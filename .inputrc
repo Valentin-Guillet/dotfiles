@@ -1,0 +1,10 @@
+
+$include /etc/inputrc
+
+"\ej": '\C-a\eDls\C-e'
+"\ek": '\C-a\eDless\C-e'
+"\es": '\C-asudo \C-e'
+"\em": '\C-aman \ef\C-k\n'
+"\ev": '\C-a\eDvim\C-e'
+
+"\e[1;3D": 'cd ..\n'

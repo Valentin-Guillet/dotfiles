@@ -1,0 +1,13 @@
+[alias]
+	st = status -s
+    br = branch
+    co = checkout
+    cm = commit -m
+    cam = commit -am
+    l = log --graph --decorate --oneline --abbrev-commit --color --all
+	unstage = reset HEAD
+[user]
+	email = Valentin.GUILLET@student.isae-supaero.fr
+	name = Val95240
+[push]
+	default = simple

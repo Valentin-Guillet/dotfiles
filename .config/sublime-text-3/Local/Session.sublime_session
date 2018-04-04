@@ -1,0 +1,987 @@
+{
+	"folder_history":
+	[
+		"/home/valentin/Documents/EuroCompetition/notebook/See4C_starting_kit/sample_code",
+		"/home/valentin/Documents/Deep-RL-agents/Rainbow"
+	],
+	"last_version": 3143,
+	"last_window_id": 55,
+	"log_indexing": false,
+	"settings":
+	{
+		"new_window_height": 0.0,
+		"new_window_settings":
+		{
+			"auto_complete":
+			{
+				"selected_items":
+				[
+					[
+						"summ",
+						"summary"
+					],
+					[
+						"D_fake",
+						"D_fake_loss_summary"
+					],
+					[
+						"s",
+						"Session"
+					],
+					[
+						"D_",
+						"D_losses"
+					],
+					[
+						"bath",
+						"batch_images"
+					],
+					[
+						"res",
+						"resize_images"
+					],
+					[
+						"if",
+						"ifmain\tif __name__ == '__main__'"
+					],
+					[
+						"train",
+						"training"
+					],
+					[
+						"ba",
+						"batch_size"
+					],
+					[
+						"D_fake_",
+						"D_fake_logits"
+					],
+					[
+						"leaky_",
+						"leaky_relu"
+					],
+					[
+						"d_",
+						"d_loss_fake"
+					],
+					[
+						"load",
+						"load_file"
+					],
+					[
+						"data",
+						"data_dir"
+					],
+					[
+						"url",
+						"url_base"
+					],
+					[
+						"gra",
+						"grad_and_vars"
+					],
+					[
+						"tar",
+						"target_vars"
+					],
+					[
+						"main",
+						"main_vars"
+					],
+					[
+						"w",
+						"w"
+					],
+					[
+						"ep",
+						"epsilon_j"
+					],
+					[
+						"lear",
+						"learning_rate"
+					],
+					[
+						"Q",
+						"QNetwork"
+					],
+					[
+						"not_done_",
+						"not_done_ph"
+					],
+					[
+						"d",
+						"debug\tdebug"
+					],
+					[
+						"Q_tar",
+						"Q_target_st_n"
+					],
+					[
+						"Q_st",
+						"Q_st_n_max_a"
+					],
+					[
+						"Q_T",
+						"Q_target_st_n_at_n"
+					]
+				]
+			},
+			"build_system_choices":
+			[
+			],
+			"build_varint": "",
+			"command_palette":
+			{
+				"height": 392.0,
+				"last_filter": ":w",
+				"selected_items":
+				[
+					[
+						":w",
+						":w - Save"
+					],
+					[
+						"py",
+						"Set Syntax: Python"
+					],
+					[
+						":g",
+						"Set Syntax: Go"
+					],
+					[
+						"inst",
+						"Package Control: Install Package"
+					],
+					[
+						"syntax h",
+						"Set Syntax: HTML"
+					],
+					[
+						"reove",
+						"Package Control: Remove Package"
+					],
+					[
+						"install",
+						"Package Control: Install Package"
+					],
+					[
+						"remove",
+						"Package Control: Remove Package"
+					],
+					[
+						"insta",
+						"Package Control: Install Package"
+					],
+					[
+						"remov",
+						"Package Control: Remove Package"
+					]
+				],
+				"width": 461.0
+			},
+			"console":
+			{
+				"height": 130.0,
+				"history":
+				[
+					"view.run_command('remove_debug')"
+				]
+			},
+			"distraction_free":
+			{
+				"menu_visible": true,
+				"show_minimap": false,
+				"show_open_files": false,
+				"show_tabs": false,
+				"side_bar_visible": false,
+				"status_bar_visible": false
+			},
+			"file_history":
+			[
+				"/home/valentin/Documents/GAN/OwnGAN/Model.py",
+				"/home/valentin/Documents/GAN/OwnGAN/main.py",
+				"/home/valentin/Documents/GAN/OwnGAN/utils.py",
+				"/home/valentin/Documents/GAN/tensorflow-MNIST-GAN-DCGAN/tensorflow_MNIST_DCGAN.py",
+				"/home/valentin/Documents/Deep-RL-agents/Test/eval.py",
+				"/home/valentin/Documents/GAN/DCGAN-tensorflow/download.py",
+				"/home/valentin/Documents/GAN/DCGAN-tensorflow/utils.py",
+				"/home/valentin/Documents/GAN/DCGAN-tensorflow/ops.py",
+				"/home/valentin/Documents/GAN/DCGAN-tensorflow/main.py",
+				"/home/valentin/Documents/GAN/DCGAN-tensorflow/model.py",
+				"/home/valentin/anaconda3/lib/python3.6/site-packages/tqdm/_tqdm.py",
+				"/home/valentin/anaconda3/lib/python3.6/site-packages/tqdm/_main.py",
+				"/home/valentin/Documents/Deep-RL-agents/utils/Saver.py",
+				"/home/valentin/Documents/GAN/OwnGAN/test.py",
+				"/home/valentin/.config/sublime-text-3/Packages/User/RemoveDebug.py",
+				"/home/valentin/.config/sublime-text-3/Packages/User/Default (Linux).sublime-keymap",
+				"/home/valentin/Documents/Deep-RL-agents/Rainbow/QNetwork.py",
+				"/home/valentin/Documents/Deep-RL-agents/utils/network_utils.py",
+				"/home/valentin/Documents/EuroCompetition/notebook/See4C_starting_kit/predictSpatioTemporal.py",
+				"/home/valentin/Documents/EuroCompetition/notebook/See4C_starting_kit/sample_code/simple_model.py",
+				"/home/valentin/Documents/EuroCompetition/notebook/See4C_starting_kit/sample_code/simple_model_test.py",
+				"/home/valentin/Documents/EuroCompetition/notebook/See4C_starting_kit/ufcnn/ufcnn.py",
+				"/home/valentin/Documents/EuroCompetition/notebook/See4C_starting_kit/sample_code/test.py",
+				"/home/valentin/Documents/EuroCompetition/notebook/See4C_starting_kit/sample_code/prednet_utils.py",
+				"/home/valentin/Documents/EuroCompetition/notebook/See4C_starting_kit/sample_code/prednet.py",
+				"/home/valentin/Documents/EuroCompetition/notebook/See4C_starting_kit/sample_code/prednet_baseline.py",
+				"/home/valentin/Documents/EuroCompetition/notebook/See4C_starting_kit/predictSpatioTemporal/predictSpatioTemporal-prednet.py",
+				"/home/valentin/Documents/EuroCompetition/notebook/See4C_starting_kit/predictSpatioTemporal/predictSpatioTemporal_neutral.py",
+				"/home/valentin/Documents/EuroCompetition/notebook/See4C_starting_kit/predictSpatioTemporal/predictSpatioTemporal_persistence.py",
+				"/home/valentin/Documents/EuroCompetition/notebook/See4C_starting_kit/ufcnn/datasets.py",
+				"/home/valentin/Documents/EuroCompetition/notebook/See4C_starting_kit/utilities/data_manager.py",
+				"/home/valentin/Documents/EuroCompetition/notebook/See4C_starting_kit/utilities/data_io.py",
+				"/home/valentin/Documents/EuroCompetition/notebook/See4C_starting_kit/sample_data/train/Xm1/X1.h5",
+				"/home/valentin/Documents/EuroCompetition/notebook/See4C_starting_kit/sample_code/linear_kernels.py",
+				"/home/valentin/Documents/EuroCompetition/notebook/See4C_starting_kit/sample_code/keras.json",
+				"/home/valentin/Documents/EuroCompetition/notebook/See4C_starting_kit/predictSpatioTemporal/predictSpatioTemporal_linear.py",
+				"/home/valentin/Documents/EuroCompetition/notebook/See4C_starting_kit/predictSpatioTemporal/README.txt",
+				"/home/valentin/Documents/Deep-RL-agents/utils/EnvironmentFlappy.py",
+				"/home/valentin/Documents/Deep-RL-agents/FlappyBird/game/flappy_bird_utils.py",
+				"/home/valentin/Documents/Deep-RL-agents/FlappyBird/game/wrapped_flappy_bird.py",
+				"/home/valentin/Documents/Deep-RL-agents/FlappyBird/QNetwork.py",
+				"/home/valentin/Documents/Deep-RL-agents/A3C/settings.py",
+				"/home/valentin/Documents/Deep-RL-agents/A3C/Saver.py",
+				"/home/valentin/Documents/Deep-RL-agents/A3C/NetworkArchitecture.py",
+				"/home/valentin/Documents/Deep-RL-agents/A3C/Agent.py",
+				"/home/valentin/Documents/Deep-RL-agents/A3C/Displayer.py",
+				"/home/valentin/Documents/Deep-RL-agents/A3C/Environment.py",
+				"/home/valentin/Documents/Deep-RL-agents/A3C/main.py",
+				"/home/valentin/Documents/Deep-RL-agents/A3C/Network.py",
+				"/home/valentin/Documents/Deep-RL-agents/FlappyBird/settings.py",
+				"/home/valentin/Documents/Deep-RL-agents/FlappyBird/Model.py",
+				"/home/valentin/Documents/Deep-RL-agents/D4PG/QNetwork.py",
+				"/home/valentin/Documents/Deep-RL-agents/DDPG/Model.py",
+				"/home/valentin/Documents/Deep-RL-agents/DDPG/QNetwork.py",
+				"/home/valentin/Documents/Deep-RL-agents/C51/QNetwork.py",
+				"/home/valentin/Documents/Deep-RL-agents/Environment_Tests/FlappyBird/Agent.py",
+				"/home/valentin/Documents/Deep-RL-agents/Environment_Tests/FlappyBird/Displayer.py",
+				"/home/valentin/Documents/Deep-RL-agents/Environment_Tests/FlappyBird/Environment.py",
+				"/home/valentin/Documents/Deep-RL-agents/Environment_Tests/FlappyBird/main.py",
+				"/home/valentin/Documents/Deep-RL-agents/Environment_Tests/FlappyBird/MasterNetwork.py",
+				"/home/valentin/Documents/Deep-RL-agents/Environment_Tests/FlappyBird/NetworkArchitecture.py",
+				"/home/valentin/Documents/Deep-RL-agents/Environment_Tests/FlappyBird/parameters.py",
+				"/home/valentin/Documents/Deep-RL-agents/Environment_Tests/FlappyBird/Saver.py",
+				"/home/valentin/Documents/Deep-RL-agents/FlappyBird/main.py",
+				"/home/valentin/Documents/Deep-RL-agents/FlappyBird/Agent.py",
+				"/home/valentin/Documents/Deep-RL-agents/FlappyBird/Displayer.py",
+				"/home/valentin/Documents/Deep-RL-agents/FlappyBird/Saver.py",
+				"/home/valentin/Documents/Deep-RL-agents/FlappyBird/parameters.py",
+				"/home/valentin/Documents/Deep-RL-agents/FlappyBird/NetworkArchitecture.py",
+				"/home/valentin/Documents/Deep-RL-agents/FlappyBird/MasterNetwork.py",
+				"/home/valentin/Documents/Deep-RL-agents/FlappyBird/Environment.py",
+				"/home/valentin/Documents/Deep-RL-agents/utils/Environment.py",
+				"/home/valentin/Documents/Deep-RL-agents/utils/GUI.py",
+				"/home/valentin/Documents/Deep-RL-agents/utils/ExperienceBuffer.py",
+				"/home/valentin/Documents/Deep-RL-agents/utils/SumTree.py",
+				"/home/valentin/.config/sublime-text-3/Packages/User/LastSelection.py",
+				"/home/valentin/Documents/Deep-RL-agents/utils/Displayer.py",
+				"/home/valentin/Documents/Deep-RL-agents/C51/settings.py",
+				"/home/valentin/Documents/Deep-RL-agents/D4PG/settings.py",
+				"/home/valentin/Documents/Deep-RL-agents/DDPG/settings.py",
+				"/home/valentin/Documents/Deep-RL-agents/Rainbow/settings.py",
+				"/home/valentin/Documents/Deep-RL-agents/Rainbow/main.py",
+				"/home/valentin/Documents/Deep-RL-agents/Rainbow/Model.py",
+				"/home/valentin/Documents/Deep-RL-agents/Rainbow/Agent.py",
+				"/home/valentin/.config/sublime-text-3/Packages/User/debug.sublime-snippet",
+				"/home/valentin/.config/sublime-text-3/Packages/User/Package Control.sublime-settings",
+				"/home/valentin/Downloads/network_utils.py",
+				"/home/valentin/Downloads/ExperienceBuffer.py",
+				"/home/valentin/Documents/Deep-RL-agents/WIP/D4PG_WoParallel/Environment.py",
+				"/home/valentin/Documents/Deep-RL-agents/WIP/D4PG_On_GPU/Environment.py",
+				"/home/valentin/Documents/Deep-RL-agents/Environment_Tests/Walker/Environment.py",
+				"/home/valentin/Documents/Deep-RL-agents/BlogFiles/Code/Rainbow/Environment.py",
+				"/home/valentin/Documents/Deep-RL-agents/BlogFiles/Code/DDPG/Environment.py",
+				"/home/valentin/Documents/Deep-RL-agents/C51/main.py",
+				"/home/valentin/Documents/Deep-RL-agents/D4PG/main.py",
+				"/home/valentin/Documents/Deep-RL-agents/DDPG/main.py"
+			],
+			"find":
+			{
+				"height": 38.0
+			},
+			"find_in_files":
+			{
+				"height": 104.0,
+				"where_history":
+				[
+				]
+			},
+			"find_state":
+			{
+				"case_sensitive": false,
+				"find_history":
+				[
+					"sample_model"
+				],
+				"highlight": true,
+				"in_selection": false,
+				"preserve_case": false,
+				"regex": true,
+				"replace_history":
+				[
+				],
+				"reverse": false,
+				"show_context": true,
+				"use_buffer2": true,
+				"whole_word": false,
+				"wrap": true
+			},
+			"incremental_find":
+			{
+				"height": 23.0
+			},
+			"input":
+			{
+				"height": 0.0
+			},
+			"menu_visible": true,
+			"output.autopep8":
+			{
+				"height": 102.0
+			},
+			"output.find_results":
+			{
+				"height": 0.0
+			},
+			"pinned_build_system": "",
+			"replace":
+			{
+				"height": 42.0
+			},
+			"save_all_on_build": true,
+			"select_file":
+			{
+				"height": 0.0,
+				"last_filter": "",
+				"selected_items":
+				[
+				],
+				"width": 0.0
+			},
+			"select_project":
+			{
+				"height": 0.0,
+				"last_filter": "",
+				"selected_items":
+				[
+				],
+				"width": 0.0
+			},
+			"select_symbol":
+			{
+				"height": 0.0,
+				"last_filter": "",
+				"selected_items":
+				[
+				],
+				"width": 0.0
+			},
+			"show_minimap": true,
+			"show_open_files": false,
+			"show_tabs": true,
+			"side_bar_visible": true,
+			"side_bar_width": 150.0,
+			"status_bar_visible": true,
+			"template_settings":
+			{
+			}
+		},
+		"new_window_width": 0.0
+	},
+	"windows":
+	[
+		{
+			"auto_complete":
+			{
+				"selected_items":
+				[
+					[
+						"summ",
+						"summary"
+					],
+					[
+						"D_fake",
+						"D_fake_loss_summary"
+					],
+					[
+						"s",
+						"Session"
+					],
+					[
+						"D_",
+						"D_losses"
+					],
+					[
+						"bath",
+						"batch_images"
+					],
+					[
+						"res",
+						"resize_images"
+					],
+					[
+						"if",
+						"ifmain\tif __name__ == '__main__'"
+					],
+					[
+						"train",
+						"training"
+					],
+					[
+						"ba",
+						"batch_size"
+					],
+					[
+						"D_fake_",
+						"D_fake_logits"
+					],
+					[
+						"leaky_",
+						"leaky_relu"
+					],
+					[
+						"d_",
+						"d_loss_fake"
+					],
+					[
+						"load",
+						"load_file"
+					],
+					[
+						"data",
+						"data_dir"
+					],
+					[
+						"url",
+						"url_base"
+					],
+					[
+						"gra",
+						"grad_and_vars"
+					],
+					[
+						"tar",
+						"target_vars"
+					],
+					[
+						"main",
+						"main_vars"
+					],
+					[
+						"w",
+						"w"
+					],
+					[
+						"ep",
+						"epsilon_j"
+					],
+					[
+						"lear",
+						"learning_rate"
+					],
+					[
+						"Q",
+						"QNetwork"
+					],
+					[
+						"not_done_",
+						"not_done_ph"
+					],
+					[
+						"d",
+						"debug\tdebug"
+					],
+					[
+						"Q_tar",
+						"Q_target_st_n"
+					],
+					[
+						"Q_st",
+						"Q_st_n_max_a"
+					],
+					[
+						"Q_T",
+						"Q_target_st_n_at_n"
+					]
+				]
+			},
+			"buffers":
+			[
+				{
+					"file": "/home/valentin/Documents/GAN/DCGAN-tensorflow/main.py",
+					"settings":
+					{
+						"buffer_size": 4132,
+						"line_ending": "Unix"
+					}
+				},
+				{
+					"file": "/home/valentin/Documents/GAN/DCGAN-tensorflow/model.py",
+					"settings":
+					{
+						"buffer_size": 19875,
+						"line_ending": "Unix"
+					}
+				},
+				{
+					"file": "/home/valentin/Documents/GAN/DCGAN-tensorflow/ops.py",
+					"settings":
+					{
+						"buffer_size": 3656,
+						"line_ending": "Unix"
+					}
+				},
+				{
+					"file": "/home/valentin/Documents/GAN/DCGAN-tensorflow/utils.py",
+					"settings":
+					{
+						"buffer_size": 8724,
+						"line_ending": "Unix"
+					}
+				}
+			],
+			"build_system": "",
+			"build_system_choices":
+			[
+			],
+			"build_varint": "",
+			"command_palette":
+			{
+				"height": 392.0,
+				"last_filter": ":w",
+				"selected_items":
+				[
+					[
+						":w",
+						":w - Save"
+					],
+					[
+						"py",
+						"Set Syntax: Python"
+					],
+					[
+						":g",
+						"Set Syntax: Go"
+					],
+					[
+						"inst",
+						"Package Control: Install Package"
+					],
+					[
+						"syntax h",
+						"Set Syntax: HTML"
+					],
+					[
+						"reove",
+						"Package Control: Remove Package"
+					],
+					[
+						"install",
+						"Package Control: Install Package"
+					],
+					[
+						"remove",
+						"Package Control: Remove Package"
+					],
+					[
+						"insta",
+						"Package Control: Install Package"
+					],
+					[
+						"remov",
+						"Package Control: Remove Package"
+					]
+				],
+				"width": 461.0
+			},
+			"console":
+			{
+				"height": 130.0,
+				"history":
+				[
+					"view.run_command('remove_debug')"
+				]
+			},
+			"distraction_free":
+			{
+				"menu_visible": true,
+				"show_minimap": false,
+				"show_open_files": false,
+				"show_tabs": false,
+				"side_bar_visible": false,
+				"status_bar_visible": false
+			},
+			"file_history":
+			[
+				"/home/valentin/Documents/Deep-RL-agents/utils/Displayer.py",
+				"/home/valentin/Documents/GAN/OwnGAN/Model.py",
+				"/home/valentin/Documents/GAN/DCGAN-tensorflow/download.py",
+				"/home/valentin/Documents/GAN/pix2pix-tensorflow/utils.py",
+				"/home/valentin/Documents/GAN/pix2pix-tensorflow/ops.py",
+				"/home/valentin/Documents/GAN/pix2pix-tensorflow/model.py",
+				"/home/valentin/Documents/GAN/pix2pix-tensorflow/main.py",
+				"/home/valentin/Documents/GAN/DCGAN-tensorflow/main.py",
+				"/home/valentin/Documents/GAN/DCGAN-tensorflow/model.py",
+				"/home/valentin/Documents/GAN/DCGAN-tensorflow/ops.py",
+				"/home/valentin/Documents/GAN/DCGAN-tensorflow/utils.py",
+				"/home/valentin/Documents/GAN/OwnGAN/main.py",
+				"/home/valentin/Documents/GAN/OwnGAN/utils.py",
+				"/home/valentin/Documents/GAN/tensorflow-MNIST-GAN-DCGAN/tensorflow_MNIST_DCGAN.py",
+				"/home/valentin/Documents/Deep-RL-agents/Test/eval.py",
+				"/home/valentin/anaconda3/lib/python3.6/site-packages/tqdm/_tqdm.py",
+				"/home/valentin/anaconda3/lib/python3.6/site-packages/tqdm/_main.py",
+				"/home/valentin/Documents/Deep-RL-agents/utils/Saver.py",
+				"/home/valentin/Documents/GAN/OwnGAN/test.py",
+				"/home/valentin/.config/sublime-text-3/Packages/User/RemoveDebug.py",
+				"/home/valentin/.config/sublime-text-3/Packages/User/Default (Linux).sublime-keymap",
+				"/home/valentin/Documents/Deep-RL-agents/Rainbow/QNetwork.py",
+				"/home/valentin/Documents/Deep-RL-agents/utils/network_utils.py",
+				"/home/valentin/Documents/EuroCompetition/notebook/See4C_starting_kit/predictSpatioTemporal.py",
+				"/home/valentin/Documents/EuroCompetition/notebook/See4C_starting_kit/sample_code/simple_model.py",
+				"/home/valentin/Documents/EuroCompetition/notebook/See4C_starting_kit/sample_code/simple_model_test.py",
+				"/home/valentin/Documents/EuroCompetition/notebook/See4C_starting_kit/ufcnn/ufcnn.py",
+				"/home/valentin/Documents/EuroCompetition/notebook/See4C_starting_kit/sample_code/test.py",
+				"/home/valentin/Documents/EuroCompetition/notebook/See4C_starting_kit/sample_code/prednet_utils.py",
+				"/home/valentin/Documents/EuroCompetition/notebook/See4C_starting_kit/sample_code/prednet.py",
+				"/home/valentin/Documents/EuroCompetition/notebook/See4C_starting_kit/sample_code/prednet_baseline.py",
+				"/home/valentin/Documents/EuroCompetition/notebook/See4C_starting_kit/predictSpatioTemporal/predictSpatioTemporal-prednet.py",
+				"/home/valentin/Documents/EuroCompetition/notebook/See4C_starting_kit/predictSpatioTemporal/predictSpatioTemporal_neutral.py",
+				"/home/valentin/Documents/EuroCompetition/notebook/See4C_starting_kit/predictSpatioTemporal/predictSpatioTemporal_persistence.py",
+				"/home/valentin/Documents/EuroCompetition/notebook/See4C_starting_kit/ufcnn/datasets.py",
+				"/home/valentin/Documents/EuroCompetition/notebook/See4C_starting_kit/utilities/data_manager.py",
+				"/home/valentin/Documents/EuroCompetition/notebook/See4C_starting_kit/utilities/data_io.py",
+				"/home/valentin/Documents/EuroCompetition/notebook/See4C_starting_kit/sample_data/train/Xm1/X1.h5",
+				"/home/valentin/Documents/EuroCompetition/notebook/See4C_starting_kit/sample_code/linear_kernels.py",
+				"/home/valentin/Documents/EuroCompetition/notebook/See4C_starting_kit/sample_code/keras.json",
+				"/home/valentin/Documents/EuroCompetition/notebook/See4C_starting_kit/predictSpatioTemporal/predictSpatioTemporal_linear.py",
+				"/home/valentin/Documents/EuroCompetition/notebook/See4C_starting_kit/predictSpatioTemporal/README.txt",
+				"/home/valentin/Documents/Deep-RL-agents/utils/EnvironmentFlappy.py",
+				"/home/valentin/Documents/Deep-RL-agents/FlappyBird/game/flappy_bird_utils.py",
+				"/home/valentin/Documents/Deep-RL-agents/FlappyBird/game/wrapped_flappy_bird.py",
+				"/home/valentin/Documents/Deep-RL-agents/FlappyBird/QNetwork.py",
+				"/home/valentin/Documents/Deep-RL-agents/A3C/settings.py",
+				"/home/valentin/Documents/Deep-RL-agents/A3C/Saver.py",
+				"/home/valentin/Documents/Deep-RL-agents/A3C/NetworkArchitecture.py",
+				"/home/valentin/Documents/Deep-RL-agents/A3C/Agent.py",
+				"/home/valentin/Documents/Deep-RL-agents/A3C/Displayer.py",
+				"/home/valentin/Documents/Deep-RL-agents/A3C/Environment.py",
+				"/home/valentin/Documents/Deep-RL-agents/A3C/main.py",
+				"/home/valentin/Documents/Deep-RL-agents/A3C/Network.py",
+				"/home/valentin/Documents/Deep-RL-agents/FlappyBird/settings.py",
+				"/home/valentin/Documents/Deep-RL-agents/FlappyBird/Model.py",
+				"/home/valentin/Documents/Deep-RL-agents/D4PG/QNetwork.py",
+				"/home/valentin/Documents/Deep-RL-agents/DDPG/Model.py",
+				"/home/valentin/Documents/Deep-RL-agents/DDPG/QNetwork.py",
+				"/home/valentin/Documents/Deep-RL-agents/C51/QNetwork.py",
+				"/home/valentin/Documents/Deep-RL-agents/Environment_Tests/FlappyBird/Agent.py",
+				"/home/valentin/Documents/Deep-RL-agents/Environment_Tests/FlappyBird/Displayer.py",
+				"/home/valentin/Documents/Deep-RL-agents/Environment_Tests/FlappyBird/Environment.py",
+				"/home/valentin/Documents/Deep-RL-agents/Environment_Tests/FlappyBird/main.py",
+				"/home/valentin/Documents/Deep-RL-agents/Environment_Tests/FlappyBird/MasterNetwork.py",
+				"/home/valentin/Documents/Deep-RL-agents/Environment_Tests/FlappyBird/NetworkArchitecture.py",
+				"/home/valentin/Documents/Deep-RL-agents/Environment_Tests/FlappyBird/parameters.py",
+				"/home/valentin/Documents/Deep-RL-agents/Environment_Tests/FlappyBird/Saver.py",
+				"/home/valentin/Documents/Deep-RL-agents/FlappyBird/main.py",
+				"/home/valentin/Documents/Deep-RL-agents/FlappyBird/Agent.py",
+				"/home/valentin/Documents/Deep-RL-agents/FlappyBird/Displayer.py",
+				"/home/valentin/Documents/Deep-RL-agents/FlappyBird/Saver.py",
+				"/home/valentin/Documents/Deep-RL-agents/FlappyBird/parameters.py",
+				"/home/valentin/Documents/Deep-RL-agents/FlappyBird/NetworkArchitecture.py",
+				"/home/valentin/Documents/Deep-RL-agents/FlappyBird/MasterNetwork.py",
+				"/home/valentin/Documents/Deep-RL-agents/FlappyBird/Environment.py",
+				"/home/valentin/Documents/Deep-RL-agents/utils/Environment.py",
+				"/home/valentin/Documents/Deep-RL-agents/utils/GUI.py",
+				"/home/valentin/Documents/Deep-RL-agents/utils/ExperienceBuffer.py",
+				"/home/valentin/Documents/Deep-RL-agents/utils/SumTree.py",
+				"/home/valentin/.config/sublime-text-3/Packages/User/LastSelection.py",
+				"/home/valentin/Documents/Deep-RL-agents/C51/settings.py",
+				"/home/valentin/Documents/Deep-RL-agents/D4PG/settings.py",
+				"/home/valentin/Documents/Deep-RL-agents/DDPG/settings.py",
+				"/home/valentin/Documents/Deep-RL-agents/Rainbow/settings.py",
+				"/home/valentin/Documents/Deep-RL-agents/Rainbow/main.py",
+				"/home/valentin/Documents/Deep-RL-agents/Rainbow/Model.py",
+				"/home/valentin/Documents/Deep-RL-agents/Rainbow/Agent.py",
+				"/home/valentin/.config/sublime-text-3/Packages/User/debug.sublime-snippet",
+				"/home/valentin/.config/sublime-text-3/Packages/User/Package Control.sublime-settings",
+				"/home/valentin/Downloads/network_utils.py",
+				"/home/valentin/Downloads/ExperienceBuffer.py",
+				"/home/valentin/Documents/Deep-RL-agents/WIP/D4PG_WoParallel/Environment.py",
+				"/home/valentin/Documents/Deep-RL-agents/WIP/D4PG_On_GPU/Environment.py",
+				"/home/valentin/Documents/Deep-RL-agents/Environment_Tests/Walker/Environment.py",
+				"/home/valentin/Documents/Deep-RL-agents/BlogFiles/Code/Rainbow/Environment.py",
+				"/home/valentin/Documents/Deep-RL-agents/BlogFiles/Code/DDPG/Environment.py",
+				"/home/valentin/Documents/Deep-RL-agents/C51/main.py",
+				"/home/valentin/Documents/Deep-RL-agents/D4PG/main.py",
+				"/home/valentin/Documents/Deep-RL-agents/DDPG/main.py"
+			],
+			"find":
+			{
+				"height": 38.0
+			},
+			"find_in_files":
+			{
+				"height": 104.0,
+				"where_history":
+				[
+				]
+			},
+			"find_state":
+			{
+				"case_sensitive": false,
+				"find_history":
+				[
+					"leaky_relu",
+					"sample_model"
+				],
+				"highlight": true,
+				"in_selection": false,
+				"preserve_case": false,
+				"regex": true,
+				"replace_history":
+				[
+				],
+				"reverse": false,
+				"show_context": true,
+				"use_buffer2": true,
+				"whole_word": false,
+				"wrap": true
+			},
+			"groups":
+			[
+				{
+					"selected": 1,
+					"sheets":
+					[
+						{
+							"buffer": 0,
+							"file": "/home/valentin/Documents/GAN/DCGAN-tensorflow/main.py",
+							"semi_transient": false,
+							"settings":
+							{
+								"buffer_size": 4132,
+								"regions":
+								{
+								},
+								"selection":
+								[
+									[
+										0,
+										0
+									]
+								],
+								"settings":
+								{
+									"syntax": "Packages/Python/Python.sublime-syntax",
+									"tab_size": 2,
+									"translate_tabs_to_spaces": true
+								},
+								"translation.x": 0.0,
+								"translation.y": 0.0,
+								"zoom_level": 1.0
+							},
+							"stack_index": 1,
+							"type": "text"
+						},
+						{
+							"buffer": 1,
+							"file": "/home/valentin/Documents/GAN/DCGAN-tensorflow/model.py",
+							"semi_transient": false,
+							"settings":
+							{
+								"buffer_size": 19875,
+								"regions":
+								{
+								},
+								"selection":
+								[
+									[
+										8333,
+										8333
+									]
+								],
+								"settings":
+								{
+									"syntax": "Packages/Python/Python.sublime-syntax",
+									"tab_size": 2,
+									"translate_tabs_to_spaces": true
+								},
+								"translation.x": 0.0,
+								"translation.y": 4365.0,
+								"zoom_level": 1.0
+							},
+							"stack_index": 0,
+							"type": "text"
+						},
+						{
+							"buffer": 2,
+							"file": "/home/valentin/Documents/GAN/DCGAN-tensorflow/ops.py",
+							"semi_transient": false,
+							"settings":
+							{
+								"buffer_size": 3656,
+								"regions":
+								{
+								},
+								"selection":
+								[
+									[
+										0,
+										0
+									]
+								],
+								"settings":
+								{
+									"syntax": "Packages/Python/Python.sublime-syntax",
+									"tab_size": 2,
+									"translate_tabs_to_spaces": true
+								},
+								"translation.x": 0.0,
+								"translation.y": 0.0,
+								"zoom_level": 1.0
+							},
+							"stack_index": 3,
+							"type": "text"
+						},
+						{
+							"buffer": 3,
+							"file": "/home/valentin/Documents/GAN/DCGAN-tensorflow/utils.py",
+							"semi_transient": false,
+							"settings":
+							{
+								"buffer_size": 8724,
+								"regions":
+								{
+								},
+								"selection":
+								[
+									[
+										0,
+										0
+									]
+								],
+								"settings":
+								{
+									"syntax": "Packages/Python/Python.sublime-syntax",
+									"tab_size": 2,
+									"translate_tabs_to_spaces": true
+								},
+								"translation.x": 0.0,
+								"translation.y": 0.0,
+								"zoom_level": 1.0
+							},
+							"stack_index": 2,
+							"type": "text"
+						}
+					]
+				},
+				{
+					"sheets":
+					[
+					]
+				}
+			],
+			"incremental_find":
+			{
+				"height": 23.0
+			},
+			"input":
+			{
+				"height": 0.0
+			},
+			"layout":
+			{
+				"cells":
+				[
+					[
+						0,
+						0,
+						1,
+						1
+					],
+					[
+						1,
+						0,
+						2,
+						1
+					]
+				],
+				"cols":
+				[
+					0.0,
+					0.5,
+					1.0
+				],
+				"rows":
+				[
+					0.0,
+					1.0
+				]
+			},
+			"menu_visible": true,
+			"output.autopep8":
+			{
+				"height": 102.0
+			},
+			"output.find_results":
+			{
+				"height": 0.0
+			},
+			"pinned_build_system": "",
+			"position": "0,1,0,0,0,0,0,0,0,7680,1440",
+			"project": "",
+			"replace":
+			{
+				"height": 42.0
+			},
+			"save_all_on_build": true,
+			"select_file":
+			{
+				"height": 0.0,
+				"last_filter": "",
+				"selected_items":
+				[
+				],
+				"width": 0.0
+			},
+			"select_project":
+			{
+				"height": 0.0,
+				"last_filter": "",
+				"selected_items":
+				[
+				],
+				"width": 0.0
+			},
+			"select_symbol":
+			{
+				"height": 0.0,
+				"last_filter": "",
+				"selected_items":
+				[
+				],
+				"width": 0.0
+			},
+			"selected_group": 1,
+			"settings":
+			{
+			},
+			"show_minimap": true,
+			"show_open_files": false,
+			"show_tabs": true,
+			"side_bar_visible": true,
+			"side_bar_width": 150.0,
+			"status_bar_visible": true,
+			"template_settings":
+			{
+			},
+			"window_id": 53,
+			"workspace_name": ""
+		}
+	],
+	"workspaces":
+	{
+		"recent_workspaces":
+		[
+		]
+	}
+}
