@@ -1,10 +1,13 @@
 
 $include /etc/inputrc
 
-"\ej": '\C-a\eDls\C-e'
-"\ek": '\C-a\eDless\C-e'
-"\es": '\C-asudo \C-e'
-"\em": '\C-aman \ef\C-k\n'
-"\ev": '\C-a\eDvim\C-e'
+"\ej": "\C-a\eDls\C-e"
+"\ek": "\C-a\eDless\C-e"
+"\em": "\C-aman \ef\C-k\n"
+"\es": "\C-asudo \C-e"
+"\ev": "\C-a\eDvim\C-e"
 
-"\e[1;3D": 'cd ..\n'
+"\e[1;3C": "\C-l\")\C-a$(next_folder \"\C-e\e\C-e\C-u\C-y\C-a\C-d\C-dls\C-e\n\C-y"
+"\e[1;3D": "\C-l\")\C-a$(prev_folder \"\C-e\e\C-e\C-u\C-y\C-a\C-d\C-dls\C-e\n\C-y"
+"\e[1;3A": "\C-l\")\C-a$(up_folder \"\C-e\e\C-e\C-u\C-y\C-a\C-d\C-dls\C-e\n\C-y"
+"\e[1;3B": "\C-l\")\C-a$(down_folder \"\C-e\e\C-e\C-u\C-y\C-a\C-d\C-dls\C-e\n\C-y"

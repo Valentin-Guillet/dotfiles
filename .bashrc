@@ -117,8 +117,4 @@ if ! shopt -oq posix; then
 fi
 
 export PATH=/home/valentin/anaconda3/bin:$PATH
-#export LD_LIBRARY_PATH=/home/valentin/anaconda3/lib:$LD_LIBRARY_PATH
-
-# added by Anaconda3 installer
-export PATH="/home/valentin/anaconda3/bin:$PATH"
 export EDITOR=/usr/bin/vim

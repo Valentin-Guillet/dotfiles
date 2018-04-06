@@ -1,10 +1,10 @@
 {
-	"font_size": 10,
 	"ignored_packages":
 	[
 	],
 	"rulers":
 	[
 		80
-	]
+	],
+	"theme": "Default.sublime-theme"
 }
