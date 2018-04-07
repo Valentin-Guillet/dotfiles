@@ -1,4 +1,6 @@
 
+alias evang='datamnt 2>/dev/null; cd /media/valentin/DATA/Videos/Neon\ Genesis\ Evangelion/ && echo Number ? && read nb && cp $nb* ~/Videos && cd ~/Videos && vlc ~/Videos/$nb*'
+
 alias cpr='cp -r'
 alias rmr='rm -r'
 
@@ -14,6 +16,7 @@ alias run='py main.py'
 alias config='vim ~/.bash_aliases; source ~/.bashrc'
 alias configg='vim ~/.bashrc; source ~/.bashrc'
 
+alias cddoc='cd /media/valentin/DATA/'
 alias datamnt='sudo mount /dev/sda1 /media/valentin/DATA'
 
 function next_folder {

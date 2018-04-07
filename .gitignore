@@ -1,0 +1,12 @@
+*
+!.bash_aliases
+!.bashrc
+!.gitconfig
+!.gitignore
+!.inputrc
+!.tmux.conf
+!.vimrc
+
+!.config/sublime-text-3/Installed*
+!.config/sublime-text-3/Packages
+!.config/tmux
