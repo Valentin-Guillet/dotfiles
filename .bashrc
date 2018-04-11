@@ -15,6 +15,9 @@ HISTCONTROL=ignoreboth
 # append to the history file, don't overwrite it
 shopt -s histappend
 
+# write to the history after every command without waiting exit
+PROMPT_COMMAND="history -a;$PROMPT_COMMAND"
+
 # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
 HISTSIZE=1000
 HISTFILESIZE=2000
@@ -115,6 +118,20 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
+
+# user general aliases
+alias cpr='cp -r'
+alias rmr='rm -r'
+alias cd..='cd ..'
+
+alias d='du -hd 1'
+alias gifspeed='find $(pwd) -name "*.gif" -exec convert -delay 2x100 {} {} \;'
+
+alias py=python
+alias run='py main.py'
+
+alias config='vim ~/.bash_aliases; source ~/.bashrc'
+alias configg='vim ~/.bashrc; source ~/.bashrc'
 
 export PATH=/home/valentin/anaconda3/bin:$PATH
 export EDITOR=/usr/bin/vim
