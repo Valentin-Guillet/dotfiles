@@ -1,1 +1,0 @@
-{"dependencies": [], "version": "2016.01.08.10.56.38", "platforms": ["*"], "description": "Python PEP8 Autoformat is a Sublime Text (2|3) plugin to interactively reformat Python source code according\r\nto PEP8 (Style Guide for Python Code).\r\n", "url": "https://bitbucket.org/StephaneBunel/pythonpep8autoformat", "sublime_text": "*"}
