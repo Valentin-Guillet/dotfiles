@@ -4,8 +4,8 @@ $include /etc/inputrc
 "\e[5~": history-search-backward
 "\e[6~": history-search-forward
 
-"\ej": "\C-a\eDls\C-e"
-"\ek": "\C-a\eDless\C-e"
+"\ei": "\C-a\eDls\C-e"
+"\eo": "\C-a\eDless\C-e"
 "\em": "\C-aman \ef\C-k\n"
 "\es": "\C-asudo \C-e"
 "\ev": "\C-a\eDvim\C-e"
