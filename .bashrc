@@ -133,5 +133,9 @@ alias run='py main.py'
 alias config='vim ~/.bash_aliases; source ~/.bashrc'
 alias configg='vim ~/.bashrc; source ~/.bashrc'
 
-export PATH=/home/valentin/anaconda3/bin:$PATH
+if [[ $PATH != *$HOME/anaconda3/bin* ]]
+then
+    export PATH="$HOME/anaconda3/bin:"$PATH
+fi
+
 export EDITOR=/usr/bin/vim
