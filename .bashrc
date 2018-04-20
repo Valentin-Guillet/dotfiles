@@ -124,7 +124,9 @@ alias cpr='cp -r'
 alias rmr='rm -r'
 alias cd..='cd ..'
 
-alias d='du -hd 1 | sort -hr'
+function d() {
+    echo "$(du -hd 1 $1 2>/dev/null | sort -hr)"
+}
 alias gifspeed='find $(pwd) -name "*.gif" -exec convert -delay 2x100 {} {} \;'
 
 alias py=python
