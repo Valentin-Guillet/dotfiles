@@ -124,6 +124,10 @@ alias cpr='cp -r'
 alias rmr='rm -r'
 alias cd..='cd ..'
 
+function psg() {
+    ps aux | grep `echo $1 | sed 's/./[\0]/'`
+}
+
 function d() {
     echo "$(du -hd 1 $1 2>/dev/null | sort -hr)"
 }
