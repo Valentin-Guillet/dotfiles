@@ -4,8 +4,9 @@ $include /etc/inputrc
 "\e[5~": history-search-backward
 "\e[6~": history-search-forward
 
-"\ei": "\C-a\eDls\C-e"
-"\eo": "\C-a\eDless\C-e"
-"\em": "\C-aman \ef\C-k\n"
+"\ei": "\C-a\C-]\ \C-wls\C-e"
+"\eo": "\C-a\C-]\ \C-wless\C-e"
+"\ev": "\C-a\C-]\ \C-wvim\C-e"
+"\ex": "\C-a\C-]\ \C-wxdg-open\C-e"
+"\em": "\C-aman \C-]\ \C-k\n"
 "\es": "\C-asudo \C-e"
-"\ev": "\C-a\eDvim\C-e"
