@@ -5,8 +5,16 @@ $include /etc/inputrc
 "\e[6~": history-search-forward
 
 "\ei": "\C-a\C-]\ \C-wls\C-e"
+"\eI": "\C-als \C-e"
+
 "\eo": "\C-a\C-]\ \C-wless\C-e"
+"\eO": "\C-aless \C-e"
+
 "\ev": "\C-a\C-]\ \C-wvim\C-e"
+"\eV": "\C-avim \C-e"
+
 "\ex": "\C-a\C-]\ \C-wxdg-open\C-e"
+"\eX": "\C-axdg-open \C-e"
+
 "\em": "\C-aman \C-]\ \C-k\n"
 "\es": "\C-asudo \C-e"
