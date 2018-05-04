@@ -124,7 +124,7 @@ alias cpr='cp -r'
 alias rmr='rm -r'
 alias cd..='cd ..'
 
-alias clean='find . -name "*~" -delete 2>/dev/null'
+alias clean='find . -name "*~" -print -delete 2>/dev/null'
 
 function psg() {
     ps aux | grep `echo $1 | sed 's/./[\0]/'`

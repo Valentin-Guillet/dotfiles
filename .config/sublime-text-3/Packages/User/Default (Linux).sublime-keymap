@@ -15,7 +15,8 @@
 	{ "keys": ["alt+delete"], "command": "run_macro_file",
 		"args": {"file": "res://Packages/User/DeleteSubwordForward.sublime-macro"} },
 
-	{ "keys": ["alt+b"], "command": "insert_snippet", "args": {"contents": "1/0     # debug"} },
+	{ "keys": ["alt+b"], "command": "insert_snippet",
+		"args": {"contents": "raise Exception('Debug breakpoint')     # debug"} },
 	{ "keys": ["alt+d"], "command": "remove_debug" },
 
 	{ "keys": ["alt+j"], "command": "wrap_lines_plus"},
