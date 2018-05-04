@@ -6,13 +6,14 @@
 	name = Val95240
 	email = Valentin.GUILLET@student.isae-supaero.fr
 [alias]
-	st = status -s
-	l = log --oneline --graph --decorate --all --color --abbrev-commit
-	cm = commit -m
-	cam = commit -am
-	unstage = reset HEAD --
-	last = log -1 HEAD
-	co = checkout
 	br = branch
+	cam = commit -am
+	cm = commit -m
+	co = checkout
+	l = log --oneline --graph --decorate --all --color --abbrev-commit
+	last = log -1 HEAD
+    ls = ls-files --exclude-standard
+	st = status -s
+	unstage = reset HEAD --
 [push]
 	default = simple

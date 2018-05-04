@@ -1,0 +1,6 @@
+AutoPEP8
+AutoWrap
+Increment Selection
+More Layouts
+MoveTab
+Wrap Plus
