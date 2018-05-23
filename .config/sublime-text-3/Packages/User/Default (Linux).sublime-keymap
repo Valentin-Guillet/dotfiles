@@ -1,45 +1,68 @@
 [
-	{ "keys": ["ctrl+v"], "command": "paste_and_indent" },
-	{ "keys": ["ctrl+shift+v"], "command": "paste" },
-
-	{ "keys": ["k", "j"], "command": "exit_insert_mode",
-	    "context": [ { "key": "setting.command_mode", "operand": false },
-		    	     { "key": "setting.is_widget", "operand": false } ]
-	},
-
-	{ "keys": ["ctrl+tab"], "command": "next_view" },
-	{ "keys": ["ctrl+shift+tab"], "command": "prev_view" },
-
+	// Alt to delete subwords
 	{ "keys": ["alt+backspace"], "command": "run_macro_file",
 		"args": {"file": "res://Packages/User/DeleteSubwordBackward.sublime-macro"} },
 	{ "keys": ["alt+delete"], "command": "run_macro_file",
 		"args": {"file": "res://Packages/User/DeleteSubwordForward.sublime-macro"} },
 
+	// Remove closing bracket when deleting opening one
 	{ "keys": ["backspace"], "command": "remove_closing_bracket", "context":
 		[
 			{ "key": "setting.auto_match_enabled", "operator": "equal", "operand": true },
-			{ "key": "selection_empty", "operator": "equal", "operand": true, "match_all": true },
-			{ "key": "preceding_text", "operator": "regex_contains", "operand": "\\($", "match_all": true },
+			{ "key": "selection_empty", "operator": "equal", "operand": true, "match_all": true }
 		]
 	},
 
+	// Switch paste
+	{ "keys": ["ctrl+v"], "command": "paste_and_indent" },
+	{ "keys": ["ctrl+shift+v"], "command": "paste" },
+
+
+	// Wrap lines
+	{ "keys": ["alt+h"], "command": "wrap_lines_plus"},
+
+	// Go to last selection
+	{ "keys": ["shift+escape"], "command": "last_selection",
+		"context": [ {"key": "num_selections", "operator": "not_equal",
+					  "operand": 1} ]
+	},
+
+	// Debug command
 	{ "keys": ["alt+b"], "command": "insert_snippet",
 		"args": {"contents": "raise Exception('Debug breakpoint')     # debug"} },
 	{ "keys": ["alt+d"], "command": "remove_debug" },
 
-	{ "keys": ["alt+j"], "command": "wrap_lines_plus"},
 
+	// ========================= TABS AND PANES =========================
+
+	// Change tab in order
+	{ "keys": ["ctrl+tab"], "command": "next_view" },
+	{ "keys": ["ctrl+shift+tab"], "command": "prev_view" },
+
+	// Focus on next group with alt+[k|j]
+	{ "keys": ["alt+j"], "command": "focus_neighboring_group"},
+	{ "keys": ["alt+k"], "command": "focus_neighboring_group", "args": {"forward": false} },
+
+
+	// ============================ VIM MODE ============================
+
+	// Exit vim mode with kj 
+	{ "keys": ["k", "j"], "command": "exit_insert_mode",
+	    "context": [ { "key": "setting.command_mode", "operand": false },
+		    	     { "key": "setting.is_widget", "operand": false } ]
+	},
+
+	// Scroll with ctrl+[j|k] in vim mode
 	{ "keys": ["ctrl+j"], "command": "scroll_lines", "args": {"amount":-1.0},
 		"context": [ {"key": "setting.command_mode", "operand": true} ] },
 
 	{ "keys": ["ctrl+k"], "command": "scroll_lines", "args": {"amount":1.0},
 		"context": [ {"key": "setting.command_mode", "operand": true} ] },
 
-	{ "keys": ["shift+escape"], "command": "last_selection",
-		"context": [ {"key": "num_selections", "operator": "not_equal",
-					  "operand": 1} ]
-	},
+	// Ctrl+r to redo in vim mode
+    {"keys": ["ctrl+r"], "command": "redo", "context": [{"key": "setting.command_mode"}] },
 
+	// Put the escape key normal behaviour before the "exit vim" behaviour
 	{ "keys": ["escape"], "command": "single_selection", "context":
 		[ { "key": "num_selections", "operator": "not_equal", "operand": 1 } ]
 	},
@@ -50,8 +73,7 @@
 		[ { "key": "has_prev_field", "operator": "equal", "operand": true } ]
 	},
 	{ "keys": ["escape"], "command": "hide_panel", "args": {"cancel": true},
-		"context": [ { "key": "panel_visible", "operator": "equal", "operand": true }
-		]
+		"context": [ { "key": "panel_visible", "operator": "equal", "operand": true } ]
 	},
 	{ "keys": ["escape"], "command": "hide_overlay", "context":
 		[ { "key": "overlay_visible", "operator": "equal", "operand": true } ]
@@ -61,7 +83,5 @@
 	},
 	{ "keys": ["escape"], "command": "hide_auto_complete", "context":
 		[ { "key": "auto_complete_visible", "operator": "equal", "operand": true } ]
-	},
-
-    {"keys": ["ctrl+r"], "command": "redo", "context": [{"key": "setting.command_mode"}] }
+	}
 ]
