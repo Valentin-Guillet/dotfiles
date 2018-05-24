@@ -5,35 +5,35 @@ import sublime_plugin
 class RemoveClosingBracket(sublime_plugin.TextCommand):
 	def run(self, edit):
 
-		curr_point = self.view.sel()[0]
-		region_line = self.view.line(curr_point)
-		line = self.view.substr(region_line)
+		n = len(self.view.sel())
 
-		row, col = self.view.rowcol(curr_point.begin())
+		for index in range(n):
 
-		if col >= 1 and line[col-1] in '([{':
-			sign = line[col-1]
+			curr_point = self.view.sel()[index]
+
+			whole_region = sublime.Region(0, self.view.size())
+			text = self.view.substr(whole_region)
+			sign = text[curr_point.begin()-1]
 
 			close_sign = sign.translate(str.maketrans('([{', ')]}'))
-			print(close_sign)
 			
 			try:
-				i = col
+				i = curr_point.begin()
 				nb_brackets = 1
 
 				while nb_brackets > 0:
-					if line[i] == sign:
+					if text[i] == sign:
 						nb_brackets += 1
-					elif line[i] == close_sign:
+					elif text[i] == close_sign:
 						nb_brackets -= 1
 					i += 1
 
-				index_closing_bracket = self.view.text_point(row, i - 1)
-				region = sublime.Region(index_closing_bracket, index_closing_bracket+1)
+				region = sublime.Region(i-1, i)
 				self.view.erase(edit, region)
 
 			except (ValueError, IndexError):
 				pass
 
-		self.view.run_command('left_delete')
+			region = sublime.Region(curr_point.begin()-1, curr_point.begin())
+			self.view.erase(edit, region)
 

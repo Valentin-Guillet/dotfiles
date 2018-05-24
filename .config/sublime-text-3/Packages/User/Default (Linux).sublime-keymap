@@ -7,10 +7,9 @@
 
 	// Remove closing bracket when deleting opening one
 	{ "keys": ["backspace"], "command": "remove_closing_bracket", "context":
-		[
-			{ "key": "setting.auto_match_enabled", "operator": "equal", "operand": true },
-			{ "key": "selection_empty", "operator": "equal", "operand": true, "match_all": true }
-		]
+		[ { "key": "setting.auto_match_enabled", "operator": "equal", "operand": true },
+		  { "key": "selection_empty", "operator": "equal", "operand": true, "match_all": true },
+		  { "key": "preceding_text", "operator": "regex_contains", "operand": "[\\(\\[\\{]", "match_all": true } ]
 	},
 
 	// Switch paste
@@ -21,10 +20,12 @@
 	// Wrap lines
 	{ "keys": ["alt+h"], "command": "wrap_lines_plus"},
 
+	// Add a new selection with the next word
+	{ "keys": ["ctrl+i"], "command": "add_next_word"},
+
 	// Go to last selection
 	{ "keys": ["shift+escape"], "command": "last_selection",
-		"context": [ {"key": "num_selections", "operator": "not_equal",
-					  "operand": 1} ]
+		"context": [ {"key": "num_selections", "operator": "not_equal", "operand": 1} ]
 	},
 
 	// Debug command
@@ -39,9 +40,11 @@
 	{ "keys": ["ctrl+tab"], "command": "next_view" },
 	{ "keys": ["ctrl+shift+tab"], "command": "prev_view" },
 
-	// Focus on next group with alt+[k|j]
+	// Focus on next group with alt+[k|j|up|down]
 	{ "keys": ["alt+j"], "command": "focus_neighboring_group"},
+	{ "keys": ["alt+down"], "command": "focus_neighboring_group"},
 	{ "keys": ["alt+k"], "command": "focus_neighboring_group", "args": {"forward": false} },
+	{ "keys": ["alt+up"], "command": "focus_neighboring_group", "args": {"forward": false} },
 
 
 	// ============================ VIM MODE ============================
