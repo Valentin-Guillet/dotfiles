@@ -28,7 +28,12 @@ shopt -s checkwinsize
 
 # If set, the pattern "**" used in a pathname expansion context will
 # match all files and zero or more directories and subdirectories.
-#shopt -s globstar
+shopt -s globstar
+
+# Correct the minor spelling errors in cd command and directory names
+shopt -s cdspell
+shopt -s direxpand
+shopt -s dirspell
 
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
@@ -104,13 +109,18 @@ alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo
 # ~/.bash_aliases, instead of adding them here directly.
 # See /usr/share/doc/bash-doc/examples in the bash-doc package.
 
-if command -v tmux > /dev/null
-then
-    [[ ! $TERM =~ screen ]] && [ -z $TMUX ] && exec tmux
-fi
-
 if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
+fi
+
+# Auto launch tmux
+if command -v tmux > /dev/null; then
+    if tmux ls | grep -v "(attached)"; then
+        n_session=$(tmux ls | grep -v "(attached)" | head -n 1 | cut -d : -f 1)
+        [[ ! $TERM =~ screen ]] && [ -z $TMUX ] && exec tmux attach -t $n_session
+    else
+        [[ ! $TERM =~ screen ]] && [ -z $TMUX ] && exec tmux
+    fi
 fi
 
 # enable programmable completion features (you don't need to enable
