@@ -146,7 +146,7 @@ function psg() {
 }
 
 function d() {
-    echo "$(du -hd 1 $1 2>/dev/null | sort -hr)"
+    echo "$(du -hd 1 "${1:-.}" 2>/dev/null | sort -hr)"
 }
 alias gifspeed='find $(pwd) -name "*.gif" -exec convert -delay 2x100 {} {} \;'
 
