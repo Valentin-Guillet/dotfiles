@@ -33,7 +33,6 @@
 	{ "keys": ["ctrl+v"], "command": "paste_and_indent" },
 	{ "keys": ["ctrl+shift+v"], "command": "paste" },
 
-
 	// Wrap lines
 	{ "keys": ["alt+h"], "command": "wrap_lines_plus"},
 
@@ -76,6 +75,9 @@
 	{ "keys": ["alt+down"], "command": "focus_neighboring_group"},
 	{ "keys": ["alt+k"], "command": "focus_neighboring_group", "args": {"forward": false} },
 	{ "keys": ["alt+up"], "command": "focus_neighboring_group", "args": {"forward": false} },
+
+	// Close pane with alt+w
+	{ "keys": ["alt+w"], "command": "close" },
 
 
 	// ============================ VIM MODE ============================

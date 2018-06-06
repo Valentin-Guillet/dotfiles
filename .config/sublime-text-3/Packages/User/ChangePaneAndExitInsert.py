@@ -11,3 +11,4 @@ class ChangePaneAndExitInsertCommand(sublime_plugin.TextCommand):
 			self.view.window().run_command('prev_view')
 
 		self.view.window().run_command('exit_insert_mode')
+		self.view.run_command('move', {"by": "characters", "forward": True})
