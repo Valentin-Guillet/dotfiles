@@ -148,6 +148,11 @@ function psg() {
 function d() {
     echo "$(du -hd 1 $1 2>/dev/null | sort -hr)"
 }
+
+function gi() {
+    git ${1:1} ${@:2}
+}
+
 alias gifspeed='find $(pwd) -name "*.gif" -exec convert -delay 2x100 {} {} \;'
 
 alias py=python
