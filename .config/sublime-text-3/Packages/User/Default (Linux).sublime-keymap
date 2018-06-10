@@ -33,7 +33,6 @@
 	{ "keys": ["ctrl+v"], "command": "paste_and_indent" },
 	{ "keys": ["ctrl+shift+v"], "command": "paste" },
 
-
 	// Wrap lines
 	{ "keys": ["alt+h"], "command": "wrap_lines_plus"},
 
@@ -57,11 +56,28 @@
 	{ "keys": ["ctrl+tab"], "command": "next_view" },
 	{ "keys": ["ctrl+shift+tab"], "command": "prev_view" },
 
-	// Focus on next group with alt+[k|j|up|down]
+	// Change tab with [J|K] in vim mode
+	{ "keys": ["K"], "command": "change_pane_and_exit_insert",
+		"context": [ {"key": "setting.command_mode", "operand": true} ] },
+	{ "keys": ["J"], "command": "change_pane_and_exit_insert", "args": {"forward": false},
+		"context": [ {"key": "setting.command_mode", "operand": true} ] },
+
+	// Move a tab though panes with alt+shift+[j|k]
+	{ "keys": ["alt+shift+j"], "command": "move_to_neighboring_group"},
+	{ "keys": ["alt+shift+k"], "command": "move_to_neighboring_group", "args": {"forward": false} },
+
+	// Switch tab order with alt+[<|>]
+	{ "keys": ["alt+shift+."], "command": "move_tab" },
+	{ "keys": ["alt+shift+,"], "command": "move_tab", "args": {"forward": false} },
+
+	// Focus on next group with alt+[j|k|up|down]
 	{ "keys": ["alt+j"], "command": "focus_neighboring_group"},
 	{ "keys": ["alt+down"], "command": "focus_neighboring_group"},
 	{ "keys": ["alt+k"], "command": "focus_neighboring_group", "args": {"forward": false} },
 	{ "keys": ["alt+up"], "command": "focus_neighboring_group", "args": {"forward": false} },
+
+	// Close pane with alt+w
+	{ "keys": ["alt+w"], "command": "close" },
 
 
 	// ============================ VIM MODE ============================

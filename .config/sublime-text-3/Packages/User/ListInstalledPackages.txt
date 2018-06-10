@@ -1,6 +1,7 @@
+AutoFileName
 AutoPEP8
 AutoWrap
 Increment Selection
 More Layouts
-MoveTab
+SideBarEnhancement
 Wrap Plus

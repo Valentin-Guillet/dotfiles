@@ -118,3 +118,5 @@ set ai
 set si
 
 inoremap kj <Esc> 
+nnoremap <C-j> <C-e>
+nnoremap <C-k> <C-y>
