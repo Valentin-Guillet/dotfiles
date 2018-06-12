@@ -117,6 +117,21 @@ set tabstop=4
 set ai
 set si
 
+" Fix Alt shortcuts <M-key>
+let c='a'
+while c <= 'z'
+    exec "set <M-".c.">=\e".c
+    exec "imap \e".c." <M-".c.">"
+    let c = nr2char(1+char2nr(c))
+endw
+
+set timeout ttimeoutlen=50
+
+" User mappings
 inoremap kj <Esc> 
 nnoremap <C-j> <C-e>
 nnoremap <C-k> <C-y>
+
+" Vim/Tmux navigator
+so ~/.config/tmux/tmux_navigator.vim
+
