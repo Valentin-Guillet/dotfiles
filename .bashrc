@@ -163,10 +163,19 @@ function gi() {
     git ${1:1} ${@:2}
 }
 
+function run() {
+    if [ -e "main.py" ]; then
+        python main.py
+    elif [ -e "Makefile" ]; then
+        make; ./main
+    else
+        echo "No main.py or Makefile to execute !"
+    fi
+}
+
 alias gifspeed='find $(pwd) -name "*.gif" -exec convert -delay 2x100 {} {} \;'
 
 alias py=python
-alias run='py main.py'
 
 alias config='vim ~/.bash_aliases; source ~/.bashrc'
 alias configg='vim ~/.bashrc; source ~/.bashrc'

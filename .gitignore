@@ -14,4 +14,5 @@
 !.config/sublime-text-3/Packages/User/*
 .config/sublime-text-3/Packages/User/Package\ Control*
 
-!.config/tmux
+!.config/tmux/
+!.config/tmux/*
