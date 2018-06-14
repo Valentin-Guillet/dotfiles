@@ -128,7 +128,7 @@ endw
 set timeout ttimeoutlen=50
 
 " User mappings
-inoremap kj <Esc> 
+inoremap kj <Esc>lh
 nnoremap <C-j> <C-e>
 nnoremap <C-k> <C-y>
 
