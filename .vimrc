@@ -1,19 +1,3 @@
-" An example for a vimrc file.
-"
-" Maintainer:	Bram Moolenaar <Bram@vim.org>
-" Last change:	2016 Mar 25
-"
-" To use it, copy it to
-"     for Unix and OS/2:  ~/.vimrc
-"	      for Amiga:  s:.vimrc
-"  for MS-DOS and Win32:  $VIM\_vimrc
-"	    for OpenVMS:  sys$login:.vimrc
-
-" When started as "evim", evim.vim will already have done these settings.
-if v:progname =~? "evim"
-  finish
-endif
-
 " Use Vim settings, rather than Vi settings (much better!).
 " This must be first, because it changes other options as a side effect.
 set nocompatible
@@ -31,9 +15,6 @@ set history=50		" keep 50 lines of command line history
 set ruler		" show the cursor position all the time
 set showcmd		" display incomplete commands
 set incsearch		" do incremental searching
-
-" For Win32 GUI: remove 't' flag from 'guioptions': no tearoff menu entries
-" let &guioptions = substitute(&guioptions, "t", "", "g")
 
 " Don't use Ex mode, use Q for formatting
 map Q gq
@@ -108,15 +89,6 @@ endif
 " compatible.
 packadd matchit
 
-set expandtab
-set smarttab
-
-set shiftwidth=4
-set tabstop=4
-
-set ai
-set si
-
 " Fix Alt shortcuts <M-key>
 let c='a'
 while c <= 'z'
@@ -127,11 +99,67 @@ endw
 
 set timeout ttimeoutlen=50
 
+" <C-c> to comment/uncomment
+let s:comment_map = { 
+    \   "c": '\/\/',
+    \   "cpp": '\/\/',
+    \   "h": '\/\/',
+    \   "python": '#',
+    \   "sh": '#',
+    \   "profile": '#',
+    \   "bashrc": '#',
+    \   "bash_profile": '#',
+    \   "vim": '"',
+    \ }
+
+function! ToggleComment()
+    if has_key(s:comment_map, &filetype)
+        let comment_leader = s:comment_map[&filetype]
+        if getline('.') =~ "^\\s*" . comment_leader . " " 
+            " Uncomment the line
+            execute "silent s/^\\(\\s*\\)" . comment_leader . " /\\1/"
+        else 
+            if getline('.') =~ "^\\s*" . comment_leader
+                " Uncomment the line
+                execute "silent s/^\\(\\s*\\)" . comment_leader . "/\\1/"
+            elseif getline('.') =~ "^$"
+                " Don't affect empty lines
+            else
+                " Comment the line
+                execute "silent s/^\\(\\s*\\)/\\1" . comment_leader . " /"
+            end
+        end
+    else
+        echo "No comment leader found for filetype"
+    end
+endfunction
+
+set expandtab
+set smarttab
+
+set shiftwidth=4
+set tabstop=4
+set shiftround
+
+set autoindent
+set smartindent
+
+set foldmethod=indent
+autocmd BufRead * normal zR
+
+nnoremap <C-c> :call ToggleComment()<cr>
+vnoremap <C-c> :call ToggleComment()<cr>
+
 " User mappings
-inoremap kj <Esc>lh
+inoremap kj <Esc>l
 nnoremap <C-j> <C-e>
+inoremap <C-j> <C-x><C-e>
 nnoremap <C-k> <C-y>
+inoremap <C-k> <C-x><C-y>
+nnoremap <C-h> o<Esc>
+nnoremap <C-n> :noh<Return>
 
 " Vim/Tmux navigator
 so ~/.config/tmux/tmux_navigator.vim
+
 

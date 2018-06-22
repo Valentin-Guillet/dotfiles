@@ -151,6 +151,7 @@ alias cd..='cd ..'
 
 function clean() {
     find ${1:-./} -name "*~" -print -delete 2>/dev/null
+    find ${1:-./} -name ".*.swp" -print -delete 2>/dev/null
 }
 
 function psg() {
