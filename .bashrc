@@ -115,7 +115,7 @@ fi
 
 # Auto launch tmux
 if command -v tmux > /dev/null; then
-    if tmux ls | grep -v "(attached)"; then
+    if tmux ls 2>/dev/null | grep -v "(attached)"; then
         n_session=$(tmux ls | grep -v "(attached)" | head -n 1 | cut -d : -f 1)
         [[ ! $TERM =~ screen ]] && [ -z $TMUX ] && exec tmux attach -t $n_session
     else

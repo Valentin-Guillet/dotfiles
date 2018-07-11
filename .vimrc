@@ -110,6 +110,7 @@ let s:comment_map = {
     \   "bashrc": '#',
     \   "bash_profile": '#',
     \   "vim": '"',
+    \   "": '#'
     \ }
 
 function! ToggleComment()
@@ -146,6 +147,8 @@ set smartindent
 
 set foldmethod=indent
 autocmd BufRead * normal zR
+
+set nohlsearch
 
 nnoremap <C-c> :call ToggleComment()<cr>
 vnoremap <C-c> :call ToggleComment()<cr>

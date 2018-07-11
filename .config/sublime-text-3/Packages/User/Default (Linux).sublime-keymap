@@ -66,6 +66,10 @@
 	{ "keys": ["alt+shift+j"], "command": "move_to_neighboring_group"},
 	{ "keys": ["alt+shift+k"], "command": "move_to_neighboring_group", "args": {"forward": false} },
 
+	// Switch tab order with ctrl+shift+page[up|down]
+	{ "keys": ["ctrl+shift+pagedown"], "command": "move_tab" },
+	{ "keys": ["ctrl+shift+pageup"], "command": "move_tab", "args": {"forward": false} },
+
 	// Switch tab order with alt+[<|>]
 	{ "keys": ["alt+shift+."], "command": "move_tab" },
 	{ "keys": ["alt+shift+,"], "command": "move_tab", "args": {"forward": false} },
