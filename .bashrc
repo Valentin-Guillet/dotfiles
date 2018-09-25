@@ -134,6 +134,8 @@ if ! shopt -oq posix; then
   fi
 fi
 
+source /opt/ros/melodic/setup.bash
+
 # color aliases
 BLACK=$(tput setaf 0)
 RED=$(tput setaf 1)
@@ -159,7 +161,7 @@ function psg() {
 }
 
 function d() {
-    echo "$(du -hd 1 "${1:-.}" 2>/dev/null | sort -hr)"
+    echo "$(du -had 1 "${1:-.}" 2>/dev/null | sort -hr)"
 }
 
 function gi() {
@@ -183,9 +185,9 @@ alias py=python
 alias config='vim ~/.bash_aliases; source ~/.bashrc'
 alias configg='vim ~/.bashrc; source ~/.bashrc'
 
-if [[ $PATH != *$HOME/anaconda3/bin* ]]
+if [[ $PATH != */opt/miniconda3/bin* ]]
 then
-    export PATH="$HOME/anaconda3/bin:"$PATH
+    export PATH="/opt/miniconda3/bin:"$PATH
 fi
 
 export EDITOR=/usr/bin/vim

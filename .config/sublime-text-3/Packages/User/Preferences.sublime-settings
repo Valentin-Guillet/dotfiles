@@ -1,6 +1,12 @@
 {
+	"enable_mathjax": true,
 	"ignored_packages":
 	[
+	],
+	"js":
+	[
+		"https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js",
+		"res://MarkdownPreview/js/math_config.js"
 	],
 	"rulers":
 	[

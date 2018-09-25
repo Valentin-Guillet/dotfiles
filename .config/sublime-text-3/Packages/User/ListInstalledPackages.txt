@@ -1,7 +1,3 @@
-AutoFileName
 AutoPEP8
-AutoWrap
 Increment Selection
-More Layouts
-SideBarEnhancement
-Wrap Plus
+MarkdownPreview

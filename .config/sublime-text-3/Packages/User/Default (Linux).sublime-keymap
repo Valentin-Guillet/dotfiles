@@ -1,4 +1,8 @@
 [
+	// Markdown visualizer
+	{ "keys": ["alt+m"], "command": "markdown_preview",
+		"args": {"target": "browser", "parser":"markdown"} },
+
 	// Alt to delete subwords
 	{ "keys": ["alt+backspace"], "command": "run_macro_file",
 		"args": {"file": "res://Packages/User/DeleteSubwordBackward.sublime-macro"} },
