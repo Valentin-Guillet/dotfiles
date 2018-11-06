@@ -18,3 +18,5 @@ $include /etc/inputrc
 
 "\em": "\C-aman \C-]\ \C-k\n"
 "\es": "\C-asudo \C-e"
+
+"\ee": "\C-a\ed\C-f\C-h\C-e"

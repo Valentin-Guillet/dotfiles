@@ -174,6 +174,8 @@ function gi() {
 function run() {
     if [ -e "main.py" ]; then
         python main.py
+    elif [ -e "main" ]; then
+        ./main
     elif [ -e "Makefile" ]; then
         make; ./main
     else
