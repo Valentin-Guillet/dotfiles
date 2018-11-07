@@ -173,7 +173,7 @@ function gi() {
 
 function run() {
     if [ -e "main.py" ]; then
-        python main.py
+        python main.py ${@:1}
     elif [ -e "main" ]; then
         ./main
     elif [ -e "Makefile" ]; then
