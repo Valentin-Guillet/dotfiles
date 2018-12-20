@@ -110,28 +110,23 @@ let s:comment_map = {
     \   "bashrc": '#',
     \   "bash_profile": '#',
     \   "vim": '"',
-    \   "": '#'
     \ }
 
 function! ToggleComment()
-    if has_key(s:comment_map, &filetype)
-        let comment_leader = s:comment_map[&filetype]
-        if getline('.') =~ "^\\s*" . comment_leader . " " 
+    let comment_leader = get(s:comment_map, &filetype, '#')
+    if getline('.') =~ "^\\s*" . comment_leader . " " 
+        " Uncomment the line
+        execute "silent s/^\\(\\s*\\)" . comment_leader . " /\\1/"
+    else 
+        if getline('.') =~ "^\\s*" . comment_leader
             " Uncomment the line
-            execute "silent s/^\\(\\s*\\)" . comment_leader . " /\\1/"
-        else 
-            if getline('.') =~ "^\\s*" . comment_leader
-                " Uncomment the line
-                execute "silent s/^\\(\\s*\\)" . comment_leader . "/\\1/"
-            elseif getline('.') =~ "^$"
-                " Don't affect empty lines
-            else
-                " Comment the line
-                execute "silent s/^\\(\\s*\\)/\\1" . comment_leader . " /"
-            end
+            execute "silent s/^\\(\\s*\\)" . comment_leader . "/\\1/"
+        elseif getline('.') =~ "^$"
+            " Don't affect empty lines
+        else
+            " Comment the line
+            execute "silent s/^\\(\\s*\\)/\\1" . comment_leader . " /"
         end
-    else
-        echo "No comment leader found for filetype"
     end
 endfunction
 

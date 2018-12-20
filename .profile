@@ -20,3 +20,8 @@ fi
 if [ -z $TMUX ]; then
     PATH="$HOME/bin:$HOME/.local/bin:$PATH"
 fi
+
+
+# pandas encoding settings
+export LC_ALL=fr_FR.UTF-8
+export LANG=fr_FR.UTF-8
