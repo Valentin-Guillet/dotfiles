@@ -150,6 +150,9 @@ vnoremap <C-c> :call ToggleComment()<cr>
 
 " User mappings
 inoremap kj <Esc>l
+inoremap Kj <Esc>l
+inoremap kJ <Esc>l
+inoremap KJ <Esc>l
 nnoremap <C-j> <C-e>
 inoremap <C-j> <C-x><C-e>
 nnoremap <C-k> <C-y>
