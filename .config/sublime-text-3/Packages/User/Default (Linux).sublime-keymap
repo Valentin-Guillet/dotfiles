@@ -1,4 +1,10 @@
 [
+	// Edit this default keymap file
+	{ "keys": ["ctrl+alt+shift+k"], "command": "edit_settings",
+		"args": {"base_file": "${packages}/Default/Default ($platform).sublime-keymap",
+				 "default": "[\n\t$0\n]\n"}
+	},
+
 	// Markdown visualizer
 	{ "keys": ["alt+m"], "command": "markdown_preview",
 		"args": {"target": "browser", "parser":"markdown"} },
@@ -127,5 +133,16 @@
 	},
 	{ "keys": ["escape"], "command": "hide_auto_complete", "context":
 		[ { "key": "auto_complete_visible", "operator": "equal", "operand": true } ]
-	}
+	},
+
+	// ============================ LINTERS ============================
+
+	// Toggle every linter
+	{ "keys": ["alt+l"], "command": "toggle_linters" },
+	{ "keys": ["alt+n"], "command": "sublime_linter_goto_error",
+		"args": {"direction": "next"}
+	},
+	{ "keys": ["alt+p"], "command": "sublime_linter_goto_error",
+		"args": {"direction": "previous"}
+	},
 ]

@@ -1,0 +1,14 @@
+{
+	"linters":
+	{
+		"flake8":
+		{
+			"args":
+			[
+				"--ignore=E226, E501, F403, F405",
+				"--max-line-length=79"
+			],
+			"disable": true
+		}
+	}
+}

@@ -4,3 +4,5 @@ Increment Selection
 MarkdownPreview
 MaxPane
 MoreLayouts
+SublimeLinter
+SublimeLinter-flake8
