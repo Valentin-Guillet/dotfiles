@@ -151,14 +151,6 @@ alias cpr='cp -r'
 alias rmr='rm -r'
 alias cd..='cd ..'
 
-function clean() {
-    if [[ $1 != '!' ]]
-    then
-        find ${1:-./} -name "*~" -print -delete 2>/dev/null
-        find ${1:-./} -name ".*.swp" -print -delete 2>/dev/null
-    fi
-}
-
 function psg() {
     ps aux | grep `echo $1 | sed 's/./[\0]/'`
 }

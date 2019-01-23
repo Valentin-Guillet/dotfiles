@@ -11,19 +11,11 @@ else
   set backup		" keep a backup file (restore to previous version)
   set undofile		" keep an undo file (undo changes after closing)
 endif
-set history=50		" keep 50 lines of command line history
-set ruler		" show the cursor position all the time
-set showcmd		" display incomplete commands
-set incsearch		" do incremental searching
+set history=50	    " keep 50 lines of command line history
+set ruler           " show the cursor position all the time
+set showcmd	        " display incomplete commands
+set incsearch       " do incremental searching
 
-" Don't use Ex mode, use Q for formatting
-map Q gq
-
-" CTRL-U in insert mode deletes a lot.  Use CTRL-G u to first break undo,
-" so that you can undo CTRL-U after inserting a line break.
-inoremap <C-U> <C-G>u<C-U>
-
-" In many terminal emulators the mouse works just fine, thus enable it.
 if has('mouse')
   set mouse=a
 endif
@@ -32,7 +24,6 @@ endif
 " Also switch on highlighting the last used search pattern.
 if &t_Co > 2 || has("gui_running")
   syntax on
-  set hlsearch
 endif
 
 " Only do this part when compiled with support for autocommands.
@@ -92,6 +83,22 @@ try
 catch /.*/
 endtry
 
+
+if !isdirectory($HOME . "/.vim/backup")
+	call mkdir($HOME . "/.vim/backup", "p")
+endif
+if !isdirectory($HOME . "/.vim/swap")
+	call mkdir($HOME . "/.vim/swap", "p")
+endif
+if !isdirectory($HOME . "/.vim/undo")
+	call mkdir($HOME . "/.vim/undo", "p")
+endif
+
+set backupdir=~/.vim/backup//,/tmp//
+set directory=~/.vim/swap//,/tmp//
+set undodir=~/.vim/undo//,/tmp//
+
+
 " Toggle paste mode each time pasting from clipboard, and remove it after
 " Source : https://coderwall.com/p/if9mda/automatically-set-paste-mode-in-vim-when-pasting-in-insert-mode
 let &t_SI .= "\<Esc>[?2004h"
@@ -117,14 +124,15 @@ set timeout ttimeoutlen=50
 
 " <C-c> to comment/uncomment
 let s:comment_map = { 
+    \   "bash_profile": '#',
+    \   "bashrc": '#',
     \   "c": '\/\/',
     \   "cpp": '\/\/',
     \   "h": '\/\/',
-    \   "python": '#',
-    \   "sh": '#',
     \   "profile": '#',
-    \   "bashrc": '#',
-    \   "bash_profile": '#',
+    \   "python": '#',
+    \   "scala": '\/\/',
+    \   "sh": '#',
     \   "vim": '"',
     \ }
 
@@ -176,7 +184,8 @@ inoremap <C-k> <C-x><C-y>
 nnoremap <C-h> o<Esc>
 nnoremap <C-n> :noh<Return>
 
+command W w !sudo tee "%" > /dev/null
+
 " Vim/Tmux navigator
 so ~/.config/tmux/tmux_navigator.vim
-
 
