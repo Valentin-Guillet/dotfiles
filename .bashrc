@@ -156,7 +156,7 @@ function psg() {
 }
 
 function d() {
-    echo "$(du -had 1 "${1:-.}" 2>/dev/null | sort -hr)"
+    echo "$(du -had 1 -t 1M "${1:-.}" 2>/dev/null | sort -h)"
 }
 
 function gi() {
