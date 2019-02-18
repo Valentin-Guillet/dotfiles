@@ -1,3 +1,72 @@
+" Define leader
+let mapleader = ","
+
+" Edit and reload vim config with <leader>[e|s]v
+nnoremap <leader>ev :vsplit $MYVIMRC<CR>
+nnoremap <leader>sv :source $MYVIMRC<CR>
+
+" Split
+nnoremap <leader>\ :vsplit<CR>
+nnoremap <leader>- :split<CR>
+nnoremap <leader>= <C-w>=
+nnoremap <leader>q :q<CR>
+
+" Scroll with C-[j|k]
+nnoremap <C-j> <C-e>
+inoremap <C-j> <C-x><C-e>
+nnoremap <C-k> <C-y>
+inoremap <C-k> <C-x><C-y>
+
+" Exit insert mode with kj
+inoremap kj <Esc>l
+inoremap Kj <Esc>l
+inoremap kJ <Esc>l
+inoremap KJ <Esc>l
+vnoremap kj <Esc>
+vnoremap Kj <Esc>
+vnoremap kJ <Esc>
+vnoremap KJ <Esc>
+
+" Move line
+nnoremap - ddp
+nnoremap _ ddkP
+
+" Add a new line
+nnoremap <C-h> o<Esc>
+
+" Select word with space
+nnoremap <space> viw
+
+" Surround words
+nnoremap <leader>' viw<Esc>a'<Esc>bi'<Esc>lel
+nnoremap <leader>" viw<Esc>a"<Esc>bi"<Esc>lel
+nnoremap <leader>( viw<Esc>a)<Esc>bi(<Esc>lel
+nnoremap <leader>[ viw<Esc>a]<Esc>bi[<Esc>lel
+nnoremap <leader>{ viw<Esc>a}<Esc>bi{<Esc>lel
+nnoremap <leader>< viw<Esc>a><Esc>bi<<Esc>lel
+
+vnoremap <leader>' <Esc>`>a'<Esc>`<i'<Esc>
+vnoremap <leader>" <Esc>`>a"<Esc>`<i"<Esc>
+vnoremap <leader>( <Esc>`>a)<Esc>`<i(<Esc>
+vnoremap <leader>[ <Esc>`>a]<Esc>`<i[<Esc>
+vnoremap <leader>{ <Esc>`>a}<Esc>`<i{<Esc>
+vnoremap <leader>< <Esc>`>a><Esc>`<i<<Esc>
+
+" Operator pending mapping
+onoremap in' :<C-u>normal! f'vi'<Cr>
+onoremap in" :<C-u>normal! f"vi"<Cr>
+onoremap in( :<C-u>normal! f(vi(<Cr>
+onoremap in[ :<C-u>normal! f[vi[<Cr>
+onoremap in{ :<C-u>normal! f{vi{<Cr>
+onoremap in< :<C-u>normal! f<vi<<Cr>
+
+onoremap il' :<C-u>normal! F'hvi'<Cr>
+onoremap il" :<C-u>normal! F"hvi"<Cr>
+onoremap il( :<C-u>normal! F)vi(<Cr>
+onoremap il[ :<C-u>normal! F[vi[<Cr>
+onoremap il{ :<C-u>normal! F{vi{<Cr>
+onoremap il< :<C-u>normal! F<vi<<Cr>
+
 " Use Vim settings, rather than Vi settings (much better!).
 " This must be first, because it changes other options as a side effect.
 set nocompatible
@@ -6,10 +75,10 @@ set nocompatible
 set backspace=indent,eol,start
 
 if has("vms")
-  set nobackup		" do not keep a backup file, use versions instead
+    set nobackup		" do not keep a backup file, use versions instead
 else
-  set backup		" keep a backup file (restore to previous version)
-  set undofile		" keep an undo file (undo changes after closing)
+    set backup		" keep a backup file (restore to previous version)
+    set undofile		" keep an undo file (undo changes after closing)
 endif
 set history=50	    " keep 50 lines of command line history
 set ruler           " show the cursor position all the time
@@ -17,44 +86,44 @@ set showcmd	        " display incomplete commands
 set incsearch       " do incremental searching
 
 if has('mouse')
-  set mouse=a
+    set mouse=a
 endif
 
 " Switch syntax highlighting on, when the terminal has colors
 " Also switch on highlighting the last used search pattern.
 if &t_Co > 2 || has("gui_running")
-  syntax on
+    syntax on
 endif
 
 " Only do this part when compiled with support for autocommands.
 if has("autocmd")
 
-  " Enable file type detection.
-  " Use the default filetype settings, so that mail gets 'tw' set to 72,
-  " 'cindent' is on in C files, etc.
-  " Also load indent files, to automatically do language-dependent indenting.
-  filetype plugin indent on
+    " Enable file type detection.
+    " Use the default filetype settings, so that mail gets 'tw' set to 72,
+    " 'cindent' is on in C files, etc.
+    " Also load indent files, to automatically do language-dependent indenting.
+    filetype plugin indent on
 
-  " Put these in an autocmd group, so that we can delete them easily.
-  augroup vimrcEx
-  au!
+    " Put these in an autocmd group, so that we can delete them easily.
+    augroup vimrcEx
+        au!
 
-  " For all text files set 'textwidth' to 78 characters.
-  autocmd FileType text setlocal textwidth=78
+        " For all text files set 'textwidth' to 78 characters.
+        autocmd FileType text setlocal textwidth=78
 
-  " When editing a file, always jump to the last known cursor position.
-  " Don't do it when the position is invalid or when inside an event handler
-  " (happens when dropping a file on gvim).
-  autocmd BufReadPost *
-    \ if line("'\"") >= 1 && line("'\"") <= line("$") |
-    \   exe "normal! g`\"" |
-    \ endif
+        " When editing a file, always jump to the last known cursor position.
+        " Don't do it when the position is invalid or when inside an event handler
+        " (happens when dropping a file on gvim).
+        autocmd BufReadPost *
+                    \ if line("'\"") >= 1 && line("'\"") <= line("$") |
+                    \   exe "normal! g`\"" |
+                    \ endif
 
-  augroup END
+    augroup END
 
 else
 
-  set autoindent		" always set autoindenting on
+    set autoindent		" always set autoindenting on
 
 endif " has("autocmd")
 
@@ -62,15 +131,15 @@ endif " has("autocmd")
 " file it was loaded from, thus the changes you made.
 " Only define it when not defined already.
 if !exists(":DiffOrig")
-  command DiffOrig vert new | set bt=nofile | r ++edit # | 0d_ | diffthis
-		  \ | wincmd p | diffthis
+    command DiffOrig vert new | set bt=nofile | r ++edit # | 0d_ | diffthis
+                \ | wincmd p | diffthis
 endif
 
 if has('langmap') && exists('+langnoremap')
-  " Prevent that the langmap option applies to characters that result from a
-  " mapping.  If unset (default), this may break plugins (but it's backward
-  " compatible).
-  set langnoremap
+    " Prevent that the langmap option applies to characters that result from a
+    " mapping.  If unset (default), this may break plugins (but it's backward
+    " compatible).
+    set langnoremap
 endif
 
 
@@ -85,13 +154,13 @@ endtry
 
 
 if !isdirectory($HOME . "/.vim/backup")
-	call mkdir($HOME . "/.vim/backup", "p")
+    call mkdir($HOME . "/.vim/backup", "p")
 endif
 if !isdirectory($HOME . "/.vim/swap")
-	call mkdir($HOME . "/.vim/swap", "p")
+    call mkdir($HOME . "/.vim/swap", "p")
 endif
 if !isdirectory($HOME . "/.vim/undo")
-	call mkdir($HOME . "/.vim/undo", "p")
+    call mkdir($HOME . "/.vim/undo", "p")
 endif
 
 set backupdir=~/.vim/backup//,/tmp//
@@ -124,17 +193,17 @@ set timeout ttimeoutlen=50
 
 " <C-c> to comment/uncomment
 let s:comment_map = { 
-    \   "bash_profile": '#',
-    \   "bashrc": '#',
-    \   "c": '\/\/',
-    \   "cpp": '\/\/',
-    \   "h": '\/\/',
-    \   "profile": '#',
-    \   "python": '#',
-    \   "scala": '\/\/',
-    \   "sh": '#',
-    \   "vim": '"',
-    \ }
+            \   "bash_profile": '#',
+            \   "bashrc": '#',
+            \   "c": '\/\/',
+            \   "cpp": '\/\/',
+            \   "h": '\/\/',
+            \   "profile": '#',
+            \   "python": '#',
+            \   "scala": '\/\/',
+            \   "sh": '#',
+            \   "vim": '"',
+            \ }
 
 function! ToggleComment()
     let comment_leader = get(s:comment_map, &filetype, '#')
@@ -154,6 +223,9 @@ function! ToggleComment()
     end
 endfunction
 
+set splitbelow
+set splitright
+
 set expandtab
 set smarttab
 
@@ -164,28 +236,45 @@ set shiftround
 set autoindent
 set smartindent
 
-set foldmethod=indent
-autocmd BufRead * normal zR
-
 set nohlsearch
 
-nnoremap <C-c> :call ToggleComment()<cr>
-vnoremap <C-c> :call ToggleComment()<cr>
+nnoremap <silent> <C-c> :call ToggleComment()<cr>
+vnoremap <silent> <C-c> :call ToggleComment()<cr>
 
-" User mappings
-inoremap kj <Esc>l
-inoremap Kj <Esc>l
-inoremap kJ <Esc>l
-inoremap KJ <Esc>l
-nnoremap <C-j> <C-e>
-inoremap <C-j> <C-x><C-e>
-nnoremap <C-k> <C-y>
-inoremap <C-k> <C-x><C-y>
-nnoremap <C-h> o<Esc>
-nnoremap <C-n> :noh<Return>
 
-command W w !sudo tee "%" > /dev/null
+if !exists(":W")
+    command W w !sudo tee "%" > /dev/null
+endif
 
 " Vim/Tmux navigator
-so ~/.config/tmux/tmux_navigator.vim
+source ~/.config/tmux/tmux_navigator.vim
+
+" Vim zoom pane
+source ~/.config/tmux/zoom.vim
+nnoremap <silent> <leader>z :call zoom#toggle()<cr>
+
+" Set status line
+function! GitBranch()
+    return system("git rev-parse --abbrev-ref HEAD 2>/dev/null | tr -d '\n'")
+endfunction
+
+function! StatuslineGit()
+    let l:branchname = GitBranch()
+    return strlen(l:branchname) > 0?'  '.l:branchname.' ':''
+endfunction
+
+highlight StatusLineNC ctermfg=2 ctermbg=8 cterm=None
+highlight StatusLine ctermfg=8 ctermbg=2 cterm=None
+
+set laststatus=2
+set statusline=
+set statusline+=%#PmenuSel#
+set statusline+=%{StatuslineGit()}
+set statusline+=%#LineNr#
+set statusline+=\ %f
+set statusline+=%m
+set statusline+=%{zoom#statusline()}
+set statusline+=%=
+set statusline+=\ %l/%L
+set statusline+=\ (%p%%)
 
