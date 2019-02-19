@@ -263,14 +263,15 @@ function! StatuslineGit()
     return strlen(l:branchname) > 0?'  '.l:branchname.' ':''
 endfunction
 
-highlight StatusLineNC ctermfg=2 ctermbg=8 cterm=None
-highlight StatusLine ctermfg=8 ctermbg=2 cterm=None
+highlight StatusLineNC cterm=underline ctermfg=130
+highlight StatusLine cterm=bold ctermfg=130 ctermbg=LightGray
 
 set laststatus=2
 set statusline=
 set statusline+=%#PmenuSel#
 set statusline+=%{StatuslineGit()}
 set statusline+=%#LineNr#
+set statusline+=%0*
 set statusline+=\ %f
 set statusline+=%m
 set statusline+=%{zoom#statusline()}
