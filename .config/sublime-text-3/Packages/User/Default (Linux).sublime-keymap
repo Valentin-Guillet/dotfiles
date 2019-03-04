@@ -57,7 +57,12 @@
 	// Debug command
 	{ "keys": ["alt+b"], "command": "insert_snippet",
 		"args": {"contents": "raise Exception('Debug breakpoint')     # debug"} },
-	{ "keys": ["alt+d"], "command": "remove_debug" },
+	{ "keys": ["alt+d"], "command": "insert_snippet",
+		"args": {"contents": "		# debug"} },
+	{ "keys": ["alt+shift+d"], "command": "remove_debug" },
+	{ "keys": ["alt+c"], "command": "toggle_debug_comment", "args": {"action": "comment"} },
+	{ "keys": ["alt+v"], "command": "toggle_debug_comment", "args": {"action": "uncomment"} },
+	{ "keys": ["alt+t"], "command": "toggle_debug_comment", "args": {"action": "toggle"}},
 
 
 	// ========================= TABS AND PANES =========================
