@@ -1,4 +1,3 @@
-AutoPEP8
 Compare Side-by-Side
 Increment Selection
 MarkdownPreview
