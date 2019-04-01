@@ -10,7 +10,8 @@
 	cam = commit -am
 	cm = commit -m
 	co = checkout
-	l = log --oneline --graph --decorate --all --color --abbrev-commit
+	l = log --oneline --graph --decorate --all --color --abbrev-commit -n 10
+	ll = log --oneline --graph --decorate --all --color --abbrev-commit
 	last = log -1 HEAD
     ls = ls-files --exclude-standard
 	st = status -s
