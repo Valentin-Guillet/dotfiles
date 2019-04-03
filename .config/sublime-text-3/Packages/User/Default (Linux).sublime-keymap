@@ -66,6 +66,9 @@
 
 	// ========================= TABS AND PANES =========================
 
+	// Set layout to 2 columns and move current file to the second column
+	{ "keys": ["alt+\\"], "command": "move_file_in_new_tab"  },
+
 	// Change tab in order
 	{ "keys": ["ctrl+tab"], "command": "next_view" },
 	{ "keys": ["ctrl+shift+tab"], "command": "prev_view" },
