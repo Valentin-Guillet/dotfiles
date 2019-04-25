@@ -54,6 +54,9 @@
 		"context": [ {"key": "num_selections", "operator": "not_equal", "operand": 1} ]
 	},
 
+	// Open SublimeMerge
+	{ "keys": ["alt+g"], "command": "sublime_merge_open_repo"},
+
 	// Debug command
 	{ "keys": ["alt+b"], "command": "insert_snippet",
 		"args": {"contents": "raise Exception('Debug breakpoint')     # debug"} },
