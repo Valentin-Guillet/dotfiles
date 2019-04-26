@@ -16,5 +16,10 @@
 .config/sublime-text-3/Packages/User/Package\ Control*
 .config/sublime-text-3/Packages/User/SBSCompare*
 
+!.config/sublime-merge/
+!.config/sublime-merge/Packages/
+!.config/sublime-merge/Packages/User/
+!.config/sublime-merge/Packages/User/*
+
 !.config/tmux/
 !.config/tmux/*
