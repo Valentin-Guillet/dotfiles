@@ -1,5 +1,10 @@
-
 [
+	// Edit this default keymap file
+	{ "keys": ["ctrl+alt+shift+k"], "command": "open_in_editor",
+		"args": {"path": "${packages}/User/Default ($platform).sublime-keymap",
+				 "default": "[\n\t$0\n]\n"}
+	},
+
 	// Ctrl-[Down|Up] to pull/push
     { "keys": ["ctrl+down"], "command": "git", "args": {"argv": ["pull", "--ff-only"] } },
 	{ "keys": ["ctrl+up"], "command": "git", "args": {"argv": ["push"] } },
