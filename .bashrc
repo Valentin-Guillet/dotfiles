@@ -121,6 +121,7 @@ if command -v tmux > /dev/null; then
     else
         [[ ! $TERM =~ screen ]] && [ -z $TMUX ] && exec tmux
     fi
+    source ~/.config/tmux/tmux_completion.sh
 fi
 
 # enable programmable completion features (you don't need to enable
@@ -187,8 +188,11 @@ function opentest() {
 
 function cleantest() {
     cd ~/Public
-    rm test.py
-    rm -r __pycache__/
+    rm test.py 2> /dev/null
+    rm -r __pycache__/ 2> /dev/null
+    cd ~/
+    tmux killp -t 2
+    tmux setw automatic-rename
 }
 
 alias gifspeed='find $(pwd) -name "*.gif" -exec convert -delay 2x100 {} {} \;'
