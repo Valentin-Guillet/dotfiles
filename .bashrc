@@ -175,6 +175,22 @@ function run() {
     fi
 }
 
+function opentest() {
+    cd ~/Public
+    tmux rename-window Pytest
+    tmux splitw
+    tmux selectp -U
+    tmux unbind -n M-g
+    tmux bind -n M-g selectp -t 1 \\\; send-keys Escape :w Enter \\\; selectp -t 2 \\\; send-keys "py test.py" Enter \\\; selectp -t 1
+    vim test.py
+}
+
+function cleantest() {
+    cd ~/Public
+    rm test.py
+    rm -r __pycache__/
+}
+
 alias gifspeed='find $(pwd) -name "*.gif" -exec convert -delay 2x100 {} {} \;'
 
 alias py=python
