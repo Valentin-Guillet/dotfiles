@@ -176,23 +176,27 @@ function run() {
     fi
 }
 
-function opentest() {
-    cd ~/Public
-    tmux rename-window Pytest
-    tmux splitw
-    tmux selectp -U
+function ot() {
+    mkdir ~/Pytest 2> /dev/null
+    tmux new-window -n Pytest -c ~/Pytest
+    tmux split-window -c ~/Pytest
+    tmux select-pane -U
     tmux unbind -n M-g
     tmux bind -n M-g selectp -t 1 \\\; send-keys Escape :w Enter \\\; selectp -t 2 \\\; send-keys "py test.py" Enter \\\; selectp -t 1
-    vim test.py
+    tmux send-keys "vim test.py" Enter
 }
 
-function cleantest() {
-    cd ~/Public
-    rm test.py 2> /dev/null
-    rm -r __pycache__/ 2> /dev/null
-    cd ~/
-    tmux killp -t 2
-    tmux setw automatic-rename
+function ct() {
+    rm -r ~/Pytest 2> /dev/null
+    tmux kill-window
+    clear
+}
+
+function pip_update() {
+    pip list -o --format=freeze > pip_list
+    vim pip_list
+    cat pip_list | cut -d = -f 1 | xargs -n 1 pip install -U
+    rm pip_list
 }
 
 alias gifspeed='find $(pwd) -name "*.gif" -exec convert -delay 2x100 {} {} \;'
