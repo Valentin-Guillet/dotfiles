@@ -152,19 +152,19 @@ alias cpr='cp -r'
 alias rmr='rm -r'
 alias cd..='cd ..'
 
-function psg() {
-    ps aux | grep `echo $1 | sed 's/./[\0]/'`
+psg() {
+    ps aux | grep "`echo $1 | sed 's/./[\0]/'`"
 }
 
-function d() {
+d() {
     echo "$(du -had 1 -t 1M "${1:-.}" 2>/dev/null | sort -h)"
 }
 
-function gi() {
+gi() {
     git ${1:1} ${@:2}
 }
 
-function run() {
+run() {
     if [ -e "main.py" ]; then
         python main.py ${@:1}
     elif [ -e "main" ]; then
@@ -176,7 +176,7 @@ function run() {
     fi
 }
 
-function ot() {
+ot() {
     mkdir ~/Pytest 2> /dev/null
     tmux new-window -n Pytest -c ~/Pytest
     tmux split-window -c ~/Pytest
@@ -186,13 +186,13 @@ function ot() {
     tmux send-keys "vim test.py" Enter
 }
 
-function ct() {
+ct() {
     rm -r ~/Pytest 2> /dev/null
     tmux kill-window
     clear
 }
 
-function pip_update() {
+pip_update() {
     pip list -o --format=freeze > pip_list
     vim pip_list
     cat pip_list | cut -d = -f 1 | xargs -n 1 pip install -U
