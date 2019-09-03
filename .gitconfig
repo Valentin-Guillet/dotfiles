@@ -16,5 +16,6 @@
     ls = ls-files --exclude-standard
 	st = status -s
 	unstage = reset HEAD --
+	la = log --graph --pretty=format:'%C(yellow)%h%Creset %C(bold blue)<%an>%Creset %Cgreen(%cr)%Creset %s' --abbrev-commit
 [push]
 	default = simple

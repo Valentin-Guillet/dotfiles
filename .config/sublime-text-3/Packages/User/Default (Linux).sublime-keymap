@@ -103,6 +103,9 @@
 	// Close pane with alt+w
 	{ "keys": ["alt+w"], "command": "close" },
 
+	// Max pane
+	{ "keys": ["alt+z"], "command": "max_pane" },
+
 
 	// ============================ VIM MODE ============================
 
