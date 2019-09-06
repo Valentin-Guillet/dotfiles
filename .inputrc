@@ -1,22 +1,30 @@
 
 $include /etc/inputrc
 
-$if Bash
-    "\e[5~": history-search-backward
-    "\e[6~": history-search-forward
+"\e[5~": history-search-backward
+"\e[6~": history-search-forward
 
+$if Bash
+    # Delete first word
+    "\ee": "\C-a\ed\C-f\C-h\C-e"
+
+    # Replace (/add) ls as first word
     "\ei": "\C-a\C-]\ \C-wls\C-e"
     "\eI": "\C-als \C-e"
 
+    # Replace (/add) less as first word
     "\eo": "\C-a\C-]\ \C-wless\C-e"
     "\eO": "\C-aless \C-e"
 
+    # Replace (/add) vim as first word
     "\ev": "\C-a\C-]\ \C-wvim\C-e"
     "\eV": "\C-avim \C-e"
 
+    # Replace (/add) xdg-open as first word
     "\ex": "\C-a\C-]\ \C-wxdg-open\C-e"
     "\eX": "\C-axdg-open \C-e"
 
+    # Add man/sudo in first position
     "\em": "\C-aman \C-]\ \C-k\n"
     "\es": "\C-asudo \C-e"
 $endif
@@ -26,4 +34,3 @@ $if Python
     "\em": "\C-ahelp(\C-e)\n"
 $endif
 
-"\ee": "\C-a\ed\C-f\C-h\C-e"
