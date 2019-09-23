@@ -24,6 +24,9 @@ $if Bash
     "\ex": "\C-a\C-]\ \C-wxdg-open\C-e"
     "\eX": "\C-axdg-open \C-e"
 
+    # Go to position to add argument 
+    "\eB": "\C-a\ef\C-f"
+
     # Add man/sudo in first position
     "\em": "\C-aman \C-]\ \C-k\n"
     "\es": "\C-asudo \C-e"
