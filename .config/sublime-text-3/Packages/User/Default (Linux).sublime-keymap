@@ -62,7 +62,9 @@
 		"args": {"contents": "raise Exception('Debug breakpoint')     # debug"} },
 	{ "keys": ["alt+d"], "command": "toggle_debug" },
 	{ "keys": ["alt+shift+d"], "command": "remove_debug" },
-	{ "keys": ["alt+c"], "command": "toggle_debug_comment", "args": {"action": "comment"} },
+	{ "keys": ["alt+c"], "command": "toggle_debug_comment", "args": {"action": "comment"},
+		"context": [ {"key": "setting.is_widget", "operator": "equal", "operand": false} ]
+	},
 	{ "keys": ["alt+v"], "command": "toggle_debug_comment", "args": {"action": "uncomment"} },
 	{ "keys": ["alt+t"], "command": "toggle_debug_comment", "args": {"action": "toggle"}},
 
