@@ -135,8 +135,6 @@ if ! shopt -oq posix; then
   fi
 fi
 
-source /opt/ros/melodic/setup.bash
-
 # color aliases
 BLACK=$(tput setaf 0)
 RED=$(tput setaf 1)
@@ -212,3 +210,10 @@ then
 fi
 
 export EDITOR=/usr/bin/vim
+
+# Cuda
+export PATH="/usr/local/cuda-10.1/bin:"$PATH
+export LD_LIBRARY_PATH="/usr/local/cuda-10.1/lib64:"$LD_LIBRARY_PATH
+
+# Latex
+export PATH="/usr/local/texlive/2019/bin/x86_64-linux:"$PATH
