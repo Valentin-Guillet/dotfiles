@@ -8,6 +8,17 @@ case $- in
       *) return;;
 esac
 
+# Auto launch tmux
+if command -v tmux > /dev/null; then
+    if tmux ls 2>/dev/null | grep -v "(attached)"; then
+        n_session=$(tmux ls | grep -v "(attached)" | head -n 1 | cut -d : -f 1)
+        [[ ! $TERM =~ screen || $SSH_CLIENT ]] && [ -z $TMUX ] && exec tmux attach -t $n_session
+    else
+        [[ ! $TERM =~ screen || $SSH_CLIENT ]] && [ -z $TMUX ] && exec tmux
+    fi
+    source ~/.config/tmux/tmux_completion.sh
+fi
+
 # don't put duplicate lines or lines starting with space in the history.
 # See bash(1) for more options
 HISTCONTROL=ignoreboth
@@ -111,17 +122,6 @@ alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo
 
 if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
-fi
-
-# Auto launch tmux
-if command -v tmux > /dev/null; then
-    if tmux ls 2>/dev/null | grep -v "(attached)"; then
-        n_session=$(tmux ls | grep -v "(attached)" | head -n 1 | cut -d : -f 1)
-        [[ ! $TERM =~ screen ]] && [ -z $TMUX ] && exec tmux attach -t $n_session
-    else
-        [[ ! $TERM =~ screen ]] && [ -z $TMUX ] && exec tmux
-    fi
-    source ~/.config/tmux/tmux_completion.sh
 fi
 
 # enable programmable completion features (you don't need to enable
