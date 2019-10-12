@@ -28,7 +28,7 @@ $if Bash
     "\eB": "\C-a\ef\C-f"
 
     # Add man/sudo in first position
-    "\em": "\C-aman \C-]\ \C-k\n"
+    "\em": "\C-u\C-y\C-aman \C-]\ \C-k\n\C-y\ey"
     "\es": "\C-asudo \C-e"
 $endif
 
