@@ -168,9 +168,9 @@ run() {
     if [ -e "main.py" ]; then
         python main.py ${@:1}
     elif [ -e "main" ]; then
-        ./main
+        ./main ${@:1}
     elif [ -e "Makefile" ]; then
-        make; ./main
+        make; ./main ${@:1}
     else
         echo "No main.py or Makefile to execute !"
     fi

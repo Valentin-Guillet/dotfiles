@@ -5,6 +5,9 @@ let mapleader = ","
 nnoremap <leader>ev :vsplit $MYVIMRC<CR>
 nnoremap <leader>sv :source $MYVIMRC<CR>
 
+" Write file with <leader>w
+nnoremap <leader>w :update <CR>
+
 " Split
 nnoremap <leader>\ :vsplit<CR>
 nnoremap <leader>- :split<CR>
