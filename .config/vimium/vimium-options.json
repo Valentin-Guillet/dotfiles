@@ -7,7 +7,7 @@
     },
     {
       "pattern": "https?://www.youtube.com/watch*",
-      "passKeys": "jk<>m,.flN"
+      "passKeys": "fjklmNPci<>,.;"
     },
     {
       "pattern": "https?://trimps.github.io/*",
@@ -25,7 +25,7 @@
   "filterLinkHints": false,
   "waitForEnterForFilteredHints": true,
   "hideHud": false,
-  "keyMappings": "",
+  "keyMappings": "map < moveTabLeft\nmap > moveTabRight",
   "linkHintCharacters": "sadfjklewcmpgh",
   "linkHintNumbers": "0123456789",
   "newTabUrl": "about:newtab",
