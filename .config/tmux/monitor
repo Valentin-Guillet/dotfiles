@@ -7,6 +7,6 @@ split-window -v
 send-keys "watch nvidia-smi" Enter
 
 split-window -h
-send-keys "watch 'sensors | tail -n 15'" Enter
+send-keys "watch sensors" Enter
 
 select-pane -t 1

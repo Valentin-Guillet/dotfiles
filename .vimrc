@@ -40,6 +40,9 @@ nnoremap <C-h> o<Esc>
 " Select word with space
 nnoremap <space> viw
 
+" Transform current string into a formatted one (python)
+nnoremap <leader>f :normal mzF'if<Esc>`zl
+
 " Surround words
 nnoremap <leader>' viw<Esc>a'<Esc>bi'<Esc>lel
 nnoremap <leader>" viw<Esc>a"<Esc>bi"<Esc>lel
