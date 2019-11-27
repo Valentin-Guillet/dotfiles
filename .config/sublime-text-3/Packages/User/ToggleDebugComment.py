@@ -11,8 +11,8 @@ class ToggleDebugCommentCommand(sublime_plugin.TextCommand):
 
         # If no specific area is selected, select every line with '# debug'
         if not selections or (len(selections) == 1 and len(selections[0]) == 0):
-            areas_to_comment = self.view.find_all(r'^(\h*)([^#\n]*# debug)\h*$')
-            areas_to_uncomment = self.view.find_all(r'^(\h*)# (.*# debug)\h*$')
+            areas_to_comment = self.view.find_all(r'^([ \t]*)([^#\n]*# debug)[ \t]*$')
+            areas_to_uncomment = self.view.find_all(r'^([ \t]*)# (.*# debug)[ \t]*$')
 
         # Else, select only the lines within the selections
         else:
@@ -23,12 +23,12 @@ class ToggleDebugCommentCommand(sublime_plugin.TextCommand):
                     text = self.view.substr(line)
 
                     # Must the line be commented...
-                    match_comment = re.match(r'^(\h*)([^#\n]*# debug)\h*$', text)
+                    match_comment = re.match(r'^([ \t]*)([^#\n]*# debug)[ \t]*$', text)
                     if match_comment and line not in areas_to_comment:
                         areas_to_comment.append(line)
 
                     # ...or uncommented ?
-                    match_uncomment = re.match(r'^(\h*)# (.*# debug)\h*$', text)
+                    match_uncomment = re.match(r'^([ \t]*)# (.*# debug)[ \t]*$', text)
                     if match_uncomment and line not in areas_to_uncomment:
                         areas_to_uncomment.append(line)
 
@@ -50,9 +50,9 @@ class ToggleDebugCommentCommand(sublime_plugin.TextCommand):
         text = self.view.substr(area)
 
         if action == 'comment':
-            modified_text = re.sub(r'^(\h*)(.*# debug)\h*$', r'\1# \2', text)
+            modified_text = re.sub(r'^([ \t]*)(.*# debug)[ \t]*$', r'\1# \2', text)
 
         elif action == 'uncomment':
-            modified_text = re.sub(r'^(\h*)# (.*# debug)\h*$', r'\1\2', text)
+            modified_text = re.sub(r'^([ \t]*)# (.*# debug)[ \t]*$', r'\1\2', text)
 
         self.view.replace(edit, area, modified_text)
