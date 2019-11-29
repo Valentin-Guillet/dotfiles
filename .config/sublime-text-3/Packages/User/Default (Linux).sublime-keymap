@@ -1,164 +1,167 @@
 [
-	// Edit this default keymap file
-	{ "keys": ["ctrl+alt+shift+k"], "command": "edit_settings",
-		"args": {"base_file": "${packages}/Default/Default ($platform).sublime-keymap",
-				 "default": "[\n\t$0\n]\n"}
-	},
+    // Edit this default keymap file
+    { "keys": ["ctrl+alt+shift+k"], "command": "edit_settings",
+        "args": {"base_file": "${packages}/Default/Default ($platform).sublime-keymap",
+                 "default": "[\n\t$0\n]\n"}
+    },
 
-	// Markdown visualizer
-	{ "keys": ["alt+m"], "command": "markdown_preview",
-		"args": {"target": "browser", "parser":"markdown"} },
+    // Markdown visualizer
+    { "keys": ["alt+m"], "command": "markdown_preview",
+        "args": {"target": "browser", "parser":"markdown"} },
 
-	// Alt to delete subwords
-	{ "keys": ["alt+backspace"], "command": "run_macro_file",
-		"args": {"file": "res://Packages/User/DeleteSubwordBackward.sublime-macro"} },
-	{ "keys": ["alt+delete"], "command": "run_macro_file",
-		"args": {"file": "res://Packages/User/DeleteSubwordForward.sublime-macro"} },
+    // Alt to delete subwords
+    { "keys": ["alt+backspace"], "command": "run_macro_file",
+        "args": {"file": "res://Packages/User/DeleteSubwordBackward.sublime-macro"} },
+    { "keys": ["alt+delete"], "command": "run_macro_file",
+        "args": {"file": "res://Packages/User/DeleteSubwordForward.sublime-macro"} },
 
-	// Remove closing bracket when deleting opening one
-	{ "keys": ["backspace"], "command": "remove_closing_bracket", "context":
-		[ { "key": "setting.auto_match_enabled", "operator": "equal", "operand": true },
-		  { "key": "selection_empty", "operator": "equal", "operand": true, "match_all": true },
-		  { "key": "preceding_text", "operator": "regex_contains", "operand": "[\\(\\[\\{]", "match_all": true } ]
-	},
+    // 
+    { "keys": ["alt+f"], "command": "convert_to_fstring" },
 
-	// Remove directly-following single and double quotes
-	{ "keys": ["backspace"], "command": "run_macro_file", "args": {"file": "res://Packages/Default/Delete Left Right.sublime-macro"}, "context":
-		[ { "key": "setting.auto_match_enabled", "operator": "equal", "operand": true },
-		  { "key": "selection_empty", "operator": "equal", "operand": true, "match_all": true },
-		  { "key": "preceding_text", "operator": "regex_contains", "operand": "\"$", "match_all": true },
-		  { "key": "following_text", "operator": "regex_contains", "operand": "^\"", "match_all": true } ]
-	},
-	{ "keys": ["backspace"], "command": "run_macro_file", "args": {"file": "res://Packages/Default/Delete Left Right.sublime-macro"}, "context":
-		[ { "key": "setting.auto_match_enabled", "operator": "equal", "operand": true },
-		  { "key": "selection_empty", "operator": "equal", "operand": true, "match_all": true },
-		  { "key": "preceding_text", "operator": "regex_contains", "operand": "'$", "match_all": true },
-		  { "key": "following_text", "operator": "regex_contains", "operand": "^'", "match_all": true } ]
-	},
+    // Remove closing bracket when deleting opening one
+    { "keys": ["backspace"], "command": "remove_closing_bracket", "context":
+        [ { "key": "setting.auto_match_enabled", "operator": "equal", "operand": true },
+          { "key": "selection_empty", "operator": "equal", "operand": true, "match_all": true },
+          { "key": "preceding_text", "operator": "regex_contains", "operand": "[\\(\\[\\{]", "match_all": false } ]
+    },
 
-	// Title case
-	{ "keys": ["ctrl+k", "ctrl+h"], "command": "title_case" },
+    // Remove directly-following single and double quotes
+    { "keys": ["backspace"], "command": "run_macro_file", "args": {"file": "res://Packages/Default/Delete Left Right.sublime-macro"}, "context":
+     [ { "key": "setting.auto_match_enabled", "operator": "equal", "operand": true },
+       { "key": "selection_empty", "operator": "equal", "operand": true, "match_all": true },
+       { "key": "preceding_text", "operator": "regex_contains", "operand": "\"$", "match_all": true },
+       { "key": "following_text", "operator": "regex_contains", "operand": "^\"", "match_all": true } ]
+    },
+    { "keys": ["backspace"], "command": "run_macro_file", "args": {"file": "res://Packages/Default/Delete Left Right.sublime-macro"}, "context":
+     [ { "key": "setting.auto_match_enabled", "operator": "equal", "operand": true },
+       { "key": "selection_empty", "operator": "equal", "operand": true, "match_all": true },
+       { "key": "preceding_text", "operator": "regex_contains", "operand": "'$", "match_all": true },
+       { "key": "following_text", "operator": "regex_contains", "operand": "^'", "match_all": true } ]
+    },
 
-	// Switch paste
-	{ "keys": ["ctrl+v"], "command": "paste_and_indent" },
-	{ "keys": ["ctrl+shift+v"], "command": "paste" },
+    // Title case
+    { "keys": ["ctrl+k", "ctrl+h"], "command": "title_case" },
 
-	// Wrap lines
-	{ "keys": ["alt+h"], "command": "wrap_lines_plus"},
+    // Switch paste
+    { "keys": ["ctrl+v"], "command": "paste_and_indent" },
+    { "keys": ["ctrl+shift+v"], "command": "paste" },
 
-	// Add a new selection with the next word
-	{ "keys": ["ctrl+i"], "command": "add_next_word"},
+    // Wrap lines
+    { "keys": ["alt+h"], "command": "wrap_lines_plus"},
 
-	// Go to last selection
-	{ "keys": ["shift+escape"], "command": "last_selection",
-		"context": [ {"key": "num_selections", "operator": "not_equal", "operand": 1} ]
-	},
+    // Add a new selection with the next word
+    { "keys": ["ctrl+i"], "command": "add_next_word"},
 
-	// Open SublimeMerge
-	{ "keys": ["alt+g"], "command": "sublime_merge_open_repo"},
+    // Go to last selection
+    { "keys": ["shift+escape"], "command": "last_selection",
+        "context": [ {"key": "num_selections", "operator": "not_equal", "operand": 1} ]
+    },
 
-	// Debug command
-	{ "keys": ["alt+b"], "command": "insert_snippet",
-		"args": {"contents": "raise Exception('Debug breakpoint')     # debug"} },
-	{ "keys": ["alt+d"], "command": "toggle_debug" },
-	{ "keys": ["alt+shift+d"], "command": "remove_debug" },
-	{ "keys": ["alt+c"], "command": "toggle_debug_comment", "args": {"action": "comment"},
-		"context": [ {"key": "setting.is_widget", "operator": "equal", "operand": false} ]
-	},
-	{ "keys": ["alt+v"], "command": "toggle_debug_comment", "args": {"action": "uncomment"} },
-	{ "keys": ["alt+t"], "command": "toggle_debug_comment", "args": {"action": "toggle"}},
+    // Open SublimeMerge
+    { "keys": ["alt+g"], "command": "sublime_merge_open_repo"},
 
-
-	// ========================= TABS AND PANES =========================
-
-	// Set layout to 2 columns and move current file to the second column
-	{ "keys": ["alt+\\"], "command": "move_file_in_new_tab", "args": {"clone": false} },
-	{ "keys": ["alt+shift+\\"], "command": "move_file_in_new_tab", "args": {"clone": true}},
-
-	// Change tab in order
-	{ "keys": ["ctrl+tab"], "command": "next_view" },
-	{ "keys": ["ctrl+shift+tab"], "command": "prev_view" },
-
-	// Change tab with [J|K] in vim mode
-	{ "keys": ["K"], "command": "change_pane_and_exit_insert",
-		"context": [ {"key": "setting.command_mode", "operand": true} ] },
-	{ "keys": ["J"], "command": "change_pane_and_exit_insert", "args": {"forward": false},
-		"context": [ {"key": "setting.command_mode", "operand": true} ] },
-
-	// Move a tab though panes with alt+shift+[j|k]
-	{ "keys": ["alt+shift+j"], "command": "move_to_neighboring_group"},
-	{ "keys": ["alt+shift+k"], "command": "move_to_neighboring_group", "args": {"forward": false} },
-
-	// Switch tab order with ctrl+shift+page[up|down]
-	{ "keys": ["ctrl+shift+pagedown"], "command": "move_tab" },
-	{ "keys": ["ctrl+shift+pageup"], "command": "move_tab", "args": {"forward": false} },
-
-	// Switch tab order with alt+[<|>]
-	{ "keys": ["alt+shift+."], "command": "move_tab" },
-	{ "keys": ["alt+shift+,"], "command": "move_tab", "args": {"forward": false} },
-
-	// Focus on next group with alt+[j|k|up|down]
-	{ "keys": ["alt+j"], "command": "focus_neighboring_group"},
-	{ "keys": ["alt+down"], "command": "focus_neighboring_group"},
-	{ "keys": ["alt+k"], "command": "focus_neighboring_group", "args": {"forward": false} },
-	{ "keys": ["alt+up"], "command": "focus_neighboring_group", "args": {"forward": false} },
-
-	// Close pane with alt+w
-	{ "keys": ["alt+w"], "command": "close" },
-
-	// Max pane
-	{ "keys": ["alt+z"], "command": "max_pane" },
+    // Debug command
+    { "keys": ["alt+b"], "command": "insert_snippet",
+        "args": {"contents": "raise Exception('Debug breakpoint')     # debug"} },
+    { "keys": ["alt+d"], "command": "toggle_debug" },
+    { "keys": ["alt+shift+d"], "command": "remove_debug" },
+    { "keys": ["alt+c"], "command": "toggle_debug_comment", "args": {"action": "comment"},
+        "context": [ {"key": "setting.is_widget", "operator": "equal", "operand": false} ]
+    },
+    { "keys": ["alt+v"], "command": "toggle_debug_comment", "args": {"action": "uncomment"} },
+    { "keys": ["alt+t"], "command": "toggle_debug_comment", "args": {"action": "toggle"}},
 
 
-	// ============================ VIM MODE ============================
+    // ========================= TABS AND PANES =========================
 
-	// Exit vim mode with kj 
-	{ "keys": ["k", "j"], "command": "exit_insert_mode",
-	    "context": [ { "key": "setting.command_mode", "operand": false },
-		    	     { "key": "setting.is_widget", "operand": false } ]
-	},
+    // Set layout to 2 columns and move current file to the second column
+    { "keys": ["alt+\\"], "command": "move_file_in_new_tab", "args": {"clone": false} },
+    { "keys": ["alt+shift+\\"], "command": "move_file_in_new_tab", "args": {"clone": true}},
 
-	// Scroll with ctrl+[j|k] in vim mode
-	{ "keys": ["ctrl+j"], "command": "scroll_lines", "args": {"amount":-1.0},
-		"context": [ {"key": "setting.command_mode", "operand": true} ] },
+    // Change tab in order
+    { "keys": ["ctrl+tab"], "command": "next_view" },
+    { "keys": ["ctrl+shift+tab"], "command": "prev_view" },
 
-	{ "keys": ["ctrl+k"], "command": "scroll_lines", "args": {"amount":1.0},
-		"context": [ {"key": "setting.command_mode", "operand": true} ] },
+    // Change tab with [J|K] in vim mode
+    { "keys": ["K"], "command": "change_pane_and_exit_insert",
+        "context": [ {"key": "setting.command_mode", "operand": true} ] },
+    { "keys": ["J"], "command": "change_pane_and_exit_insert", "args": {"forward": false},
+        "context": [ {"key": "setting.command_mode", "operand": true} ] },
 
-	// Ctrl+r to redo in vim mode
+    // Move a tab though panes with alt+shift+[j|k]
+    { "keys": ["alt+shift+j"], "command": "move_to_neighboring_group"},
+    { "keys": ["alt+shift+k"], "command": "move_to_neighboring_group", "args": {"forward": false} },
+
+    // Switch tab order with ctrl+shift+page[up|down]
+    { "keys": ["ctrl+shift+pagedown"], "command": "move_tab" },
+    { "keys": ["ctrl+shift+pageup"], "command": "move_tab", "args": {"forward": false} },
+
+    // Switch tab order with alt+[<|>]
+    { "keys": ["alt+shift+."], "command": "move_tab" },
+    { "keys": ["alt+shift+,"], "command": "move_tab", "args": {"forward": false} },
+
+    // Focus on next group with alt+[j|k|up|down]
+    { "keys": ["alt+j"], "command": "focus_neighboring_group"},
+    { "keys": ["alt+down"], "command": "focus_neighboring_group"},
+    { "keys": ["alt+k"], "command": "focus_neighboring_group", "args": {"forward": false} },
+    { "keys": ["alt+up"], "command": "focus_neighboring_group", "args": {"forward": false} },
+
+    // Close pane with alt+w
+    { "keys": ["alt+w"], "command": "close" },
+
+    // Max pane
+    { "keys": ["alt+z"], "command": "max_pane" },
+
+
+    // ============================ VIM MODE ============================
+
+    // Exit vim mode with kj 
+    { "keys": ["k", "j"], "command": "exit_insert_mode",
+        "context": [ { "key": "setting.command_mode", "operand": false },
+                     { "key": "setting.is_widget", "operand": false } ]
+    },
+
+    // Scroll with ctrl+[j|k] in vim mode
+    { "keys": ["ctrl+j"], "command": "scroll_lines", "args": {"amount":-1.0},
+        "context": [ {"key": "setting.command_mode", "operand": true} ] },
+
+    { "keys": ["ctrl+k"], "command": "scroll_lines", "args": {"amount":1.0},
+        "context": [ {"key": "setting.command_mode", "operand": true} ] },
+
+    // Ctrl+r to redo in vim mode
     {"keys": ["ctrl+r"], "command": "redo", "context": [{"key": "setting.command_mode"}] },
 
-	// Put the escape key normal behaviour before the "exit vim" behaviour
-	{ "keys": ["escape"], "command": "single_selection", "context":
-		[ { "key": "num_selections", "operator": "not_equal", "operand": 1 } ]
-	},
-	{ "keys": ["escape"], "command": "clear_fields", "context":
-		[ { "key": "has_next_field", "operator": "equal", "operand": true } ]
-	},
-	{ "keys": ["escape"], "command": "clear_fields", "context":
-		[ { "key": "has_prev_field", "operator": "equal", "operand": true } ]
-	},
-	{ "keys": ["escape"], "command": "hide_panel", "args": {"cancel": true},
-		"context": [ { "key": "panel_visible", "operator": "equal", "operand": true } ]
-	},
-	{ "keys": ["escape"], "command": "hide_overlay", "context":
-		[ { "key": "overlay_visible", "operator": "equal", "operand": true } ]
-	},
-	{ "keys": ["escape"], "command": "hide_popup", "context":
-		[ { "key": "popup_visible", "operator": "equal", "operand": true } ]
-	},
-	{ "keys": ["escape"], "command": "hide_auto_complete", "context":
-		[ { "key": "auto_complete_visible", "operator": "equal", "operand": true } ]
-	},
+    // Put the escape key normal behaviour before the "exit vim" behaviour
+    { "keys": ["escape"], "command": "single_selection", "context":
+        [ { "key": "num_selections", "operator": "not_equal", "operand": 1 } ]
+    },
+    { "keys": ["escape"], "command": "clear_fields", "context":
+        [ { "key": "has_next_field", "operator": "equal", "operand": true } ]
+    },
+    { "keys": ["escape"], "command": "clear_fields", "context":
+        [ { "key": "has_prev_field", "operator": "equal", "operand": true } ]
+    },
+    { "keys": ["escape"], "command": "hide_panel", "args": {"cancel": true},
+        "context": [ { "key": "panel_visible", "operator": "equal", "operand": true } ]
+    },
+    { "keys": ["escape"], "command": "hide_overlay", "context":
+        [ { "key": "overlay_visible", "operator": "equal", "operand": true } ]
+    },
+    { "keys": ["escape"], "command": "hide_popup", "context":
+        [ { "key": "popup_visible", "operator": "equal", "operand": true } ]
+    },
+    { "keys": ["escape"], "command": "hide_auto_complete", "context":
+        [ { "key": "auto_complete_visible", "operator": "equal", "operand": true } ]
+    },
 
-	// ============================ LINTERS ============================
+    // ============================ LINTERS ============================
 
-	// Toggle every linter
-	{ "keys": ["alt+l"], "command": "toggle_linters" },
-	{ "keys": ["alt+n"], "command": "sublime_linter_goto_error",
-		"args": {"direction": "next"}
-	},
-	{ "keys": ["alt+p"], "command": "sublime_linter_goto_error",
-		"args": {"direction": "previous"}
-	},
+    // Toggle every linter
+    { "keys": ["alt+l"], "command": "toggle_linters" },
+    { "keys": ["alt+n"], "command": "sublime_linter_goto_error",
+        "args": {"direction": "next"}
+    },
+    { "keys": ["alt+p"], "command": "sublime_linter_goto_error",
+        "args": {"direction": "previous"}
+    },
 ]

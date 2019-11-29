@@ -4,6 +4,9 @@ $include /etc/inputrc
 "\e[5~": history-search-backward
 "\e[6~": history-search-forward
 
+# Go to position to add argument
+"\eB": "\C-a\C-]\ \C-f"
+
 $if Bash
     # Delete first word
     "\ee": "\C-a\ed\C-f\C-h\C-e"
@@ -23,9 +26,6 @@ $if Bash
     # Replace (/add) xdg-open as first word
     "\ex": "\C-a\C-]\ \C-wxdg-open\C-e"
     "\eX": "\C-axdg-open \C-e"
-
-    # Go to position to add argument 
-    "\eB": "\C-a\C-]\ \C-f"
 
     # Copy arguments
     "\eC": "\C-a\C-]\ \C-k\C-y\C-h\C-y"
