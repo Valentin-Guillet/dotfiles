@@ -195,7 +195,7 @@ ct() {
 pip_update() {
     pip list -o --format=freeze > pip_list
     vim pip_list
-    cat pip_list | cut -d = -f 1 | xargs -n 1 pip install -U
+    [ -s pip_list ] && cat pip_list | cut -d = -f 1 | xargs -n 1 pip install -U
     rm pip_list
 }
 

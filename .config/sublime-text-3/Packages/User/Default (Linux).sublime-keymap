@@ -46,9 +46,6 @@
     { "keys": ["ctrl+v"], "command": "paste_and_indent" },
     { "keys": ["ctrl+shift+v"], "command": "paste" },
 
-    // Wrap lines
-    { "keys": ["alt+h"], "command": "wrap_lines_plus"},
-
     // Add a new selection with the next word
     { "keys": ["ctrl+i"], "command": "add_next_word"},
 
