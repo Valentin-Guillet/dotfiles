@@ -2,8 +2,8 @@
 let mapleader = ","
 
 " Edit and reload vim config with <leader>[e|s]v
-nnoremap <leader>ev :vsplit $MYVIMRC<CR>
-nnoremap <leader>sv :source $MYVIMRC<CR>
+nnoremap <leader>e :vsplit $MYVIMRC<CR>
+nnoremap <leader>r :source $MYVIMRC<CR>
 
 " Write file with <leader>w
 nnoremap <leader>w :update <CR>
@@ -254,6 +254,7 @@ endif
 
 " Vim/Tmux navigator
 source ~/.config/tmux/tmux_navigator.vim
+let g:tmux_navigator_disable_when_zoomed = 1
 
 " Vim zoom pane
 source ~/.config/tmux/zoom.vim

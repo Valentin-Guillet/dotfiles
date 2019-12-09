@@ -199,7 +199,7 @@ pip_update() {
     rm pip_list
 }
 
-alias gifspeed='find $(pwd) -name "*.gif" -exec convert -delay 2x100 {} {} \;'
+alias sudo='sudo TMUX="$TMUX"'
 
 alias py=python
 
