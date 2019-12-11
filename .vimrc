@@ -3,7 +3,7 @@ let mapleader = ","
 
 " Edit and reload vim config with <leader>[e|s]v
 nnoremap <leader>e :vsplit $MYVIMRC<CR>
-nnoremap <leader>r :source $MYVIMRC<CR>
+nnoremap <leader>r :source $MYVIMRC<CR>:echo "Config reloaded !"<CR>
 
 " Write file with <leader>w
 nnoremap <leader>w :update <CR>
@@ -13,6 +13,12 @@ nnoremap <leader>\ :vsplit<CR>
 nnoremap <leader>- :split<CR>
 nnoremap <leader>= <C-w>=
 nnoremap <leader>q :q<CR>
+
+" Resize splits
+source ~/.config/vim/submode.vim
+call submode#set_resize_mode()
+let g:submode_timeout = 0
+
 
 " Scroll with C-[j|k]
 nnoremap <C-j> <C-e>

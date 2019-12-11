@@ -25,5 +25,8 @@
 !.config/tmux/*
 .config/tmux/buffer_cmd
 
+!.config/vim/
+!.config/vim/*
+
 !.config/vimium/
 !.config/vimium/*
