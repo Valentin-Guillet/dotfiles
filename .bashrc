@@ -192,10 +192,24 @@ ct() {
     clear
 }
 
+yop() {
+    echo "$1"
+    [ "$1" = "-a" -o "$1" = '--all' ]  && echo yes
+}
+
 pip_update() {
     pip list -o --format=freeze > pip_list
-    vim pip_list
-    [ -s pip_list ] && cat pip_list | cut -d = -f 1 | xargs -n 1 pip install -U
+    if [ ! "$1" = "-a" -a ! "$1" = '--all' ] && [ "$pip_exclude" ]
+    then
+        grep -v "$pip_exclude" pip_list > pip_list_tmp
+        mv pip_list_tmp pip_list
+    fi
+
+    if [ -s pip_list ]
+    then
+        vim pip_list
+        cat pip_list | cut -d = -f 1 | xargs -n 1 pip install -U
+    fi
     rm pip_list
 }
 
