@@ -1,0 +1,69 @@
+#!/bin/bash
+
+save_file() {
+    mv ~/"$1" ~/"$1".save
+    if [ -f "$CONFIG_DIR/$1" ]
+    then
+        cp $CONFIG_DIR/"$1" ~/"$1"
+    elif [ -d "$CONFIG_DIR/$1" ]
+    then
+        cp -r $CONFIG_DIR/"$1" ~/"$1"
+    fi
+}
+
+unsave_file() {
+    if [ -f ~/"$1" ]
+    then
+        rm ~/"$1"
+    elif [ -d ~/"$1" ]
+    then
+        rm -r ~/"$1"
+    fi
+    mv ~/"$1".save ~/"$1"
+}
+
+if [ "$1" = "?" ]
+then
+    if [ -z "$CONFIG_DIR" ]
+    then
+        echo "Config is not loaded !"
+    else
+        echo "Config is loaded !"
+    fi
+
+elif [ "$1" = "load" ]
+then
+    if [ -z "$CONFIG_DIR" ]
+    then
+        export CONFIG_DIR="$HOME/.config/valentin_config"
+
+        while read file
+        do
+            save_file "$file"
+        done < <(sed -e "/^\s*#.*$/d" -e "/^\s*$/d" list_files)
+
+        gnome-terminal --working-directory=$HOME
+        kill -9 $PPID
+    else
+        echo "Config is already loaded !"
+    fi
+
+elif [ "$1" = "unload" ]
+then
+    if [ ! -z "$CONFIG_DIR" ]
+    then
+        unset CONFIG_DIR
+
+        while read file
+        do
+            unsave_file "$file"
+        done < <(sed -e "/^\s*#.*$/d" -e "/^\s*$/d" list_files)
+
+       gnome-terminal --working-directory=$HOME
+       tmux kill-session
+    else
+        echo "Config is not loaded !"
+    fi
+else
+    echo "Command $1 is not recognized"
+fi
