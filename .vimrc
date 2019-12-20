@@ -19,6 +19,10 @@ source ~/.config/vim/submode.vim
 call submode#set_resize_mode()
 let g:submode_timeout = 0
 
+" Tabs
+nnoremap <leader>t :tabnew<CR>
+nnoremap <leader>n :tabnext<CR>
+nnoremap <leader>p :tabprev<CR>
 
 " Scroll with C-[j|k]
 nnoremap <C-j> <C-e>
@@ -47,7 +51,7 @@ nnoremap <C-h> o<Esc>
 nnoremap <space> viw
 
 " Transform current string into a formatted one (python)
-nnoremap <leader>f :normal mzF'if<Esc>`zl
+nnoremap <leader>f :normal mzF"if<Esc>`zl
 
 " Surround words
 nnoremap <leader>' viw<Esc>a'<Esc>bi'<Esc>lel
