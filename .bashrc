@@ -153,7 +153,7 @@ alias rmr='rm -r'
 alias cd..='cd ..'
 
 psg() {
-    ps aux | grep "`echo $1 | sed 's/./[\0]/'`"
+    ps aux | grep "$(echo $1 | sed 's/./[\0]/')"
 }
 
 d() {
@@ -192,11 +192,6 @@ ct() {
     clear
 }
 
-yop() {
-    echo "$1"
-    [ "$1" = "-a" -o "$1" = '--all' ]  && echo yes
-}
-
 pip_update() {
     pip list -o --format=freeze > pip_list
     if [ ! "$1" = "-a" -a ! "$1" = '--all' ] && [ "$pip_exclude" ]
@@ -213,6 +208,7 @@ pip_update() {
     rm pip_list
 }
 
+# Necessary for vim-zoom
 alias sudo='sudo TMUX="$TMUX"'
 
 alias py=python

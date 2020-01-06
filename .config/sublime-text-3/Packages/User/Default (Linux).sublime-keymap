@@ -60,8 +60,8 @@
     // Debug command
     { "keys": ["alt+b"], "command": "insert_snippet",
         "args": {"contents": "raise Exception('Debug breakpoint')     # debug"} },
-    { "keys": ["alt+d"], "command": "toggle_debug" },
-    { "keys": ["alt+shift+d"], "command": "remove_debug" },
+    { "keys": ["alt+d"], "command": "add_debug", "args": {"action": "toggle"} },
+    { "keys": ["alt+shift+d"], "command": "add_debug", "args": {"action": "remove"} },
     { "keys": ["alt+c"], "command": "toggle_debug_comment", "args": {"action": "comment"},
         "context": [ {"key": "setting.is_widget", "operator": "equal", "operand": false} ]
     },
@@ -86,8 +86,8 @@
         "context": [ {"key": "setting.command_mode", "operand": true} ] },
 
     // Move a tab though panes with alt+shift+[j|k]
-    { "keys": ["alt+shift+j"], "command": "move_to_neighboring_group"},
-    { "keys": ["alt+shift+k"], "command": "move_to_neighboring_group", "args": {"forward": false} },
+    { "keys": ["alt+shift+k"], "command": "move_to_neighboring_group"},
+    { "keys": ["alt+shift+j"], "command": "move_to_neighboring_group", "args": {"forward": false} },
 
     // Switch tab order with ctrl+shift+page[up|down]
     { "keys": ["ctrl+shift+pagedown"], "command": "move_tab" },

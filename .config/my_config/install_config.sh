@@ -16,5 +16,7 @@ done < <(sed -e "/^\s*#.*$/d" -e "/^\s*$/d" list_files)
 
 sed -i "s;export CONFIG_DIR=.*;export CONFIG_DIR=$(realpath .);" toggle_config
 
-"Create a symbolic link in a directory from PATH to $(realpath toggle_config)"
+echo "Create a symbolic link in a directory from PATH to $(realpath toggle_config)"
+echo "For instance :"
+echo "    ln -s $(realpath toggle_config) ~/.local/bin/val"
 
