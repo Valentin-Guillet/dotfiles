@@ -3,6 +3,7 @@ let mapleader = ","
 
 " Edit and reload vim config with <leader>[e|s]v
 nnoremap <leader>e :vsplit $MYVIMRC<CR>
+nnoremap <leader>E :tabnew $MYVIMRC<CR>
 nnoremap <leader>r :source $MYVIMRC<CR>:echo "Config reloaded !"<CR>
 
 " Write file with <leader>w
@@ -14,6 +15,12 @@ nnoremap <leader>- :split<CR>
 nnoremap <leader>= <C-w>=
 nnoremap <leader>q :q<CR>
 
+" Move splits around
+nnoremap <leader>H <C-w>H
+nnoremap <leader>J <C-w>J
+nnoremap <leader>K <C-w>K
+nnoremap <leader>L <C-w>L
+
 " Resize splits
 source ~/.config/vim/submode.vim
 call submode#set_resize_mode()
@@ -23,6 +30,15 @@ let g:submode_timeout = 0
 nnoremap <leader>t :tabnew<CR>
 nnoremap <leader>n :tabnext<CR>
 nnoremap <leader>p :tabprev<CR>
+
+nnoremap <leader>N :tabm <C-R>=(tabpagenr()+1)%(tabpagenr('$')+1)<CR><CR>
+nnoremap <leader>P :tabm <C-R>=(tabpagenr()+tabpagenr('$')-1)%(tabpagenr('$')+1)<CR><CR>
+
+nnoremap <leader>< <C-W>R
+nnoremap <leader>> <C-W>r
+
+" Send split to new tab
+nnoremap <leader>! <C-W>T
 
 " Scroll with C-[j|k]
 nnoremap <C-j> <C-e>
@@ -54,34 +70,34 @@ nnoremap <space> viw
 nnoremap <leader>f :normal mzF"if<Esc>`zl
 
 " Surround words
-nnoremap <leader>' viw<Esc>a'<Esc>bi'<Esc>lel
-nnoremap <leader>" viw<Esc>a"<Esc>bi"<Esc>lel
-nnoremap <leader>( viw<Esc>a)<Esc>bi(<Esc>lel
-nnoremap <leader>[ viw<Esc>a]<Esc>bi[<Esc>lel
-nnoremap <leader>{ viw<Esc>a}<Esc>bi{<Esc>lel
-nnoremap <leader>< viw<Esc>a><Esc>bi<<Esc>lel
+nnoremap <leader>i' viw<Esc>a'<Esc>bi'<Esc>lel
+nnoremap <leader>i" viw<Esc>a"<Esc>bi"<Esc>lel
+nnoremap <leader>i( viw<Esc>a)<Esc>bi(<Esc>lel
+nnoremap <leader>i[ viw<Esc>a]<Esc>bi[<Esc>lel
+nnoremap <leader>i{ viw<Esc>a}<Esc>bi{<Esc>lel
+nnoremap <leader>i< viw<Esc>a><Esc>bi<<Esc>lel
 
-vnoremap <leader>' <Esc>`>a'<Esc>`<i'<Esc>
-vnoremap <leader>" <Esc>`>a"<Esc>`<i"<Esc>
-vnoremap <leader>( <Esc>`>a)<Esc>`<i(<Esc>
-vnoremap <leader>[ <Esc>`>a]<Esc>`<i[<Esc>
-vnoremap <leader>{ <Esc>`>a}<Esc>`<i{<Esc>
-vnoremap <leader>< <Esc>`>a><Esc>`<i<<Esc>
+vnoremap <leader>i' <Esc>`>a'<Esc>`<i'<Esc>
+vnoremap <leader>i" <Esc>`>a"<Esc>`<i"<Esc>
+vnoremap <leader>i( <Esc>`>a)<Esc>`<i(<Esc>
+vnoremap <leader>i[ <Esc>`>a]<Esc>`<i[<Esc>
+vnoremap <leader>i{ <Esc>`>a}<Esc>`<i{<Esc>
+vnoremap <leader>i< <Esc>`>a><Esc>`<i<<Esc>
 
 " Operator pending mapping
-onoremap in' :<C-u>normal! f'vi'<Cr>
-onoremap in" :<C-u>normal! f"vi"<Cr>
-onoremap in( :<C-u>normal! f(vi(<Cr>
-onoremap in[ :<C-u>normal! f[vi[<Cr>
-onoremap in{ :<C-u>normal! f{vi{<Cr>
-onoremap in< :<C-u>normal! f<vi<<Cr>
+onoremap in' :<C-u>normal! f'vi'<CR>
+onoremap in" :<C-u>normal! f"vi"<CR>
+onoremap in( :<C-u>normal! f(vi(<CR>
+onoremap in[ :<C-u>normal! f[vi[<CR>
+onoremap in{ :<C-u>normal! f{vi{<CR>
+onoremap in< :<C-u>normal! f<vi<<CR>
 
-onoremap il' :<C-u>normal! F'hvi'<Cr>
-onoremap il" :<C-u>normal! F"hvi"<Cr>
-onoremap il( :<C-u>normal! F)vi(<Cr>
-onoremap il[ :<C-u>normal! F[vi[<Cr>
-onoremap il{ :<C-u>normal! F{vi{<Cr>
-onoremap il< :<C-u>normal! F<vi<<Cr>
+onoremap il' :<C-u>normal! F'hvi'<CR>
+onoremap il" :<C-u>normal! F"hvi"<CR>
+onoremap il( :<C-u>normal! F)vi(<CR>
+onoremap il[ :<C-u>normal! F[vi[<CR>
+onoremap il{ :<C-u>normal! F{vi{<CR>
+onoremap il< :<C-u>normal! F<vi<<CR>
 
 " Use Vim settings, rather than Vi settings (much better!).
 " This must be first, because it changes other options as a side effect.
@@ -100,6 +116,7 @@ set history=50	    " keep 50 lines of command line history
 set ruler           " show the cursor position all the time
 set showcmd	        " display incomplete commands
 set incsearch       " do incremental searching
+set nowrap          " remove wrap
 
 if has('mouse')
     set mouse=a
