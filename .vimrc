@@ -6,6 +6,12 @@ nnoremap <leader>e :vsplit $MYVIMRC<CR>
 nnoremap <leader>E :tabnew $MYVIMRC<CR>
 nnoremap <leader>r :source $MYVIMRC<CR>:echo "Config reloaded !"<CR>
 
+" Fix Ctrl-Arrow
+noremap [1;5D <C-Left>
+noremap! [1;5D <C-Left>
+noremap [1;5C <C-Right>
+noremap! [1;5C <C-Right>
+
 " Write file with <leader>w
 nnoremap <leader>w :update <CR>
 
@@ -27,7 +33,7 @@ call submode#set_resize_mode()
 let g:submode_timeout = 0
 
 " Tabs
-nnoremap <leader>t :tabnew<CR>
+nnoremap <leader>t :tab split<CR>
 nnoremap <leader>n :tabnext<CR>
 nnoremap <leader>p :tabprev<CR>
 
@@ -98,6 +104,13 @@ onoremap il( :<C-u>normal! F)vi(<CR>
 onoremap il[ :<C-u>normal! F[vi[<CR>
 onoremap il{ :<C-u>normal! F{vi{<CR>
 onoremap il< :<C-u>normal! F<vi<<CR>
+
+" Ctags
+set tags=tags
+nnoremap <leader>g :execute '!ctags -R .'<CR> :echo "Tags created"<CR>
+
+" nnoremap <C-\> :tab split<CR>:exec("tag ".expand("<cword>"))<CR>
+nnoremap <leader>] :vsp <CR>:exec("tag ".expand("<cword>"))<CR>
 
 " Use Vim settings, rather than Vi settings (much better!).
 " This must be first, because it changes other options as a side effect.
