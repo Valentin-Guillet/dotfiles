@@ -7,4 +7,5 @@ send-keys "conda update --all" Enter
 split-window -h
 send-keys "pip_update" Enter
 
+select-pane -t 2
 select-pane -t 1

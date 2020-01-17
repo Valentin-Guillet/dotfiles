@@ -194,9 +194,9 @@ ct() {
 
 pip_update() {
     pip list -o --format=freeze > pip_list
-    if [ ! "$1" = "-a" -a ! "$1" = '--all' ] && [ "$pip_exclude" ]
+    if [ ! "$1" = "-a" -a ! "$1" = '--all' ] && [ -s ~/.config/pip/pip_exclude ]
     then
-        grep -v "$pip_exclude" pip_list > pip_list_tmp
+        grep -v -f <(sed -e "/^\s*#.*$/d" -e "/^\s*$/d" ~/.config/pip/pip_exclude) pip_list > pip_list_tmp
         mv pip_list_tmp pip_list
     fi
 

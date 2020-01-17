@@ -2,6 +2,9 @@
 " |   GENERAL OPTIONS   |
 " +=====================+
 
+" Define leader
+let mapleader = ","
+
 " Use Vim settings, rather than Vi
 set nocompatible
 
@@ -108,9 +111,6 @@ nnoremap <silent> <leader>z :call zoom#toggle()<cr>
 " +===================+
 " |   USER MAPPINGS   |
 " +===================+
-
-" Define leader
-let mapleader = ","
 
 " Edit and reload vim config with <leader>[e|s]v
 nnoremap <leader>e :vsplit $MYVIMRC<CR>
@@ -325,4 +325,10 @@ function! XTermPasteBegin()
     set paste
     return ""
 endfunction
+
+" Vim diff colors
+highlight DiffAdd    cterm=bold ctermfg=10 ctermbg=17
+highlight DiffDelete cterm=bold ctermfg=10 ctermbg=17
+highlight DiffChange cterm=bold ctermfg=10 ctermbg=17
+highlight DiffText   cterm=bold ctermfg=10 ctermbg=88
 
