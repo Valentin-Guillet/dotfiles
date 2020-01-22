@@ -3,6 +3,7 @@ import sublime_plugin
 
 
 class MoveFileInNewTabCommand(sublime_plugin.WindowCommand):
+
     def run(self, clone):
 
         if self.window.num_groups() == 1:

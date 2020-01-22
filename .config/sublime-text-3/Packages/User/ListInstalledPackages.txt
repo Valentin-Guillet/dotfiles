@@ -3,5 +3,6 @@ Increment Selection
 MarkdownPreview
 MaxPane
 MoreLayouts
+PackageResourceViewer
 SublimeLinter
 SublimeLinter-flake8

@@ -48,6 +48,7 @@
 
     // Add a new selection with the next word
     { "keys": ["ctrl+i"], "command": "add_next_word"},
+    { "keys": ["ctrl+k", "ctrl+i"], "command": "add_next_word", "args": {"skip": true}},
 
     // Go to last selection
     { "keys": ["shift+escape"], "command": "last_selection",
@@ -106,13 +107,10 @@
     // Close pane with alt+w
     { "keys": ["alt+w"], "command": "close" },
 
-    // Max pane
-    { "keys": ["alt+z"], "command": "max_pane" },
-
 
     // ============================ VIM MODE ============================
 
-    // Exit vim mode with kj 
+    // Exit vim mode with kj
     { "keys": ["k", "j"], "command": "exit_insert_mode",
         "context": [ { "key": "setting.command_mode", "operand": false },
                      { "key": "setting.is_widget", "operand": false } ]
@@ -126,29 +124,21 @@
         "context": [ {"key": "setting.command_mode", "operand": true} ] },
 
     // Ctrl+r to redo in vim mode
-    {"keys": ["ctrl+r"], "command": "redo", "context": [{"key": "setting.command_mode"}] },
+    { "keys": ["ctrl+r"], "command": "redo", "context": [{"key": "setting.command_mode"}] },
+
+    { "keys": ["a"], "command": "enter_insert_mode", "context":
+        [ { "key": "setting.command_mode" },
+          { "key": "selection_empty", "operator": "equal", "operand": false, "match_all": false } ]
+    },
 
     // Put the escape key normal behaviour before the "exit vim" behaviour
     { "keys": ["escape"], "command": "single_selection", "context":
         [ { "key": "num_selections", "operator": "not_equal", "operand": 1 } ]
     },
-    { "keys": ["escape"], "command": "clear_fields", "context":
-        [ { "key": "has_next_field", "operator": "equal", "operand": true } ]
-    },
-    { "keys": ["escape"], "command": "clear_fields", "context":
-        [ { "key": "has_prev_field", "operator": "equal", "operand": true } ]
-    },
-    { "keys": ["escape"], "command": "hide_panel", "args": {"cancel": true},
-        "context": [ { "key": "panel_visible", "operator": "equal", "operand": true } ]
-    },
-    { "keys": ["escape"], "command": "hide_overlay", "context":
-        [ { "key": "overlay_visible", "operator": "equal", "operand": true } ]
-    },
-    { "keys": ["escape"], "command": "hide_popup", "context":
-        [ { "key": "popup_visible", "operator": "equal", "operand": true } ]
-    },
-    { "keys": ["escape"], "command": "hide_auto_complete", "context":
-        [ { "key": "auto_complete_visible", "operator": "equal", "operand": true } ]
+    { "keys": ["escape"], "command": "move", "args": {"by": "characters", "forward": true},
+        "context": [ { "key": "num_selections", "operand": 1 },
+                     { "key": "selection_empty", "operand": false },
+                     { "key": "panel_has_focus", "operand": false } ]
     },
 
     // ============================ LINTERS ============================

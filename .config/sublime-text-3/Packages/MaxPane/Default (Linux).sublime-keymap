@@ -1,0 +1,4 @@
+[
+    { "keys": ["alt+z"], "command": "max_pane" },
+    { "keys": ["ctrl+k", "ctrl+m"], "command": "max_editor" }
+]
