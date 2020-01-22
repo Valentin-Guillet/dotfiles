@@ -206,6 +206,9 @@ onoremap il[ :<C-u>normal! F[vi[<CR>
 onoremap il{ :<C-u>normal! F{vi{<CR>
 onoremap il< :<C-u>normal! F<vi<<CR>
 
+" Delete last word in insert mode
+inoremap  <C-w>
+
 " Ctags
 set tags=tags
 nnoremap <leader>g :execute '!ctags -R .'<CR> :echo "Tags created"<CR>
