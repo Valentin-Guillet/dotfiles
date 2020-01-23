@@ -4,6 +4,7 @@
 !.gitconfig
 !.gitignore
 !.inputrc
+!.pdbrc
 !.profile
 !.tmux.conf
 !.vimrc
@@ -11,6 +12,9 @@
 !.config/
 !.config/my_config/
 !.config/my_config/*
+
+!.config/pdb/
+!.config/pdb/*
 
 !.config/sublime-text-3/
 !.config/sublime-text-3/Packages/

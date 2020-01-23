@@ -3,6 +3,18 @@
 .inputrc
 .profile
 
+# Git
+.gitconfig
+.gitignore
+
+# Pdb
+.pdbrc
+.config/pdb
+
+# Sublime
+.config/sublime-text-3/Packages/User
+.config/sublime-merge/Packages/User
+
 # Tmux
 .tmux.conf
 .config/tmux
@@ -10,12 +22,4 @@
 # Vim
 .vimrc
 .config/vim
-
-# Git
-.gitconfig
-.gitignore
-
-# Sublime
-.config/sublime-text-3/Packages/User
-.config/sublime-merge/Packages/User
 

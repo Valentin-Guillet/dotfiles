@@ -15,7 +15,6 @@ set history=50	    " keep 50 lines of command line history
 set ruler           " show the cursor position all the time
 set showcmd	        " display incomplete commands
 set incsearch       " do incremental searching
-set nowrap          " remove wrap
 
 set splitbelow
 set splitright
@@ -112,8 +111,8 @@ nnoremap <silent> <leader>z :call zoom#toggle()<cr>
 " |   USER MAPPINGS   |
 " +===================+
 
-" Edit and reload vim config with <leader>[e|s]v
-nnoremap <leader>e :vsplit $MYVIMRC<CR>
+" Edit and reload vim config
+nnoremap <leader>e :call OpenInSplitIfNotEmpty($MYVIMRC)<CR>
 nnoremap <leader>E :tabnew $MYVIMRC<CR>
 nnoremap <leader>r :source $MYVIMRC<CR>:echo "Config reloaded !"<CR>
 
@@ -206,8 +205,9 @@ onoremap il[ :<C-u>normal! F[vi[<CR>
 onoremap il{ :<C-u>normal! F{vi{<CR>
 onoremap il< :<C-u>normal! F<vi<<CR>
 
-" Delete last word in insert mode
+" Delete last word in insert and command mode
 inoremap  <C-w>
+cnoremap  <C-w>
 
 " Ctags
 set tags=tags
@@ -219,6 +219,15 @@ nnoremap <leader>] :vsp <CR>:exec("tag ".expand("<cword>"))<CR>
 " +==============+
 " |   COMMANDS   |
 " +==============+
+
+" Function to open file in split if buffer not empty
+function! OpenInSplitIfNotEmpty(file)
+    if line('$') == 1 && getline(1) == ''
+        exec 'e' a:file
+    else
+        exec 'vsplit' a:file
+    end
+endfunction
 
 " <C-c> to comment/uncomment
 let s:comment_map = { 
