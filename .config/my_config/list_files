@@ -12,6 +12,9 @@
 .config/pdb
 
 # Sublime
+.config/sublime-text-3/Packages/MaxPane
+.config/sublime-text-3/Packages/Vintage
+
 .config/sublime-text-3/Packages/User
 .config/sublime-merge/Packages/User
 
