@@ -98,12 +98,24 @@ try
 catch /.*/
 endtry
 
+" Resize splits
+source ~/.config/vim/submode.vim
+call submode#set_resize_mode()
+let g:submode_timeout = 0
+
+" Auto-pairs
+source ~/.config/vim/auto-pairs.vim
+let g:AutoPairsShortcutToggle = ''
+let g:AutoPairsShortcutFastWrap = ''
+let g:AutoPairsShortcutJump = ''
+let g:AutoPairsMapCh = 0
+
 " Vim/Tmux navigator
 source ~/.config/tmux/tmux_navigator.vim
 let g:tmux_navigator_disable_when_zoomed = 1
 
-" Vim zoom pane
-source ~/.config/tmux/zoom.vim
+" Zoom pane
+source ~/.config/vim/zoom.vim
 nnoremap <silent> <leader>z :call zoom#toggle()<cr>
 
 
@@ -131,11 +143,6 @@ nnoremap <leader>J <C-w>J
 nnoremap <leader>K <C-w>K
 nnoremap <leader>L <C-w>L
 
-" Resize splits
-source ~/.config/vim/submode.vim
-call submode#set_resize_mode()
-let g:submode_timeout = 0
-
 " Tabs
 nnoremap <leader>t :tab split<CR>
 nnoremap <leader>n :tabnext<CR>
@@ -152,8 +159,10 @@ nnoremap <leader>! <C-W>T
 
 " Scroll with C-[j|k]
 nnoremap <C-j> <C-e>
+vnoremap <C-j> <C-e>
 inoremap <C-j> <C-x><C-e>
 nnoremap <C-k> <C-y>
+vnoremap <C-k> <C-y>
 inoremap <C-k> <C-x><C-y>
 
 " Exit insert mode with kj
@@ -208,6 +217,9 @@ onoremap il< :<C-u>normal! F<vi<<CR>
 " Delete last word in insert and command mode
 inoremap  <C-w>
 cnoremap  <C-w>
+
+" Quit visual mode with q
+vnoremap q <Esc>
 
 " Ctags
 set tags=tags

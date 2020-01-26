@@ -28,7 +28,7 @@ $if Bash
     "\eX": "\C-axdg-open \C-e"
 
     # Copy arguments
-    "\eC": "\C-a\C-]\ \C-k\C-y\C-h\C-y"
+    "\eC": "\C-a\C-]\ \C-k\C-y\C-h\C-y\C-h"
 
     # Add man/sudo in first position
     "\em": "\C-u\C-y\C-aman \C-]\ \C-k\n\C-y\ey"
