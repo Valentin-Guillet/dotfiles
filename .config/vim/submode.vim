@@ -79,6 +79,7 @@ function! submode#set_resize_mode()
   call submode#map('resize', 'n', '', 'K', reset_split . '<C-w>k<C-w>-')
   call submode#map('resize', 'n', '', 'H', reset_split . '<C-w>h<C-w><')
   call submode#map('resize', 'n', '', 'L', reset_split . '<C-w>h<C-w>>')
+  call submode#map('resize', 'n', '', '=', reset_split . '<C-w>=')
 endfunction
 
 function! submode#current()

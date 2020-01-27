@@ -11,13 +11,28 @@ set nocompatible
 " Allow backspacing over everything in insert mode
 set backspace=indent,eol,start
 
+" Don't display message when running vim without file
+set shortmess+=I
+
+
+
+" Replace patterns act on every occurence in line by default
+" (and use g-flag to use default behavior)
+set gdefault
+
+" Filename will autocomplete as in shell
+set wildmode=longest,list
+
 set history=50	    " keep 50 lines of command line history
 set ruler           " show the cursor position all the time
 set showcmd	        " display incomplete commands
 set incsearch       " do incremental searching
+set smartcase       " case-sensitive search only when at least one capital letter
 
-set splitbelow
-set splitright
+set path+=**        " set recursive path to use :find
+
+set splitright      " new splits on the right...
+set splitbelow      " ... and below
 
 set expandtab
 set smarttab
@@ -26,17 +41,12 @@ set shiftwidth=4
 set tabstop=4
 set shiftround
 
+set autoindent
 set smartindent
-set nohlsearch
+
+set linebreak       " break line between words during wrap
 
 set timeout ttimeoutlen=50
-
-if has("vms")
-    set nobackup	" do not keep a backup file, use versions instead
-else
-    set backup		" keep a backup file (restore to previous version)
-    set undofile	" keep an undo file (undo changes after closing)
-endif
 
 if has('mouse')
     set mouse=a
@@ -65,14 +75,16 @@ if has("autocmd")
                     \   exe "normal! g`\"" |
                     \ endif
     augroup END
-else
-    set autoindent		" always set autoindenting on
-endif " has("autocmd")
+endif
 
 " Switch syntax highlighting on, when the terminal has colors
 if &t_Co > 2 || has("gui_running")
     syntax on
 endif
+
+
+set backup
+set undofile
 
 if !isdirectory($HOME . "/.vim/backup")
     call mkdir($HOME . "/.vim/backup", "p")
@@ -89,6 +101,9 @@ set directory=~/.vim/swap//,/tmp//
 set undodir=~/.vim/undo//,/tmp//
 
 
+set dictionary+=/usr/share/dict/words
+
+
 " +=========================+
 " |   ADDITIONAL PACKAGES   |
 " +=========================+
@@ -103,12 +118,13 @@ source ~/.config/vim/submode.vim
 call submode#set_resize_mode()
 let g:submode_timeout = 0
 
+" Better highlighting searches
+source ~/.config/vim/evanesco.vim
+
 " Auto-pairs
 source ~/.config/vim/auto-pairs.vim
 let g:AutoPairsShortcutToggle = ''
-let g:AutoPairsShortcutFastWrap = ''
-let g:AutoPairsShortcutJump = ''
-let g:AutoPairsMapCh = 0
+let g:AutoPairsShortcutJump = '<M-f>'
 
 " Vim/Tmux navigator
 source ~/.config/tmux/tmux_navigator.vim
@@ -172,17 +188,13 @@ inoremap kJ <Esc>l
 inoremap KJ <Esc>l
 
 " Move line
-nnoremap - ddp
-nnoremap _ ddkP
+nnoremap <silent> - :m .+1<CR>==
+nnoremap <silent> _ :m .-2<CR>==
+vnoremap <silent> - :m '>+1<CR>gv=gv
+vnoremap <silent> _ :m '<-2<CR>gv=gv
 
 " Add a new line
 nnoremap <C-h> o<Esc>
-
-" Select word with space
-nnoremap <space> viw
-
-" Transform current string into a formatted one (python)
-nnoremap <leader>f :normal mzF"if<Esc>`zl
 
 " Surround words
 nnoremap <leader>i' viw<Esc>a'<Esc>bi'<Esc>lel
@@ -213,6 +225,28 @@ onoremap il( :<C-u>normal! F)vi(<CR>
 onoremap il[ :<C-u>normal! F[vi[<CR>
 onoremap il{ :<C-u>normal! F{vi{<CR>
 onoremap il< :<C-u>normal! F<vi<<CR>
+
+" Select word with space
+nnoremap <space> viw
+
+" Swap words
+nnoremap <silent> gt "_yiw:s/\(\%#\w\+\)\(\_W\+\)\(\w\+\)/\3\2\1/<CR><C-o>/\w\+\_W\+<CR><C-l>:nohlsearch<CR>
+
+" Swap [0$] and g[0$]
+nnoremap 0 g0
+nnoremap $ g$
+nnoremap g0 0
+nnoremap g$ $
+
+" Unmap Q and K
+nnoremap Q <nop>
+nnoremap K <nop>
+
+" Y same as D or C
+nnoremap Y y$
+
+" Transform current string into a formatted one (python)
+nnoremap <leader>f :normal mzF"if<Esc>`zl
 
 " Delete last word in insert and command mode
 inoremap  <C-w>

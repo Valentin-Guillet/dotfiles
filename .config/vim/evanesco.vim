@@ -1,0 +1,371 @@
+"==============================================================================
+"File:        evanesco.vim
+"Description: Automatically clears search highlight on CursorMoved
+"Maintainer:  Pierre-Guy Douyon <pgdouyon@alum.mit.edu>
+"License:     MIT <../LICENSE>
+"==============================================================================
+
+
+if exists("g:loaded_evanesco")
+    finish
+endif
+let g:loaded_evanesco = 1
+
+
+let s:save_cpo = &cpoptions
+set cpoptions&vim
+
+let s:paused = 0
+let s:has_current_match = 0
+let s:try_set_hlsearch = 0
+
+function! evanesco#evanesco(search_command)
+    if s:pattern_not_found()
+        let v:errmsg = ""
+    endif
+    let s:try_set_hlsearch = 1
+    call s:set_nohlsearch()
+    call s:register_autocmds()
+    call feedkeys(a:search_command, 'nti')
+endfunction
+
+
+function! s:pattern_not_found()
+    return (v:errmsg =~# '^E486')
+endfunction
+
+
+function! s:register_autocmds()
+    augroup evanesco_hl
+        autocmd!
+        autocmd CursorMoved,InsertEnter * call <SID>toggle_hlsearch()
+    augroup END
+endfunction
+
+
+function! s:unregister_autocmds()
+    autocmd! evanesco_hl
+    augroup! evanesco_hl
+endfunction
+
+
+function! evanesco#evanesco_next_end()
+    call s:register_autocmds()
+    call s:set_hlsearch()
+    let s:try_set_hlsearch = 0
+endfunction
+
+
+function! evanesco#evanesco_star()
+    let s:save_shortmess = &shortmess
+    let s:save_winview = winsaveview()
+    set shortmess+=s
+endfunction
+
+
+function! evanesco#evanesco_visual_star(search_type)
+    let save_yank_register_info = ['0', getreg('0'), getregtype('0')]
+    let save_unnamed_register_info = ['"', getreg('"'), getregtype('"')]
+    normal! gvy
+    let escape_chars = '\' . a:search_type
+    let search_term = '\V' . s:remove_null_bytes(escape(@@, escape_chars))
+    call evanesco#evanesco_star()
+    call call("setreg", save_unnamed_register_info)
+    call call("setreg", save_yank_register_info)
+
+    " since each call inserts at the start of the buffer, the characters from
+    " the first call will be processed after those from the second
+    call feedkeys("\<Plug>Evanesco_visual_search_end", "mi")
+    call feedkeys(a:search_type . search_term . "\<CR>\<C-O>", "nti")
+endfunction
+
+
+function! s:remove_null_bytes(string)
+    return substitute(a:string, '\%x00', '\\n', 'g')
+endfunction
+
+
+function! evanesco#evanesco_star_end()
+    let &shortmess = s:save_shortmess
+    let s:save_winview.lnum = line(".")
+    let s:save_winview.col = col(".") - 1
+    let s:save_winview.coladd = 0
+    call winrestview(s:save_winview)
+    call s:register_autocmds()
+    call s:set_hlsearch()
+    let s:try_set_hlsearch = 0
+endfunction
+
+
+" there are 3 scenarios where the cursor can move after a search is attempted:
+"   1) search was successfully executed and cursor moves to next match
+"   2) search was exectued but failed with a 'pattern not found' error
+"   3) search was aborted by pressing <Esc> or <C-C> at the search prompt
+" only want to enable highlighting for scenario 1 and ignore 2/3 entirely
+function! s:toggle_hlsearch()
+    if s:paused
+        return
+    endif
+
+    if s:try_set_hlsearch
+        let s:try_set_hlsearch = 0
+        if !s:pattern_not_found() && s:search_executed()
+            call s:set_hlsearch()
+        endif
+    else
+        call s:set_nohlsearch()
+        call s:unregister_autocmds()
+    endif
+endfunction
+
+
+function! s:search_executed()
+    let [search_pattern, offset] = s:last_search_attempt()
+    let match_at_cursor = s:match_at_cursor(search_pattern, offset)
+    return (search_pattern ==# @/) && search(match_at_cursor, 'cnw')
+endfunction
+
+
+" extracts pattern and offset from last search attempt
+function! s:last_search_attempt()
+    let last_search_attempt = histget("search", -1)
+    let search_dir = (v:searchforward ? "/" : "?")
+    let reused_latest_pattern = (last_search_attempt[0] ==# search_dir)
+    if reused_latest_pattern
+        return [@/, last_search_attempt[1:]]
+    endif
+
+    let is_conjunctive_search = (last_search_attempt =~# '\\\@<![/?];[/?]')
+    if is_conjunctive_search
+        let search_query = matchstr(last_search_attempt, '\%(.*\\\@<![/?];\)\zs.*')
+        let search_dir = search_query[0]
+        let last_search_attempt = search_query[1:]
+    endif
+    let offset_regex = '\\\@<!'.search_dir.'[esb]\?[+-]\?[0-9]*'
+    let search_pattern = matchstr(last_search_attempt, '^.\{-\}\ze\%('.offset_regex.'\)\?$')
+    let offset = matchstr(last_search_attempt, offset_regex.'$')[1:]
+    return [search_pattern, offset]
+endfunction
+
+
+" Returns a pattern string to match the search_pattern+offset at the current
+" cursor position
+function! s:match_at_cursor(search_pattern, offset)
+    let search_pattern = s:sanitize_search_pattern(a:search_pattern)
+    if empty(a:offset)
+        return s:simple_match_at_cursor(search_pattern)
+    elseif s:is_linewise_offset(a:offset)
+        return s:linewise_match_at_cursor(search_pattern, a:offset)
+    else
+        return s:characterwise_match_at_cursor(search_pattern, a:offset)
+    endif
+endfunction
+
+
+function! s:sanitize_search_pattern(search_pattern)
+    let star_replacement = &magic ? '\\*' : '*'
+    let equals_replacement = '\%(=\)'
+    let sanitized = substitute(a:search_pattern, '\V\^*', star_replacement, '')
+    return substitute(sanitized, '\V\^=', equals_replacement, '')
+endfunction
+
+
+function! s:simple_match_at_cursor(search_pattern)
+    return a:search_pattern =~# '\\zs'
+                \ ? s:normalize_zs_pattern(a:search_pattern)
+                \ : '\%#' . a:search_pattern
+endfunction
+
+
+function! s:normalize_zs_pattern(search_pattern)
+    let [head, tail] = split(a:search_pattern, '\\zs')
+    return '\m\%('.head.'\m\)\@<=\%#'.s:extract_magic(head).tail
+endfunction
+
+
+function! s:extract_magic(search_pattern)
+    let sanitized_search_pattern = substitute(a:search_pattern, '\\\\', '', 'g')
+    let last_magic_pattern_regex = '\%(\\[mvMV]\)\ze\%([^\\]\|\\[^mMvV]\)*$'
+    let last_magic_pattern = matchstr(sanitized_search_pattern, last_magic_pattern_regex)
+    return !empty(last_magic_pattern) ? last_magic_pattern : s:magic()
+endfunction
+
+
+function! s:magic()
+    return &magic ? '\m' : '\M'
+endfunction
+
+
+function! s:is_linewise_offset(offset)
+    return a:offset[0] !~# '[esb]'
+endfunction
+
+
+function! s:linewise_match_at_cursor(search_pattern, offset)
+    let cursor_line = line(".")
+    let offset_lines = matchstr(a:offset, '\d\+')
+    let offset_lines = !empty(offset_lines) ? str2nr(offset_lines) : 1
+    if (a:offset =~ '^-')
+        return '\m\%(\%#' . repeat('.*\n', offset_lines) . '.*\)\@<=' . s:magic() . a:search_pattern
+    else
+        return a:search_pattern . '\m\%(' . repeat('.*\n', offset_lines) . '\%#\)\@='
+    endif
+endfunction
+
+
+function! s:characterwise_match_at_cursor(search_pattern, offset)
+    let cursor_column = s:offset_cursor_column(a:search_pattern, a:offset)
+    if cursor_column == 0
+        return s:simple_match_at_cursor(a:search_pattern)
+    elseif cursor_column < 0
+        let offset = (0 - cursor_column)
+        return '\%(\%#' . repeat('\_.', offset) . '\)\@<=' . a:search_pattern
+    elseif cursor_column >= strchars(a:search_pattern)
+        let offset = cursor_column - strchars(a:search_pattern)
+        return a:search_pattern . '\m\%(' . repeat('\_.', offset) . '\%#\)\@='
+    endif
+    let byteidx = byteidx(a:search_pattern, cursor_column)
+    let start = a:search_pattern[0 : byteidx - 1]
+    let end = a:search_pattern[byteidx : -1]
+    return start . '\%#' . s:sanitize_search_pattern(end)
+endfunction
+
+
+function! s:offset_cursor_column(search_pattern, offset)
+    let default_offset = (a:offset =~ '[-+]') ? 1 : 0
+    let offset_chars = matchstr(a:offset, '\d\+')
+    let offset_chars = !empty(offset_chars) ? str2nr(offset_chars) : default_offset
+    let start_column = (a:offset =~ 'e') ? strchars(a:search_pattern) - 1 : 0
+    return a:offset =~ '-' ? (start_column - offset_chars) : (start_column + offset_chars)
+endfunction
+
+
+function! s:set_hlsearch()
+    set hlsearch
+    call s:highlight_current_match()
+    if (&foldopen =~# 'search') || (&foldopen =~# 'all')
+        normal! zv
+    endif
+endfunction
+
+
+function! s:set_nohlsearch()
+    set nohlsearch
+    call s:clear_current_match()
+endfunction
+
+
+function! s:highlight_current_match() abort
+    call s:clear_current_match()
+    let [search_pattern, offset] = s:last_search_attempt()
+    let match_at_cursor = s:match_at_cursor(search_pattern, offset)
+    let w:evanesco_current_match = matchadd("IncSearch", s:magic().'\c'.match_at_cursor, 999)
+    let s:has_current_match = 1
+endfunction
+
+
+function! s:clear_current_match()
+    if s:has_current_match
+        let [current_match_tabnr, current_match_winnr] = s:find_current_match_window()
+        if (current_match_tabnr > 0) && (current_match_winnr > 0)
+            let save_tab = tabpagenr()
+            let save_win = tabpagewinnr(current_match_tabnr)
+            execute "tabnext" current_match_tabnr
+            execute current_match_winnr "wincmd w"
+
+            call s:matchdelete(w:evanesco_current_match)
+            unlet w:evanesco_current_match
+
+            execute save_win "wincmd w"
+            execute "tabnext" save_tab
+        elseif exists("w:evanesco_current_match")
+            " ensure current match is cleared in special cases like command line window
+            call s:matchdelete(w:evanesco_current_match)
+            unlet w:evanesco_current_match
+        endif
+        let s:has_current_match = 0
+    endif
+endfunction
+
+
+function! s:find_current_match_window()
+    if !empty(getcmdwintype())
+        return [-1, -1]
+    endif
+
+    for winnr in range(1, winnr("$"))
+        if !empty(getwinvar(winnr, "evanesco_current_match"))
+            return [tabpagenr(), winnr]
+        endif
+    endfor
+
+    for tabnr in range(1, tabpagenr("$"))
+        for winnr in range(1, tabpagewinnr(tabnr, "$"))
+            if !empty(gettabwinvar(tabnr, winnr, "evanesco_current_match"))
+                return [tabnr, winnr]
+            endif
+        endfor
+    endfor
+
+    return [-1, -1]
+endfunction
+
+
+function! s:matchdelete(match_id)
+    try
+        call matchdelete(a:match_id)
+    catch /E803/
+        " suppress errors for matches that have already been deleted
+    endtry
+endfunction
+
+
+" currently unused
+function! evanesco#pause()
+    let s:paused = 1
+    let s:try_set_hlsearch = 1
+endfunction
+
+
+function! evanesco#resume()
+    let s:paused = 0
+endfunction
+
+
+set nohlsearch
+
+nnoremap <silent> <Plug>Evanesco_/ :<C-U>call evanesco#evanesco('/')<CR>
+nnoremap <silent> <Plug>Evanesco_? :<C-U>call evanesco#evanesco('?')<CR>
+
+nnoremap <silent> <Plug>Evanesco_n  :echo<CR>n:call evanesco#evanesco_next_end()<CR>
+nnoremap <silent> <Plug>Evanesco_N  :echo<CR>N:call evanesco#evanesco_next_end()<CR>
+
+nnoremap <silent> <Plug>Evanesco_*  :call evanesco#evanesco_star()<CR>:keepjumps normal! *<CR>:call evanesco#evanesco_star_end()<CR>
+nnoremap <silent> <Plug>Evanesco_#  :call evanesco#evanesco_star()<CR>:keepjumps normal! #<CR>:call evanesco#evanesco_star_end()<CR>
+nnoremap <silent> <Plug>Evanesco_g* :call evanesco#evanesco_star()<CR>:keepjumps normal! g*<CR>:call evanesco#evanesco_star_end()<CR>
+nnoremap <silent> <Plug>Evanesco_g# :call evanesco#evanesco_star()<CR>:keepjumps normal! g#<CR>:call evanesco#evanesco_star_end()<CR>
+nnoremap <silent> <Plug>Evanesco_gd :call evanesco#evanesco_star()<CR>gd:call evanesco#evanesco_star_end()<CR>
+nnoremap <silent> <Plug>Evanesco_gD :call evanesco#evanesco_star()<CR>gD:call evanesco#evanesco_star_end()<CR>
+
+xnoremap <silent> <Plug>Evanesco_*  <Esc>:<C-U>call evanesco#evanesco_visual_star('/')<CR>
+xnoremap <silent> <Plug>Evanesco_#  <Esc>:<C-U>call evanesco#evanesco_visual_star('?')<CR>
+
+" hack used to call evanesco#evanesco_star_end from feedkeys without causing
+" command to echo or be saved in command history
+nnoremap <silent> <Plug>Evanesco_visual_search_end :<C-U>call evanesco#evanesco_star_end()<CR>:echo<CR>
+
+for key in ['/', '?', 'n', 'N', '*', '#', 'g*', 'g#', 'gd', 'gD']
+    if !hasmapto(printf("<Plug>Evanesco_%s", key), "n")
+        execute printf("nmap %s <Plug>Evanesco_%s", key, key)
+    endif
+endfor
+if !hasmapto("<Plug>Evanesco_*", "v")
+    xmap * <Plug>Evanesco_*
+endif
+if !hasmapto("<Plug>Evanesco_#", "v")
+    xmap # <Plug>Evanesco_#
+endif
+
+let &cpoptions = s:save_cpo
+unlet s:save_cpo
+
