@@ -19,18 +19,24 @@ endfunction
 function! s:zoom_session_file()
   if !exists('t:zoom_session_file')
     let t:zoom_session_file = tempname().'_'.tabpagenr()
-    autocmd TabClosed * call s:clean_session_file()
+    if exists('##TabClosed')
+      autocmd TabClosed * call s:clean_session_file()
+    elseif exists('##TabLeave')
+      autocmd TabLeave * call s:clean_session_file()
+    end
   endif
   return t:zoom_session_file
 endfunction
 
 function! zoom#toggle()
   if s:is_zoomed()
+    let cursor_pos = getpos('.')
     let l:current_buffer = bufnr('')
     exec 'silent! source' s:zoom_session_file()
     call setqflist(s:qflist)
     silent! exe 'b'.l:current_buffer
     call s:set_zoomed()
+    call setpos('.', cursor_pos)
   else
     " skip if only window
     if s:is_only_window() | return | endif
@@ -49,7 +55,7 @@ endfunction
 
 function! zoom#statusline()
   if s:is_zoomed()
-    return '[Z]'
+    return get(g:, 'zoom#statustext', 'zoomed')
   endif
   return ''
 endfunction

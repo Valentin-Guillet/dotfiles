@@ -1,5 +1,62 @@
+" submode - Create your own submodes
+" Version: 0.3.1
+" Copyright (C) 2008-2014 kana <http://whileimautomaton.net/>
+" License: MIT license  {{{
+"     Permission is hereby granted, free of charge, to any person obtaining
+"     a copy of this software and associated documentation files (the
+"     "Software"), to deal in the Software without restriction, including
+"     without limitation the rights to use, copy, modify, merge, publish,
+"     distribute, sublicense, and/or sell copies of the Software, and to
+"     permit persons to whom the Software is furnished to do so, subject to
+"     the following conditions:
+"
+"     The above copyright notice and this permission notice shall be included
+"     in all copies or substantial portions of the Software.
+"
+"     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+"     OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+"     MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+"     IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+"     CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+"     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+"     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+" }}}
+" Concept  "{{{1
+"
+" In the following pseudo code, :MAP means :map or :noremap, and it depends on
+" user's specification.
+"
+" map {key-to-enter}
+" \   <Plug>(submode-before-entering:{submode}:with:{key-to-enter})
+"    \<Plug>(submode-before-entering:{submode})
+"    \<Plug>(submode-enter:{submode})
+"
+" MAP <Plug>(submode-before-entering:{submode}:with:{key-to-enter})
+" \   {anything}
+" noremap <Plug>(submode-before-entering:{submode})
+" \       {tweaking 'timeout' and others}
+" map <Plug>(submode-enter:{submode})
+" \   <Plug>(submode-before-action:{submode})
+"    \<Plug>(submode-prefix:{submode})
+"
+" map <Plug>(submode-prefix:{submode})
+" \   <Plug>(submode-leave:{submode})
+" map <Plug>(submode-prefix:{submode}){the first N keys in {lhs}}
+" \   <Plug>(submode-leave:{submode})
+" map <Plug>(submode-prefix:{submode}){lhs}
+" \   <Plug>(submode-rhs:{submode}:for:{lhs})
+"    \<Plug>(submode-enter:{submode})
+" MAP <Plug>(submode-rhs:{submode}:for:{lhs})
+" \   {rhs}
 
-" Variables
+
+
+
+
+
+
+
+" Variables  "{{{1
 
 if !exists('g:submode_always_show_submode')
   let g:submode_always_show_submode = 0
@@ -20,6 +77,9 @@ endif
 if !exists('g:submode_timeoutlen')
   let g:submode_timeoutlen = &timeoutlen
 endif
+
+
+
 
 "" See s:set_up_options() and s:restore_options().
 "
@@ -48,45 +108,26 @@ let s:STEALTH_TYPEAHEAD =
 \ : repeat('.', 10)
 
 let s:current_submode = ''
-let s:original_split = ''
 
 
-" Interface
-" :SubmodeRestoreOptions
+
+
+" Interface  "{{{1
+" :SubmodeRestoreOptions  "{{{2
 
 command! -bar -nargs=0 SubmodeRestoreOptions  call submode#restore_options()
 
-function! submode#set_split()
-  let s:original_split = winnr()
-endfunction
 
-function! submode#reset_split()
-  execute "normal " . s:original_split . ""
-endfunction
 
-function! submode#set_resize_mode()
-  let set_split = ':call submode#set_split()<CR>'
-  let reset_split = ':call submode#reset_split()<CR>' . set_split
-  call submode#enter_with('resize', 'n', '', '<leader>j', set_split . '<C-w>k5<C-w>+')
-  call submode#enter_with('resize', 'n', '', '<leader>k', set_split . '<C-w>k5<C-w>-')
-  call submode#enter_with('resize', 'n', '', '<leader>h', set_split . '<C-w>h5<C-w><')
-  call submode#enter_with('resize', 'n', '', '<leader>l', set_split . '<C-w>h5<C-w>>')
-  call submode#map('resize', 'n', '', 'j', reset_split . '<C-w>k5<C-w>+')
-  call submode#map('resize', 'n', '', 'k', reset_split . '<C-w>k5<C-w>-')
-  call submode#map('resize', 'n', '', 'h', reset_split . '<C-w>h5<C-w><')
-  call submode#map('resize', 'n', '', 'l', reset_split . '<C-w>h5<C-w>>')
-  call submode#map('resize', 'n', '', 'J', reset_split . '<C-w>k<C-w>+')
-  call submode#map('resize', 'n', '', 'K', reset_split . '<C-w>k<C-w>-')
-  call submode#map('resize', 'n', '', 'H', reset_split . '<C-w>h<C-w><')
-  call submode#map('resize', 'n', '', 'L', reset_split . '<C-w>h<C-w>>')
-  call submode#map('resize', 'n', '', '=', reset_split . '<C-w>=')
-endfunction
 
-function! submode#current()
+function! submode#current()  "{{{2
   return s:current_submode
 endfunction
 
-function! submode#enter_with(submode, modes, options, lhs, ...)
+
+
+
+function! submode#enter_with(submode, modes, options, lhs, ...)  "{{{2
   let rhs = 0 < a:0 ? a:1 : '<Nop>'
   for mode in s:each_char(a:modes)
     call s:define_entering_mapping(a:submode, mode, a:options, a:lhs, rhs)
@@ -94,24 +135,36 @@ function! submode#enter_with(submode, modes, options, lhs, ...)
   return
 endfunction
 
-function! submode#leave_with(submode, modes, options, lhs)
+
+
+
+function! submode#leave_with(submode, modes, options, lhs)  "{{{2
   let options = substitute(a:modes, 'e', '', 'g')  " <Nop> is not expression.
   return submode#map(a:submode, a:modes, options . 'x', a:lhs, '<Nop>')
 endfunction
 
-function! submode#map(submode, modes, options, lhs, rhs)
+
+
+
+function! submode#map(submode, modes, options, lhs, rhs)  "{{{2
   for mode in s:each_char(a:modes)
     call s:define_submode_mapping(a:submode, mode, a:options, a:lhs, a:rhs)
   endfor
   return
 endfunction
 
-function! submode#restore_options()
+
+
+
+function! submode#restore_options()  "{{{2
   call s:restore_options()
   return
 endfunction
 
-function! submode#unmap(submode, modes, options, lhs)
+
+
+
+function! submode#unmap(submode, modes, options, lhs)  "{{{2
   for mode in s:each_char(a:modes)
     call s:undefine_submode_mapping(a:submode, mode, a:options, a:lhs)
   endfor
@@ -119,8 +172,14 @@ function! submode#unmap(submode, modes, options, lhs)
 endfunction
 
 
-" Core
-function! s:define_entering_mapping(submode, mode, options, lhs, rhs)
+
+
+
+
+
+
+" Core  "{{{1
+function! s:define_entering_mapping(submode, mode, options, lhs, rhs)  "{{{2
   execute s:map_command(a:mode, 'r')
   \       s:map_options(s:filter_flags(a:options, 'bu'))
   \       (a:lhs)
@@ -170,7 +229,10 @@ function! s:define_entering_mapping(submode, mode, options, lhs, rhs)
   return
 endfunction
 
-function! s:define_submode_mapping(submode, mode, options, lhs, rhs)
+
+
+
+function! s:define_submode_mapping(submode, mode, options, lhs, rhs)  "{{{2
   execute s:map_command(a:mode, 'r')
   \       s:map_options(s:filter_flags(a:options, 'bu'))
   \       (s:named_key_prefix(a:submode) . a:lhs)
@@ -195,7 +257,10 @@ function! s:define_submode_mapping(submode, mode, options, lhs, rhs)
   return
 endfunction
 
-function! s:undefine_submode_mapping(submode, mode, options, lhs)
+
+
+
+function! s:undefine_submode_mapping(submode, mode, options, lhs)  "{{{2
   execute s:map_command(a:mode, 'u')
   \       s:map_options(s:filter_flags(a:options, 'b'))
   \       s:named_key_rhs(a:submode, a:lhs)
@@ -219,32 +284,53 @@ function! s:undefine_submode_mapping(submode, mode, options, lhs)
 endfunction
 
 
-" Misc.
-function! s:each_char(s)
+
+
+
+
+
+
+" Misc.  "{{{1
+function! s:each_char(s)  "{{{2
   return split(a:s, '.\zs')
 endfunction
 
-function! s:filter_flags(s, cs)
+
+
+
+function! s:filter_flags(s, cs)  "{{{2
   return join(map(s:each_char(a:cs), 's:has_flag_p(a:s, v:val) ? v:val : ""'),
   \           '')
 endfunction
 
-function! s:has_flag_p(s, c)
+
+
+
+function! s:has_flag_p(s, c)  "{{{2
   return 0 <= stridx(a:s, a:c)
 endfunction
 
-function! s:insert_mode_p(mode)
+
+
+
+function! s:insert_mode_p(mode)  "{{{2
   return a:mode =~# '^[iR]'
 endfunction
 
-function! s:longer_mapping_exists_p(submode, lhs)
+
+
+
+function! s:longer_mapping_exists_p(submode, lhs)  "{{{2
   " FIXME: Implement the proper calculation.
   "        Note that mapcheck() can't be used for this purpose because it may
   "        act as s:shorter_mapping_exists_p() if there is such a mapping.
   return !0
 endfunction
 
-function! s:map_command(mode, flags)
+
+
+
+function! s:map_command(mode, flags)  "{{{2
   if s:has_flag_p(a:flags, 'u')
     return a:mode . 'unmap'
   else
@@ -252,7 +338,10 @@ function! s:map_command(mode, flags)
   endif
 endfunction
 
-function! s:map_options(options)
+
+
+
+function! s:map_options(options)  "{{{2
   let _ = {
   \   'b': '<buffer>',
   \   'e': '<expr>',
@@ -262,49 +351,82 @@ function! s:map_options(options)
   return join(map(s:each_char(a:options), 'get(_, v:val, "")'))
 endfunction
 
-function! s:mapping_exists_p(keyseq, mode)
+
+
+
+function! s:mapping_exists_p(keyseq, mode)  "{{{2
   return maparg(a:keyseq, a:mode) != ''
 endfunction
 
-function! s:may_override_showmode_p(mode)
+
+
+
+function! s:may_override_showmode_p(mode)  "{{{2
   " Normal mode / Visual mode (& its variants) / Insert mode (& its variants)
   return a:mode =~# "^[nvV\<C-v>sS\<C-s>]" || s:insert_mode_p(a:mode)
 endfunction
 
-function! s:named_key_before_action(submode)
+
+
+
+function! s:named_key_before_action(submode)  "{{{2
   return printf('<Plug>(submode-before-action:%s)', a:submode)
 endfunction
 
-function! s:named_key_before_entering(submode)
+
+
+
+function! s:named_key_before_entering(submode)  "{{{2
   return printf('<Plug>(submode-before-entering:%s)', a:submode)
 endfunction
 
-function! s:named_key_before_entering_with(submode, lhs)
+
+
+
+function! s:named_key_before_entering_with(submode, lhs)  "{{{2
   return printf('<Plug>(submode-before-entering:%s:with:%s)', a:submode, a:lhs)
 endfunction
 
-function! s:named_key_enter(submode)
+
+
+
+function! s:named_key_enter(submode)  "{{{2
   return printf('<Plug>(submode-enter:%s)', a:submode)
 endfunction
 
-function! s:named_key_leave(submode)
+
+
+
+function! s:named_key_leave(submode)  "{{{2
   return printf('<Plug>(submode-leave:%s)', a:submode)
 endfunction
 
-function! s:named_key_prefix(submode)
+
+
+
+function! s:named_key_prefix(submode)  "{{{2
   return printf('<Plug>(submode-prefix:%s)%s', a:submode, s:STEALTH_TYPEAHEAD)
 endfunction
 
-function! s:named_key_rhs(submode, lhs)
+
+
+
+function! s:named_key_rhs(submode, lhs)  "{{{2
   return printf('<Plug>(submode-rhs:%s:for:%s)', a:submode, a:lhs)
 endfunction
 
-function! s:on_entering_submode(submode)
+
+
+
+function! s:on_entering_submode(submode)  "{{{2
   call s:set_up_options(a:submode)
   return ''
 endfunction
 
-function! s:on_executing_action(submode)
+
+
+
+function! s:on_executing_action(submode)  "{{{2
   if (s:original_showmode || g:submode_always_show_submode)
   \  && s:may_override_showmode_p(mode())
     echohl ModeMsg
@@ -314,7 +436,10 @@ function! s:on_executing_action(submode)
   return ''
 endfunction
 
-function! s:on_leaving_submode(submode)
+
+
+
+function! s:on_leaving_submode(submode)  "{{{2
   if (s:original_showmode || g:submode_always_show_submode)
   \  && s:may_override_showmode_p(mode())
     if s:insert_mode_p(mode())
@@ -337,12 +462,18 @@ function! s:on_leaving_submode(submode)
   return ''
 endfunction
 
-function! s:remove_flag(s, c)
+
+
+
+function! s:remove_flag(s, c)  "{{{2
   " Assumption: a:c is not a meta character.
   return substitute(a:s, a:c, '', 'g')
 endfunction
 
-function! s:restore_options()
+
+
+
+function! s:restore_options()  "{{{2
   if submode#current() == "resize"
     call submode#reset_split()
   endif
@@ -363,7 +494,10 @@ function! s:restore_options()
   return
 endfunction
 
-function! s:set_up_options(submode)
+
+
+
+function! s:set_up_options(submode)  "{{{2
   if s:options_overridden_p
     return
   endif
@@ -394,9 +528,21 @@ function! s:set_up_options(submode)
   return
 endfunction
 
-function! s:split_keys(keyseq)
+
+
+
+function! s:split_keys(keyseq)  "{{{2
   " Assumption: Special keys such as <C-u> are escaped with < and >, i.e.,
   "             a:keyseq doesn't directly contain any escape sequences.
   return split(a:keyseq, '\(<[^<>]\+>\|.\)\zs')
 endfunction
 
+
+
+
+
+
+
+
+" __END__  "{{{1
+" vim: foldmethod=marker

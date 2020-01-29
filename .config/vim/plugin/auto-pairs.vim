@@ -671,4 +671,3 @@ imap <script> <Plug>AutoPairsReturn <SID>AutoPairsReturn
 
 
 au BufEnter * :call AutoPairsTryInit()
-

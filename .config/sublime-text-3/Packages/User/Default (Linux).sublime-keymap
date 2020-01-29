@@ -1,6 +1,6 @@
 [
     // Edit this default keymap file
-    { "keys": ["ctrl+alt+shift+k"], "command": "edit_settings",
+    { "keys": ["ctrl+alt+shift+o"], "command": "edit_settings",
         "args": {"base_file": "${packages}/Default/Default ($platform).sublime-keymap",
                  "default": "[\n\t$0\n]\n"}
     },
@@ -60,7 +60,7 @@
 
     // Debug command
     { "keys": ["alt+b"], "command": "insert_snippet",
-        "args": {"contents": "raise Exception('Debug breakpoint')     # debug"} },
+        "args": {"contents": "breakpoint()     # debug"} },
     { "keys": ["alt+d"], "command": "add_debug", "args": {"action": "toggle"} },
     { "keys": ["alt+shift+d"], "command": "add_debug", "args": {"action": "remove"} },
     { "keys": ["alt+c"], "command": "toggle_debug_comment", "args": {"action": "comment"},
@@ -130,6 +130,11 @@
         [ { "key": "setting.command_mode" },
           { "key": "selection_empty", "operator": "equal", "operand": false, "match_all": false } ]
     },
+
+    { "keys": ["_"], "command": "swap_line_up", "context":
+        [ {"key": "setting.command_mode", "operand": true} ] },
+    { "keys": ["-"], "command": "swap_line_down", "context":
+        [ {"key": "setting.command_mode", "operand": true} ] },
 
     // Put the escape key normal behaviour before the "exit vim" behaviour
     { "keys": ["escape"], "command": "single_selection", "context":

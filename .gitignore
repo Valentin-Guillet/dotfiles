@@ -40,7 +40,12 @@
 .config/tmux/buffer_cmd
 
 !.config/vim/
-!.config/vim/*
+!.config/vim/autoload/
+!.config/vim/autoload/*
+!.config/vim/doc/
+!.config/vim/doc/*
+!.config/vim/plugin/
+!.config/vim/plugin/*
 
 !.config/vimium/
 !.config/vimium/*

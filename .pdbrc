@@ -6,3 +6,4 @@ rc_file = os.path.expanduser("~/.config/pdb/pdbrc.py")
 
 if loaded and os.path.exists(rc_file): exec(open(rc_file).read())
 
+alias st sticky

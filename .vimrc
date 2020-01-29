@@ -86,19 +86,19 @@ endif
 set backup
 set undofile
 
-if !isdirectory($HOME . "/.vim/backup")
-    call mkdir($HOME . "/.vim/backup", "p")
+if !isdirectory($HOME . "/.config/vim/backup")
+    call mkdir($HOME . "/.config/vim/backup", "p")
 endif
-if !isdirectory($HOME . "/.vim/swap")
-    call mkdir($HOME . "/.vim/swap", "p")
+if !isdirectory($HOME . "/.config/vim/swap")
+    call mkdir($HOME . "/.config/vim/swap", "p")
 endif
-if !isdirectory($HOME . "/.vim/undo")
-    call mkdir($HOME . "/.vim/undo", "p")
+if !isdirectory($HOME . "/.config/vim/undo")
+    call mkdir($HOME . "/.config/vim/undo", "p")
 endif
 
-set backupdir=~/.vim/backup//,/tmp//
-set directory=~/.vim/swap//,/tmp//
-set undodir=~/.vim/undo//,/tmp//
+set backupdir=~/.config/vim/backup//,/tmp//
+set directory=~/.config/vim/swap//,/tmp//
+set undodir=~/.config/vim/undo//,/tmp//
 
 
 set dictionary+=/usr/share/dict/words
@@ -108,31 +108,23 @@ set dictionary+=/usr/share/dict/words
 " |   ADDITIONAL PACKAGES   |
 " +=========================+
 
+set runtimepath^=~/.config/vim/
+
 try
     packadd matchit
 catch /.*/
 endtry
 
-" Resize splits
-source ~/.config/vim/submode.vim
-call submode#set_resize_mode()
-let g:submode_timeout = 0
-
-" Better highlighting searches
-source ~/.config/vim/evanesco.vim
-
 " Auto-pairs
-source ~/.config/vim/auto-pairs.vim
 let g:AutoPairsShortcutToggle = ''
 let g:AutoPairsShortcutJump = '<M-f>'
+let g:AutoPairsMapCh = 0
 
 " Vim/Tmux navigator
-source ~/.config/tmux/tmux_navigator.vim
 let g:tmux_navigator_disable_when_zoomed = 1
 
 " Zoom pane
-source ~/.config/vim/zoom.vim
-nnoremap <silent> <leader>z :call zoom#toggle()<cr>
+let g:zoom#statustext = '[Z]'
 
 
 " +===================+
@@ -197,19 +189,19 @@ vnoremap <silent> _ :m '<-2<CR>gv=gv
 nnoremap <C-h> o<Esc>
 
 " Surround words
-nnoremap <leader>i' viw<Esc>a'<Esc>bi'<Esc>lel
-nnoremap <leader>i" viw<Esc>a"<Esc>bi"<Esc>lel
-nnoremap <leader>i( viw<Esc>a)<Esc>bi(<Esc>lel
-nnoremap <leader>i[ viw<Esc>a]<Esc>bi[<Esc>lel
-nnoremap <leader>i{ viw<Esc>a}<Esc>bi{<Esc>lel
-nnoremap <leader>i< viw<Esc>a><Esc>bi<<Esc>lel
+nnoremap <silent> <leader>s' viw<Esc>a'<Esc>bi'<Esc>lel
+nnoremap <silent> <leader>s" viw<Esc>a"<Esc>bi"<Esc>lel
+nnoremap <silent> <leader>s( viw<Esc>a)<Esc>bi(<Esc>lel
+nnoremap <silent> <leader>s[ viw<Esc>a]<Esc>bi[<Esc>lel
+nnoremap <silent> <leader>s{ viw<Esc>a}<Esc>bi{<Esc>lel
+nnoremap <silent> <leader>s< viw<Esc>a><Esc>bi<<Esc>lel
 
-vnoremap <leader>i' <Esc>`>a'<Esc>`<i'<Esc>
-vnoremap <leader>i" <Esc>`>a"<Esc>`<i"<Esc>
-vnoremap <leader>i( <Esc>`>a)<Esc>`<i(<Esc>
-vnoremap <leader>i[ <Esc>`>a]<Esc>`<i[<Esc>
-vnoremap <leader>i{ <Esc>`>a}<Esc>`<i{<Esc>
-vnoremap <leader>i< <Esc>`>a><Esc>`<i<<Esc>
+vnoremap <silent> <leader>s' <Esc>`>a'<Esc>`<i'<Esc>
+vnoremap <silent> <leader>s" <Esc>`>a"<Esc>`<i"<Esc>
+vnoremap <silent> <leader>s( <Esc>`>a)<Esc>`<i(<Esc>
+vnoremap <silent> <leader>s[ <Esc>`>a]<Esc>`<i[<Esc>
+vnoremap <silent> <leader>s{ <Esc>`>a}<Esc>`<i{<Esc>
+vnoremap <silent> <leader>s< <Esc>`>a><Esc>`<i<<Esc>
 
 " Operator pending mapping
 onoremap in' :<C-u>normal! f'vi'<CR>
@@ -251,6 +243,9 @@ nnoremap <leader>f :normal mzF"if<Esc>`zl
 " Delete last word in insert and command mode
 inoremap  <C-w>
 cnoremap  <C-w>
+
+" Kill all windows except current
+nnoremap <silent> <leader>a :only<CR>
 
 " Quit visual mode with q
 vnoremap q <Esc>
@@ -307,8 +302,8 @@ function! ToggleComment()
     end
 endfunction
 
-nnoremap <silent> <C-c> :call ToggleComment()<cr>
-vnoremap <silent> <C-c> :call ToggleComment()<cr>
+nnoremap <silent> <C-_> :call ToggleComment()<cr>
+vnoremap <silent> <C-_> :call ToggleComment()<cr>
 
 " Convenient command to see the difference between the current buffer and the
 " file it was loaded from, thus the changes you made.
