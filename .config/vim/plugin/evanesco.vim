@@ -23,6 +23,7 @@ nnoremap <silent> <Plug>Evanesco_? :<C-U>call evanesco#evanesco('?')<CR>
 
 nnoremap <silent> <Plug>Evanesco_n  :echo<CR>n:call evanesco#evanesco_next_end()<CR>
 nnoremap <silent> <Plug>Evanesco_N  :echo<CR>N:call evanesco#evanesco_next_end()<CR>
+nnoremap <silent> <Plug>Evanesco_g/  :echo<CR>:call evanesco#evanesco_next_end()<CR>
 
 nnoremap <silent> <Plug>Evanesco_*  :call evanesco#evanesco_star()<CR>:keepjumps normal! *<CR>:call evanesco#evanesco_star_end()<CR>
 nnoremap <silent> <Plug>Evanesco_#  :call evanesco#evanesco_star()<CR>:keepjumps normal! #<CR>:call evanesco#evanesco_star_end()<CR>
@@ -44,6 +45,7 @@ nmap <silent> n <Plug>Evanesco_n:SearchIndex<CR>
 nmap <silent> N <Plug>Evanesco_N:SearchIndex<CR>
 nmap <silent> * <Plug>Evanesco_*:SearchIndex<CR>
 nmap <silent> # <Plug>Evanesco_#:SearchIndex<CR>
+nmap <silent> g/ <Plug>Evanesco_g/:SearchIndex<CR>
 
 
 for key in ['/', '?', 'n', 'N', '*', '#', 'g*', 'g#', 'gd', 'gD']

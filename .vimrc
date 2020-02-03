@@ -14,19 +14,20 @@ set backspace=indent,eol,start
 " Don't display message when running vim without file
 set shortmess+=I
 
-
-
 " Replace patterns act on every occurence in line by default
 " (and use g-flag to use default behavior)
 set gdefault
 
-" Filename will autocomplete as in shell
-set wildmode=longest,list
+" Better autocompletion in command mode
+set wildmenu
+
+set hidden
 
 set history=50	    " keep 50 lines of command line history
 set ruler           " show the cursor position all the time
 set showcmd	        " display incomplete commands
 set incsearch       " do incremental searching
+set ignorecase
 set smartcase       " case-sensitive search only when at least one capital letter
 
 set path+=**        " set recursive path to use :find
@@ -45,6 +46,7 @@ set autoindent
 set smartindent
 
 set linebreak       " break line between words during wrap
+set lazyredraw      " don't update screen during macros
 
 set timeout ttimeoutlen=50
 
@@ -188,21 +190,6 @@ vnoremap <silent> _ :m '<-2<CR>gv=gv
 " Add a new line
 nnoremap <C-h> o<Esc>
 
-" Surround words
-nnoremap <silent> <leader>s' viw<Esc>a'<Esc>bi'<Esc>lel
-nnoremap <silent> <leader>s" viw<Esc>a"<Esc>bi"<Esc>lel
-nnoremap <silent> <leader>s( viw<Esc>a)<Esc>bi(<Esc>lel
-nnoremap <silent> <leader>s[ viw<Esc>a]<Esc>bi[<Esc>lel
-nnoremap <silent> <leader>s{ viw<Esc>a}<Esc>bi{<Esc>lel
-nnoremap <silent> <leader>s< viw<Esc>a><Esc>bi<<Esc>lel
-
-vnoremap <silent> <leader>s' <Esc>`>a'<Esc>`<i'<Esc>
-vnoremap <silent> <leader>s" <Esc>`>a"<Esc>`<i"<Esc>
-vnoremap <silent> <leader>s( <Esc>`>a)<Esc>`<i(<Esc>
-vnoremap <silent> <leader>s[ <Esc>`>a]<Esc>`<i[<Esc>
-vnoremap <silent> <leader>s{ <Esc>`>a}<Esc>`<i{<Esc>
-vnoremap <silent> <leader>s< <Esc>`>a><Esc>`<i<<Esc>
-
 " Operator pending mapping
 onoremap in' :<C-u>normal! f'vi'<CR>
 onoremap in" :<C-u>normal! f"vi"<CR>
@@ -245,7 +232,10 @@ inoremap  <C-w>
 cnoremap  <C-w>
 
 " Kill all windows except current
-nnoremap <silent> <leader>a :only<CR>
+nnoremap <silent> <leader>o :only<CR>
+
+" Redraw screen in insert mode
+inoremap <C-l> <C-o><C-l>
 
 " Quit visual mode with q
 vnoremap q <Esc>
