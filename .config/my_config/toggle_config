@@ -45,10 +45,9 @@ then
         echo -e "\n"export CONFIG_DIR="$HOME/.config/valentin_config\n" >> ~/.bashrc
 
         # Must hide Sublime directory to not be detected as a Package
-        cp -r $HOME/.config/sublime-text-3/Packages/User.save/* $HOME/.config/sublime-text-3/Packages/User/
         mv $HOME/.config/sublime-text-3/Packages/User.save $HOME/.config/sublime-text-3/Packages/.User.save
 
-        gnome-terminal --working-directory=$HOME
+        gnome-terminal --working-directory=$HOME --maximize
         kill -9 $PPID
     else
         echo "Config is already loaded !"
@@ -67,9 +66,9 @@ then
         done < <(sed -e "/^\s*#.*$/d" -e "/^\s*$/d" $CONFIG_DIR/.config/my_config/list_files)
 
         unset CONFIG_DIR
-        unset TMUX
-        gnome-terminal --working-directory=$HOME
-        tmux kill-session
+
+       gnome-terminal --working-directory=$HOME --maximize -- /bin/sh -c 'unset TMUX && bash'
+       tmux kill-session
     else
         echo "Config is not loaded !"
     fi
