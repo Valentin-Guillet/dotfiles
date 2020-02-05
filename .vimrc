@@ -120,7 +120,6 @@ endtry
 " Auto-pairs
 let g:AutoPairsShortcutToggle = ''
 let g:AutoPairsShortcutJump = '<M-f>'
-let g:AutoPairsMapCh = 0
 
 " Vim/Tmux navigator
 let g:tmux_navigator_disable_when_zoomed = 1
@@ -227,8 +226,7 @@ nnoremap Y y$
 " Transform current string into a formatted one (python)
 nnoremap <leader>f :normal mzF"if<Esc>`zl
 
-" Delete last word in insert and command mode
-inoremap  <C-w>
+" Delete last word in command mode
 cnoremap  <C-w>
 
 " Kill all windows except current
@@ -260,7 +258,7 @@ function! OpenInSplitIfNotEmpty(file)
     end
 endfunction
 
-" <C-c> to comment/uncomment
+" <C-/> to comment/uncomment
 let s:comment_map = { 
             \   "bash_profile": '#',
             \   "bashrc": '#',

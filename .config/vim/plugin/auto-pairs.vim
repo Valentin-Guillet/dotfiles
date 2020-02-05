@@ -546,7 +546,7 @@ func! AutoPairsInit()
   end
 
   if g:AutoPairsMapCh
-    execute 'inoremap <buffer> <silent> <C-h> <C-R>=AutoPairsDelete()<CR>'
+    execute 'inoremap <buffer> <silent> <C-h> <C-R>=AutoPairsDelete()<CR><C-w>'
   endif
 
   if g:AutoPairsMapSpace

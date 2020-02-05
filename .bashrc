@@ -41,11 +41,6 @@ shopt -s checkwinsize
 # match all files and zero or more directories and subdirectories.
 shopt -s globstar
 
-# Correct the minor spelling errors in cd command and directory names
-shopt -s cdspell
-shopt -s direxpand
-shopt -s dirspell
-
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
