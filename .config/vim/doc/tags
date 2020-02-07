@@ -1,3 +1,4 @@
+:Commentary	commentary.txt	/*:Commentary*
 :SearchIndex	searchindex.txt	/*:SearchIndex*
 :SubmodeRestoreOptions	submode.txt	/*:SubmodeRestoreOptions*
 <Plug>SearchIndex	searchindex.txt	/*<Plug>SearchIndex*
@@ -11,6 +12,7 @@ autopairs-shortcuts	auto-pairs.txt	/*autopairs-shortcuts*
 autopairs-troubleshooting	auto-pairs.txt	/*autopairs-troubleshooting*
 b:AutoPairs	auto-pairs.txt	/*b:AutoPairs*
 cS	surround.txt	/*cS*
+commentary.txt	commentary.txt	/*commentary.txt*
 cs	surround.txt	/*cs*
 ds	surround.txt	/*ds*
 g/	searchindex.txt	/*g\/*
@@ -34,8 +36,13 @@ g:submode_keep_leaving_key	submode.txt	/*g:submode_keep_leaving_key*
 g:submode_keyseqs_to_leave	submode.txt	/*g:submode_keyseqs_to_leave*
 g:submode_timeout	submode.txt	/*g:submode_timeout*
 g:submode_timeoutlen	submode.txt	/*g:submode_timeoutlen*
+gc	commentary.txt	/*gc*
+gcc	commentary.txt	/*gcc*
+gcgc	commentary.txt	/*gcgc*
+gcu	commentary.txt	/*gcu*
 i_CTRL-G_S	surround.txt	/*i_CTRL-G_S*
 i_CTRL-G_s	surround.txt	/*i_CTRL-G_s*
+o_gc	commentary.txt	/*o_gc*
 searchindex	searchindex.txt	/*searchindex*
 searchindex#MatchCounts()	searchindex.txt	/*searchindex#MatchCounts()*
 searchindex-issues	searchindex.txt	/*searchindex-issues*
@@ -78,6 +85,7 @@ tmux-navigator-configuration	tmux-navigator.txt	/*tmux-navigator-configuration*
 tmux-navigator-contents	tmux-navigator.txt	/*tmux-navigator-contents*
 tmux-navigator.txt	tmux-navigator.txt	/*tmux-navigator.txt*
 vS	surround.txt	/*vS*
+v_gc	commentary.txt	/*v_gc*
 vgS	surround.txt	/*vgS*
 yS	surround.txt	/*yS*
 ySS	surround.txt	/*ySS*

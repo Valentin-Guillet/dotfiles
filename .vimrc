@@ -1,63 +1,36 @@
 " +=====================+
-" |   GENERAL OPTIONS   |
+" |     Defaults.vim    |
 " +=====================+
-
-" Define leader
-let mapleader = ","
-
 " Use Vim settings, rather than Vi
 set nocompatible
 
-" Allow backspacing over everything in insert mode
-set backspace=indent,eol,start
+set backspace=indent,eol,start      " Allow backspacing over everything in insert mode
 
-" Don't display message when running vim without file
-set shortmess+=I
+set history=1000	        " keep 1000 lines of command line history
+set ruler                   " show the cursor position all the time
+set showcmd	                " display incomplete commands
+set wildmenu		        " display completion matches in a status line
 
-" Replace patterns act on every occurence in line by default
-" (and use g-flag to use default behavior)
-set gdefault
+set ttimeout		        " time out for key codes
+set ttimeoutlen=50	        " wait up to 100ms after Esc for special key
 
-" Better autocompletion in command mode
-set wildmenu
+set display+=lastline
 
-set hidden
+set scrolloff=3             " show a few lines of context around the cursor
+set sidescrolloff=5
 
-set history=50	    " keep 50 lines of command line history
-set ruler           " show the cursor position all the time
-set showcmd	        " display incomplete commands
-set incsearch       " do incremental searching
-set ignorecase
-set smartcase       " case-sensitive search only when at least one capital letter
+set incsearch               " do incremental searching
+set nrformats-=octal        " do not recognize octal numbers for Ctrl-A and Ctrl-X
 
-set path+=**        " set recursive path to use :find
+" CTRL-U in insert mode deletes a lot.  Use CTRL-G u to first break undo,
+" so that you can undo CTRL-U after inserting a line break.
+inoremap <C-U> <C-G>u<C-U>
 
-set splitright      " new splits on the right...
-set splitbelow      " ... and below
-
-set expandtab
-set smarttab
-
-set shiftwidth=4
-set tabstop=4
-set shiftround
-
-set autoindent
-set smartindent
-
-set linebreak       " break line between words during wrap
-set lazyredraw      " don't update screen during macros
-
-set timeout ttimeoutlen=50
-
-if has('mouse')
-    set mouse=a
+" Switch syntax highlighting on, when the terminal has colors
+if &t_Co > 2 || has("gui_running")
+    syntax enable
 endif
 
-" Prevent that the langmap option applies to characters that result from a mapping
-if has('langmap') && exists('+langnoremap')
-    set langnoremap
-endif
 
 if has("autocmd")
     " Enable file type detection.
@@ -73,17 +46,67 @@ if has("autocmd")
 
         " When editing a file, always jump to the last known cursor position.
         autocmd BufReadPost *
-                    \ if line("'\"") >= 1 && line("'\"") <= line("$") |
-                    \   exe "normal! g`\"" |
-                    \ endif
+            \ if line("'\"") >= 1 && line("'\"") <= line("$") && &ft !~# 'commit'
+            \ |   exe "normal! g`\""
+            \ | endif
     augroup END
 endif
 
-" Switch syntax highlighting on, when the terminal has colors
-if &t_Co > 2 || has("gui_running")
-    syntax on
+
+" Convenient command to see the difference between the current buffer and the
+" file it was loaded from, thus the changes you made.
+if !exists(":DiffOrig")
+    command DiffOrig vert new | set bt=nofile | r ++edit # | 0d_ | diffthis
+            \ | wincmd p | diffthis
 endif
 
+" Prevent that the langmap option applies to characters that result from a mapping
+if has('langmap') && exists('+langnoremap')
+    set langnoremap
+endif
+
+
+" +=====================+
+" |   GENERAL OPTIONS   |
+" +=====================+
+
+let mapleader = ","
+
+set formatoptions+=j    " delete comment character when joining commented lines
+set autoread
+
+set shortmess+=I        " don't display message when running vim without file
+
+" Replace patterns act on every occurence in line by default
+" (and use g-flag to use default behavior)
+set gdefault
+
+set hidden
+
+set ignorecase
+set smartcase           " case-sensitive search only when at least one capital letter
+
+set path+=**            " set recursive path to use :find
+
+set splitright          " new splits on the right...
+set splitbelow          " ... and below
+
+set expandtab
+set smarttab
+
+set shiftwidth=4
+set tabstop=4
+set shiftround
+
+set autoindent
+set smartindent
+
+set linebreak           " break line between words during wrap
+set lazyredraw          " don't update screen during macros
+
+if has('mouse')
+    set mouse=a
+endif
 
 set backup
 set undofile
@@ -257,48 +280,6 @@ function! OpenInSplitIfNotEmpty(file)
         exec 'vsplit' a:file
     end
 endfunction
-
-" <C-/> to comment/uncomment
-let s:comment_map = { 
-            \   "bash_profile": '#',
-            \   "bashrc": '#',
-            \   "c": '\/\/',
-            \   "cpp": '\/\/',
-            \   "h": '\/\/',
-            \   "profile": '#',
-            \   "python": '#',
-            \   "scala": '\/\/',
-            \   "sh": '#',
-            \   "vim": '"',
-            \ }
-
-function! ToggleComment()
-    let comment_leader = get(s:comment_map, &filetype, '#')
-    if getline('.') =~ "^\\s*" . comment_leader . " " 
-        " Uncomment the line
-        execute "silent s/^\\(\\s*\\)" . comment_leader . " /\\1/"
-    else 
-        if getline('.') =~ "^\\s*" . comment_leader
-            " Uncomment the line
-            execute "silent s/^\\(\\s*\\)" . comment_leader . "/\\1/"
-        elseif getline('.') =~ "^$"
-            " Don't affect empty lines
-        else
-            " Comment the line
-            execute "silent s/^\\(\\s*\\)/\\1" . comment_leader . " /"
-        end
-    end
-endfunction
-
-nnoremap <silent> <C-_> :call ToggleComment()<cr>
-vnoremap <silent> <C-_> :call ToggleComment()<cr>
-
-" Convenient command to see the difference between the current buffer and the
-" file it was loaded from, thus the changes you made.
-if !exists(":DiffOrig")
-    command DiffOrig vert new | set bt=nofile | r ++edit # | 0d_ | diffthis
-                \ | wincmd p | diffthis
-endif
 
 if !exists(":W")
     command W w !sudo tee "%" > /dev/null
