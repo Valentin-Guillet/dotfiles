@@ -10,6 +10,9 @@
 !.vimrc
 
 !.config/
+!.config/dconf/
+!.config/dconf/conf
+
 !.config/my_config/
 !.config/my_config/*
 
@@ -49,3 +52,6 @@
 
 !.config/vimium/
 !.config/vimium/*
+
+!.config/youtube-dl/
+!.config/youtube-dl/*
