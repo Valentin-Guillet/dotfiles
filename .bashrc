@@ -9,12 +9,14 @@ case $- in
 esac
 
 # Auto launch tmux
-if command -v tmux > /dev/null; then
-    if tmux ls 2>/dev/null | grep -v "(attached)"; then
+if command -v tmux > /dev/null
+then
+    if tmux ls 2>/dev/null | grep -v "(attached)" && [ -z "$SSH_CONNECTION" ]
+    then
         n_session=$(tmux ls | grep -v "(attached)" | head -n 1 | cut -d : -f 1)
-        [[ ! $TERM =~ screen || $SSH_CLIENT ]] && [ -z $TMUX ] && exec tmux attach -t $n_session
+        [[ ! $TERM =~ screen || $SSH_CLIENT ]] && [ -z "$TMUX" ] && exec tmux attach -t $n_session
     else
-        [[ ! $TERM =~ screen || $SSH_CLIENT ]] && [ -z $TMUX ] && exec tmux
+        [[ ! $TERM =~ screen || $SSH_CLIENT ]] && [ -z "$TMUX" ] && exec tmux
     fi
     source ~/.config/tmux/tmux_completion.sh
 fi
