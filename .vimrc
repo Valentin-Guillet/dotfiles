@@ -42,7 +42,7 @@ if has("autocmd")
         au!
 
         " For all text files set 'textwidth' to 78 characters.
-        autocmd FileType text setlocal textwidth=78
+        autocmd FileType text setlocal textwidth=88
 
         " When editing a file, always jump to the last known cursor position.
         autocmd BufReadPost *
@@ -80,6 +80,9 @@ set shortmess+=I        " don't display message when running vim without file
 " Replace patterns act on every occurence in line by default
 " (and use g-flag to use default behavior)
 set gdefault
+
+" Use dash in autocomplete
+set iskeyword+=\-
 
 set hidden
 

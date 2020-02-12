@@ -161,6 +161,10 @@ gi() {
     git ${1:1} ${@:2}
 }
 
+pane_id() {
+    tmux display-message -pt "${TMUX_PANE:?}" '#{pane_index}'
+}
+
 run() {
     if [ -e "main.py" ]; then
         python main.py ${@:1}
