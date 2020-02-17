@@ -1,8 +1,10 @@
 Compare Side-by-Side
 Increment Selection
+Jump Along Indent
 MarkdownPreview
 MaxPane
 MoreLayouts
+MultiEditUtils
 PackageResourceViewer
 SublimeLinter
 SublimeLinter-flake8

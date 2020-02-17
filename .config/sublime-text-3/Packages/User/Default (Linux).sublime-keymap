@@ -50,11 +50,6 @@
     { "keys": ["ctrl+i"], "command": "add_next_word"},
     { "keys": ["ctrl+k", "ctrl+i"], "command": "add_next_word", "args": {"skip": true}},
 
-    // Go to last selection
-    { "keys": ["shift+escape"], "command": "last_selection",
-        "context": [ {"key": "num_selections", "operator": "not_equal", "operand": 1} ]
-    },
-
     // Open SublimeMerge
     { "keys": ["alt+g"], "command": "sublime_merge_open_repo"},
 
@@ -98,11 +93,9 @@
     { "keys": ["alt+shift+."], "command": "move_tab" },
     { "keys": ["alt+shift+,"], "command": "move_tab", "args": {"forward": false} },
 
-    // Focus on next group with alt+[j|k|up|down]
+    // Focus on next group with alt+[j|k]
     { "keys": ["alt+j"], "command": "focus_neighboring_group"},
-    { "keys": ["alt+down"], "command": "focus_neighboring_group"},
     { "keys": ["alt+k"], "command": "focus_neighboring_group", "args": {"forward": false} },
-    { "keys": ["alt+up"], "command": "focus_neighboring_group", "args": {"forward": false} },
 
     // Close pane with alt+w
     { "keys": ["alt+w"], "command": "close" },
