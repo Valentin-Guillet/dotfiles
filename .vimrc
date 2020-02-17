@@ -161,7 +161,7 @@ let g:zoom#statustext = '[Z]'
 " Edit and reload vim config
 nnoremap <leader>e :call OpenInSplitIfNotEmpty($MYVIMRC)<CR>
 nnoremap <leader>E :tabnew $MYVIMRC<CR>
-nnoremap <leader>r :source $MYVIMRC<CR>:echo "Config reloaded !"<CR>
+nnoremap <leader>r :source $MYVIMRC \| redraw \| echo "Config reloaded !"<CR>
 
 " Write file with <leader>w
 nnoremap <leader>w :update <CR>
@@ -201,10 +201,10 @@ vnoremap <C-k> <C-y>
 inoremap <C-k> <C-x><C-y>
 
 " Exit insert mode with kj
-inoremap kj <Esc>l
-inoremap Kj <Esc>l
-inoremap kJ <Esc>l
-inoremap KJ <Esc>l
+inoremap kj <C-c>l
+inoremap Kj <C-c>l
+inoremap kJ <C-c>l
+inoremap KJ <C-c>l
 
 " Move line
 nnoremap <silent> - :m .+1<CR>==
@@ -213,7 +213,7 @@ vnoremap <silent> - :m '>+1<CR>gv=gv
 vnoremap <silent> _ :m '<-2<CR>gv=gv
 
 " Add a new line
-nnoremap <C-h> o<Esc>
+nnoremap <C-h> o<C-c>
 
 " Operator pending mapping
 onoremap in' :<C-u>normal! f'vi'<CR>
@@ -236,12 +236,6 @@ nnoremap <space> viw
 " Swap words
 nnoremap <silent> gt "_yiw:s/\(\%#\w\+\)\(\_W\+\)\(\w\+\)/\3\2\1/<CR><C-o>/\w\+\_W\+<CR><C-l>:nohlsearch<CR>
 
-" Swap [0$] and g[0$]
-nnoremap 0 g0
-nnoremap $ g$
-nnoremap g0 0
-nnoremap g$ $
-
 " Unmap Q and K
 nnoremap Q <nop>
 nnoremap K <nop>
@@ -250,7 +244,7 @@ nnoremap K <nop>
 nnoremap Y y$
 
 " Transform current string into a formatted one (python)
-nnoremap <leader>f :normal mzF"if<Esc>`zl
+nnoremap <leader>f :normal mzF"if<C-c>`zl
 
 " Delete last word in command mode
 cnoremap  <C-w>
@@ -262,7 +256,7 @@ nnoremap <silent> <leader>o :only<CR>
 inoremap <C-l> <C-o><C-l>
 
 " Quit visual mode with q
-vnoremap q <Esc>
+vnoremap q <C-c>
 
 " Ctags
 set tags=tags
