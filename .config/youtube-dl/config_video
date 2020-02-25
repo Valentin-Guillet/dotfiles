@@ -1,0 +1,9 @@
+# Mark as watched
+--mark-watched
+
+# Do not copy the mtime
+--no-mtime
+
+# Output file name
+-o ~/Videos/%(title)s.%(ext)s
+

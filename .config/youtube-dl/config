@@ -4,8 +4,9 @@
 # Do not copy the mtime
 --no-mtime
 
-# Use this proxy
-# --proxy 127.0.0.1:3128
+# Format
+--audio-format vorbis
 
-# Save all videos under Movies directory in your home directory
--o ~/Music/%(title)s.%(ext)s
+# Output file name
+-o ~/Music/ToProcess/%(title)s.%(ext)s
+

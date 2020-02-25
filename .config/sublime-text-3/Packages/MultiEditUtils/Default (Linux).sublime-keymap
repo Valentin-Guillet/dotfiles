@@ -10,6 +10,7 @@
       {"key": "setting.is_widget", "operator": "equal", "operand": false}
     ]
   },
+  { "keys": ["ctrl+l", "ctrl+m"], "command": "preserve_case" },
 
   // Multi Find All example keybindings, uncomment to activate
 

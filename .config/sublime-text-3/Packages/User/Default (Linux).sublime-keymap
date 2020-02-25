@@ -78,8 +78,8 @@
         "context": [ {"key": "setting.command_mode", "operand": true} ] },
 
     // Move a tab though panes with alt+shift+[j|k]
-    { "keys": ["alt+shift+k"], "command": "move_to_neighboring_group"},
-    { "keys": ["alt+shift+j"], "command": "move_to_neighboring_group", "args": {"forward": false} },
+    { "keys": ["alt+shift+j"], "command": "move_to_neighboring_group"},
+    { "keys": ["alt+shift+k"], "command": "move_to_neighboring_group", "args": {"forward": false} },
 
     // Switch tab order with ctrl+shift+page[up|down]
     { "keys": ["ctrl+shift+pagedown"], "command": "move_tab" },
