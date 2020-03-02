@@ -6,5 +6,6 @@ MaxPane
 MoreLayouts
 MultiEditUtils
 PackageResourceViewer
+ProjectManager
 SublimeLinter
 SublimeLinter-flake8

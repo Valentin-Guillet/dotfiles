@@ -16,7 +16,7 @@ endif
 inoremap        <C-A> <C-O>^
 inoremap   <C-X><C-A> <C-A>
 cnoremap        <C-A> <Home>
-cnoremap   <C-X><C-A> <C-A>
+" cnoremap   <C-X><C-A> <C-A>
 
 inoremap <expr> <C-B> getline('.')=~'^\s*$'&&col('.')>strlen(getline('.'))?"0\<Lt>C-D>\<Lt>Esc>kJs":"\<Lt>Left>"
 cnoremap        <C-B> <Left>

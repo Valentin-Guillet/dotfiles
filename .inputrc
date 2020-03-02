@@ -9,7 +9,11 @@ $include /etc/inputrc
 
 $if Bash
     # Delete first word
-    "\ee": "\C-a\ed\C-f\C-h\C-e"
+    "\ee": "\C-a\C-]\ \C-f\C-u\C-e"
+
+    # To lower/upper/title with <C-x>
+    "\C-x\C-u": upcase-word
+    "\C-x\C-l": downcase-word
 
     # Replace (/add) ls as first word
     "\ei": "\C-a\C-]\ \C-wls\C-e"

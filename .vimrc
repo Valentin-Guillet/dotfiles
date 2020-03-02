@@ -86,6 +86,9 @@ set iskeyword+=\-
 
 set hidden
 
+set wildmode=longest:full,full   " when tabing, complete the longest, then disp list
+set wildcharm=<C-z>              " autocompletion character in macros
+
 set ignorecase
 set smartcase           " case-sensitive search only when at least one capital letter
 
@@ -168,7 +171,9 @@ nnoremap <leader>w :update <CR>
 
 " Split
 nnoremap <leader>\ :vsplit<CR>
+nnoremap <leader><bar> :vsplit \| enew<CR>
 nnoremap <leader>- :split<CR>
+nnoremap <leader>_ :split \| enew<CR>
 nnoremap <leader>= <C-w>=
 nnoremap <leader>q :q<CR>
 
@@ -180,6 +185,7 @@ nnoremap <leader>L <C-w>L
 
 " Tabs
 nnoremap <leader>t :tab split<CR>
+nnoremap <leader>T :tabnew<CR>
 nnoremap <leader>n :tabnext<CR>
 nnoremap <leader>p :tabprev<CR>
 
@@ -248,6 +254,9 @@ nnoremap <leader>f :normal mzF"if<C-c>`zl
 
 " Delete last word in command mode
 cnoremap  <C-w>
+
+" Cancel autocomplete but reprint longest match
+cmap <C-x> <C-l><C-n><C-p><C-u><C-y><C-z>
 
 " Kill all windows except current
 nnoremap <silent> <leader>o :only<CR>
