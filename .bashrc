@@ -195,6 +195,7 @@ ct() {
 
 pip_update() {
     pip list -o --format=freeze > pip_list
+    [[ $? == 1 ]] && return 1
     if [ ! "$1" = "-a" -a ! "$1" = '--all' ] && [ -s ~/.config/pip/pip_exclude ]
     then
         grep -v -f <(sed -e "/^\s*#.*$/d" -e "/^\s*$/d" ~/.config/pip/pip_exclude) pip_list > pip_list_tmp
@@ -209,8 +210,8 @@ pip_update() {
     rm pip_list
 }
 
-# Necessary for vim-zoom
-alias sudo='sudo TMUX="$TMUX"'
+NOTES_DIR="$HOME/Documents/Notes"
+alias td='[ -d "$NOTES_DIR" ] || mkdir -p "$NOTES_DIR" ; tmux rename-window "ToDo" && vim "$NOTES_DIR"/ToDo && tmux set-option automatic-rename on'
 
 alias py=python
 

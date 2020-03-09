@@ -9,6 +9,29 @@
 !.tmux.conf
 !.vimrc
 
+!.vim/
+!.vim/after/
+!.vim/after/ftplugin/
+!.vim/after/ftplugin/*
+!.vim/autoload/
+!.vim/autoload/*
+!.vim/colors/
+!.vim/colors/*
+!.vim/doc/
+!.vim/doc/*
+!.vim/ftdetect/
+!.vim/ftdetect/*
+!.vim/ftplugin/
+!.vim/ftplugin/*
+!.vim/indent/
+!.vim/indent/*
+!.vim/plugin/
+!.vim/plugin/*
+!.vim/registry/
+!.vim/registry/*
+!.vim/syntax/
+!.vim/syntax/*
+
 !.config/
 !.config/dconf/
 !.config/dconf/conf
@@ -47,14 +70,6 @@
 !.config/tmux/
 !.config/tmux/*
 .config/tmux/buffer_cmd
-
-!.config/vim/
-!.config/vim/autoload/
-!.config/vim/autoload/*
-!.config/vim/doc/
-!.config/vim/doc/*
-!.config/vim/plugin/
-!.config/vim/plugin/*
 
 !.config/vimium/
 !.config/vimium/*

@@ -1,6 +1,4 @@
-" +=====================+
-" |     Defaults.vim    |
-" +=====================+
+" {{{1 DEFAULTS.VIM
 " Use Vim settings, rather than Vi
 set nocompatible
 
@@ -41,7 +39,7 @@ if has("autocmd")
     augroup vimrcEx
         au!
 
-        " For all text files set 'textwidth' to 78 characters.
+        " For all text files set 'textwidth' to 88 characters.
         autocmd FileType text setlocal textwidth=88
 
         " When editing a file, always jump to the last known cursor position.
@@ -66,9 +64,7 @@ if has('langmap') && exists('+langnoremap')
 endif
 
 
-" +=====================+
-" |   GENERAL OPTIONS   |
-" +=====================+
+" {{{1 GENERAL OPTIONS
 
 let mapleader = ","
 
@@ -110,6 +106,17 @@ set smartindent
 set linebreak           " break line between words during wrap
 set lazyredraw          " don't update screen during macros
 
+if has("autocmd")
+    " Unfold all when entering buffer
+    autocmd BufWinEnter * normal zR
+
+    " For all markdown files, activate conceal
+    autocmd FileType markdown setlocal conceallevel=2
+
+    " Close markdown TOC when closing file
+    autocmd BufEnter * if (winnr('$') == 1 && &filetype ==# 'toc') | q | endif
+endif
+
 if has('mouse')
     set mouse=a
 endif
@@ -117,29 +124,26 @@ endif
 set backup
 set undofile
 
-if !isdirectory($HOME . "/.config/vim/backup")
-    call mkdir($HOME . "/.config/vim/backup", "p")
+if !isdirectory($HOME . "/.vim/backup")
+    call mkdir($HOME . "/.vim/backup", "p")
 endif
-if !isdirectory($HOME . "/.config/vim/swap")
-    call mkdir($HOME . "/.config/vim/swap", "p")
+if !isdirectory($HOME . "/.vim/swap")
+    call mkdir($HOME . "/.vim/swap", "p")
 endif
-if !isdirectory($HOME . "/.config/vim/undo")
-    call mkdir($HOME . "/.config/vim/undo", "p")
+if !isdirectory($HOME . "/.vim/undo")
+    call mkdir($HOME . "/.vim/undo", "p")
 endif
 
-set backupdir=~/.config/vim/backup//,/tmp//
-set directory=~/.config/vim/swap//,/tmp//
-set undodir=~/.config/vim/undo//,/tmp//
-
+set backupdir=~/.vim/backup//,/tmp//
+set directory=~/.vim/swap//,/tmp//
+set undodir=~/.vim/undo//,/tmp//
 
 set dictionary+=/usr/share/dict/words
 
+colorscheme molokai
 
-" +=========================+
-" |   ADDITIONAL PACKAGES   |
-" +=========================+
 
-set runtimepath^=~/.config/vim/
+" {{{1 ADDITIONAL PACKAGES
 
 try
     packadd matchit
@@ -148,7 +152,17 @@ endtry
 
 " Auto-pairs
 let g:AutoPairsShortcutToggle = ''
-let g:AutoPairsShortcutJump = '<M-f>'
+let g:AutoPairsShortcutJump = ''
+let g:AutoPairsShortcutBackInsert = '<M-c>'
+
+" Markdown
+let g:vim_markdown_toc_autofit = 1
+let g:vim_markdown_follow_anchor = 1
+let g:vim_markdown_strikethrough = 1
+let g:vim_markdown_new_list_item_indent = 2
+
+" ToDo Lists
+let g:VimTodoListsMoveItems = 0
 
 " Vim/Tmux navigator
 let g:tmux_navigator_disable_when_zoomed = 1
@@ -157,9 +171,7 @@ let g:tmux_navigator_disable_when_zoomed = 1
 let g:zoom#statustext = '[Z]'
 
 
-" +===================+
-" |   USER MAPPINGS   |
-" +===================+
+" {{{1 USER MAPPINGS
 
 " Edit and reload vim config
 nnoremap <leader>e :call OpenInSplitIfNotEmpty($MYVIMRC)<CR>
@@ -170,12 +182,12 @@ nnoremap <leader>r :source $MYVIMRC \| redraw \| echo "Config reloaded !"<CR>
 nnoremap <leader>w :update <CR>
 
 " Split
-nnoremap <leader>\ :vsplit<CR>
-nnoremap <leader><bar> :vsplit \| enew<CR>
-nnoremap <leader>- :split<CR>
-nnoremap <leader>_ :split \| enew<CR>
-nnoremap <leader>= <C-w>=
-nnoremap <leader>q :q<CR>
+nnoremap <silent><leader>\ :vsplit<CR>
+nnoremap <silent><leader><bar> :vsplit \| enew<CR>
+nnoremap <silent><leader>- :split<CR>
+nnoremap <silent><leader>_ :split \| enew<CR>
+nnoremap <silent><leader>= <C-w>=
+nnoremap <silent><leader>q :q<CR>
 
 " Move splits around
 nnoremap <leader>H <C-w>H
@@ -184,10 +196,10 @@ nnoremap <leader>K <C-w>K
 nnoremap <leader>L <C-w>L
 
 " Tabs
-nnoremap <leader>t :tab split<CR>
-nnoremap <leader>T :tabnew<CR>
-nnoremap <leader>n :tabnext<CR>
-nnoremap <leader>p :tabprev<CR>
+nnoremap <silent><leader>t :tab split<CR>
+nnoremap <silent><leader>T :tabnew<CR>
+nnoremap <silent><leader>n :tabnext<CR>
+nnoremap <silent><leader>p :tabprev<CR>
 
 nnoremap <leader>N :tabm <C-R>=(tabpagenr()+1)%(tabpagenr('$')+1)<CR><CR>
 nnoremap <leader>P :tabm <C-R>=(tabpagenr()+tabpagenr('$')-1)%(tabpagenr('$')+1)<CR><CR>
@@ -274,9 +286,7 @@ nnoremap <leader>g :execute '!ctags -R .'<CR> :echo "Tags created"<CR>
 nnoremap <leader>] :vsp <CR>:exec("tag ".expand("<cword>"))<CR>
 
 
-" +==============+
-" |   COMMANDS   |
-" +==============+
+" {{{1 COMMANDS
 
 " Function to open file in split if buffer not empty
 function! OpenInSplitIfNotEmpty(file)
@@ -292,9 +302,7 @@ if !exists(":W")
 endif
 
 
-" +=================+
-" |   STATUS LINE   |
-" +=================+
+" {{{1 STATUS LINE
 
 " Set status line
 function! GitBranch()
@@ -305,9 +313,6 @@ function! StatuslineGit()
     let l:branchname = GitBranch()
     return strlen(l:branchname) > 0?'  '.l:branchname.' ':''
 endfunction
-
-highlight StatusLineNC cterm=underline ctermfg=130
-highlight StatusLine cterm=bold ctermfg=130 ctermbg=LightGray
 
 set laststatus=2
 set statusline=
@@ -323,9 +328,7 @@ set statusline+=\ %l/%L
 set statusline+=\ (%p%%)
 
 
-" +===========+
-" |   FIXES   |
-" +===========+
+" {{{1 FIXES
 
 " Fix Ctrl-Arrow
 noremap [1;5D <C-Left>
@@ -354,9 +357,4 @@ function! XTermPasteBegin()
     return ""
 endfunction
 
-" Vim diff colors
-highlight DiffAdd    cterm=bold ctermfg=10 ctermbg=17
-highlight DiffDelete cterm=bold ctermfg=10 ctermbg=17
-highlight DiffChange cterm=bold ctermfg=10 ctermbg=17
-highlight DiffText   cterm=bold ctermfg=10 ctermbg=88
-
+" vim:fdm=marker

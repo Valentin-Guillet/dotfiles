@@ -128,6 +128,7 @@ move-to-workspace-left=['<Control><Shift><Alt>Left', '<Control><Shift><Alt>h']
 move-to-monitor-right=['<Super><Shift>Right', '<Super><Shift>l']
 move-to-workspace-down=['<Control><Shift><Alt>Down', '<Control><Shift><Alt>j']
 move-to-monitor-up=['<Super><Shift>Up', '<Super><Shift>k']
+minimize=['<Super>m']
 switch-to-workspace-up=['<Control><Alt>Up', '<Control><Alt>k']
 
 [org/gnome/desktop/datetime]
