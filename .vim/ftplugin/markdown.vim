@@ -794,4 +794,13 @@ augroup Mkd
     autocmd BufWritePost <buffer> call s:MarkdownRefreshSyntax(0)
     autocmd InsertEnter,InsertLeave <buffer> call s:MarkdownRefreshSyntax(0)
     autocmd CursorHold,CursorHoldI <buffer> call s:MarkdownRefreshSyntax(0)
+
+    " For all markdown files, activate conceal
+    autocmd BufEnter * setlocal conceallevel=2 concealcursor=nc
+
+    " Tabstop and shiftwidth to 2
+    autocmd BufEnter * setlocal shiftwidth=2 tabstop=2
+
+    " Close markdown TOC when closing file
+    autocmd BufEnter * if (winnr('$') == 1 && &filetype ==# 'toc') | q | endif
 augroup END

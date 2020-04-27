@@ -109,12 +109,6 @@ set lazyredraw          " don't update screen during macros
 if has("autocmd")
     " Unfold all when entering buffer
     autocmd BufWinEnter * normal zR
-
-    " For all markdown files, activate conceal
-    autocmd FileType markdown setlocal conceallevel=2
-
-    " Close markdown TOC when closing file
-    autocmd BufEnter * if (winnr('$') == 1 && &filetype ==# 'toc') | q | endif
 endif
 
 if has('mouse')
@@ -213,10 +207,8 @@ nnoremap <leader>! <C-W>T
 " Scroll with C-[j|k]
 nnoremap <C-j> <C-e>
 vnoremap <C-j> <C-e>
-inoremap <C-j> <C-x><C-e>
 nnoremap <C-k> <C-y>
 vnoremap <C-k> <C-y>
-inoremap <C-k> <C-x><C-y>
 
 " Exit insert mode with kj
 inoremap kj <C-c>l
@@ -282,8 +274,8 @@ vnoremap q <C-c>
 " Ctags
 set tags=tags
 nnoremap <leader>g :execute '!ctags -R .'<CR> :echo "Tags created"<CR>
-" nnoremap <C-\> :tab split<CR>:exec("tag ".expand("<cword>"))<CR>
 nnoremap <leader>] :vsp <CR>:exec("tag ".expand("<cword>"))<CR>
+nnoremap <leader>} :tab split<CR>:exec("tag ".expand("<cword>"))<CR>
 
 
 " {{{1 COMMANDS
