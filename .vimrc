@@ -77,11 +77,6 @@ set shortmess+=I        " don't display message when running vim without file
 " (and use g-flag to use default behavior)
 set gdefault
 
-" Use dash in autocomplete
-set iskeyword+=\-
-
-set hidden
-
 set wildmode=longest:full,full   " when tabing, complete the longest, then disp list
 set wildcharm=<C-z>              " autocompletion character in macros
 
@@ -92,6 +87,9 @@ set path+=**            " set recursive path to use :find
 
 set splitright          " new splits on the right...
 set splitbelow          " ... and below
+
+" Also set help by default in vertical split
+cabbrev <expr> h ((getcmdtype() == ':' && getcmdpos() <= 2)? 'vert h' : 'h')
 
 set expandtab
 set smarttab
@@ -109,6 +107,9 @@ set lazyredraw          " don't update screen during macros
 if has("autocmd")
     " Unfold all when entering buffer
     autocmd BufWinEnter * normal zR
+
+    " Add - to word limit in text, markdown and bash files
+    autocmd FileType text,markdown,sh setlocal iskeyword+=\-
 endif
 
 if has('mouse')
@@ -148,6 +149,7 @@ endtry
 let g:AutoPairsShortcutToggle = ''
 let g:AutoPairsShortcutJump = ''
 let g:AutoPairsShortcutBackInsert = '<M-c>'
+let g:AutoPairsCenterLine = 0
 
 " Markdown
 let g:vim_markdown_toc_autofit = 1

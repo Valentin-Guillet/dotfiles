@@ -1,0 +1,64 @@
+#!/bin/bash
+
+psg() {
+    ps aux | grep "$(echo $1 | sed 's/./[\0]/')"
+}
+
+ds() {
+    echo "$(du -had 1 -t 1M "${1:-.}" 2>/dev/null | sort -h)"
+}
+
+gi() {
+    git ${1:1} ${@:2}
+}
+
+pane_id() {
+    tmux display-message -pt "${TMUX_PANE:?}" '#{pane_index}'
+}
+
+run() {
+    if [ -e "main.py" ]; then
+        python main.py ${@:1}
+    elif [ -e "main" ]; then
+        ./main ${@:1}
+    elif [ -e "Makefile" ]; then
+        make; ./main ${@:1}
+    else
+        echo "No main.py or Makefile to execute !"
+    fi
+}
+
+ot() {
+    mkdir ~/Pytest 2> /dev/null
+    tmux new-window -n Pytest -c ~/Pytest
+    tmux split-window -c ~/Pytest
+    tmux select-pane -U
+    tmux unbind -n M-g
+    tmux bind -n M-g selectp -t 1 \\\; send-keys Escape :w Enter \\\; selectp -t 2 \\\; send-keys "py test.py" Enter \\\; selectp -t 1
+    tmux send-keys "vim test.py" Enter
+}
+
+ct() {
+    rm -r ~/Pytest 2> /dev/null
+    tmux kill-window
+    clear
+}
+
+pip_update() {
+    pip list -o --format=freeze > pip_list
+    [[ $? == 1 ]] && return 1
+    if [ ! "$1" = "-a" -a ! "$1" = '--all' ] && [ -s ~/.config/pip/pip_exclude ]
+    then
+        grep -v -f <(sed -e "/^\s*#.*$/d" -e "/^\s*$/d" ~/.config/pip/pip_exclude) pip_list > pip_list_tmp
+        mv pip_list_tmp pip_list
+    fi
+
+    if [ -s pip_list ]
+    then
+        vim pip_list
+        cat pip_list | cut -d = -f 1 | xargs -n 1 pip install -U
+    fi
+    rm pip_list
+}
+
+#vi:syn=sh

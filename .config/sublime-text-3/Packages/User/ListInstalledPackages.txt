@@ -6,6 +6,7 @@ MaxPane
 MoreLayouts
 MultiEditUtils
 PackageResourceViewer
-ProjectManager
+ProjectManager (PackageManager -> Add Repository https://github.com/Val95240/ProjectManager
+                               -> Install ProjectManager)
 SublimeLinter
 SublimeLinter-flake8

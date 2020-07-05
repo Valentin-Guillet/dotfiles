@@ -10,6 +10,7 @@
 !.vimrc
 
 !.vim/
+!.vim/filetype.vim
 !.vim/after/
 !.vim/after/ftplugin/
 !.vim/after/ftplugin/*
@@ -33,6 +34,10 @@
 !.vim/syntax/*
 
 !.config/
+!.config/bash/
+!.config/bash/*
+
+!.config/
 !.config/dconf/
 !.config/dconf/conf
 
@@ -53,6 +58,9 @@
 
 !.config/sublime-text-3/Packages/MultiEditUtils/
 !.config/sublime-text-3/Packages/MultiEditUtils/*
+
+!.config/sublime-text-3/Packages/ProjectManager/
+!.config/sublime-text-3/Packages/ProjectManager/*
 
 !.config/sublime-text-3/Packages/Vintage/
 !.config/sublime-text-3/Packages/Vintage/*
