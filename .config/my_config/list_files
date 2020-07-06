@@ -2,6 +2,7 @@
 .bashrc
 .inputrc
 .profile
+.config/bash
 
 # Git
 .gitconfig
@@ -24,5 +25,5 @@
 
 # Vim
 .vimrc
-.config/vim
+.vim
 

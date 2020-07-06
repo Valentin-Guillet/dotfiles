@@ -684,7 +684,7 @@ command! -buffer Toct call s:Toc('tab')
 noremap <leader>c :Toc<CR>
 nnoremap o A<CR>
 nnoremap O kA<CR>
-nnoremap <CR> <CR>:lclose<CR>
+nnoremap <silent> <expr> <CR> &buftype == 'quickfix' ? '<CR>:lclose<CR>zt' : '<CR>'
 
 " Heavily based on vim-notes - http://peterodding.com/code/vim/notes/
 if exists('g:vim_markdown_fenced_languages')

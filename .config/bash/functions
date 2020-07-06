@@ -61,4 +61,3 @@ pip_update() {
     rm pip_list
 }
 
-#vi:syn=sh

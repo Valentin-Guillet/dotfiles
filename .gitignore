@@ -35,7 +35,8 @@
 
 !.config/
 !.config/bash/
-!.config/bash/*
+!.config/bash/aliases
+!.config/bash/functions
 
 !.config/
 !.config/dconf/

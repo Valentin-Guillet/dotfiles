@@ -6,7 +6,7 @@
 	status = auto
 [user]
 	name = Val95240
-	email = Valentin.GUILLET@student.isae-supaero.fr
+	email = Valentin.GUILLET@isae-supaero.fr
 [alias]
 	br = branch
 	cam = commit -am

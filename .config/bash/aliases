@@ -34,4 +34,3 @@ alias config='vim ~/.config/bash/local_aliases; source ~/.bashrc'
 alias configg='vim ~/.bashrc; source ~/.bashrc'
 alias configf='vim ~/.config/bash/functions; source ~/.bashrc'
 
-# vim:syn=sh
