@@ -35,9 +35,8 @@ if has("autocmd")
     " Also load indent files, to automatically do language-dependent indenting.
     filetype plugin indent on
 
-    " Put these in an autocmd group, so that we can delete them easily.
     augroup vimrcEx
-        au!
+        autocmd!
 
         " For all text files set 'textwidth' to 88 characters.
         autocmd FileType text setlocal textwidth=88
@@ -90,6 +89,7 @@ set splitbelow          " ... and below
 
 " Also set help by default in vertical split
 cabbrev <expr> h ((getcmdtype() == ':' && getcmdpos() <= 2)? 'vert h' : 'h')
+cabbrev <expr> help ((getcmdtype() == ':' && getcmdpos() <= 5)? 'vert help' : 'help')
 
 set expandtab
 set smarttab
@@ -104,12 +104,15 @@ set smartindent
 set linebreak           " break line between words during wrap
 set lazyredraw          " don't update screen during macros
 
-if has("autocmd")
-    " Unfold all when entering buffer
-    autocmd BufWinEnter * normal zR
+set foldlevelstart=0
 
-    " Add - to word limit in text, markdown and bash files
-    autocmd FileType text,markdown,sh setlocal iskeyword+=\-
+if has("autocmd")
+    augroup myGroup
+        autocmd!
+
+        " Add - to word limit in text, markdown and bash files
+        autocmd FileType text,markdown,sh setlocal iskeyword+=\-
+    augroup END
 endif
 
 if has('mouse')
@@ -242,9 +245,6 @@ onoremap il[ :<C-u>normal! F[vi[<CR>
 onoremap il{ :<C-u>normal! F{vi{<CR>
 onoremap il< :<C-u>normal! F<vi<<CR>
 
-" Select word with space
-nnoremap <space> viw
-
 " Swap words
 nnoremap <silent> gt "_yiw:s/\(\%#\w\+\)\(\_W\+\)\(\w\+\)/\3\2\1/<CR><C-o>/\w\+\_W\+<CR><C-l>:nohlsearch<CR>
 
@@ -269,6 +269,9 @@ nnoremap <silent> <leader>o :only<CR>
 
 " Redraw screen in insert mode
 inoremap <C-l> <C-o><C-l>
+
+" Correct last misspelled word
+inoremap <C-K> <C-G>u<Esc>[s1z=`]a<C-G>u
 
 " Quit visual mode with q
 vnoremap q <C-c>
