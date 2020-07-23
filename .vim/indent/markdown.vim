@@ -66,8 +66,7 @@ function GetMarkdownIndent()
         if s:IsMkdCode(lnum)
             return ind
         else
-            " Last line is the first line of a list item, increase indent
-            return ind + list_ind
+            return 0
         end
     else
         return ind

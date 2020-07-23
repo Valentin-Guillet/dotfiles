@@ -97,7 +97,7 @@ function! s:MoveToCurHeader()
     if l:lineNum != 0
         call cursor(l:lineNum, 1)
     else
-        echo 'outside any header'
+        echo 'Outside any header'
         "normal! gg
     endif
     return l:lineNum
@@ -110,7 +110,7 @@ endfunction
 function! s:MoveToNextHeader()
     if search(s:headersRegexp, 'W') == 0
         "normal! G
-        echo 'no next header'
+        echo 'No next header'
     endif
 endfunction
 
@@ -132,7 +132,7 @@ function! s:MoveToPreviousHeader()
         endif
     endif
     if l:noPreviousHeader
-        echo 'no previous header'
+        echo 'No previous header'
     endif
 endfunction
 
@@ -177,7 +177,7 @@ function! s:MoveToParentHeader()
     if l:linenum != 0
         call cursor(l:linenum, 1)
     else
-        echo 'no parent header'
+        echo 'No parent header'
     endif
 endfunction
 
@@ -266,7 +266,7 @@ function! s:MoveToNextSiblingHeader()
         endif
     endif
     if l:noNextSibling
-        echo 'no next sibling header'
+        echo 'No next sibling header'
     endif
 endfunction
 
@@ -291,7 +291,7 @@ function! s:MoveToPreviousSiblingHeader()
         endif
     endif
     if l:noPreviousSibling
-        echo 'no previous sibling header'
+        echo 'No previous sibling header'
     endif
 endfunction
 
@@ -401,6 +401,8 @@ function! s:Toc(...)
     endfor
     setlocal nomodified
     setlocal nomodifiable
+    setlocal foldlevel=99
+    setlocal foldmethod=indent
     execute 'normal! ' . l:cursor_header . 'G'
 endfunction
 
@@ -482,7 +484,7 @@ endfunction
 "
 function! s:MapNormVis(rhs,lhs)
     execute 'nn <buffer><silent> ' . a:rhs . ' :call ' . a:lhs . '()<cr>'
-    execute 'vn <buffer><silent> ' . a:rhs . ' <esc>:call <sid>VisMove(''' . a:lhs . ''')<cr>'
+    execute 'vn <buffer><silent> ' . a:rhs . ' <esc>:call s:VisMove(''' . a:lhs . ''')<cr>'
 endfunction
 
 " Parameters:
@@ -515,15 +517,15 @@ function! s:FindNextSyntax(lnum, col, name)
 endfunction
 
 function! s:FindCornersOfSyntax(lnum, col)
-    return [<sid>FindLeftOfSyntax(a:lnum, a:col), <sid>FindRightOfSyntax(a:lnum, a:col)]
+    return [s:FindLeftOfSyntax(a:lnum, a:col), s:FindRightOfSyntax(a:lnum, a:col)]
 endfunction
 
 function! s:FindRightOfSyntax(lnum, col)
-    return <sid>FindCornerOfSyntax(a:lnum, a:col, 1)
+    return s:FindCornerOfSyntax(a:lnum, a:col, 1)
 endfunction
 
 function! s:FindLeftOfSyntax(lnum, col)
-    return <sid>FindCornerOfSyntax(a:lnum, a:col, -1)
+    return s:FindCornerOfSyntax(a:lnum, a:col, -1)
 endfunction
 
 " Returns:
@@ -544,7 +546,7 @@ function! s:Markdown_GetUrlForPosition(lnum, col)
     if l:syn ==# 'mkdInlineURL' || l:syn ==# 'mkdURL' || l:syn ==# 'mkdLinkDefTarget'
         " Do nothing.
     elseif l:syn ==# 'mkdLink'
-        let [l:lnum, l:col] = <sid>FindNextSyntax(l:lnum, l:col, 'mkdURL')
+        let [l:lnum, l:col] = s:FindNextSyntax(l:lnum, l:col, 'mkdURL')
         let l:syn = 'mkdURL'
     elseif l:syn ==# 'mkdDelimiter'
         let l:line = getline(l:lnum)
@@ -554,7 +556,7 @@ function! s:Markdown_GetUrlForPosition(lnum, col)
         elseif l:char ==# '>' || l:char ==# ')'
             let l:col -= 1
         elseif l:char ==# '[' || l:char ==# ']' || l:char ==# '('
-            let [l:lnum, l:col] = <sid>FindNextSyntax(l:lnum, l:col, 'mkdURL')
+            let [l:lnum, l:col] = s:FindNextSyntax(l:lnum, l:col, 'mkdURL')
         else
             return ''
         endif
@@ -562,7 +564,7 @@ function! s:Markdown_GetUrlForPosition(lnum, col)
         return ''
     endif
 
-    let [l:left, l:right] = <sid>FindCornersOfSyntax(l:lnum, l:col)
+    let [l:left, l:right] = s:FindCornersOfSyntax(l:lnum, l:col)
     return getline(l:lnum)[l:left - 1 : l:right - 1]
 endfunction
 
@@ -652,24 +654,24 @@ function! s:MapNotHasmapto(lhs, rhs)
     endif
 endfunction
 
-call <sid>MapNormVis('<Plug>Markdown_MoveToNextHeader', '<sid>MoveToNextHeader')
-call <sid>MapNormVis('<Plug>Markdown_MoveToPreviousHeader', '<sid>MoveToPreviousHeader')
-call <sid>MapNormVis('<Plug>Markdown_MoveToNextSiblingHeader', '<sid>MoveToNextSiblingHeader')
-call <sid>MapNormVis('<Plug>Markdown_MoveToPreviousSiblingHeader', '<sid>MoveToPreviousSiblingHeader')
-call <sid>MapNormVis('<Plug>Markdown_MoveToParentHeader', '<sid>MoveToParentHeader')
-call <sid>MapNormVis('<Plug>Markdown_MoveToCurHeader', '<sid>MoveToCurHeader')
-nnoremap <Plug>Markdown_OpenUrlUnderCursor :call <sid>OpenUrlUnderCursor()<cr>
-nnoremap <Plug>Markdown_EditUrlUnderCursor :call <sid>EditUrlUnderCursor()<cr>
+call s:MapNormVis('<Plug>Markdown_MoveToNextHeader', '<SID>MoveToNextHeader')
+call s:MapNormVis('<Plug>Markdown_MoveToPreviousHeader', '<SID>MoveToPreviousHeader')
+call s:MapNormVis('<Plug>Markdown_MoveToNextSiblingHeader', '<SID>MoveToNextSiblingHeader')
+call s:MapNormVis('<Plug>Markdown_MoveToPreviousSiblingHeader', '<SID>MoveToPreviousSiblingHeader')
+call s:MapNormVis('<Plug>Markdown_MoveToParentHeader', '<SID>MoveToParentHeader')
+call s:MapNormVis('<Plug>Markdown_MoveToCurHeader', '<SID>MoveToCurHeader')
+nnoremap <Plug>Markdown_OpenUrlUnderCursor :call <SID>OpenUrlUnderCursor()<cr>
+nnoremap <Plug>Markdown_EditUrlUnderCursor :call <SID>EditUrlUnderCursor()<cr>
 
 if !get(g:, 'vim_markdown_no_default_key_mappings', 0)
-    call <sid>MapNotHasmapto(']]', 'Markdown_MoveToNextHeader')
-    call <sid>MapNotHasmapto('[[', 'Markdown_MoveToPreviousHeader')
-    call <sid>MapNotHasmapto('][', 'Markdown_MoveToNextSiblingHeader')
-    call <sid>MapNotHasmapto('[]', 'Markdown_MoveToPreviousSiblingHeader')
-    call <sid>MapNotHasmapto(']u', 'Markdown_MoveToParentHeader')
-    call <sid>MapNotHasmapto(']c', 'Markdown_MoveToCurHeader')
-    call <sid>MapNotHasmapto('gx', 'Markdown_OpenUrlUnderCursor')
-    call <sid>MapNotHasmapto('ge', 'Markdown_EditUrlUnderCursor')
+    call s:MapNotHasmapto(']]', 'Markdown_MoveToNextHeader')
+    call s:MapNotHasmapto('[[', 'Markdown_MoveToPreviousHeader')
+    call s:MapNotHasmapto('][', 'Markdown_MoveToNextSiblingHeader')
+    call s:MapNotHasmapto('[]', 'Markdown_MoveToPreviousSiblingHeader')
+    call s:MapNotHasmapto(']u', 'Markdown_MoveToParentHeader')
+    call s:MapNotHasmapto(']c', 'Markdown_MoveToCurHeader')
+    call s:MapNotHasmapto('gx', 'Markdown_OpenUrlUnderCursor')
+    call s:MapNotHasmapto('ge', 'Markdown_EditUrlUnderCursor')
 endif
 
 command! -buffer -range=% HeaderDecrease call s:HeaderDecrease(<line1>, <line2>)
@@ -680,11 +682,6 @@ command! -buffer Toc call s:Toc()
 command! -buffer Toch call s:Toc('horizontal')
 command! -buffer Tocv call s:Toc('vertical')
 command! -buffer Toct call s:Toc('tab')
-
-noremap <leader>c :Toc<CR>
-nnoremap o A<CR>
-nnoremap O kA<CR>
-nnoremap <silent> <expr> <CR> &buftype == 'quickfix' ? '<CR>:lclose<CR>zt' : '<CR>'
 
 " Heavily based on vim-notes - http://peterodding.com/code/vim/notes/
 if exists('g:vim_markdown_fenced_languages')
@@ -785,6 +782,52 @@ function! s:MarkdownClearSyntaxVariables()
     endif
 endfunction
 
+
+function! s:MarkdownTabulate(dir, insert)
+    let l:save_pos = getpos('.')
+    let l:line = getline('.')
+    let l:bullets = ['-', '+', '*']
+    let l:regex = '^\s*\([+*-]\)\s*' . (a:insert ? '' : '.*') . '$'
+
+    let l:match = matchlist(l:line, l:regex)
+    if !empty(l:match)
+        if a:insert
+            execute "normal! u"
+        endif
+
+        let l:bullet = l:match[1]
+        let l:index = index(l:bullets, l:bullet) + a:dir
+
+        if a:dir == 1 || stridx(l:line, l:bullet) > 1  " Don't modify bullet if on first column
+            let l:new_bullet = l:bullets[l:index % 3]
+            execute 's/' . l:bullet . '/' . l:new_bullet . '/e'
+        endif
+
+        call setpos('.', l:save_pos)
+
+        if a:insert
+            execute "normal! >>$"
+        endif
+
+    endif
+endfunction
+
+function! s:MarkdownRemoveBullet()
+    if getline('.') =~ '^\s*[+*-]\s*$'
+
+        let l:line_to_bullet = matchlist(getline('.'), '^\(\s*[+*-]\).*$')[1]
+        let l:len_line = len(l:line_to_bullet)
+
+        if getline(line('.')+1)[: l:len_line-1] !=# l:line_to_bullet
+            normal! 0D
+        else
+            execute "normal! a\<Space>"
+        endif
+    
+    endif
+endfunction
+
+
 augroup Mkd
     " These autocmd calling s:MarkdownRefreshSyntax need to be kept in sync with
     " the autocmds calling s:MarkdownSetupFolding in after/ftplugin/markdown.vim.
@@ -794,13 +837,29 @@ augroup Mkd
     autocmd BufWritePost <buffer> call s:MarkdownRefreshSyntax(0)
     autocmd InsertEnter,InsertLeave <buffer> call s:MarkdownRefreshSyntax(0)
     autocmd CursorHold,CursorHoldI <buffer> call s:MarkdownRefreshSyntax(0)
-
-    " For all markdown files, activate conceal
-    autocmd BufEnter * setlocal conceallevel=2 concealcursor=nc
-
-    " Tabstop and shiftwidth to 2
-    autocmd BufEnter * setlocal shiftwidth=2 tabstop=2
-
-    " Close markdown TOC when closing file
-    autocmd BufEnter * if (winnr('$') == 1 && &filetype ==# 'toc') | q | endif
 augroup END
+
+
+" Activate conceal
+setlocal conceallevel=2 concealcursor=nc
+
+" Tabstop and shiftwidth to 2
+setlocal shiftwidth=2 tabstop=2
+
+
+" Custom mappings
+noremap  <buffer> <leader>c :Toc<CR>
+nnoremap <buffer> o A<CR>
+nnoremap <buffer> O kA<CR>
+
+nnoremap <buffer><silent> >> :call <SID>MarkdownTabulate( 1, 0) \| normal! >><CR>
+nnoremap <buffer><silent> << :call <SID>MarkdownTabulate(-1, 0) \| normal! <<<CR>
+
+inoremap <buffer><silent>       <C-T> <C-O>:call <SID>MarkdownTabulate(1, 0)<CR><C-T>
+inoremap <buffer><silent><expr> <C-D> col('.')>strlen(getline('.'))?"<C-O>:call <SID>MarkdownTabulate(-1, 0)<CR><C-D>":"<Del>"
+
+inoremap <buffer><silent> <Tab>   <C-g>u<Tab><C-O>:call <SID>MarkdownTabulate(1, 1)<CR>
+inoremap <buffer><silent> <S-Tab> <C-O>:call <SID>MarkdownTabulate(-1, 0)<CR><C-D>
+
+inoremap <buffer> <CR> <C-O>:call <SID>MarkdownRemoveBullet()<CR><CR>
+

@@ -1,6 +1,8 @@
+
 function! s:is_zoomed()
     return get(t:, 'zoomed', 0)
 endfunction
+
 
 function! s:is_only_window()
     return len(tabpagebuflist()) == 1
@@ -37,6 +39,9 @@ function! zoom#toggle()
         silent! exe 'b'.l:current_buffer
         call s:set_zoomed()
         call setpos('.', cursor_pos)
+        if exists("t:hidden")
+            let &hidden = t:hidden
+        endif
     else
         " skip if only window
         if s:is_only_window() | return | endif
@@ -46,10 +51,14 @@ function! zoom#toggle()
         set sessionoptions-=tabpages
         let s:qflist = getqflist()
         exec 'mksession!' s:zoom_session_file()
+        let t:hidden = &hidden
+        let &hidden = 1
+
         wincmd o
         call s:set_zoomed(1)
         let v:this_session = oldsession
         let &sessionoptions = oldsessionoptions
+
     endif
 endfunction
 
@@ -59,3 +68,4 @@ function! zoom#statusline()
     endif
     return ''
 endfunction
+

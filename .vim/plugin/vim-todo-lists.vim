@@ -22,7 +22,7 @@
 
 
 " Initializes plugin settings and mappings
-function! VimTodoListsInit()
+function! s:VimTodoListsInit()
   set filetype=todo
 
   if !exists('g:VimTodoListsDatesEnabled')
@@ -44,33 +44,33 @@ function! VimTodoListsInit()
     catch
       echo 'VimTodoLists: Error in custom key mapper.'
            \.' Falling back to default mappings'
-      call VimTodoListsSetItemMode()
+      call s:VimTodoListsSetItemMode()
     endtry
   else
-    call VimTodoListsSetItemMode()
+    call s:VimTodoListsSetItemMode()
   endif
 
-  call VimTodoListsMigrate()
+  call s:VimTodoListsMigrate()
 
 endfunction
 
 
 " Sets the item done
-function! VimTodoListsSetItemDone(lineno)
+function! s:VimTodoListsSetItemDone(lineno)
   let l:line = getline(a:lineno)
   call setline(a:lineno, substitute(l:line, '^\(\s*- \)\[ \]', '\1[X]', ''))
 endfunction
 
 
 " Sets the item not done
-function! VimTodoListsSetItemNotDone(lineno)
+function! s:VimTodoListsSetItemNotDone(lineno)
   let l:line = getline(a:lineno)
   call setline(a:lineno, substitute(l:line, '^\(\s*- \)\[X\]', '\1[ ]', ''))
 endfunction
 
 
 " Checks that line is a todo list item
-function! VimTodoListsLineIsItem(line)
+function! s:VimTodoListsLineIsItem(line)
   if match(a:line, '^\s*- \[[ X]\].*') != -1
     return 1
   endif
@@ -80,7 +80,7 @@ endfunction
 
 
 " Checks that item is not done
-function! VimTodoListsItemIsNotDone(line)
+function! s:VimTodoListsItemIsNotDone(line)
   if match(a:line, '^\s*- \[ \].*') != -1
     return 1
   endif
@@ -90,7 +90,7 @@ endfunction
 
 
 " Checks that item is done
-function! VimTodoListsItemIsDone(line)
+function! s:VimTodoListsItemIsDone(line)
   if match(a:line, '^\s*- \[X\].*') != -1
     return 1
   endif
@@ -100,19 +100,19 @@ endfunction
 
 
 " Returns the line number of the brother item in specified range
-function! VimTodoListsBrotherItemInRange(line, range)
-  let l:indent = VimTodoListsCountLeadingSpaces(getline(a:line))
+function! s:VimTodoListsBrotherItemInRange(line, range)
+  let l:indent = s:VimTodoListsCountLeadingSpaces(getline(a:line))
   let l:result = -1
 
   for current_line in a:range
-    if VimTodoListsLineIsItem(getline(current_line)) == 0
+    if s:VimTodoListsLineIsItem(getline(current_line)) == 0
       break
     endif
 
-    if (VimTodoListsCountLeadingSpaces(getline(current_line)) == l:indent)
+    if (s:VimTodoListsCountLeadingSpaces(getline(current_line)) == l:indent)
       let l:result = current_line
       break
-    elseif (VimTodoListsCountLeadingSpaces(getline(current_line)) > l:indent)
+    elseif (s:VimTodoListsCountLeadingSpaces(getline(current_line)) > l:indent)
       continue
     else
       break
@@ -124,52 +124,52 @@ endfunction
 
 
 " Finds the insert position above the item
-function! VimTodoListsFindTargetPositionUp(lineno)
+function! s:VimTodoListsFindTargetPositionUp(lineno)
   let l:range = range(a:lineno, 1, -1)
-  let l:candidate_line = VimTodoListsBrotherItemInRange(a:lineno, l:range)
+  let l:candidate_line = s:VimTodoListsBrotherItemInRange(a:lineno, l:range)
   let l:target_line = -1
 
   while l:candidate_line != -1
     let l:target_line = l:candidate_line
-    let l:candidate_line = VimTodoListsBrotherItemInRange(
+    let l:candidate_line = s:VimTodoListsBrotherItemInRange(
       \ l:candidate_line, range(l:candidate_line - 1, 1, -1))
 
     if l:candidate_line != -1 &&
-      \ VimTodoListsItemIsNotDone(getline(l:candidate_line)) == 1
+      \ s:VimTodoListsItemIsNotDone(getline(l:candidate_line)) == 1
       let l:target_line = l:candidate_line
       break
     endif
   endwhile
 
-  return VimTodoListsFindLastChild(l:target_line)
+  return s:VimTodoListsFindLastChild(l:target_line)
 endfunction
 
 
 " Finds the insert position below the item
-function! VimTodoListsFindTargetPositionDown(line)
+function! s:VimTodoListsFindTargetPositionDown(line)
   let l:range = range(a:line, line('$'))
-  let l:candidate_line = VimTodoListsBrotherItemInRange(a:line, l:range)
+  let l:candidate_line = s:VimTodoListsBrotherItemInRange(a:line, l:range)
   let l:target_line = -1
 
   while l:candidate_line != -1
     let l:target_line = l:candidate_line
-    let l:candidate_line = VimTodoListsBrotherItemInRange(
+    let l:candidate_line = s:VimTodoListsBrotherItemInRange(
       \ l:candidate_line, range(l:candidate_line + 1, line('$')))
   endwhile
 
-  return VimTodoListsFindLastChild(l:target_line)
+  return s:VimTodoListsFindLastChild(l:target_line)
 endfunction
 
 
 " Moves the item subtree to the specified position
-function! VimTodoListsMoveSubtree(lineno, position)
+function! s:VimTodoListsMoveSubtree(lineno, position)
   if exists('g:VimTodoListsMoveItems')
     if g:VimTodoListsMoveItems != 1
       return
     endif
   endif
 
-  let l:subtree_length = VimTodoListsFindLastChild(a:lineno) - a:lineno + 1
+  let l:subtree_length = s:VimTodoListsFindLastChild(a:lineno) - a:lineno + 1
 
   let l:cursor_pos = getcurpos()
   call cursor(a:lineno, l:cursor_pos[4])
@@ -187,10 +187,10 @@ function! VimTodoListsMoveSubtree(lineno, position)
     " where it was before
     call cursor(l:cursor_pos[1], l:cursor_pos[4])
   else
-    let l:indent = VimTodoListsCountLeadingSpaces(getline(a:lineno))
+    let l:indent = s:VimTodoListsCountLeadingSpaces(getline(a:lineno))
 
-    if VimTodoListsItemIsDone(getline(a:position)) &&
-       \ (VimTodoListsCountLeadingSpaces(getline(a:position)) == l:indent)
+    if s:VimTodoListsItemIsDone(getline(a:position)) &&
+       \ (s:VimTodoListsCountLeadingSpaces(getline(a:position)) == l:indent)
       execute 'normal! P'
     else
       execute 'normal! p'
@@ -207,39 +207,39 @@ endfunction
 
 
 " Moves the subtree up
-function! VimTodoListsMoveSubtreeUp(lineno)
-  let l:move_position = VimTodoListsFindTargetPositionUp(a:lineno)
+function! s:VimTodoListsMoveSubtreeUp(lineno)
+  let l:move_position = s:VimTodoListsFindTargetPositionUp(a:lineno)
 
   if l:move_position != -1
-    call VimTodoListsMoveSubtree(a:lineno, l:move_position)
+    call s:VimTodoListsMoveSubtree(a:lineno, l:move_position)
   endif
 endfunction
 
 
 " Moves the subtree down
-function! VimTodoListsMoveSubtreeDown(lineno)
-  let l:move_position = VimTodoListsFindTargetPositionDown(a:lineno)
+function! s:VimTodoListsMoveSubtreeDown(lineno)
+  let l:move_position = s:VimTodoListsFindTargetPositionDown(a:lineno)
 
   if l:move_position != -1
-    call VimTodoListsMoveSubtree(a:lineno, l:move_position)
+    call s:VimTodoListsMoveSubtree(a:lineno, l:move_position)
   endif
 endfunction
 
 
 " Counts the number of leading spaces
-function! VimTodoListsCountLeadingSpaces(line)
+function! s:VimTodoListsCountLeadingSpaces(line)
   return (strlen(a:line) - strlen(substitute(a:line, '^\s*', '', '')))
 endfunction
 
 
 " Returns the line number of the parent
-function! VimTodoListsFindParent(lineno)
-  let l:indent = VimTodoListsCountLeadingSpaces(getline(a:lineno))
+function! s:VimTodoListsFindParent(lineno)
+  let l:indent = s:VimTodoListsCountLeadingSpaces(getline(a:lineno))
   let l:parent_lineno = -1
 
   for current_line in range(a:lineno, 1, -1)
-    if (VimTodoListsLineIsItem(getline(current_line)) &&
-      \ VimTodoListsCountLeadingSpaces(getline(current_line)) < l:indent)
+    if (s:VimTodoListsLineIsItem(getline(current_line)) &&
+      \ s:VimTodoListsCountLeadingSpaces(getline(current_line)) < l:indent)
       let l:parent_lineno = current_line
       break
     endif
@@ -250,8 +250,8 @@ endfunction
 
 
 " Returns the line number of the last child
-function! VimTodoListsFindLastChild(lineno)
-  let l:indent = VimTodoListsCountLeadingSpaces(getline(a:lineno))
+function! s:VimTodoListsFindLastChild(lineno)
+  let l:indent = s:VimTodoListsCountLeadingSpaces(getline(a:lineno))
   let l:last_child_lineno = a:lineno
 
   " If item is the last line in the buffer it has no children
@@ -260,8 +260,8 @@ function! VimTodoListsFindLastChild(lineno)
   endif
 
   for current_line in range (a:lineno + 1, line('$'))
-    if (VimTodoListsLineIsItem(getline(current_line)) &&
-      \ VimTodoListsCountLeadingSpaces(getline(current_line)) > l:indent)
+    if (s:VimTodoListsLineIsItem(getline(current_line)) &&
+      \ s:VimTodoListsCountLeadingSpaces(getline(current_line)) > l:indent)
       let l:last_child_lineno = current_line
     else
       break
@@ -273,15 +273,15 @@ endfunction
 
 
 " Marks the parent done if all children are done
-function! VimTodoListsUpdateParent(lineno)
-  let l:parent_lineno = VimTodoListsFindParent(a:lineno)
+function! s:VimTodoListsUpdateParent(lineno)
+  let l:parent_lineno = s:VimTodoListsFindParent(a:lineno)
 
   " No parent item
   if l:parent_lineno == -1
     return
   endif
 
-  let l:last_child_lineno = VimTodoListsFindLastChild(l:parent_lineno)
+  let l:last_child_lineno = s:VimTodoListsFindLastChild(l:parent_lineno)
 
   " There is no children
   if l:last_child_lineno == l:parent_lineno
@@ -289,24 +289,24 @@ function! VimTodoListsUpdateParent(lineno)
   endif
 
   for current_line in range(l:parent_lineno + 1, l:last_child_lineno)
-    if VimTodoListsItemIsNotDone(getline(current_line)) == 1
+    if s:VimTodoListsItemIsNotDone(getline(current_line)) == 1
       " Not all children are done
-      call VimTodoListsSetItemNotDone(l:parent_lineno)
-      call VimTodoListsMoveSubtreeUp(l:parent_lineno)
-      call VimTodoListsUpdateParent(l:parent_lineno)
+      call s:VimTodoListsSetItemNotDone(l:parent_lineno)
+      call s:VimTodoListsMoveSubtreeUp(l:parent_lineno)
+      call s:VimTodoListsUpdateParent(l:parent_lineno)
       return
     endif
   endfor
 
-  call VimTodoListsSetItemDone(l:parent_lineno)
-  call VimTodoListsMoveSubtreeDown(l:parent_lineno)
-  call VimTodoListsUpdateParent(l:parent_lineno)
+  call s:VimTodoListsSetItemDone(l:parent_lineno)
+  call s:VimTodoListsMoveSubtreeDown(l:parent_lineno)
+  call s:VimTodoListsUpdateParent(l:parent_lineno)
 endfunction
 
 
 " Applies the function for each child
-function! VimTodoListsForEachChild(lineno, function)
-  let l:last_child_lineno = VimTodoListsFindLastChild(a:lineno)
+function! s:VimTodoListsForEachChild(lineno, function)
+  let l:last_child_lineno = s:VimTodoListsFindLastChild(a:lineno)
 
   " Apply the function on children prior to the item.
   " This order is required for proper work of the items moving on toggle
@@ -317,37 +317,37 @@ endfunction
 
 
 " Sets mapping for normal navigation and editing mode
-function! VimTodoListsSetNormalMode()
+function! s:VimTodoListsSetNormalMode()
   nunmap <buffer> o
   nunmap <buffer> O
   nunmap <buffer> j
   nunmap <buffer> k
-  nnoremap <buffer> <Space> :VimTodoListsToggleItem<CR>
-  vnoremap <buffer> <Space> :'<,'>VimTodoListsToggleItem<CR>
-  noremap <buffer> <leader>e :silent call VimTodoListsSetItemMode()<CR>
+  nnoremap <silent> <buffer> <Space> :call <SID>VimTodoListsToggleItem()<CR>
+  vnoremap <silent> <buffer> <Space> :'<,'>call <SID>VimTodoListsToggleItem()<CR>
+  noremap  <silent> <buffer> <leader>e :call <SID>VimTodoListsSetItemMode()<CR>
 endfunction
 
 
 " Sets mappings for faster item navigation and editing
-function! VimTodoListsSetItemMode()
-  nnoremap <buffer> o :VimTodoListsCreateNewItemBelow<CR>
-  nnoremap <buffer> O :VimTodoListsCreateNewItemAbove<CR>
-  nnoremap <buffer> j :VimTodoListsGoToNextItem<CR>
-  nnoremap <buffer> k :VimTodoListsGoToPreviousItem<CR>
-  nnoremap <buffer> <Space> :VimTodoListsToggleItem<CR>
-  vnoremap <buffer> <Space> :VimTodoListsToggleItem<CR>
-  inoremap <buffer> <CR> <ESC>:call VimTodoListsAppendDate()<CR>A<CR><ESC>:VimTodoListsCreateNewItem<CR>
-  noremap <buffer> <leader>e :silent call VimTodoListsSetNormalMode()<CR>
-  nnoremap <buffer> <Tab> :VimTodoListsIncreaseIndent<CR>
-  nnoremap <buffer> <S-Tab> :VimTodoListsDecreaseIndent<CR>
-  vnoremap <buffer> <Tab> :VimTodoListsIncreaseIndent<CR>
-  vnoremap <buffer> <S-Tab> :VimTodoListsDecreaseIndent<CR>
-  inoremap <buffer> <Tab> <ESC>:VimTodoListsIncreaseIndent<CR>A
-  inoremap <buffer> <S-Tab> <ESC>:VimTodoListsDecreaseIndent<CR>A
+function! s:VimTodoListsSetItemMode()
+  nnoremap <silent> <buffer> o :call <SID>VimTodoListsCreateNewItemBelow()<CR>
+  nnoremap <silent> <buffer> O :call <SID>VimTodoListsCreateNewItemAbove()<CR>
+  nnoremap <silent> <buffer> j :call <SID>VimTodoListsGoToNextItem()<CR>
+  nnoremap <silent> <buffer> k :call <SID>VimTodoListsGoToPreviousItem()<CR>
+  nnoremap <silent> <buffer> <Space> :call <SID>VimTodoListsToggleItem()<CR>
+  vnoremap <silent> <buffer> <Space> :call <SID>VimTodoListsToggleItem()<CR>
+  inoremap <silent> <buffer> <CR> <ESC>:call <SID>VimTodoListsAppendDate()<CR>A<CR><ESC>:call <SID>VimTodoListsCreateNewItem()<CR>
+  noremap  <silent> <buffer> <leader>e :silent call <SID>VimTodoListsSetNormalMode()<CR>
+  nnoremap <silent> <buffer> <Tab> :call <SID>VimTodoListsIncreaseIndent()<CR>
+  nnoremap <silent> <buffer> <S-Tab> :call <SID>VimTodoListsDecreaseIndent()<CR>
+  vnoremap <silent> <buffer> <Tab> :call <SID>VimTodoListsIncreaseIndent()<CR>
+  vnoremap <silent> <buffer> <S-Tab> :call <SID>VimTodoListsDecreaseIndent()<CR>
+  inoremap <silent> <buffer> <Tab> <ESC>:call <SID>VimTodoListsIncreaseIndent()<CR>A
+  inoremap <silent> <buffer> <S-Tab> <ESC>:call <SID>VimTodoListsDecreaseIndent()<CR>A
 endfunction
 
 " Appends date at the end of the line
-function! VimTodoListsAppendDate()
+function! s:VimTodoListsAppendDate()
   if(g:VimTodoListsDatesEnabled == 1)
     let l:date = strftime(g:VimTodoListsDatesFormat)
     execute "s/$/ (" . l:date . ")"
@@ -355,27 +355,27 @@ function! VimTodoListsAppendDate()
 endfunction
 
 " Creates a new item above the current line
-function! VimTodoListsCreateNewItemAbove()
+function! s:VimTodoListsCreateNewItemAbove()
   normal! O- [ ] 
   startinsert!
 endfunction
 
 
 " Creates a new item below the current line
-function! VimTodoListsCreateNewItemBelow()
+function! s:VimTodoListsCreateNewItemBelow()
   normal! o- [ ] 
   startinsert!
 endfunction
 
 " Creates a new item in the current line
-function! VimTodoListsCreateNewItem()
+function! s:VimTodoListsCreateNewItem()
   normal! 0i- [ ] 
   startinsert!
 endfunction
 
 
 " Moves the cursor to the next item
-function! VimTodoListsGoToNextItem()
+function! s:VimTodoListsGoToNextItem()
   normal! $
   silent! exec '/^\s*- \[.\]'
   silent! exec 'noh'
@@ -384,7 +384,7 @@ endfunction
 
 
 " Moves the cursor to the previous item
-function! VimTodoListsGoToPreviousItem()
+function! s:VimTodoListsGoToPreviousItem()
   normal! 0
   silent! exec '?^\s*- \[.\]'
   silent! exec 'noh'
@@ -393,22 +393,22 @@ endfunction
 
 
 " Toggles todo list item
-function! VimTodoListsToggleItem()
+function! s:VimTodoListsToggleItem()
   let l:line = getline('.')
   let l:lineno = line('.')
 
   " Store current cursor position
   let l:cursor_pos = getcurpos()
 
-  if VimTodoListsItemIsNotDone(l:line) == 1
-    call VimTodoListsForEachChild(l:lineno, 'VimTodoListsSetItemDone')
-    call VimTodoListsMoveSubtreeDown(l:lineno)
-  elseif VimTodoListsItemIsDone(l:line) == 1
-    call VimTodoListsForEachChild(l:lineno, 'VimTodoListsSetItemNotDone')
-    call VimTodoListsMoveSubtreeUp(l:lineno)
+  if s:VimTodoListsItemIsNotDone(l:line) == 1
+    call s:VimTodoListsForEachChild(l:lineno, 's:VimTodoListsSetItemDone')
+    call s:VimTodoListsMoveSubtreeDown(l:lineno)
+  elseif s:VimTodoListsItemIsDone(l:line) == 1
+    call s:VimTodoListsForEachChild(l:lineno, 's:VimTodoListsSetItemNotDone')
+    call s:VimTodoListsMoveSubtreeUp(l:lineno)
   endif
 
-  call VimTodoListsUpdateParent(l:lineno)
+  call s:VimTodoListsUpdateParent(l:lineno)
 
   " Restore the current position
   " Using the {curswant} value to set the proper column
@@ -416,17 +416,17 @@ function! VimTodoListsToggleItem()
 endfunction
 
 " Increases the indent level
-function! VimTodoListsIncreaseIndent()
+function! s:VimTodoListsIncreaseIndent()
   normal! >>
 endfunction
 
 " Decreases the indent level
-function! VimTodoListsDecreaseIndent()
+function! s:VimTodoListsDecreaseIndent()
   normal! <<
 endfunction
 
 " Migrates file to new format
-function! VimTodoListsMigrate()
+function! s:VimTodoListsMigrate()
   normal! mz
   silent! execute ':%s/^\(\s*\)\(\[.\]\)/\1- \2/'
   normal! 'z
@@ -444,18 +444,8 @@ if !exists('g:vimtodolists_plugin')
   "Defining auto commands
   augroup vimtodolists_auto_commands
     autocmd!
-    autocmd BufRead,BufNewFile *.todo call VimTodoListsInit()
-    autocmd BufRead,BufNewFile ToDo call VimTodoListsInit()
+    autocmd BufRead,BufNewFile *.todo call s:VimTodoListsInit()
+    autocmd BufRead,BufNewFile ToDo call s:VimTodoListsInit()
   augroup end
-
-  "Defining plugin commands
-  command! VimTodoListsCreateNewItemAbove silent call VimTodoListsCreateNewItemAbove()
-  command! VimTodoListsCreateNewItemBelow silent call VimTodoListsCreateNewItemBelow()
-  command! VimTodoListsCreateNewItem silent call VimTodoListsCreateNewItem()
-  command! VimTodoListsGoToNextItem silent call VimTodoListsGoToNextItem()
-  command! VimTodoListsGoToPreviousItem silent call VimTodoListsGoToPreviousItem()
-  command! -range VimTodoListsToggleItem silent <line1>,<line2>call VimTodoListsToggleItem()
-  command! -range VimTodoListsIncreaseIndent silent <line1>,<line2>call VimTodoListsIncreaseIndent()
-  command! -range VimTodoListsDecreaseIndent silent <line1>,<line2>call VimTodoListsDecreaseIndent()
 endif
 

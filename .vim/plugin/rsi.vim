@@ -14,7 +14,7 @@ if &ttimeoutlen == -1
 endif
 
 inoremap        <C-A> <C-O>^
-inoremap   <C-X><C-A> <C-A>
+" inoremap   <C-X><C-A> <C-A>
 cnoremap        <C-A> <Home>
 " cnoremap   <C-X><C-A> <C-A>
 

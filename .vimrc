@@ -139,6 +139,7 @@ set undodir=~/.vim/undo//,/tmp//
 set dictionary+=/usr/share/dict/words
 
 colorscheme molokai
+filetype detect
 
 
 " {{{1 ADDITIONAL PACKAGES
@@ -255,14 +256,20 @@ nnoremap K <nop>
 " Y same as D or C
 nnoremap Y y$
 
-" Transform current string into a formatted one (python)
-nnoremap <leader>f :normal mzF"if<C-c>`zl
-
 " Delete last word in command mode
 cnoremap  <C-w>
 
+" Shift-Tab to dedent
+inoremap <S-Tab> <C-d>
+
+" Enter opens folds in normal mode
+nnoremap <silent> <CR> :silent! execute "normal! zO\n"<CR>
+
 " Cancel autocomplete but reprint longest match
 cmap <C-x> <C-l><C-n><C-p><C-u><C-y><C-z>
+
+" Open autocomplete on next subdirectory
+cnoremap <C-o> <Space><BS><C-z>
 
 " Kill all windows except current
 nnoremap <silent> <leader>o :only<CR>
@@ -271,7 +278,7 @@ nnoremap <silent> <leader>o :only<CR>
 inoremap <C-l> <C-o><C-l>
 
 " Correct last misspelled word
-inoremap <C-K> <C-G>u<Esc>[s1z=`]a<C-G>u
+inoremap <C-k> <C-G>u<Esc>[s1z=`]a<C-G>u
 
 " Quit visual mode with q
 vnoremap q <C-c>
