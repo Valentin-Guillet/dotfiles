@@ -3,7 +3,7 @@ import readline
 import atexit
 
 # Command line history:
-histfile = os.path.expanduser("~/.python_history")
+histfile = os.path.expanduser("~/.cache/history/python_history")
 if readline.get_current_history_length() == 0:
     try:
         readline.read_history_file(histfile)

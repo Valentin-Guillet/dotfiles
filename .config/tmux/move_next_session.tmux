@@ -8,3 +8,4 @@ source-file ~/.config/tmux/list_sessions
 switch-client -n
 
 run-shell "rm ~/.config/tmux/list_sessions"
+

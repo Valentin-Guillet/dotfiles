@@ -45,19 +45,19 @@ ct() {
 }
 
 pip_update() {
-    pip3 list -o --format=freeze > pip_list
+    pip3 list -o --format=freeze > /tmp/pip_list
     [[ $? == 1 ]] && return 1
     if [ ! "$1" = "-a" -a ! "$1" = '--all' ] && [ -s ~/.config/pip/pip_exclude ]
     then
-        grep -v -f <(sed -e "/^\s*#.*$/d" -e "/^\s*$/d" ~/.config/pip/pip_exclude) pip_list > pip_list_tmp
-        mv pip_list_tmp pip_list
+        grep -v -f <(sed -e "/^\s*#.*$/d" -e "/^\s*$/d" ~/.config/pip/pip_exclude) /tmp/pip_list > /tmp/pip_list_tmp
+        mv /tmp/pip_list_tmp /tmp/pip_list
     fi
 
-    if [ -s pip_list ]
+    if [ -s /tmp/pip_list ]
     then
-        vim pip_list
-        cat pip_list | cut -d = -f 1 | xargs -n 1 pip3 install -U
+        vim /tmp/pip_list
+        cat /tmp/pip_list | cut -d = -f 1 | xargs -n 1 pip3 install -U
     fi
-    rm pip_list
+    rm /tmp/pip_list
 }
 

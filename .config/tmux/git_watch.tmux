@@ -1,3 +1,4 @@
+
 split-window -v -c "#{pane_current_path}"
 
 swap-pane -U

@@ -8,6 +8,18 @@ case $- in
       *) return;;
 esac
 
+# Set dotfiles location
+export XDG_CONFIG_HOME=$HOME/.config
+export XDG_CACHE_HOME=$HOME/.cache
+
+export INPUTRC="$XDG_CONFIG_HOME"/readline/inputrc
+export PYTHONSTARTUP="$XDG_CONFIG_HOME"/python/pythonrc.py
+
+mkdir -p "$XDG_CACHE_HOME"/history
+export ICEAUTHORITY="$XDG_CACHE_HOME"/ICEauthority
+export LESSHISTFILE="$XDG_CACHE_HOME"/history/less_history
+export CUDA_CACHE_PATH="$XDG_CACHE_HOME"/nv
+
 # Auto launch tmux
 if command -v tmux > /dev/null
 then
@@ -18,12 +30,13 @@ then
     else
         [[ ! $TERM =~ screen || $SSH_CLIENT ]] && [ -z "$TMUX" ] && exec tmux
     fi
-    source ~/.config/tmux/tmux_completion.sh
+    source "$XDG_CONFIG_HOME"/tmux/tmux_completion.sh
 fi
 
 # Set up history
 HISTCONTROL=ignoreboth   # Don't put duplicate lines or lines starting with space
 HISTSIZE=1000            # Set up length
+HISTFILE="$XDG_CACHE_HOME"/history/bash_history
 HISTFILESIZE=2000
 shopt -s histappend      # Append to the history file, don't overwrite it
 
@@ -81,9 +94,9 @@ fi
 EDITOR=/usr/bin/vim
 
 # Alias definitions
-[ -f ~/.config/bash/aliases ] && . ~/.config/bash/aliases
-[ -f ~/.config/bash/local_aliases ] && . ~/.config/bash/local_aliases
-[ -f ~/.config/bash/functions ] && . ~/.config/bash/functions
+[ -f "$XDG_CONFIG_HOME"/bash/aliases ] && . "$XDG_CONFIG_HOME"/bash/aliases
+[ -f "$XDG_CONFIG_HOME"/bash/local_aliases ] && . "$XDG_CONFIG_HOME"/bash/local_aliases
+[ -f "$XDG_CONFIG_HOME"/bash/functions ] && . "$XDG_CONFIG_HOME"/bash/functions
 
 if [[ $PATH != */opt/miniconda3/bin* ]]
 then

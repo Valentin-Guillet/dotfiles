@@ -122,19 +122,12 @@ endif
 set backup
 set undofile
 
-if !isdirectory($HOME . "/.vim/backup")
-    call mkdir($HOME . "/.vim/backup", "p")
-endif
-if !isdirectory($HOME . "/.vim/swap")
-    call mkdir($HOME . "/.vim/swap", "p")
-endif
-if !isdirectory($HOME . "/.vim/undo")
-    call mkdir($HOME . "/.vim/undo", "p")
-endif
+set backupdir=$HOME/.cache/vim/backup//,/tmp// | call mkdir(&backupdir, 'p', 0700)
+set directory=$HOME/.cache/vim/swap//,/tmp//   | call mkdir(&directory, 'p', 0700)
+set viewdir=$HOME/.cache/vim/view//,/tmp//     | call mkdir(&viewdir, 'p', 0700)
+set undodir=$HOME/.cache/vim/undo//,/tmp//     | call mkdir(&undodir, 'p', 0700)
 
-set backupdir=~/.vim/backup//,/tmp//
-set directory=~/.vim/swap//,/tmp//
-set undodir=~/.vim/undo//,/tmp//
+set viminfo+='1000,n.cache/vim/viminfo
 
 set dictionary+=/usr/share/dict/words
 
@@ -301,8 +294,9 @@ function! OpenInSplitIfNotEmpty(file)
     end
 endfunction
 
+" Command to write read-only file
 if !exists(":W")
-    command W w !sudo tee "%" > /dev/null
+    command W execute 'silent! write !sudo /usr/bin/tee "%" >/dev/null' <bar> edit!
 endif
 
 
