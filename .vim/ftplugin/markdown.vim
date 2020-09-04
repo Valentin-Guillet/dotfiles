@@ -782,31 +782,38 @@ function! s:MarkdownClearSyntaxVariables()
     endif
 endfunction
 
-
-function! s:MarkdownTabulate(dir, insert)
-    let l:save_pos = getpos('.')
+function! s:MarkdownShouldIndent()
     let l:line = getline('.')
+    let l:is_bullet = '^\s*[+*-]\s*.*$'
+    let l:no_text_yet = '^\s*[+*-]\s*$'
+
+    let l:beginning_line = l:line[:col('.')-1]
+    let l:is_not_letters = '^\s*[+*-]\?$'
+
+    return l:line =~ l:is_bullet && (l:line =~ l:no_text_yet || l:beginning_line =~ l:is_not_letters)
+endfunction
+
+function! s:MarkdownModifyBullet(direction, ...)
+    if a:0 > 0
+        let l:line_nb = a:1
+    else
+        let l:line_nb = '.'
+    endif
+
+    let l:line = getline(l:line_nb)
     let l:bullets = ['-', '+', '*']
-    let l:regex = '^\s*\([+*-]\)\s*' . (a:insert ? '' : '.*') . '$'
+    let l:regex = '^\s*\([+*-]\)\%(\s\+.*\)\?$'
 
     let l:match = matchlist(l:line, l:regex)
     if !empty(l:match)
-        if a:insert
-            execute "normal! u"
-        endif
-
         let l:bullet = l:match[1]
-        let l:index = index(l:bullets, l:bullet) + a:dir
+        let l:index = index(l:bullets, l:bullet) + a:direction
 
-        if a:dir == 1 || stridx(l:line, l:bullet) > 1  " Don't modify bullet if on first column
+        " Don't modify bullet if on first column and going left
+        if a:direction == 1 || stridx(l:line, l:bullet) > 1  
             let l:new_bullet = l:bullets[l:index % 3]
-            execute 's/' . l:bullet . '/' . l:new_bullet . '/e'
-        endif
-
-        call setpos('.', l:save_pos)
-
-        if a:insert
-            execute "normal! >>$"
+            let l:new_line = substitute(l:line, l:bullet, l:new_bullet, "")
+            call setline(l:line_nb, l:new_line)
         endif
 
     endif
@@ -827,6 +834,35 @@ function! s:MarkdownRemoveBullet()
     endif
 endfunction
 
+function! s:MarkdownModifyIndentRange(type)
+    if a:type ==? 'line'
+        let l:min_line = line("'[")
+        let l:max_line = line("']")
+    else
+        let l:min_line = line("'<")
+        let l:max_line = line("'>")
+    endif
+
+    for l:lnum in range(l:max_line, l:min_line, -1)
+        call s:MarkdownModifyBullet(1, l:lnum)
+        execute l:lnum . "normal! >>"
+    endfor
+endfunction
+
+function! s:MarkdownModifyDedentRange(type)
+    if a:type ==? 'line'
+        let l:min_line = line("'[")
+        let l:max_line = line("']")
+    else
+        let l:min_line = line("'<")
+        let l:max_line = line("'>")
+    endif
+
+    for l:lnum in range(l:max_line, l:min_line, -1)
+        call s:MarkdownModifyBullet(-1, l:lnum)
+        execute l:lnum . "normal! <<"
+    endfor
+endfunction
 
 augroup Mkd
     " These autocmd calling s:MarkdownRefreshSyntax need to be kept in sync with
@@ -852,14 +888,21 @@ noremap  <buffer> <leader>c :Toc<CR>
 nnoremap <buffer> o A<CR>
 nnoremap <buffer> O kA<CR>
 
-nnoremap <buffer><silent> >> :call <SID>MarkdownTabulate( 1, 0) \| normal! >><CR>
-nnoremap <buffer><silent> << :call <SID>MarkdownTabulate(-1, 0) \| normal! <<<CR>
+nnoremap <buffer><silent> > :set opfunc=<SID>MarkdownModifyIndentRange<CR>g@
+nnoremap <buffer><silent> < :set opfunc=<SID>MarkdownModifyDedentRange<CR>g@
+vnoremap <buffer><silent> > :<C-u>call <SID>MarkdownModifyIndentRange('visual')<CR>
+vnoremap <buffer><silent> < :<C-u>call <SID>MarkdownModifyDedentRange('visual')<CR>
 
-inoremap <buffer><silent>       <C-T> <C-O>:call <SID>MarkdownTabulate(1, 0)<CR><C-T>
-inoremap <buffer><silent><expr> <C-D> col('.')>strlen(getline('.'))?"<C-O>:call <SID>MarkdownTabulate(-1, 0)<CR><C-D>":"<Del>"
+nnoremap <buffer><silent> <Plug>MarkdownIncrement :call <SID>MarkdownModifyBullet( 1) \| execute "normal! >>" \| call repeat#set("\<Plug>MarkdownIncrement")<CR>
+nnoremap <buffer><silent> <Plug>MarkdownDecrement :call <SID>MarkdownModifyBullet(-1) \| execute "normal! <<" \| call repeat#set("\<Plug>MarkdownDecrement")<CR>
+nmap >> <Plug>MarkdownIncrement
+nmap << <Plug>MarkdownDecrement
 
-inoremap <buffer><silent> <Tab>   <C-g>u<Tab><C-O>:call <SID>MarkdownTabulate(1, 1)<CR>
-inoremap <buffer><silent> <S-Tab> <C-O>:call <SID>MarkdownTabulate(-1, 0)<CR><C-D>
+inoremap <buffer><silent>       <C-T> <C-O>:call <SID>MarkdownModifyBullet(1)<CR><C-T>
+inoremap <buffer><silent><expr> <C-D> col('.')>strlen(getline('.'))?"<C-O>:call <SID>MarkdownModifyBullet(-1)<CR><C-D>":"<Del>"
+
+inoremap <buffer><silent><expr> <Tab>   <SID>MarkdownShouldIndent()?"<C-\><C-O>:call <SID>MarkdownModifyBullet(1)<CR><C-T>":"<Tab>"
+inoremap <buffer><silent>       <S-Tab> <C-O>:call <SID>MarkdownModifyBullet(-1)<CR><C-D>
 
 inoremap <buffer> <CR> <C-O>:call <SID>MarkdownRemoveBullet()<CR><CR>
 

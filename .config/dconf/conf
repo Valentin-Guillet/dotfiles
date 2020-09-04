@@ -5,35 +5,27 @@ night-light-schedule-from=22.0
 night-light-enabled=true
 
 [org/gnome/settings-daemon/plugins/media-keys]
-custom-keybindings=['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom3/']
-www='<Primary><Alt>w'
-screensaver='<Super>f'
-home='<Primary><Alt>r'
-terminal=''
-
-[org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2]
-binding='<Primary><Alt>t'
-command='/usr/bin/gnome-terminal --maximize'
-name='Launch terminal (maximized)'
-
-[org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1]
-binding='<Primary><Alt>s'
-command='sh -c "PATH=/opt/miniconda3/bin:$PATH subl"'
-name='Sublime Text'
+custom-keybindings=['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2/']
+www=['<Primary><Alt>w']
+screensaver=['<Super>f']
+home=['<Primary><Alt>r']
+terminal=['<Control><Alt>t']
 
 [org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0]
 binding='<Primary><Shift><Alt>s'
 command='sh -c "PATH=/opt/miniconda3/bin:$PATH subl -n"'
 name='Sublime Text (New Window)'
 
-[org/gnome/settings-daemon/peripherals/keyboard]
-numlock-state='on'
+[org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1]
+binding='<Primary><Alt>s'
+command='sh -c "PATH=/opt/miniconda3/bin:$PATH subl"'
+name='Sublime Text'
 
 [org/gnome/shell]
-enabled-extensions=['cpupower@mko-sl.de', 'update-extensions@franglais125.gmail.com', 'user-theme@gnome-shell-extensions.gcampax.github.com', 'workspace-grid@mathematical.coffee.gmail.com', 'ShellTile@emasab.it', 'music-integration@brianrobles204', 'window-list@gnome-shell-extensions.gcampax.github.com', 'dynamic_battery@exalm', 'pixel-saver@deadalnix.me', 'putWindow@clemens.lab21.org', 'night-light-slider.timur@linux.com']
+enabled-extensions=['update-extensions@franglais125.gmail.com', 'workspace-grid@mathematical.coffee.gmail.com', 'putWindow@clemens.lab21.org', 'cpupower@mko-sl.de', 'pixel-saver@deadalnix.me', 'night-light-slider.timur@linux.com', 'wsmatrix@martin.zurowietz.de', 'user-theme@gnome-shell-extensions.gcampax.github.com']
 disable-user-extensions=false
 enable-hot-corners=false
-favorite-apps=['org.gnome.Terminal.desktop', 'brave-browser.desktop', 'thunderbird.desktop', 'firefox.desktop', 'org.gnome.Nautilus.desktop', 'libreoffice-writer.desktop', 'texstudio.desktop']
+favorite-apps=['org.gnome.Terminal.desktop', 'firefox.desktop', 'thunderbird.desktop', 'org.gnome.Nautilus.desktop', 'libreoffice-writer.desktop']
 
 [org/gnome/shell/app-switcher]
 current-workspace-only=true
@@ -42,32 +34,15 @@ current-workspace-only=true
 dynamic-workspaces=false
 
 [org/gnome/shell/extensions/nightlightslider]
+brightness-sync=false
+enable-always=false
 show-always=true
+show-in-submenu=false
 show-status-icon=true
 
-[org/gnome/shell/extensions/shelltile]
-gap-between-windows=0
-
-[org/gnome/shell/extensions/cpupower]
-taskbar-freq-unit-ghz=true
-profiles=[(0, 10, false, 'Energy Saver', '3845567195'), (0, 30, false, 'Quiet', '924335458'), (20, 80, true, 'Multimedia', '503125238'), (50, 100, true, 'High Performance', '2468462210'), (0, 100, true, 'Default', '1493275746')]
-
-[org/gnome/shell/extensions/cpufreq]
-save-settings=true
-user-profile='{"name":"Saved settings","minf":0,"maxf":0,"turbo":false,"cpu":12,"acpi":false,"guid":"user","core":[{"g":"powersave","a":800000,"b":2600000},{"g":"powersave","a":800000,"b":2600000},{"g":"powersave","a":800000,"b":2600000},{"g":"powersave","a":800000,"b":2600000},{"g":"powersave","a":800000,"b":2600000},{"g":"powersave","a":800000,"b":2600000},{"g":"powersave","a":800000,"b":2600000},{"g":"powersave","a":800000,"b":2600000},{"g":"powersave","a":800000,"b":2600000},{"g":"powersave","a":800000,"b":2600000},{"g":"powersave","a":800000,"b":2600000},{"g":"powersave","a":800000,"b":2600000}]}'
-
-[org/gnome/shell/extensions/workspace-grid]
-wrap-to-same=false
-wrap-to-same-scroll=false
-relative-workspace-switching=true
-wraparound=false
-num-rows=3
+[org/gnome/shell/extensions/wsmatrix]
 num-columns=2
-show-workspace-labels=false
-
-[org/gnome/shell/extensions/update-extensions]
-interval-unit='days'
-last-check-date-double=1581092605478.0
+num-rows=3
 
 [org/gnome/shell/extensions/org-lab21-putwindow]
 move-focus-north-enabled=0
@@ -92,14 +67,13 @@ put-to-right-screen-enabled=0
 move-focus-west-enabled=0
 move-focus-right-screen-enabled=0
 
-[org/gnome/shell/extensions/window-list]
-grouping-mode='never'
-
 [org/gnome/desktop/interface]
 clock-show-date=true
-gtk-im-module='gtk-im-context-simple'
 clock-show-seconds=false
 show-battery-percentage=true
+
+[org/gnome/desktop/peripherals/mouse]
+natural-scroll=false
 
 [org/gnome/desktop/peripherals/touchpad]
 natural-scroll=false
@@ -108,36 +82,33 @@ natural-scroll=false
 show-weekdate=false
 
 [org/gnome/desktop/wm/preferences]
-auto-raise=false
-focus-mode='click'
 num-workspaces=6
 
 [org/gnome/desktop/wm/keybindings]
-maximize=['<Super>Up', '<Super>k']
-unmaximize=['<Super>Down', '<Super>j']
-close=['<Alt>a']
-move-to-workspace-up=['<Control><Shift><Alt>Up', '<Control><Shift><Alt>k']
-switch-to-workspace-left=['<Control><Alt>Left', '<Control><Alt>h']
-switch-to-workspace-down=['<Control><Alt>Down', '<Control><Alt>j']
+activate-window-menu=['<Alt>space']
 always-on-top=['<Control>space']
-move-to-workspace-right=['<Control><Shift><Alt>Right', '<Control><Shift><Alt>l']
-move-to-monitor-left=['<Super><Shift>Left', '<Super><Shift>h']
-switch-to-workspace-right=['<Control><Alt>Right', '<Control><Alt>l']
-move-to-monitor-down=['<Super><Shift>Down', '<Super><Shift>j']
-move-to-workspace-left=['<Control><Shift><Alt>Left', '<Control><Shift><Alt>h']
-move-to-monitor-right=['<Super><Shift>Right', '<Super><Shift>l']
-move-to-workspace-down=['<Control><Shift><Alt>Down', '<Control><Shift><Alt>j']
-move-to-monitor-up=['<Super><Shift>Up', '<Super><Shift>k']
+close=['<Alt>a']
+maximize=['<Super>Up', '<Super>k']
 minimize=['<Super>m']
+move-to-monitor-down=['<Super><Shift>Down', '<Super><Shift>j']
+move-to-monitor-left=['<Super><Shift>Left', '<Super><Shift>h']
+move-to-monitor-right=['<Super><Shift>Right', '<Super><Shift>l']
+move-to-monitor-up=['<Super><Shift>Up', '<Super><Shift>k']
+move-to-workspace-down=['<Control><Shift><Alt>Down', '<Control><Shift><Alt>j']
+move-to-workspace-left=['<Control><Shift><Alt>Left', '<Control><Shift><Alt>h']
+move-to-workspace-right=['<Control><Shift><Alt>Right', '<Control><Shift><Alt>l']
+move-to-workspace-up=['<Control><Shift><Alt>Up', '<Control><Shift><Alt>k']
+show-desktop=['<Control><Super>d']
+switch-to-workspace-down=['<Control><Alt>Down', '<Control><Alt>j']
+switch-to-workspace-left=['<Control><Alt>Left', '<Control><Alt>h']
+switch-to-workspace-right=['<Control><Alt>Right', '<Control><Alt>l']
 switch-to-workspace-up=['<Control><Alt>Up', '<Control><Alt>k']
-
-[org/gnome/desktop/datetime]
-automatic-timezone=true
+unmaximize=['<Super>Down', '<Super>j']
 
 [org/gnome/desktop/input-sources]
-sources=[('xkb', 'us'), ('xkb', 'fr')]
-mru-sources=[('xkb', 'us'), ('xkb', 'fr')]
-xkb-options=@as []
+sources=[('xkb', 'us'), ('xkb', 'fr+oss')]
+mru-sources=[('xkb', 'us'), ('xkb', 'fr+oss')]
+xkb-options=['esperanto:qwerty', 'lv3:ralt_switch']
 
 [org/gnome/mutter]
 dynamic-workspaces=false
@@ -147,5 +118,6 @@ workspaces-only-on-primary=true
 toggle-tiled-right=['<Super>Right', '<Super>l']
 toggle-tiled-left=['<Super>Left', '<Super>h']
 
-[org/gnome/mutter/wayland/keybindings]
-restore-shortcuts=@as []
+[system/locale]
+region='en_US.UTF-8'
+

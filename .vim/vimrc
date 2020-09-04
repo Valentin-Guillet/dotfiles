@@ -154,9 +154,6 @@ let g:vim_markdown_follow_anchor = 1
 let g:vim_markdown_strikethrough = 1
 let g:vim_markdown_new_list_item_indent = 2
 
-" ToDo Lists
-let g:VimTodoListsMoveItems = 0
-
 " Vim/Tmux navigator
 let g:tmux_navigator_disable_when_zoomed = 1
 

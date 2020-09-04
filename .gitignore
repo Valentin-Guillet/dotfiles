@@ -32,6 +32,12 @@
 !.config/sublime-text-3/
 !.config/sublime-text-3/Packages/
 
+!.config/sublime-text-3/Packages/BetterFindBuffer/
+!.config/sublime-text-3/Packages/BetterFindBuffer/FindResults.hidden-tmTheme
+
+!.config/sublime-text-3/Packages/Default/
+!.config/sublime-text-3/Packages/Default/symbol.py
+
 !.config/sublime-text-3/Packages/Jump\ Along\ Indent/
 !.config/sublime-text-3/Packages/Jump\ Along\ Indent/*
 

@@ -1,5 +1,15 @@
 #!/bin/bash
 
+lsf() {
+    if [ "$1" = "-i" ]
+    then
+        shift
+        find "${2:-.}" -iname "*$1*" 2>/dev/null
+    else
+        find "${2:-.}" -name "*$1*" 2>/dev/null
+    fi
+}
+
 psg() {
     ps aux | grep "$(echo $1 | sed 's/./[\0]/')"
 }

@@ -39,9 +39,9 @@ class AddNextWordCommand(sublime_plugin.TextCommand):
             lines[(line.a, line.b)].append(area)
 
         new_areas = []
-        for line in lines.values():
+        for areas in lines.values():
             self.view.sel().clear()
-            self.view.sel().add_all(line)
+            self.view.sel().add_all(areas)
             new_areas.extend(self.compute_line(skip))
 
         self.view.sel().clear()

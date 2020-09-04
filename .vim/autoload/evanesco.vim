@@ -115,7 +115,11 @@ endfunction
 function! s:search_executed()
     let [search_pattern, offset] = s:last_search_attempt()
     let match_at_cursor = s:match_at_cursor(search_pattern, offset)
-    return (search_pattern ==# @/) && search(match_at_cursor, 'cnw')
+    try
+        return (search_pattern ==# @/) && search(match_at_cursor, 'cnw')
+    catch
+        return 0
+    endtry
 endfunction
 
 

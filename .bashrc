@@ -17,6 +17,7 @@ export PYTHONSTARTUP="$XDG_CONFIG_HOME"/python/pythonrc.py
 
 mkdir -p "$XDG_CACHE_HOME"/history
 export ICEAUTHORITY="$XDG_CACHE_HOME"/ICEauthority
+export XAUTHORITY="$XDG_CACHE_HOME"/Xauthority
 export LESSHISTFILE="$XDG_CACHE_HOME"/history/less_history
 export CUDA_CACHE_PATH="$XDG_CACHE_HOME"/nv
 

@@ -16,26 +16,26 @@
 " limitations under the License.
 
 if &cp || v:version < 700
-  echoerr "Ancient Vim version, or compatible set"
-  finish
+    echoerr "Ancient Vim version, or compatible set"
+    finish
 endif
 
 if exists('g:loaded_searchindex')
-  finish
+    finish
 endif
 let g:loaded_searchindex = 1
 
 " Setup options.
 if !exists('g:searchindex_line_limit')
-  let g:searchindex_line_limit=1000000
+    let g:searchindex_line_limit=1000000
 endif
 
 if !exists('g:searchindex_improved_star')
-  let g:searchindex_improved_star=1
+    let g:searchindex_improved_star=1
 endif
 
 if !exists('g:searchindex_star_case')
-  let g:searchindex_star_case=1
+    let g:searchindex_star_case=1
 endif
 
 " Suppress the "search hit BOTTOM, continuing at TOP" type messages.
@@ -74,98 +74,104 @@ noremap <silent><expr> <Plug>ImprovedStar_g# <SID>StarSearch('g#')
 " (issue #14). Consider reimplementing it based on CmdlineEnter and
 " CmdlineLeave events to make it less intrusive.
 silent! cmap <unique><expr> <CR>
-    \ "\<CR>" . (getcmdtype() =~ '[/?]' ? "<Plug>SearchIndex" : "")
+            \ "\<CR>" . (getcmdtype() =~ '[/?]' ? "<Plug>SearchIndex" : "")
 
 if exists('*getcmdwintype')
-  " getcmdwintype() requires Vim 7.4.392. If it's not available, disable
-  " support for command window searches (q/, q?).
-  augroup searchindex_cmdwin
-    autocmd!
-    autocmd CmdWinEnter *
-      \ if getcmdwintype() =~ '[/?]' |
-      \   silent! nmap <buffer><unique> <CR> <CR><Plug>SearchIndex|
-      \ endif
-  augroup END
+    " getcmdwintype() requires Vim 7.4.392. If it's not available, disable
+    " support for command window searches (q/, q?).
+    augroup searchindex_cmdwin
+        autocmd!
+        autocmd CmdWinEnter *
+                    \ if getcmdwintype() =~ '[/?]' |
+                    \   silent! nmap <buffer><unique> <CR> <CR><Plug>SearchIndex|
+                    \ endif
+    augroup END
 endif
 
 " Implementation details.
 
 function! s:StarSearch(cmd)
-  if !g:searchindex_improved_star | return a:cmd | endif
+    if !g:searchindex_improved_star | return a:cmd | endif
 
-  " With no word under cursor, search will fail. Fall back to '*' so that
-  " error seems to come from native Vim command, not from this function.
-  if expand("<cword>") == "" | return "*" | endif
+    " With no word under cursor, search will fail. Fall back to '*' so that
+    " error seems to come from native Vim command, not from this function.
+    if expand("<cword>") == "" | return "*" | endif
 
-  " reimplement star commands using '/' and '?'
-  let search_dir = (a:cmd == '*' || a:cmd == 'g*') ? '/' : '?'
-  let case_char = (g:searchindex_star_case ? '\C' : '\c')
-  let [open_delim, close_delim] = (a:cmd =~ 'g.' ? ['', ''] : ['\<', '\>'])
-  let search_term = open_delim . "\<C-R>\<C-W>" . close_delim
-  return search_dir . search_term . case_char . "\<CR>"
+    " reimplement star commands using '/' and '?'
+    let search_dir = (a:cmd == '*' || a:cmd == 'g*') ? '/' : '?'
+    let case_char = (g:searchindex_star_case ? '\C' : '\c')
+    let [open_delim, close_delim] = (a:cmd =~ 'g.' ? ['', ''] : ['\<', '\>'])
+    let search_term = open_delim . "\<C-R>\<C-W>" . close_delim
+    return search_dir . search_term . case_char . "\<CR>"
 endfunction
 
 function! s:MatchesInRange(range)
-  " Use :s///n to search efficiently in large files. Although calling search()
-  " in the loop would be cleaner (see issue #18), it is also much slower.
-  let gflag = &gdefault ? '' : 'g'
-  let saved_marks = [ getpos("'["), getpos("']") ]
-  let output = ''
-  redir => output
+    " Use :s///n to search efficiently in large files. Although calling search()
+    " in the loop would be cleaner (see issue #18), it is also much slower.
+    let gflag = &gdefault ? '' : 'g'
+    let saved_marks = [ getpos("'["), getpos("']") ]
+    let output = ''
+    redir => output
     silent! execute 'keepjumps ' . a:range . 's//~/en' . gflag
-  redir END
-  call setpos("'[", saved_marks[0])
-  call setpos("']", saved_marks[1])
-  return str2nr(matchstr(output, '\d\+'))
+    redir END
+    call setpos("'[", saved_marks[0])
+    call setpos("']", saved_marks[1])
+    return str2nr(matchstr(output, '\d\+'))
 endfunction
 
 " Calculate which match in the current line the 'col' is at.
 function! s:MatchInLine()
-  let line = line('.')
-  let col = col('.')
-  let star_search = 0
+    let line = line('.')
+    let col = col('.')
+    let star_search = 0
 
-  normal! 0
-  let matches = 0
-  let s_opt = 'c'
-  " The count might be off in edge cases (e.g. regexes that allow empty match,
-  " like 'a*'). Unfortunately, Vim's searching functions are so inconsistent
-  " that I can't fix this.
-  while search(@/, s_opt, line) && col('.') <= col
-    let matches += 1
-    let s_opt = ''
-  endwhile
+    normal! 0
+    let matches = 0
+    let s_opt = 'c'
+    " The count might be off in edge cases (e.g. regexes that allow empty match,
+    " like 'a*'). Unfortunately, Vim's searching functions are so inconsistent
+    " that I can't fix this.
+    " if @/ ==# ''
+    "     let @/ = ' '
+    " endif
+    try
+        while search(@/, s_opt, line) && col('.') <= col
+            let matches += 1
+            let s_opt = ''
+        endwhile
+    catch
+    endtry
 
-  return matches
+    return matches
 endfunction
 
 " Efficiently recalculate number of matches above cursor using values cached
 " from the previous run.
 function s:MatchesAbove(cached_values)
-  " avoid wrapping range at the beginning of file
-  if line('.') == 1 | return 0 | endif
+    " avoid wrapping range at the beginning of file
+    if line('.') == 1 | return 0 | endif
 
-  let [old_line, old_result, total] = a:cached_values
-  " Find the nearest point from which we can restart match counting (top,
-  " bottom, or previously cached line).
-  let line = line('.')
-  let to_top = line
-  let to_old = abs(line - old_line)
-  let to_bottom = line('$') - line
-  let min_dist = min([to_top, to_old, to_bottom])
+    let [old_line, old_result, total] = a:cached_values
+    " Find the nearest point from which we can restart match counting (top,
+    " bottom, or previously cached line).
+    let line = line('.')
+    let to_top = line
+    let to_old = abs(line - old_line)
+    let to_bottom = line('$') - line
+    let min_dist = min([to_top, to_old, to_bottom])
 
-  if min_dist == to_top
-    return s:MatchesInRange('1,.-1')
-  elseif min_dist == to_bottom
-    return total - s:MatchesInRange(',$')
-  " otherwise, min_dist == to_old, we just need to check relative line order
-  elseif old_line < line
-    return old_result + s:MatchesInRange(old_line . ',-1')
-  elseif old_line > line
-    return old_result - s:MatchesInRange(',' . (old_line - 1))
-  else " old_line == line
-    return old_result
-  endif
+    if min_dist == to_top
+        return s:MatchesInRange('1,.-1')
+    elseif min_dist == to_bottom
+        return total - s:MatchesInRange(',$')
+        " otherwise, min_dist == to_old, we just need to check relative line order
+    elseif old_line < line
+        return old_result + s:MatchesInRange(old_line . ',-1')
+    elseif old_line > line
+        return old_result - s:MatchesInRange(',' . (old_line - 1))
+    else " old_line == line
+        return old_result
+    endif
 endfunction
 
 " Return the given string, shortened to the maximum length. The middle of the
@@ -188,63 +194,63 @@ function! s:ShortString(string, max_length)
 endfunction
 
 function! s:PrintMatches()
-  let l:dir_char = v:searchforward ? '/' : '?'
-  if line('$') > g:searchindex_line_limit
-    let l:msg = '[MAX]  ' . l:dir_char . @/
-  else
-    " If there are no matches, search fails before we get here. The only way
-    " we could see zero results is on 'g/' (but that's a reasonable result).
-    let [l:current, l:total] = searchindex#MatchCounts()
-    let l:msg = '[' . l:current . '/' . l:total . ']  ' . l:dir_char . @/
-  endif
+    let l:dir_char = v:searchforward ? '/' : '?'
+    if line('$') > g:searchindex_line_limit
+        let l:msg = '[MAX]  ' . l:dir_char . @/
+    else
+        " If there are no matches, search fails before we get here. The only way
+        " we could see zero results is on 'g/' (but that's a reasonable result).
+        let [l:current, l:total] = searchindex#MatchCounts()
+        let l:msg = '[' . l:current . '/' . l:total . ']  ' . l:dir_char . @/
+    endif
 
-  " foldopen+=search causes search commands to open folds in the matched line
-  " - but it doesn't work in mappings. Hence, we just open the folds here.
-  if &foldopen =~# "search"
-    normal! zv
-  endif
+    " foldopen+=search causes search commands to open folds in the matched line
+    " - but it doesn't work in mappings. Hence, we just open the folds here.
+    if &foldopen =~# "search"
+        normal! zv
+    endif
 
-  " Shorten the message string, to make it one screen wide. Do it only if the
-  " T flag is inside the shortmess variable.
-  " It seems that the press enter message won't be printed only if the length
-  " of the message is shorter by at least 11 chars than the real length of the
-  " screen.
-  if &shortmess =~# "T"
-    let l:msg = s:ShortString(l:msg, &columns - 11)
-  endif
+    " Shorten the message string, to make it one screen wide. Do it only if the
+    " T flag is inside the shortmess variable.
+    " It seems that the press enter message won't be printed only if the length
+    " of the message is shorter by at least 11 chars than the real length of the
+    " screen.
+    if &shortmess =~# "T"
+        let l:msg = s:ShortString(l:msg, &columns - 11)
+    endif
 
-  " Flush any delayed screen updates before printing "l:msg".
-  " See ":h :echo-redraw".
-  redraw | echo l:msg
+    " Flush any delayed screen updates before printing "l:msg".
+    " See ":h :echo-redraw".
+    redraw | echo l:msg
 endfunction
 
 " Return 2-element array, containing current index and total number of matches
 " of @/ (last search pattern) in the current buffer.
 function! searchindex#MatchCounts()
-  " both :s and search() modify cursor position
-  let win_view = winsaveview()
-  " folds affect range of ex commands (issue #4)
-  let save_foldenable = &foldenable
-  set nofoldenable
+    " both :s and search() modify cursor position
+    let win_view = winsaveview()
+    " folds affect range of ex commands (issue #4)
+    let save_foldenable = &foldenable
+    set nofoldenable
 
-  let in_line = s:MatchInLine()
+    let in_line = s:MatchInLine()
 
-  let cache_key = [b:changedtick, @/]
-  if exists('b:searchindex_cache_key') && b:searchindex_cache_key ==# cache_key
-    let before = s:MatchesAbove(b:searchindex_cache_val)
-    let total = b:searchindex_cache_val[-1]
-  else
-    let before = (line('.') == 1 ? 0 : s:MatchesInRange('1,-1'))
-    let total = before + s:MatchesInRange(',$')
-  endif
+    let cache_key = [b:changedtick, @/]
+    if exists('b:searchindex_cache_key') && b:searchindex_cache_key ==# cache_key
+        let before = s:MatchesAbove(b:searchindex_cache_val)
+        let total = b:searchindex_cache_val[-1]
+    else
+        let before = (line('.') == 1 ? 0 : s:MatchesInRange('1,-1'))
+        let total = before + s:MatchesInRange(',$')
+    endif
 
-  let b:searchindex_cache_val = [line('.'), before, total]
-  let b:searchindex_cache_key = cache_key
+    let b:searchindex_cache_val = [line('.'), before, total]
+    let b:searchindex_cache_key = cache_key
 
-  let &foldenable = save_foldenable
-  call winrestview(win_view)
+    let &foldenable = save_foldenable
+    call winrestview(win_view)
 
-  return [before + in_line, total]
+    return [before + in_line, total]
 endfunction
 
 """ IMPLEMENTATION NOTES
