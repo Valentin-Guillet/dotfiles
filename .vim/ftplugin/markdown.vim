@@ -877,7 +877,7 @@ augroup END
 
 
 " Activate conceal
-setlocal conceallevel=2 concealcursor=nc
+setlocal conceallevel=2 concealcursor=c
 
 " Tabstop and shiftwidth to 2
 setlocal shiftwidth=2 tabstop=2

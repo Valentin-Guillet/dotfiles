@@ -231,7 +231,7 @@ function! s:TodoListsSetItemMode()
     nnoremap <silent> <buffer> <leader>c :call <SID>TodoListsCleanItemsDone()<CR>
     nnoremap <silent> <buffer> <Space> :call <SID>TodoListsToggleItem()<CR>
     vnoremap <silent> <buffer> <Space> :call <SID>TodoListsToggleItem()<CR>
-    inoremap <silent> <buffer> <CR> <CR><C-U><ESC>:call <SID>TodoListsCreateNewItem()<CR>
+    inoremap <silent> <buffer> <CR> <CR><ESC>d0:call <SID>TodoListsCreateNewItem()<CR>
     noremap  <silent> <buffer> <leader>e :silent call <SID>TodoListsSetNormalMode()<CR>
     nnoremap <silent> <buffer> <Tab> :call <SID>TodoListsIncreaseIndent()<CR>
     nnoremap <silent> <buffer> <S-Tab> :call <SID>TodoListsDecreaseIndent()<CR>

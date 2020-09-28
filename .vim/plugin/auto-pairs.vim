@@ -140,6 +140,25 @@ func! s:backspace(s)
     return repeat("\<BS>", s:ulen(a:s))
 endf
 
+func! s:getline_before()
+    let line = getline('.')
+    let pos = col('.') - 1
+    let before = strpart(line, 0, pos)
+    let after = strpart(line, pos)
+    if g:AutoPairsMultilineClose
+        let i = line('.')-1
+        while 0 <= i
+            let line = getline(i)
+            let before = line.' '.before
+            if !(line =~ '\v^\s*$')
+                break
+            end
+            let i = i-1
+        endwhile
+    end
+    return [before, after]
+endf
+
 func! s:getline()
     let line = getline('.')
     let pos = col('.') - 1
@@ -348,7 +367,7 @@ func! AutoPairsFastWrap()
         let after = after[2:]
     endif
 
-    if after =~ '\v^\s?[\{\[\(\<].*'
+    if after =~ '\v^\s?[{[(].*'
         normal! %p
     else
         for [open, close, opt] in b:AutoPairsList
@@ -356,6 +375,9 @@ func! AutoPairsFastWrap()
                 continue
             end
             if after =~ '^\s*\V'.open
+                if after =~ '^\v\s+'
+                    normal! w
+                end
                 call search(close, 'We')
                 normal! p
                 let @" = c
@@ -372,10 +394,9 @@ endf
 " Fast wrap the word in brackets
 func! AutoPairsFastUnwrap()
     let c = @"
+    let [before, after] = s:getline_before()
     normal! x
-    let [before, after, ig] = s:getline()
-    " echom "Before = /" . before "/, after = /" . after "/"
-    if before[strlen(before)-1] =~ '\v[\}\]\)\>]'
+    if before =~ '\v[]})]\s?$'
         normal! h%gep
     else
         for [open, close, opt] in b:AutoPairsList
@@ -383,17 +404,21 @@ func! AutoPairsFastUnwrap()
                 continue
             end
             if before =~ '\V' . close . '\v\s*$'
-                normal! h
+                if col('.') != col('$')-1
+                    normal! h
+                end
                 call search(open, 'bWe')
                 normal! gep
                 let @" = c
                 return ""
             end
         endfor
-        if before[strlen(before)-1] =~ '\v[\{\[\(\<]'
+        if before =~ '\v[{[(]$'
             normal! P
         else
-            normal! hgep
+            " Divide the command in two not to interrupt if h fails
+            normal! h
+            normal! gep
         endif
     end
     let @" = c

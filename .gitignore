@@ -80,4 +80,5 @@
 !.vim/
 !.vim/**
 .vim/.netrwhist
+.vim/.netrwbook
 
