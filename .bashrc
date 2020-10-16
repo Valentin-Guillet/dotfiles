@@ -38,7 +38,7 @@ fi
 HISTCONTROL=ignoreboth   # Don't put duplicate lines or lines starting with space
 HISTSIZE=1000            # Set up length
 HISTFILE="$XDG_CACHE_HOME"/history/bash_history
-HISTFILESIZE=2000
+HISTFILESIZE=20000
 shopt -s histappend      # Append to the history file, don't overwrite it
 
 # Write to the history after every command without waiting exit

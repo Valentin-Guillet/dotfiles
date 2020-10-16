@@ -17,10 +17,6 @@ alias ll='ls -ahlF'
 alias la='ls -A'
 alias l='ls -CF'
 
-alias cpr='cp -r'
-alias rmr='rm -r'
-alias cd..='cd ..'
-
 alias pu="pushd"
 alias po="popd"
 

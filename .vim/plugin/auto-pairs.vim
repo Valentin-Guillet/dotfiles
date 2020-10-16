@@ -239,6 +239,12 @@ func! AutoPairsInsert(key)
         if len(ms) > 0
             " process the open pair
 
+            " Don't insert pair of ' or " if there's an odd number on the line
+            if (open == close || open == '\v(^|\W)\zs''') && (count(before, close) + count(afterline, close)) % 2
+                echom 'Test'
+                return close
+            endif
+
             " remove inserted pair
             " eg: if the pairs include < > and  <!-- --> 
             " when <!-- is detected the inserted pair < > should be clean up 

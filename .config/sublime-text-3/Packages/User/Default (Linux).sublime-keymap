@@ -61,13 +61,18 @@
     // Debug command
     { "keys": ["alt+b"], "command": "insert_snippet",
         "args": {"contents": "breakpoint()     # debug"} },
-    { "keys": ["alt+d"], "command": "add_debug", "args": {"action": "toggle"} },
-    { "keys": ["alt+shift+d"], "command": "add_debug", "args": {"action": "remove"} },
-    { "keys": ["alt+c"], "command": "toggle_debug_comment", "args": {"action": "comment"},
+    { "keys": ["alt+d"], "command": "debug", "args": {"action": "toggle"} },
+    { "keys": ["alt+shift+d"], "command": "debug", "args": {"action": "remove"} },
+
+    { "keys": ["alt+c"], "command": "debug", "args": {"action": "comment"},
         "context": [ {"key": "setting.is_widget", "operator": "equal", "operand": false} ]
     },
-    { "keys": ["alt+v"], "command": "toggle_debug_comment", "args": {"action": "uncomment"} },
-    { "keys": ["alt+t"], "command": "toggle_debug_comment", "args": {"action": "toggle"}},
+    { "keys": ["alt+v"], "command": "debug", "args": {"action": "uncomment"},
+        "context": [ {"key": "setting.is_widget", "operator": "equal", "operand": false} ]
+    },
+    { "keys": ["alt+t"], "command": "debug", "args": {"action": "toggle_comment"},
+        "context": [ {"key": "setting.is_widget", "operator": "equal", "operand": false} ]
+    },
 
     // ========================= TABS AND PANES =========================
 

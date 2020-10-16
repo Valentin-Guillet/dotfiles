@@ -646,43 +646,6 @@ function! s:VersionAwareNetrwBrowseX(url)
         call netrw#NetrwBrowseX(a:url, 0)
     endif
 endf
-
-function! s:MapNotHasmapto(lhs, rhs)
-    if !hasmapto('<Plug>' . a:rhs)
-        execute 'nmap <buffer>' . a:lhs . ' <Plug>' . a:rhs
-        execute 'vmap <buffer>' . a:lhs . ' <Plug>' . a:rhs
-    endif
-endfunction
-
-call s:MapNormVis('<Plug>Markdown_MoveToNextHeader', '<SID>MoveToNextHeader')
-call s:MapNormVis('<Plug>Markdown_MoveToPreviousHeader', '<SID>MoveToPreviousHeader')
-call s:MapNormVis('<Plug>Markdown_MoveToNextSiblingHeader', '<SID>MoveToNextSiblingHeader')
-call s:MapNormVis('<Plug>Markdown_MoveToPreviousSiblingHeader', '<SID>MoveToPreviousSiblingHeader')
-call s:MapNormVis('<Plug>Markdown_MoveToParentHeader', '<SID>MoveToParentHeader')
-call s:MapNormVis('<Plug>Markdown_MoveToCurHeader', '<SID>MoveToCurHeader')
-nnoremap <Plug>Markdown_OpenUrlUnderCursor :call <SID>OpenUrlUnderCursor()<cr>
-nnoremap <Plug>Markdown_EditUrlUnderCursor :call <SID>EditUrlUnderCursor()<cr>
-
-if !get(g:, 'vim_markdown_no_default_key_mappings', 0)
-    call s:MapNotHasmapto(']]', 'Markdown_MoveToNextHeader')
-    call s:MapNotHasmapto('[[', 'Markdown_MoveToPreviousHeader')
-    call s:MapNotHasmapto('][', 'Markdown_MoveToNextSiblingHeader')
-    call s:MapNotHasmapto('[]', 'Markdown_MoveToPreviousSiblingHeader')
-    call s:MapNotHasmapto(']u', 'Markdown_MoveToParentHeader')
-    call s:MapNotHasmapto(']c', 'Markdown_MoveToCurHeader')
-    call s:MapNotHasmapto('gx', 'Markdown_OpenUrlUnderCursor')
-    call s:MapNotHasmapto('ge', 'Markdown_EditUrlUnderCursor')
-endif
-
-command! -buffer -range=% HeaderDecrease call s:HeaderDecrease(<line1>, <line2>)
-command! -buffer -range=% HeaderIncrease call s:HeaderDecrease(<line1>, <line2>, 1)
-command! -buffer -range=% SetexToAtx call s:SetexToAtx(<line1>, <line2>)
-command! -buffer TableFormat call s:TableFormat()
-command! -buffer Toc call s:Toc()
-command! -buffer Toch call s:Toc('horizontal')
-command! -buffer Tocv call s:Toc('vertical')
-command! -buffer Toct call s:Toc('tab')
-
 " Heavily based on vim-notes - http://peterodding.com/code/vim/notes/
 if exists('g:vim_markdown_fenced_languages')
     let s:filetype_dict = {}
@@ -784,11 +747,11 @@ endfunction
 
 function! s:MarkdownShouldIndent()
     let l:line = getline('.')
-    let l:is_bullet = '^\s*[+*-]\s*.*$'
-    let l:no_text_yet = '^\s*[+*-]\s*$'
+    let l:is_bullet = '^\s*[+*-]\%( \[.\]\)\?\s*.*$'
+    let l:no_text_yet = '^\s*[+*-]\%( \[.\]\)\?\s*$'
 
     let l:beginning_line = l:line[:col('.')-1]
-    let l:is_not_letters = '^\s*[+*-]\?$'
+    let l:is_not_letters = '^\s*\%(\|[+*-]\%(\| \[.\]\)\)\?$'
 
     return l:line =~ l:is_bullet && (l:line =~ l:no_text_yet || l:beginning_line =~ l:is_not_letters)
 endfunction
@@ -864,6 +827,476 @@ function! s:MarkdownModifyDedentRange(type)
     endfor
 endfunction
 
+" Sets the item done
+function! s:TodoListsSetItemDone(lineno)
+    let l:line = getline(a:lineno)
+    call setline(a:lineno, substitute(l:line, '^\(\s*\%([-*+]\|\d\+\.\) \)\[[^X]\]', '\1[X]', ''))
+endfunction
+
+
+" Sets the item not done
+function! s:TodoListsSetItemNotDone(lineno)
+    let l:line = getline(a:lineno)
+    call setline(a:lineno, substitute(l:line, '^\(\s*\%([-*+]\|\d\+\.\) \)\[[-X]\]', '\1[ ]', ''))
+endfunction
+
+
+" Sets the item in progress
+function! s:TodoListsSetItemInProg(lineno)
+    let l:line = getline(a:lineno)
+    call setline(a:lineno, substitute(l:line, '^\(\s*\%([-*+]\|\d\+\.\) \)\[[^X]\]', '\1[-]', ''))
+endfunction
+
+
+" Checks that line is a todo list item
+function! s:TodoListsLineIsItem(line)
+    return a:line =~ '^\s*\%([-*+]\|\d\+\.\) \[.\].*'
+endfunction
+
+
+" Checks that item is not done
+function! s:TodoListsItemIsNotDone(line)
+    return match(a:line, '^\s*\%([-*+]\|\d\+\.\) \[[^X]\].*') != -1
+endfunction
+
+
+" Checks that item is done
+function! s:TodoListsItemIsDone(line)
+    return match(a:line, '^\s*\%([-*+]\|\d\+\.\) \[X\].*') != -1
+endfunction
+
+
+" Returns the line number of the brother item in specified range
+function! s:TodoListsBrotherItemInRange(line, range)
+    let l:indent = s:TodoListsCountLeadingSpaces(getline(a:line))
+    let l:result = -1
+
+    for current_line in a:range
+        if s:TodoListsLineIsItem(getline(current_line)) == 0
+            break
+        endif
+
+        if (s:TodoListsCountLeadingSpaces(getline(current_line)) == l:indent)
+            let l:result = current_line
+            break
+        elseif (s:TodoListsCountLeadingSpaces(getline(current_line)) > l:indent)
+            continue
+        else
+            break
+        endif
+    endfor
+
+    return l:result
+endfunction
+
+
+" Finds the insert position above the item
+function! s:TodoListsFindTargetPositionUp(lineno)
+    let l:range = range(a:lineno, 1, -1)
+    let l:candidate_line = s:TodoListsBrotherItemInRange(a:lineno, l:range)
+    let l:target_line = -1
+
+    while l:candidate_line != -1
+        let l:target_line = l:candidate_line
+        let l:candidate_line = s:TodoListsBrotherItemInRange(
+                    \ l:candidate_line, range(l:candidate_line - 1, 1, -1))
+
+        if l:candidate_line != -1 &&
+                    \ s:TodoListsItemIsNotDone(getline(l:candidate_line)) == 1
+            let l:target_line = l:candidate_line
+            break
+        endif
+    endwhile
+
+    return s:TodoListsFindLastChild(l:target_line)
+endfunction
+
+
+" Finds the insert position below the item
+function! s:TodoListsFindTargetPositionDown(line)
+    let l:range = range(a:line, line('$'))
+    let l:candidate_line = s:TodoListsBrotherItemInRange(a:line, l:range)
+    let l:target_line = -1
+
+    while l:candidate_line != -1
+        let l:target_line = l:candidate_line
+        let l:candidate_line = s:TodoListsBrotherItemInRange(
+                    \ l:candidate_line, range(l:candidate_line + 1, line('$')))
+    endwhile
+
+    return s:TodoListsFindLastChild(l:target_line)
+endfunction
+
+
+" Counts the number of leading spaces
+function! s:TodoListsCountLeadingSpaces(line)
+    return (strlen(a:line) - strlen(substitute(a:line, '^\s*', '', '')))
+endfunction
+
+
+" Returns the line number of the parent
+function! s:TodoListsFindParent(lineno)
+    let l:indent = s:TodoListsCountLeadingSpaces(getline(a:lineno))
+    let l:parent_lineno = -1
+
+    for current_line in range(a:lineno, 1, -1)
+        if (s:TodoListsLineIsItem(getline(current_line)) &&
+                    \ s:TodoListsCountLeadingSpaces(getline(current_line)) < l:indent)
+            let l:parent_lineno = current_line
+            break
+        endif
+    endfor
+
+    return l:parent_lineno
+endfunction
+
+
+" Returns the line number of the last child
+function! s:TodoListsFindLastChild(lineno)
+    let l:indent = s:TodoListsCountLeadingSpaces(getline(a:lineno))
+    let l:last_child_lineno = a:lineno
+
+    " If item is the last line in the buffer it has no children
+    if a:lineno == line('$')
+        return l:last_child_lineno
+    endif
+
+    for current_line in range (a:lineno + 1, line('$'))
+        if (s:TodoListsLineIsItem(getline(current_line)) &&
+                    \ s:TodoListsCountLeadingSpaces(getline(current_line)) > l:indent)
+            let l:last_child_lineno = current_line
+        else
+            break
+        endif
+    endfor
+
+    return l:last_child_lineno
+endfunction
+
+
+" Marks the parent done if all children are done
+function! s:TodoListsUpdateParent(lineno)
+    if s:disable_undo
+        return
+    endif
+
+    let l:parent_lineno = s:TodoListsFindParent(a:lineno)
+
+    " No parent item
+    if l:parent_lineno == -1
+        return
+    endif
+
+    let l:last_child_lineno = s:TodoListsFindLastChild(l:parent_lineno)
+
+    " There is no children
+    if l:last_child_lineno == l:parent_lineno
+        return
+    endif
+
+    for current_line in range(l:parent_lineno + 1, l:last_child_lineno)
+        if s:TodoListsItemIsNotDone(getline(current_line)) == 1
+            " Not all children are done
+            call s:TodoListsSetItemNotDone(l:parent_lineno)
+            call s:TodoListsUpdateParent(l:parent_lineno)
+            return
+        endif
+    endfor
+
+    call s:TodoListsSetItemDone(l:parent_lineno)
+    call s:TodoListsUpdateParent(l:parent_lineno)
+endfunction
+
+
+function! s:TodoListsUpdateItems(lineno)
+    call s:TodoListsUpdateParent(a:lineno-1)
+    call s:TodoListsUpdateParent(a:lineno)
+endfunction
+
+
+" Applies the function for each child
+function! s:TodoListsForEachChild(lineno, function)
+    let l:last_child_lineno = s:TodoListsFindLastChild(a:lineno)
+
+    " Apply the function on children prior to the item.
+    " This order is required for proper work of the items moving on toggle
+    for current_line in range(a:lineno, l:last_child_lineno)
+        call call(a:function, [current_line])
+    endfor
+endfunction
+
+
+" Creates a new item above the current line
+function! s:TodoListsCreateNewItemAbove()
+    normal! O
+    call s:TodoListsCreateNewItem()
+    startinsert!
+endfunction
+
+
+" Creates a new item below the current line
+function! s:TodoListsCreateNewItemBelow()
+    normal! o
+    call s:TodoListsCreateNewItem()
+    startinsert!
+endfunction
+
+
+" Creates a new item in the current line
+function! s:TodoListsCreateNewItem()
+    " If prev line is empty item, delete it
+    if getline(line('.')-1) =~ '^\s*- \[[ X ]\]\s*$'
+        call setline(line('.')-1, '')
+        call s:TodoListsUpdateParent(line('.')-2)
+    endif
+
+    normal! 0i- [ ] 
+    let l:prev_line = getline(line('.')-1)
+    if s:TodoListsLineIsItem(l:prev_line)
+        let l:indent = indent(line('.')-1)
+        if l:indent > 0
+            for l:i in range(l:indent / &shiftwidth)
+                normal >>
+            endfor
+        endif
+    endif
+    startinsert!
+endfunction
+
+
+" Moves the cursor to the next item
+function! s:TodoListsGoToNextItem()
+    normal! $
+    silent! exec '/^\s*\%([-*+]\|\d\+\.\) \[.\]'
+    silent! exec 'noh'
+    normal! l
+endfunction
+
+
+" Moves the cursor to the previous item
+function! s:TodoListsGoToPreviousItem()
+    normal! 0
+    silent! exec '?^\s*\%([-*+]\|\d\+\.\) \[.\]'
+    silent! exec 'noh'
+    normal! l
+endfunction
+
+
+" Moves the cursor to the next base item
+function! s:TodoListsGoToNextBaseItem()
+    normal! $
+    silent! exec '/^\%([-*+]\|\d\+\.\) \[.\]'
+    silent! exec 'noh'
+    normal! l
+endfunction
+
+
+" Moves the cursor to the previous base item
+function! s:TodoListsGoToPreviousBaseItem()
+    normal! 0
+    silent! exec '?^\%([-*+]\|\d\+\.\) \[.\]'
+    silent! exec 'noh'
+    normal! l
+endfunction
+
+
+" Toggles todo list item
+function! s:TodoListsToggleItem()
+    let l:line = getline('.')
+    let l:lineno = line('.')
+
+    " Store current cursor position
+    let l:cursor_pos = getcurpos()
+
+    if s:TodoListsItemIsNotDone(l:line) == 1
+        call s:TodoListsForEachChild(l:lineno, 's:TodoListsSetItemDone')
+    elseif s:TodoListsItemIsDone(l:line) == 1
+        call s:TodoListsForEachChild(l:lineno, 's:TodoListsSetItemNotDone')
+    endif
+
+    call s:TodoListsUpdateParent(l:lineno)
+
+    " Restore the current position
+    " Using the {curswant} value to set the proper column
+    call cursor(l:cursor_pos[1], l:cursor_pos[4])
+endfunction
+
+
+function! s:TodoListsSetInProgItem()
+    let l:line = getline('.')
+    let l:lineno = line('.')
+
+    " Store current cursor position
+    let l:cursor_pos = getcurpos()
+
+    if s:TodoListsItemIsNotDone(l:line) == 1
+        call s:TodoListsForEachChild(l:lineno, 's:TodoListsSetItemInProg')
+    endif
+
+    " Restore the current position
+    " Using the {curswant} value to set the proper column
+    call cursor(l:cursor_pos[1], l:cursor_pos[4])
+endfunction
+
+
+function! s:TodoListsDeleteItem(lineno)
+    let l:indent = s:TodoListsCountLeadingSpaces(getline(a:lineno))
+    execute "normal! :" . a:lineno . "," . s:TodoListsFindLastChild(a:lineno) . "d\<CR>"
+    if l:indent == 0 && getline(a:lineno) == ''
+        normal! dd
+    endif
+endfunction
+
+
+function! s:TodoListsCleanItemsDone()
+    let l:lineno = 0
+    while l:lineno < line('$')
+        let l:line = getline(l:lineno)
+        if s:TodoListsLineIsItem(l:line) && s:TodoListsItemIsDone(l:line)
+            call s:TodoListsDeleteItem(l:lineno)
+        else
+            let l:lineno += 1
+        endif
+    endwhile
+endfunction
+
+
+" Increases the indent level
+function! s:TodoListsIncreaseIndent()
+    normal! >>
+endfunction
+
+
+" Decreases the indent level
+function! s:TodoListsDecreaseIndent()
+    normal! <<
+endfunction
+
+
+function s:TodoListsDisableUndo()
+    let s:disable_undo = 1
+endfunction
+
+
+function s:TodoListsEnableUndo()
+    let s:disable_undo = 0
+endfunction
+
+
+function s:TodoListsUndo()
+    call s:TodoListsDisableUndo()
+    normal! u
+endfunction
+
+
+function s:TodoListsRedo()
+    call s:TodoListsDisableUndo()
+    normal! 
+endfunction
+
+call s:MapNormVis('<Plug>Markdown_MoveToNextHeader', '<SID>MoveToNextHeader')
+call s:MapNormVis('<Plug>Markdown_MoveToPreviousHeader', '<SID>MoveToPreviousHeader')
+call s:MapNormVis('<Plug>Markdown_MoveToNextSiblingHeader', '<SID>MoveToNextSiblingHeader')
+call s:MapNormVis('<Plug>Markdown_MoveToPreviousSiblingHeader', '<SID>MoveToPreviousSiblingHeader')
+call s:MapNormVis('<Plug>Markdown_MoveToParentHeader', '<SID>MoveToParentHeader')
+call s:MapNormVis('<Plug>Markdown_MoveToCurHeader', '<SID>MoveToCurHeader')
+
+" Sets mapping for normal navigation and editing mode
+function! s:MarkdownSetNormalMode()
+    if exists('s:cursorline_backup')
+        let &cursorline = s:cursorline_backup
+    endif
+    if exists('s:autoindent_backup')
+        let &autoindent = s:autoindent_backup
+    endif
+    let s:disable_undo = 1
+
+    setlocal formatoptions-=c
+    setlocal comments+=b:*,b:+,b:-
+
+    silent! nunmap <buffer> j
+    silent! nunmap <buffer> k
+    silent! nunmap <buffer> dd
+    silent! nunmap <buffer> <leader>d
+    silent! iunmap <buffer> <CR>
+    silent! unmap  <buffer> <Tab>
+    silent! unmap  <buffer> <S-Tab>
+    silent! nunmap <buffer> [[
+    silent! nunmap <buffer> ]]
+    silent! nunmap <buffer> u
+    silent! nunmap <buffer> <C-R>
+    silent! nunmap <buffer> <Tab>
+    silent! nunmap <buffer> <S-Tab>
+
+    augroup Todo
+        autocmd!
+    augroup END
+
+    map <buffer> ]] <Plug>Markdown_MoveToNextHeader
+    map <buffer> [[ <Plug>Markdown_MoveToPreviousHeader
+    map <buffer> ][ <Plug>Markdown_MoveToNextSiblingHeader
+    map <buffer> [] <Plug>Markdown_MoveToPreviousSiblingHeader
+    map <buffer> ]u <Plug>Markdown_MoveToParentHeader
+    map <buffer> ]c <Plug>Markdown_MoveToCurHeader
+
+    nnoremap <buffer> o A<CR>
+    nnoremap <buffer> O kA<CR>
+    nnoremap <buffer><silent> > :set opfunc=<SID>MarkdownModifyIndentRange<CR>g@
+    nnoremap <buffer><silent> < :set opfunc=<SID>MarkdownModifyDedentRange<CR>g@
+    vnoremap <buffer><silent> > :<C-u>call <SID>MarkdownModifyIndentRange('visual')<CR>
+    vnoremap <buffer><silent> < :<C-u>call <SID>MarkdownModifyDedentRange('visual')<CR>
+
+    inoremap <buffer> <CR> <C-O>:call <SID>MarkdownRemoveBullet()<CR><CR>
+
+    noremap  <silent> <buffer> <leader>e :call <SID>MarkdownSetItemMode()<CR>
+endfunction
+
+" Sets mappings for faster item navigation and editing
+function! s:MarkdownSetItemMode()
+    let s:cursorline_backup = &cursorline
+    let s:autoindent_backup = &autoindent
+    setlocal cursorline
+    setlocal noautoindent
+
+    setlocal formatoptions+=c
+    setlocal comments-=b:*,b:+,b:-
+
+    silent! unmap <buffer> ]]
+    silent! unmap <buffer> [[
+    silent! unmap <buffer> ][
+    silent! unmap <buffer> []
+    silent! unmap <buffer> ]u
+    silent! unmap <buffer> ]c
+    silent! iunmap <buffer> <CR>
+
+    nnoremap <silent> <buffer> o :call <SID>TodoListsCreateNewItemBelow()<CR>
+    nnoremap <silent> <buffer> O :call <SID>TodoListsCreateNewItemAbove()<CR>
+    nnoremap <silent> <buffer> j :call <SID>TodoListsGoToNextItem()<CR>
+    nnoremap <silent> <buffer> k :call <SID>TodoListsGoToPreviousItem()<CR>
+    nnoremap <silent> <buffer> dd :call <SID>TodoListsDeleteItem(line('.'))<CR>
+    nnoremap <silent> <buffer> <leader>d :call <SID>TodoListsCleanItemsDone()<CR>
+    inoremap <silent> <buffer> <CR> <CR><ESC>d0:call <SID>TodoListsCreateNewItem()<CR>
+    nmap <buffer> <Tab>   <Plug>MarkdownIncrement
+    nmap <buffer> <S-Tab> <Plug>MarkdownDecrement
+
+    nnoremap <silent> <buffer> [[ :call <SID>TodoListsGoToPreviousBaseItem()<CR>
+    nnoremap <silent> <buffer> ]] :call <SID>TodoListsGoToNextBaseItem()<CR>
+
+    noremap  <silent> <buffer> <leader>e :silent call <SID>MarkdownSetNormalMode()<CR>
+
+    let s:disable_undo = 0
+    nnoremap <silent><buffer> u :call <SID>TodoListsUndo()<CR>:call <SID>TodoListsEnableUndo()<CR>
+    nnoremap <silent><buffer> <C-R> :call <SID>TodoListsRedo()<CR>:call <SID>TodoListsEnableUndo()<CR>
+
+    augroup Todo
+        autocmd!
+
+        autocmd TextChanged * call s:TodoListsUpdateItems(line('.'))
+        autocmd InsertEnter * call s:TodoListsUpdateItems(line('.'))
+    augroup END
+
+endfunction
+
 augroup Mkd
     " These autocmd calling s:MarkdownRefreshSyntax need to be kept in sync with
     " the autocmds calling s:MarkdownSetupFolding in after/ftplugin/markdown.vim.
@@ -875,28 +1308,35 @@ augroup Mkd
     autocmd CursorHold,CursorHoldI <buffer> call s:MarkdownRefreshSyntax(0)
 augroup END
 
+command! -buffer -range=% HeaderDecrease call s:HeaderDecrease(<line1>, <line2>)
+command! -buffer -range=% HeaderIncrease call s:HeaderDecrease(<line1>, <line2>, 1)
+command! -buffer -range=% SetexToAtx call s:SetexToAtx(<line1>, <line2>)
+command! -buffer TableFormat call s:TableFormat()
+command! -buffer Toc call s:Toc()
+command! -buffer Toch call s:Toc('horizontal')
+command! -buffer Tocv call s:Toc('vertical')
+command! -buffer Toct call s:Toc('tab')
 
-" Activate conceal
+
 setlocal conceallevel=2 concealcursor=c
+setlocal shiftwidth=2 tabstop=2 expandtab
 
-" Tabstop and shiftwidth to 2
-setlocal shiftwidth=2 tabstop=2
+" Permanent mappings
+noremap <buffer> <leader>c :<C-U>Toc<CR>
+noremap <silent> <buffer> <Space> :call <SID>TodoListsToggleItem()<CR>
+noremap <silent> <buffer> g<Space> :call <SID>TodoListsSetInProgItem()<CR>
+
+nnoremap <Plug>Markdown_OpenUrlUnderCursor :call <SID>OpenUrlUnderCursor()<cr>
+nnoremap <Plug>Markdown_EditUrlUnderCursor :call <SID>EditUrlUnderCursor()<cr>
+map <buffer> gx <Plug>Markdown_OpenUrlUnderCursor
+map <buffer> ge <Plug>Markdown_EditUrlUnderCursor
 
 
-" Custom mappings
-noremap  <buffer> <leader>c :Toc<CR>
-nnoremap <buffer> o A<CR>
-nnoremap <buffer> O kA<CR>
-
-nnoremap <buffer><silent> > :set opfunc=<SID>MarkdownModifyIndentRange<CR>g@
-nnoremap <buffer><silent> < :set opfunc=<SID>MarkdownModifyDedentRange<CR>g@
-vnoremap <buffer><silent> > :<C-u>call <SID>MarkdownModifyIndentRange('visual')<CR>
-vnoremap <buffer><silent> < :<C-u>call <SID>MarkdownModifyDedentRange('visual')<CR>
-
+" Indentation mappings
 nnoremap <buffer><silent> <Plug>MarkdownIncrement :call <SID>MarkdownModifyBullet( 1) \| execute "normal! >>" \| call repeat#set("\<Plug>MarkdownIncrement")<CR>
 nnoremap <buffer><silent> <Plug>MarkdownDecrement :call <SID>MarkdownModifyBullet(-1) \| execute "normal! <<" \| call repeat#set("\<Plug>MarkdownDecrement")<CR>
-nmap >> <Plug>MarkdownIncrement
-nmap << <Plug>MarkdownDecrement
+nmap <buffer> >> <Plug>MarkdownIncrement
+nmap <buffer> << <Plug>MarkdownDecrement
 
 inoremap <buffer><silent>       <C-T> <C-O>:call <SID>MarkdownModifyBullet(1)<CR><C-T>
 inoremap <buffer><silent><expr> <C-D> col('.')>strlen(getline('.'))?"<C-O>:call <SID>MarkdownModifyBullet(-1)<CR><C-D>":"<Del>"
@@ -904,5 +1344,10 @@ inoremap <buffer><silent><expr> <C-D> col('.')>strlen(getline('.'))?"<C-O>:call 
 inoremap <buffer><silent><expr> <Tab>   <SID>MarkdownShouldIndent()?"<C-\><C-O>:call <SID>MarkdownModifyBullet(1)<CR><C-T>":"<Tab>"
 inoremap <buffer><silent>       <S-Tab> <C-O>:call <SID>MarkdownModifyBullet(-1)<CR><C-D>
 
-inoremap <buffer> <CR> <C-O>:call <SID>MarkdownRemoveBullet()<CR><CR>
+
+if expand('%:t') =~ '.*\.todo' || expand('%:t') =~ 'ToDo'
+    call s:MarkdownSetItemMode()
+else
+    call s:MarkdownSetNormalMode()
+endif
 

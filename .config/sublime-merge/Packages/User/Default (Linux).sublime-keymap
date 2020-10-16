@@ -1,6 +1,6 @@
 [
 	// Edit this default keymap file
-	{ "keys": ["ctrl+alt+shift+o"], "command": "open_in_editor",
+	{ "keys": ["ctrl+alt+shift+b"], "command": "open_in_editor",
 		"args": {"path": "${packages}/User/Default ($platform).sublime-keymap",
 				 "default": "[\n\t$0\n]\n"}
 	},
