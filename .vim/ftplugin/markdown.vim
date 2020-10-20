@@ -1045,7 +1045,7 @@ endfunction
 " Creates a new item in the current line
 function! s:TodoListsCreateNewItem()
     " If prev line is empty item, delete it
-    if getline(line('.')-1) =~ '^\s*- \[[ X ]\]\s*$'
+    if getline(line('.')-1) =~ '^\s*\%([-*+]\|\d\+\.\) \[[ X ]\]\s*$'
         call setline(line('.')-1, '')
         call s:TodoListsUpdateParent(line('.')-2)
     endif
@@ -1241,11 +1241,6 @@ function! s:MarkdownSetNormalMode()
 
     nnoremap <buffer> o A<CR>
     nnoremap <buffer> O kA<CR>
-    nnoremap <buffer><silent> > :set opfunc=<SID>MarkdownModifyIndentRange<CR>g@
-    nnoremap <buffer><silent> < :set opfunc=<SID>MarkdownModifyDedentRange<CR>g@
-    vnoremap <buffer><silent> > :<C-u>call <SID>MarkdownModifyIndentRange('visual')<CR>
-    vnoremap <buffer><silent> < :<C-u>call <SID>MarkdownModifyDedentRange('visual')<CR>
-
     inoremap <buffer> <CR> <C-O>:call <SID>MarkdownRemoveBullet()<CR><CR>
 
     noremap  <silent> <buffer> <leader>e :call <SID>MarkdownSetItemMode()<CR>
@@ -1337,6 +1332,11 @@ nnoremap <buffer><silent> <Plug>MarkdownIncrement :call <SID>MarkdownModifyBulle
 nnoremap <buffer><silent> <Plug>MarkdownDecrement :call <SID>MarkdownModifyBullet(-1) \| execute "normal! <<" \| call repeat#set("\<Plug>MarkdownDecrement")<CR>
 nmap <buffer> >> <Plug>MarkdownIncrement
 nmap <buffer> << <Plug>MarkdownDecrement
+
+nnoremap <buffer><silent> > :set opfunc=<SID>MarkdownModifyIndentRange<CR>g@
+nnoremap <buffer><silent> < :set opfunc=<SID>MarkdownModifyDedentRange<CR>g@
+vnoremap <buffer><silent> > :<C-u>call <SID>MarkdownModifyIndentRange('visual')<CR>
+vnoremap <buffer><silent> < :<C-u>call <SID>MarkdownModifyDedentRange('visual')<CR>
 
 inoremap <buffer><silent>       <C-T> <C-O>:call <SID>MarkdownModifyBullet(1)<CR><C-T>
 inoremap <buffer><silent><expr> <C-D> col('.')>strlen(getline('.'))?"<C-O>:call <SID>MarkdownModifyBullet(-1)<CR><C-D>":"<Del>"
