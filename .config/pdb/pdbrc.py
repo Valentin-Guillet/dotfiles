@@ -14,7 +14,6 @@ atexit.register(readline.write_history_file, histfile)
 
 # Cleanup any variables that could otherwise clutter up the namespace.
 try:
-    del os
     del readline
     del atexit
     del histfile

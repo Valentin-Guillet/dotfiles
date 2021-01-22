@@ -38,9 +38,10 @@ augroup Toc
 augroup END
 
 nnoremap <buffer><silent> <CR> <CR>:lclose<CR>zvzt
-nnoremap <buffer><silent> <leader><CR> :execute "lclose \| botright vsplit \| " . line('.') . "ll \| normal! zOzt"<Cr>
+nnoremap <buffer><silent> <leader><CR> :execute "lclose \| botright vsplit \| " . line('.') . "ll \| normal! zOzt"<CR>
 
-nnoremap <buffer><silent> ]u :call <SID>MoveToParentHeader()<Cr>
-nnoremap <buffer><silent> [[ :call <SID>MoveToSiblingHeader(-1)<Cr>
-nnoremap <buffer><silent> ]] :call <SID>MoveToSiblingHeader(1)<Cr>
+nnoremap <buffer><silent> ]u :call <SID>MoveToParentHeader()<CR>
+nnoremap <buffer><silent> [[ :call <SID>MoveToSiblingHeader(-1)<CR>
+nnoremap <buffer><silent> ]] :call <SID>MoveToSiblingHeader(1)<CR>
+nmap <buffer><silent> <leader>c <leader>c
 
