@@ -153,7 +153,10 @@ let g:vim_markdown_new_list_item_indent = 2
 
 " Tagbar
 let g:tagbar_position = 'topleft vertical'
-nnoremap <leader>c :TagbarOpen fj<CR>
+let g:tagbar_sort = 0
+let g:tagbar_autofocus = 1
+let g:tagbar_jump_offset = 100
+nnoremap <leader>c :TagbarOpen j<CR>
 
 " Vim/Tmux navigator
 let g:tmux_navigator_disable_when_zoomed = 1
@@ -173,12 +176,12 @@ nnoremap <leader>r :source $MYVIMRC \| redraw \| echo "Config reloaded !"<CR>
 nnoremap <leader>w :update <CR>
 
 " Split
-nnoremap <silent><leader>\ :vsplit<CR>
-nnoremap <silent><leader><bar> :vsplit \| enew<CR>
-nnoremap <silent><leader>- :split<CR>
-nnoremap <silent><leader>_ :split \| enew<CR>
-nnoremap <silent><leader>= <C-w>=
-nnoremap <silent><leader>q :q<CR>
+nnoremap <silent> <leader>\ :vsplit<CR>
+nnoremap <silent> <leader><bar> :vsplit \| enew<CR>
+nnoremap <silent> <leader>- :split<CR>
+nnoremap <silent> <leader>_ :split \| enew<CR>
+nnoremap <silent> <leader>= <C-w>=
+nnoremap <silent> <leader>q :q<CR>
 
 " Move splits around
 nnoremap <leader>H <C-w>H
@@ -187,10 +190,10 @@ nnoremap <leader>K <C-w>K
 nnoremap <leader>L <C-w>L
 
 " Tabs
-nnoremap <silent><leader>t :tab split<CR>
-nnoremap <silent><leader>T :tabnew<CR>
-nnoremap <silent><leader>n :tabnext<CR>
-nnoremap <silent><leader>p :tabprev<CR>
+nnoremap <silent> <leader>t :tab split<CR>
+nnoremap <silent> <leader>T :tabnew<CR>
+nnoremap <silent> <leader>n :tabnext<CR>
+nnoremap <silent> <leader>p :tabprev<CR>
 
 nnoremap <leader>N :tabm <C-R>=(tabpagenr()+1)%(tabpagenr('$')+1)<CR><CR>
 nnoremap <leader>P :tabm <C-R>=(tabpagenr()+tabpagenr('$')-1)%(tabpagenr('$')+1)<CR><CR>
@@ -225,6 +228,7 @@ nnoremap <C-h> o<C-c>
 " Operator pending mapping
 onoremap in' :<C-u>normal! f'vi'<CR>
 onoremap in" :<C-u>normal! f"vi"<CR>
+onoremap in` :<C-u>normal! f`vi`<CR>
 onoremap in( :<C-u>normal! f(vi(<CR>
 onoremap in[ :<C-u>normal! f[vi[<CR>
 onoremap in{ :<C-u>normal! f{vi{<CR>
@@ -232,6 +236,7 @@ onoremap in< :<C-u>normal! f<vi<<CR>
 
 onoremap il' :<C-u>normal! F'hvi'<CR>
 onoremap il" :<C-u>normal! F"hvi"<CR>
+onoremap il` :<C-u>normal! F`hvi`<CR>
 onoremap il( :<C-u>normal! F)vi(<CR>
 onoremap il[ :<C-u>normal! F[vi[<CR>
 onoremap il{ :<C-u>normal! F{vi{<CR>
@@ -239,6 +244,7 @@ onoremap il< :<C-u>normal! F<vi<<CR>
 
 " Swap words
 nnoremap <silent> gt "_yiw:s/\(\%#\w\+\)\(\_W\+\)\(\w\+\)/\3\2\1/<CR><C-o>/\w\+\_W\+<CR><C-l>:nohlsearch<CR>
+nnoremap <silent> gT "_yiw?\w\+\_W\+<CR><C-l>:nohlsearch<CR>:s/\(\%#\w\+\)\(\_W\+\)\(\w\+\)/\3\2\1/<CR><C-o>
 
 " Unmap Q and K
 nnoremap Q <nop>
@@ -300,14 +306,9 @@ endif
 
 " {{{1 STATUS LINE
 
-" Set status line
-function! GitBranch()
-    return system("git rev-parse --abbrev-ref HEAD 2>/dev/null | tr -d '\n'")
-endfunction
-
 function! StatuslineGit()
-    let l:branchname = GitBranch()
-    return strlen(l:branchname) > 0?'  '.l:branchname.' ':''
+    let l:branchname = system("git rev-parse --abbrev-ref HEAD 2>/dev/null | tr -d '\n'")
+    return !empty(l:branchname) ? '  ' . l:branchname . ' ' : ''
 endfunction
 
 set laststatus=2
