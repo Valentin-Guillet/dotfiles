@@ -96,11 +96,7 @@ EDITOR=/usr/bin/vim
 
 # Alias definitions
 [ -f "$XDG_CONFIG_HOME"/bash/aliases ] && . "$XDG_CONFIG_HOME"/bash/aliases
-[ -f "$XDG_CONFIG_HOME"/bash/local_aliases ] && . "$XDG_CONFIG_HOME"/bash/local_aliases
 [ -f "$XDG_CONFIG_HOME"/bash/functions ] && . "$XDG_CONFIG_HOME"/bash/functions
-
-if [[ $PATH != */opt/miniconda3/bin* ]]
-then
-    export PATH="/opt/miniconda3/bin:"$PATH
-fi
+[ -f "$XDG_CONFIG_HOME"/bash/local_aliases ] && . "$XDG_CONFIG_HOME"/bash/local_aliases
+[ -f "$XDG_CONFIG_HOME"/bash/local_path ] && . "$XDG_CONFIG_HOME"/bash/local_path
 

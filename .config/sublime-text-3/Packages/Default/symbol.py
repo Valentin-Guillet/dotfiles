@@ -1,3 +1,4 @@
+
 import sublime
 import sublime_plugin
 import re
@@ -34,7 +35,6 @@ def lookup_symbol_curr_view(view, symbol, pt):
     regex_func_arg = re.compile(r'^(\s*def \w+\((?:|.*,) *)' + symbol_regex + r' *(?:= *\w+)?(?:|,.*)\) *:')
 
     regex_assign = re.compile(r'^(\s*(?:|.*,) *)' + symbol_regex + r' *(?:|,.*)=')
-    # regex_assign = re.compile(r'^(\s*(?:[\w+] *, *)*)' + symbol_regex + r'(?:[\w+,] ?)* ?=')
 
     regex_import = re.compile(r'^(\s*import (?:|.*,) *)' + symbol_regex + r' *(?:|,.*)(?: *#.* *)?$')
     regex_import_from = re.compile(r'^(\s*from .* import (?:|.*,) *)' + symbol_regex + r' *(?:|,.*)(?: *#.* *)?$')
