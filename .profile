@@ -8,6 +8,12 @@
 # for ssh logins, install and configure the libpam-umask package.
 #umask 022
 
+# set PATH so it includes user's private bin if it exists
+if [ -d "$HOME/.local/bin" ] && [[ $PATH != *"$HOME/.local/bin"* ]]
+then
+    PATH="$HOME/.local/bin:$PATH"
+fi
+
 # if running bash
 if [ -n "$BASH_VERSION" ]
 then
@@ -16,11 +22,5 @@ then
     then
         . "$HOME/.bashrc"
     fi
-fi
-
-# set PATH so it includes user's private bin if it exists
-if [ -d "$HOME/.local/bin" ] && [[ $PATH != *"$HOME/.local/bin"* ]]
-then
-    PATH="$HOME/.local/bin:$PATH"
 fi
 

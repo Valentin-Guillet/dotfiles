@@ -92,7 +92,7 @@ if [ -x /usr/bin/dircolors ]; then
     alias egrep='egrep --color=auto'
 fi
 
-EDITOR=/usr/bin/vim
+EDITOR=$(which vim)
 
 # Alias definitions
 [ -f "$XDG_CONFIG_HOME"/bash/aliases ] && . "$XDG_CONFIG_HOME"/bash/aliases

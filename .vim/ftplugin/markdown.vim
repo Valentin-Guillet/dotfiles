@@ -1089,7 +1089,7 @@ endfunction
 
 function! s:TodoList_CleanItemsDone()
     let l:lineno = 0
-    while l:lineno < line('$')
+    while l:lineno <= line('$')
         let l:line = getline(l:lineno)
         if s:TodoList_LineIsItem(l:line) && s:TodoList_ItemIsDone(l:line)
             call s:TodoList_DeleteItem(l:lineno)
