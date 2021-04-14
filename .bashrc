@@ -22,14 +22,19 @@ export LESSHISTFILE="$XDG_CACHE_HOME"/history/less_history
 export CUDA_CACHE_PATH="$XDG_CACHE_HOME"/nv
 
 # Auto launch tmux
-if command -v tmux > /dev/null
+if [ -z $IGNORE_TMUX ] && command -v tmux > /dev/null
 then
     if tmux ls 2>/dev/null | grep -v "(attached)" && [ -z "$SSH_CONNECTION" ]
     then
         n_session=$(tmux ls | grep -v "(attached)" | head -n 1 | cut -d : -f 1)
         [[ ! $TERM =~ screen || $SSH_CLIENT ]] && [ -z "$TMUX" ] && exec tmux attach -t "$n_session"
     else
-        [[ ! $TERM =~ screen || $SSH_CLIENT ]] && [ -z "$TMUX" ] && exec tmux
+        if [[ ! $TERM =~ screen || $SSH_CLIENT ]] && [ -z "$TMUX" ]
+        then
+            trap 'exec env IGNORE_TMUX=1 bash -l' USR1
+            tmux new-session \; set-environment TMUX_PPID $$
+            exit
+        fi
     fi
     source "$XDG_CONFIG_HOME"/tmux/tmux_completion.sh
 fi
