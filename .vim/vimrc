@@ -194,6 +194,9 @@ nnoremap <silent> <leader>t :tab split<CR>
 nnoremap <silent> <leader>T :tabnew<CR>
 nnoremap <silent> <leader>n :tabnext<CR>
 nnoremap <silent> <leader>p :tabprev<CR>
+for i in range(1, 9)
+    execute "nnoremap <silent> <leader>" . i . " :" . i . "tabnext<CR>"
+endfor
 
 nnoremap <leader>N :tabm <C-R>=(tabpagenr()+1)%(tabpagenr('$')+1)<CR><CR>
 nnoremap <leader>P :tabm <C-R>=(tabpagenr()+tabpagenr('$')-1)%(tabpagenr('$')+1)<CR><CR>
@@ -211,10 +214,10 @@ nnoremap <C-k> <C-y>
 vnoremap <C-k> <C-y>
 
 " Exit insert mode with kj
-inoremap kj <C-c>l
-inoremap Kj <C-c>l
-inoremap kJ <C-c>l
-inoremap KJ <C-c>l
+inoremap kj <Esc>l
+inoremap Kj <Esc>l
+inoremap kJ <Esc>l
+inoremap KJ <Esc>l
 
 " Move line
 nnoremap <silent> - :m .+1<CR>==
@@ -302,6 +305,55 @@ endfunction
 if !exists(":W")
     command W execute 'silent! write !sudo /usr/bin/tee "%" >/dev/null' <bar> edit!
 endif
+
+
+" {{{1 WHITESPACE HIGHLIGHTING
+
+augroup whitespaceHighlight
+    autocmd!
+
+    highlight ExtraWhitespace ctermbg=red
+    match ExtraWhitespace /\s\+$\| \+\ze\t/
+    autocmd WinEnter * match ExtraWhitespace /\s\+$\| \+\ze\t/
+    autocmd InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$\| \+\ze\t/
+    autocmd InsertLeave * match ExtraWhitespace /\s\+$\| \+\ze\t/
+    autocmd WinLeave * call clearmatches()
+
+    autocmd InsertLeave * redraw!
+augroup END
+
+
+" {{{1 TAB LINE
+
+function! TabLine()
+    let s = ''
+    for tab in range(1, tabpagenr('$'))
+        let winnr = tabpagewinnr(tab)
+        let buflist = tabpagebuflist(tab)
+        let bufnr = buflist[winnr - 1]
+        let bufname = bufname(bufnr)
+        let bufmodified = getbufvar(bufnr, "&mod")
+        let base_color = (tab == tabpagenr() ? '%#TabLineSel#' : '%#TabLine#')
+        let nb_color = (tab == tabpagenr() ? '%#TabLineNbSel#' : '%#TabLineNb#')
+
+        let s .= '%' . tab . 'T' . base_color
+        let s .= ' ' . nb_color . tab . base_color . " "
+        let s .= (bufname != '' ? fnamemodify(bufname, ':t') : '[No Name]')
+
+        let s .= (bufmodified ? ' [+]' : ' ')
+    endfor
+
+    let s .= '%#TabLineFill#'
+    return s
+endfunction
+
+highlight TabLine cterm=underline ctermfg=15 ctermbg=242
+highlight TabLineSel cterm=bold
+highlight TabLineNbSel cterm=bold ctermfg=Brown
+highlight TabLineNb cterm=underline ctermfg=Brown ctermbg=242
+highlight TabLineFill ctermfg=Grey
+
+set tabline=%!TabLine()
 
 
 " {{{1 STATUS LINE

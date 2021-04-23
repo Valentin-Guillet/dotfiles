@@ -78,6 +78,10 @@ augroup END
 nnoremap <buffer><silent> <CR> <CR>:call <SID>TOC_CRAutoclose()<CR>zvjzvzczOkzt
 nnoremap <buffer><silent> <leader><CR> :execute "lclose \| botright vsplit \| " . line('.') . "ll \| normal! zOzt"<CR>
 
+nnoremap <buffer><silent><nowait> P <nop>
+nnoremap <buffer><silent><nowait> s <nop>
+nnoremap <buffer><silent><nowait> i <nop>
+
 nnoremap <buffer><silent><nowait> p <CR>zvjzvzczOkzt<C-W>p
 nnoremap <buffer><silent><nowait> c :call <SID>TOC_ToggleAutoclose()<CR>
 nnoremap <buffer><silent><nowait> x :call <SID>TOC_ToggleZoom()<CR>
