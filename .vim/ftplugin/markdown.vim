@@ -906,8 +906,23 @@ function! s:TodoList_CreateNewItem()
         call s:TodoList_UpdateParent(line('.')-2)
     endif
 
-    normal! 0i- [ ] 
+    let l:prev_line_non_empty_nb = line('.')-1
+    while l:prev_line_non_empty_nb > 0 && getline(l:prev_line_non_empty_nb) =~ '^\s*$'
+        let l:prev_line_non_empty_nb -= 1
+    endwhile
+
+    let l:prev_line_non_empty = getline(l:prev_line_non_empty_nb)
+    if l:prev_line_non_empty =~ '^\s*\d\+\. \[[X ]\] '
+        let l:beg_ind = match(l:prev_line_non_empty, '\d')
+        let l:end_ind = match(l:prev_line_non_empty, '\.')
+        let l:bullet_nb = str2nr(l:prev_line_non_empty[l:beg_ind: l:end_ind-1]) + 1
+        execute "normal! 0i" . l:bullet_nb . ". [ ] "
+        startinsert!
+        return
+    endif
+
     let l:prev_line = getline(line('.')-1)
+    normal! 0i- [ ] 
     if s:TodoList_LineIsItem(l:prev_line)
         let l:indent = indent(line('.')-1)
         if l:indent > 0
@@ -979,7 +994,7 @@ function! s:TodoList_GoToNextSiblingItem(mode)
     let l:indent = indent(l:curr_item_line)
     let l:next_sibling_line = line('.') + 1
 
-    while l:next_sibling_line < line('$') && 
+    while l:next_sibling_line < line('$') &&
             \ (!s:TodoList_LineIsItem(getline(l:next_sibling_line)) || indent(l:next_sibling_line) > l:indent)
         let l:next_sibling_line += 1
     endwhile
@@ -1003,7 +1018,7 @@ function! s:TodoList_GoToPreviousSiblingItem(mode)
     let l:indent = indent(l:curr_item_line)
     let l:prev_sibling_line = l:curr_item_line - 1
 
-    while l:prev_sibling_line > -1 && 
+    while l:prev_sibling_line > -1 &&
             \ (!s:TodoList_LineIsItem(getline(l:prev_sibling_line)) || indent(l:prev_sibling_line) > l:indent)
         let l:prev_sibling_line -= 1
     endwhile
@@ -1025,7 +1040,7 @@ function! s:TodoList_GoToParentItem(mode)
     if l:curr_item_line < 0 || l:indent == 0 | echo 'No parent item' | return | endif
 
     let l:parent_line = l:curr_item_line - 1
-    while l:parent_line > -1 && 
+    while l:parent_line > -1 &&
             \ (!s:TodoList_LineIsItem(getline(l:parent_line)) || indent(l:parent_line) >= l:indent)
         let l:parent_line -= 1
     endwhile

@@ -103,6 +103,10 @@ set lazyredraw          " don't update screen during macros
 
 set foldlevelstart=0
 
+set notagrelative       " cf plugin/hidden_tags.vim
+
+set sessionoptions-=options     " To restore syntax highlighting when restoring session (unzoom)
+
 if has("autocmd")
     augroup myGroup
         autocmd!
@@ -283,12 +287,6 @@ inoremap <C-k> <C-G>u<Esc>[s1z=`]a<C-G>u
 " Quit visual mode with q
 vnoremap q <C-c>
 
-" Ctags
-set tags=tags
-nnoremap <leader>g :execute '!ctags -R .'<CR> :echo "Tags created"<CR>
-nnoremap <leader>] :vsp <CR>:exec("tag ".expand("<cword>"))<CR>
-nnoremap <leader>} :tab split<CR>:exec("tag ".expand("<cword>"))<CR>
-
 
 " {{{1 COMMANDS
 
@@ -326,25 +324,25 @@ augroup END
 " {{{1 TAB LINE
 
 function! TabLine()
-    let s = ''
-    for tab in range(1, tabpagenr('$'))
-        let winnr = tabpagewinnr(tab)
-        let buflist = tabpagebuflist(tab)
-        let bufnr = buflist[winnr - 1]
-        let bufname = bufname(bufnr)
-        let bufmodified = getbufvar(bufnr, "&mod")
-        let base_color = (tab == tabpagenr() ? '%#TabLineSel#' : '%#TabLine#')
-        let nb_color = (tab == tabpagenr() ? '%#TabLineNbSel#' : '%#TabLineNb#')
+    let l:s = ''
+    for l:tab in range(1, tabpagenr('$'))
+        let l:winnr = tabpagewinnr(l:tab)
+        let l:buflist = tabpagebuflist(l:tab)
+        let l:bufnr = l:buflist[l:winnr - 1]
+        let l:bufname = bufname(l:bufnr)
+        let l:bufmodified = getbufvar(l:bufnr, "&mod")
+        let l:base_color = (l:tab == tabpagenr() ? '%#TabLineSel#' : '%#TabLine#')
+        let l:nb_color = (l:tab == tabpagenr() ? '%#TabLineNbSel#' : '%#TabLineNb#')
 
-        let s .= '%' . tab . 'T' . base_color
-        let s .= ' ' . nb_color . tab . base_color . " "
-        let s .= (bufname != '' ? fnamemodify(bufname, ':t') : '[No Name]')
+        let l:s .= '%' . l:tab . 'T' . l:base_color
+        let l:s .= ' ' . l:nb_color . l:tab . l:base_color . " "
+        let l:s .= (l:bufname != '' ? fnamemodify(l:bufname, ':t') : '[No Name]')
 
-        let s .= (bufmodified ? ' [+]' : ' ')
+        let l:s .= (l:bufmodified ? ' [+]' : ' ')
     endfor
 
-    let s .= '%#TabLineFill#'
-    return s
+    let l:s .= '%#TabLineFill#'
+    return l:s
 endfunction
 
 highlight TabLine cterm=underline ctermfg=15 ctermbg=242
