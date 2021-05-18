@@ -267,7 +267,7 @@ cnoremap  <C-w>
 inoremap <S-Tab> <C-d>
 
 " Enter opens folds in normal mode
-nnoremap <silent> <CR> :silent! execute "normal! zO\n"<CR>
+nnoremap <silent><expr> <CR> getcmdwintype() !~ '[/?]' ? ':silent! execute "normal! zO\n"<CR>' : '<CR>'
 
 " Cancel autocomplete but reprint longest match
 cmap <C-x> <C-l><C-n><C-p><C-u><C-y><C-z>
@@ -302,6 +302,30 @@ endfunction
 " Command to write read-only file
 if !exists(":W")
     command W execute 'silent! write !sudo /usr/bin/tee "%" >/dev/null' <bar> edit!
+endif
+
+" Command to diff if there are two splits on current window
+function! DiffToggle()
+    if &diff
+        let l:win_nr = winnr()
+        windo diffoff
+        execute l:win_nr . 'wincmd w'
+        return
+    endif
+
+    if tabpagewinnr('.', '$') != 2
+        echohl ErrorMsg
+        echo "Can only diff two files"
+        echohl None
+        return
+    endif
+
+    let l:win_nr = winnr()
+    windo diffthis
+    execute l:win_nr . 'wincmd w'
+endfunction
+if !exists(":DiffToggle")
+    command DiffToggle call DiffToggle()
 endif
 
 

@@ -1,18 +1,11 @@
-"==============================================================================
-"File:        evanesco.vim
-"Description: Automatically clears search highlight on CursorMoved
-"Maintainer:  Pierre-Guy Douyon <pgdouyon@alum.mit.edu>
-"License:     MIT <../LICENSE>
-"==============================================================================
 
 let s:save_cpo = &cpoptions
 set cpoptions&vim
 
-let s:paused = 0
 let s:has_current_match = 0
 let s:try_set_hlsearch = 0
 
-function! evanesco#evanesco(search_command)
+function! better_search#search(search_command)
     if s:pattern_not_found()
         let v:errmsg = ""
     endif
@@ -29,7 +22,7 @@ endfunction
 
 
 function! s:register_autocmds()
-    augroup evanesco_hl
+    augroup better_search_hl
         autocmd!
         autocmd CursorMoved,InsertEnter * call <SID>toggle_hlsearch()
     augroup END
@@ -37,39 +30,41 @@ endfunction
 
 
 function! s:unregister_autocmds()
-    autocmd! evanesco_hl
-    augroup! evanesco_hl
+    autocmd! better_search_hl
+    augroup! better_search_hl
 endfunction
 
 
-function! evanesco#evanesco_next_end()
+function! better_search#search_next_end()
     call s:register_autocmds()
     call s:set_hlsearch()
     let s:try_set_hlsearch = 0
+    call better_search#print_matches()
 endfunction
 
 
-function! evanesco#evanesco_star()
+function! better_search#search_star()
     let s:save_shortmess = &shortmess
     let s:save_winview = winsaveview()
     set shortmess+=s
 endfunction
 
 
-function! evanesco#evanesco_visual_star(search_type)
+function! better_search#search_visual_star(search_type)
     let save_yank_register_info = ['0', getreg('0'), getregtype('0')]
     let save_unnamed_register_info = ['"', getreg('"'), getregtype('"')]
     normal! gvy
     let escape_chars = '\' . a:search_type
     let search_term = '\V' . s:remove_null_bytes(escape(@@, escape_chars))
-    call evanesco#evanesco_star()
+    call better_search#search_star()
     call call("setreg", save_unnamed_register_info)
     call call("setreg", save_yank_register_info)
 
     " since each call inserts at the start of the buffer, the characters from
     " the first call will be processed after those from the second
-    call feedkeys("\<Plug>Evanesco_visual_search_end", "mi")
+    call feedkeys("\<Plug>BetterSearch_visual_search_end", "mi")
     call feedkeys(a:search_type . search_term . "\<CR>\<C-O>", "nti")
+    call better_search#print_matches()
 endfunction
 
 
@@ -78,7 +73,7 @@ function! s:remove_null_bytes(string)
 endfunction
 
 
-function! evanesco#evanesco_star_end()
+function! better_search#search_star_end()
     let &shortmess = s:save_shortmess
     let s:save_winview.lnum = line(".")
     let s:save_winview.col = col(".") - 1
@@ -86,6 +81,7 @@ function! evanesco#evanesco_star_end()
     call winrestview(s:save_winview)
     call s:register_autocmds()
     call s:set_hlsearch()
+    call better_search#print_matches()
     let s:try_set_hlsearch = 0
 endfunction
 
@@ -96,10 +92,6 @@ endfunction
 "   3) search was aborted by pressing <Esc> or <C-C> at the search prompt
 " only want to enable highlighting for scenario 1 and ignore 2/3 entirely
 function! s:toggle_hlsearch()
-    if s:paused
-        return
-    endif
-
     if s:try_set_hlsearch
         let s:try_set_hlsearch = 0
         if !s:pattern_not_found() && s:search_executed()
@@ -256,7 +248,7 @@ function! s:highlight_current_match() abort
     call s:clear_current_match()
     let [search_pattern, offset] = s:last_search_attempt()
     let match_at_cursor = s:match_at_cursor(search_pattern, offset)
-    let w:evanesco_current_match = matchadd("IncSearch", s:magic().'\c'.match_at_cursor, 999)
+    let w:better_search_current_match = matchadd("IncSearch", s:magic().'\c'.match_at_cursor, 999)
     let s:has_current_match = 1
 endfunction
 
@@ -270,18 +262,23 @@ function! s:clear_current_match()
             execute "tabnext" current_match_tabnr
             execute current_match_winnr "wincmd w"
 
-            call s:matchdelete(w:evanesco_current_match)
-            unlet w:evanesco_current_match
+            call s:matchdelete(w:better_search_current_match)
+            unlet w:better_search_current_match
 
             execute save_win "wincmd w"
             execute "tabnext" save_tab
-        elseif exists("w:evanesco_current_match")
+        elseif exists("w:better_search_current_match")
             " ensure current match is cleared in special cases like command line window
-            call s:matchdelete(w:evanesco_current_match)
-            unlet w:evanesco_current_match
+            call s:matchdelete(w:better_search_current_match)
+            unlet w:better_search_current_match
         endif
         let s:has_current_match = 0
     endif
+endfunction
+
+
+function! better_search#clear_all()
+    call s:set_nohlsearch()
 endfunction
 
 
@@ -291,14 +288,14 @@ function! s:find_current_match_window()
     endif
 
     for winnr in range(1, winnr("$"))
-        if !empty(getwinvar(winnr, "evanesco_current_match"))
+        if !empty(getwinvar(winnr, "better_search_current_match"))
             return [tabpagenr(), winnr]
         endif
     endfor
 
     for tabnr in range(1, tabpagenr("$"))
         for winnr in range(1, tabpagewinnr(tabnr, "$"))
-            if !empty(gettabwinvar(tabnr, winnr, "evanesco_current_match"))
+            if !empty(gettabwinvar(tabnr, winnr, "better_search_current_match"))
                 return [tabnr, winnr]
             endif
         endfor
@@ -316,17 +313,154 @@ function! s:matchdelete(match_id)
     endtry
 endfunction
 
-
-" currently unused
-function! evanesco#pause()
-    let s:paused = 1
-    let s:try_set_hlsearch = 1
+" Search index
+function! s:matches_in_range(range)
+    " Use :s///n to search efficiently in large files. Although calling search()
+    " in the loop would be cleaner (see issue #18), it is also much slower.
+    let gflag = &gdefault ? '' : 'g'
+    let saved_marks = [ getpos("'["), getpos("']") ]
+    let output = ''
+    redir => output
+    silent! execute 'keepjumps ' . a:range . 's//~/en' . gflag
+    redir END
+    call setpos("'[", saved_marks[0])
+    call setpos("']", saved_marks[1])
+    return str2nr(matchstr(output, '\d\+'))
 endfunction
 
+" Calculate which match in the current line the 'col' is at.
+function! s:match_in_line()
+    let line = line('.')
+    let col = col('.')
 
-function! evanesco#resume()
-    let s:paused = 0
+    normal! 0
+    let matches = 0
+    let s_opt = 'c'
+    " The count might be off in edge cases (e.g. regexes that allow empty match,
+    " like 'a*'). Unfortunately, Vim's searching functions are so inconsistent
+    " that I can't fix this.
+    " if @/ ==# ''
+    "     let @/ = ' '
+    " endif
+    try
+        while search(@/, s_opt, line) && col('.') <= col
+            let matches += 1
+            let s_opt = ''
+        endwhile
+    catch
+    endtry
+
+    return matches
 endfunction
+
+" Efficiently recalculate number of matches above cursor using values cached
+" from the previous run.
+function s:matches_above(cached_values)
+    " avoid wrapping range at the beginning of file
+    if line('.') == 1 | return 0 | endif
+
+    let [old_line, old_result, total] = a:cached_values
+    " Find the nearest point from which we can restart match counting (top,
+    " bottom, or previously cached line).
+    let line = line('.')
+    let to_top = line
+    let to_old = abs(line - old_line)
+    let to_bottom = line('$') - line
+    let min_dist = min([to_top, to_old, to_bottom])
+
+    if min_dist == to_top
+        return s:matches_in_range('1,.-1')
+    elseif min_dist == to_bottom
+        return total - s:matches_in_range(',$')
+        " otherwise, min_dist == to_old, we just need to check relative line order
+    elseif old_line < line
+        return old_result + s:matches_in_range(old_line . ',-1')
+    elseif old_line > line
+        return old_result - s:matches_in_range(',' . (old_line - 1))
+    else " old_line == line
+        return old_result
+    endif
+endfunction
+
+" Return the given string, shortened to the maximum length. The middle of the
+" string would be replaced by '...' in case the original string is too long.
+function! s:short_string(string, max_length)
+    if len(a:string) < a:max_length
+        return a:string
+    endif
+
+    " Calculate the needed length of each part of the string.
+    " The 3 is because the middle part would be replace with 3 points.
+    let l:string_part_length = (a:max_length - 3) / 2
+
+    let l:start = a:string[:l:string_part_length - 1]
+    let l:end = a:string[len(a:string) - l:string_part_length:]
+
+    let l:output_string = l:start . "..." . l:end
+
+    return l:output_string
+endfunction
+
+function! better_search#print_matches()
+    let l:dir_char = v:searchforward ? '/' : '?'
+    if line('$') > g:better_search_line_limit
+        let l:msg = '[MAX]  ' . l:dir_char . @/
+    else
+        " If there are no matches, search fails before we get here. The only way
+        " we could see zero results is on 'g/' (but that's a reasonable result).
+        let [l:current, l:total] = s:match_counts()
+        let l:msg = '[' . l:current . '/' . l:total . ']  ' . l:dir_char . @/
+    endif
+
+    " foldopen+=search causes search commands to open folds in the matched line
+    " - but it doesn't work in mappings. Hence, we just open the folds here.
+    if &foldopen =~# "search"
+        normal! zv
+    endif
+
+    " Shorten the message string, to make it one screen wide. Do it only if the
+    " T flag is inside the shortmess variable.
+    " It seems that the press enter message won't be printed only if the length
+    " of the message is shorter by at least 11 chars than the real length of the
+    " screen.
+    if &shortmess =~# "T"
+        let l:msg = s:short_string(l:msg, &columns - 11)
+    endif
+
+    " Flush any delayed screen updates before printing "l:msg".
+    " See ":h :echo-redraw".
+    redraw | echo l:msg
+endfunction
+
+" Return 2-element array, containing current index and total number of matches
+" of @/ (last search pattern) in the current buffer.
+function! s:match_counts()
+    " both :s and search() modify cursor position
+    let win_view = winsaveview()
+    " folds affect range of ex commands (issue #4)
+    let save_foldenable = &foldenable
+    set nofoldenable
+
+    let in_line = s:match_in_line()
+
+    let cache_key = [b:changedtick, @/]
+    if exists('b:better_search_cache_key') && b:better_search_cache_key ==# cache_key
+        let before = s:matches_above(b:better_search_cache_val)
+        let total = b:better_search_cache_val[-1]
+    else
+        let before = (line('.') == 1 ? 0 : s:matches_in_range('1,-1'))
+        let total = before + s:matches_in_range(',$')
+    endif
+
+    let b:better_search_cache_val = [line('.'), before, total]
+    let b:better_search_cache_key = cache_key
+
+    let &foldenable = save_foldenable
+    call winrestview(win_view)
+
+    return [before + in_line, total]
+endfunction
+
 
 let &cpoptions = s:save_cpo
 unlet s:save_cpo
