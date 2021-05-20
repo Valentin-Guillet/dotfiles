@@ -63,7 +63,7 @@ for key in ['*', '#']
 endfor
 
 " Clear match when redrawing screen
-nnoremap <C-l> <C-l>:call better_search#clear_all()<CR>
+nnoremap <silent> <C-l> <C-l>:call better_search#clear_all()<CR>
 
 
 let &cpoptions = s:save_cpo

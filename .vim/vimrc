@@ -141,6 +141,15 @@ let g:AutoPairsShortcutJump = ''
 let g:AutoPairsShortcutBackInsert = '<M-c>'
 let g:AutoPairsCenterLine = 0
 
+" Git Gutter
+set updatetime=100
+let g:gitgutter_highlight_lines = 1
+let g:gitgutter_enabled = 0
+nnoremap <leader>g :GitGutterToggle<CR>
+highlight GitGutterAdd    ctermfg=2
+highlight GitGutterChange ctermfg=3
+highlight GitGutterDelete ctermfg=1
+
 " Markdown
 let g:vim_markdown_toc_autofit = 1
 let g:vim_markdown_follow_anchor = 1

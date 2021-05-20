@@ -978,7 +978,7 @@ function! s:SetMarkdownMode()
     call s:MapKey('][', "<SID>Markdown_GoToNextSiblingHeader")
     call s:MapKey('[]', "<SID>Markdown_GoToPreviousSiblingHeader")
     call s:MapKey(']u', "<SID>Markdown_GoToParentHeader")
-    call s:MapKey(']c', "<SID>Markdown_GoToCurrHeader")
+    call s:MapKey(']y', "<SID>Markdown_GoToCurrHeader")
 
     nnoremap <buffer> o A<CR>
     nnoremap <buffer> O kA<CR>
@@ -1003,7 +1003,7 @@ function! s:SetTodoMode()
     silent! unmap <buffer> ][
     silent! unmap <buffer> []
     silent! unmap <buffer> ]u
-    silent! unmap <buffer> ]c
+    silent! unmap <buffer> ]y
     silent! iunmap <buffer> <CR>
 
     nnoremap <buffer><silent> o :call <SID>TodoList_CreateNewItemBelow()<CR>

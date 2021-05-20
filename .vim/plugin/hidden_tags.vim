@@ -139,7 +139,7 @@ augroup Tags
 augroup END
 
 
-nnoremap <silent> <leader>g :if <SID>UpdateTagsFile() \| call <SID>SetTags() \| endif<CR>
+nnoremap <silent> <leader>G :if <SID>UpdateTagsFile() \| call <SID>SetTags() \| endif<CR>
 nnoremap <silent> <C-]> :call <SID>TagGoToOpenedTab(expand("<cword>"))<CR>
 nnoremap <silent> <leader>] :vsp <CR>:execute "tag " . expand("<cword>")<CR>
 nnoremap <silent> <leader>} :tab split<CR>:execute "tag " . expand("<cword>")<CR>
