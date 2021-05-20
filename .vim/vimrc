@@ -137,7 +137,7 @@ endtry
 
 " Auto-pairs
 let g:AutoPairsShortcutToggle = ''
-let g:AutoPairsShortcutJump = ''
+let g:AutoPairsShortcutJump = '<M-v>'
 let g:AutoPairsShortcutBackInsert = '<M-c>'
 let g:AutoPairsCenterLine = 0
 

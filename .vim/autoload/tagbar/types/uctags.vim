@@ -300,6 +300,25 @@ function! tagbar#types#uctags#init(supported_types) abort
         \ 'namespace'  : 'n'
     \ }
     let types.clojure = type_clojure
+    " CMake {{{1
+    let type_cmake = tagbar#prototypes#typeinfo#new()
+    let type_cmake.ctagstype = 'cmake'
+    let type_cmake.kinds     = [
+        \ {'short': 'p', 'long': 'projects' , 'fold': 0, 'stl': 1},
+        \ {'short': 'm', 'long': 'macros'   , 'fold': 0, 'stl': 1},
+        \ {'short': 'f', 'long': 'functions', 'fold': 0, 'stl': 1},
+        \ {'short': 'D', 'long': 'options'  , 'fold': 0, 'stl': 1},
+        \ {'short': 'v', 'long': 'variables', 'fold': 0, 'stl': 1},
+        \ {'short': 't', 'long': 'targets'  , 'fold': 0, 'stl': 1},
+    \ ]
+    let type_cmake.sro = '.'
+    let type_cmake.kind2scope = {
+        \ 'f' : 'function',
+    \ }
+    let type_cmake.scope2kind = {
+        \ 'function'  : 'f',
+    \ }
+    let types.cmake = type_cmake
     " Ctags config {{{1
     let type_ctags = tagbar#prototypes#typeinfo#new()
     let type_ctags.ctagstype = 'ctags'
@@ -529,12 +548,28 @@ function! tagbar#types#uctags#init(supported_types) abort
     " HTML {{{1
     let type_html = tagbar#prototypes#typeinfo#new()
     let type_html.ctagstype = 'html'
+    let type_html.ctagsargs = [
+                \ '--fields=+{roles}',
+                \ '--extras=+{reference}',
+                \ '--extras=+F',
+                \ '-f',
+                \ '-',
+                \ '--format=2',
+                \ '--excmd=pattern',
+                \ '--fields=nksSafet',
+                \ '--sort=no',
+                \ '--append=no',
+                \ ]
     let type_html.kinds = [
-        \ {'short' : 'a', 'long' : 'named anchors', 'fold' : 0, 'stl' : 1},
-        \ {'short' : 'h', 'long' : 'H1 headings',   'fold' : 0, 'stl' : 1},
-        \ {'short' : 'i', 'long' : 'H2 headings',   'fold' : 0, 'stl' : 1},
-        \ {'short' : 'j', 'long' : 'H3 headings',   'fold' : 0, 'stl' : 1},
-    \ ]
+                \ {'short' : 'a', 'long' : 'named anchors', 'fold' : 0, 'stl' : 1},
+                \ {'short' : 'c', 'long' : 'classes',       'fold' : 0, 'stl' : 1},
+                \ {'short' : 'C', 'long' : 'stylesheets',   'fold' : 0, 'stl' : 1},
+                \ {'short' : 'I', 'long' : 'identifiers',   'fold' : 0, 'stl' : 1},
+                \ {'short' : 'J', 'long' : 'scripts',       'fold' : 0, 'stl' : 1},
+                \ {'short' : 'h', 'long' : 'H1 headings',   'fold' : 1, 'stl' : 1},
+                \ {'short' : 'i', 'long' : 'H2 headings',   'fold' : 1, 'stl' : 1},
+                \ {'short' : 'j', 'long' : 'H3 headings',   'fold' : 1, 'stl' : 1},
+                \ ]
     let types.html = type_html
     " Java {{{1
     let type_java = tagbar#prototypes#typeinfo#new()
@@ -637,13 +672,31 @@ function! tagbar#types#uctags#init(supported_types) abort
     let type_markdown = tagbar#prototypes#typeinfo#new()
     let type_markdown.ctagstype = 'markdown'
     let type_markdown.kinds = [
-        \ {'short' : 'c', 'long' : 'h1', 'fold' : 0, 'stl' : 0},
-        \ {'short' : 's', 'long' : 'h2', 'fold' : 0, 'stl' : 0},
-        \ {'short' : 'S', 'long' : 'h3', 'fold' : 0, 'stl' : 0},
-        \ {'short' : 't', 'long' : 'h4', 'fold' : 0, 'stl' : 0},
-        \ {'short' : 'T', 'long' : 'h5', 'fold' : 0, 'stl' : 0},
-        \ {'short' : 'u', 'long' : 'h6', 'fold' : 0, 'stl' : 0},
+        \ {'short' : 'c', 'long' : 'chapter',       'fold' : 0, 'stl' : 1},
+        \ {'short' : 's', 'long' : 'section',       'fold' : 0, 'stl' : 1},
+        \ {'short' : 'S', 'long' : 'subsection',    'fold' : 0, 'stl' : 1},
+        \ {'short' : 't', 'long' : 'subsubsection', 'fold' : 0, 'stl' : 1},
+        \ {'short' : 'T', 'long' : 'l3subsection',  'fold' : 0, 'stl' : 1},
+        \ {'short' : 'u', 'long' : 'l4subsection',  'fold' : 0, 'stl' : 1},
     \ ]
+    let type_markdown.kind2scope = {
+        \ 'c' : 'chapter',
+        \ 's' : 'section',
+        \ 'S' : 'subsection',
+        \ 't' : 'subsubsection',
+        \ 'T' : 'l3subsection',
+        \ 'u' : 'l4subsection',
+    \ }
+    let type_markdown.scope2kind = {
+        \ 'chapter'       : 'c',
+        \ 'section'       : 's',
+        \ 'subsection'    : 'S',
+        \ 'subsubsection' : 't',
+        \ 'l3subsection'  : 'T',
+        \ 'l4subsection'  : 'u',
+    \ }
+    let type_markdown.sro = '""'
+    let type_markdown.sort = 0
     let types.markdown = type_markdown
     " Matlab {{{1
     let type_matlab = tagbar#prototypes#typeinfo#new()
@@ -842,6 +895,36 @@ function! tagbar#types#uctags#init(supported_types) abort
         \ {'short' : 'v', 'long' : 'function variables', 'fold' : 0, 'stl' : 0},
     \ ]
     let types.r = type_r
+    " ReStructuredText {{{1
+    let type_restructuredtext = tagbar#prototypes#typeinfo#new()
+    let type_restructuredtext.ctagstype = 'restructuredtext'
+    let type_restructuredtext.kinds = [
+        \ {'short' : 'c', 'long' : 'chapter',       'fold' : 0, 'stl' : 1},
+        \ {'short' : 's', 'long' : 'section',       'fold' : 0, 'stl' : 1},
+        \ {'short' : 'S', 'long' : 'subsection',    'fold' : 0, 'stl' : 1},
+        \ {'short' : 't', 'long' : 'subsubsection', 'fold' : 0, 'stl' : 1},
+        \ {'short' : 'T', 'long' : 'l3subsection',  'fold' : 0, 'stl' : 1},
+        \ {'short' : 'u', 'long' : 'l4subsection',  'fold' : 0, 'stl' : 1},
+    \ ]
+    let type_restructuredtext.kind2scope = {
+        \ 'c' : 'chapter',
+        \ 's' : 'section',
+        \ 'S' : 'subsection',
+        \ 't' : 'subsubsection',
+        \ 'T' : 'l3subsection',
+        \ 'u' : 'l4subsection',
+    \ }
+    let type_restructuredtext.scope2kind = {
+        \ 'chapter'       : 'c',
+        \ 'section'       : 's',
+        \ 'subsection'    : 'S',
+        \ 'subsubsection' : 't',
+        \ 'l3subsection'  : 'T',
+        \ 'l4subsection'  : 'u',
+    \ }
+    let type_restructuredtext.sro = '""'
+    let type_restructuredtext.sort = 0
+    let types.rst = type_restructuredtext
     " REXX {{{1
     let type_rexx = tagbar#prototypes#typeinfo#new()
     let type_rexx.ctagstype = 'rexx'

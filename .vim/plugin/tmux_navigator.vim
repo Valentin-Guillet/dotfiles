@@ -20,13 +20,11 @@ if !get(g:, 'tmux_navigator_no_mappings', 0)
   nnoremap <silent> <M-j> :TmuxNavigateDown<cr>
   nnoremap <silent> <M-k> :TmuxNavigateUp<cr>
   nnoremap <silent> <M-l> :TmuxNavigateRight<cr>
-  nnoremap <silent> <M-\> :TmuxNavigatePrevious<cr>
 
   inoremap <silent> <M-h> <Esc>:TmuxNavigateLeft<cr>
   inoremap <silent> <M-j> <Esc>:TmuxNavigateDown<cr>
   inoremap <silent> <M-k> <Esc>:TmuxNavigateUp<cr>
   inoremap <silent> <M-l> <Esc>:TmuxNavigateRight<cr>
-  inoremap <silent> <M-\> <Esc>:TmuxNavigatePrevious<cr>
 endif
 
 if empty($TMUX)
@@ -67,7 +65,11 @@ endfunction
 
 function! s:TmuxCommand(args)
   let cmd = s:TmuxOrTmateExecutable() . ' -S ' . s:TmuxSocket() . ' ' . a:args
-  return system(cmd)
+  let l:x=&shellcmdflag
+  let &shellcmdflag='-c'
+  let retval=system(cmd)
+  let &shellcmdflag=l:x
+  return retval
 endfunction
 
 function! s:TmuxNavigatorProcessList()
