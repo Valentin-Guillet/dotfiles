@@ -22,30 +22,22 @@ let s:headersRegexp = '\v^(#|.+\n(\=+|-+)$)'
 
 " Returns the line number of the first header before `line`, called the
 " current header.
-"
 " If there is no current header, return `0`.
 "
 " @param a:1 The line to look the header of. Default value: `getpos('.')`.
-"
 function! s:GetHeaderLineNum(...)
-    if a:0 == 0
-        let l:l = line('.')
-    else
-        let l:l = a:1
-    endif
-    while l:l > 0
-        if join(getline(l:l, l:l + 1), "\n") =~ s:headersRegexp
-            return l:l
+    let l:line = (a:0 > 0 ? a:1 : line('.'))
+    while l:line > 0
+        if join(getline(l:line, l:line+1), "\n") =~ s:headersRegexp
+            return l:line
         endif
-        let l:l -= 1
+        let l:line -= 1
     endwhile
     return 0
 endfunction
 
 " Returns the level of the header at the given line.
-"
 " If there is no header at the given line, returns `0`.
-"
 function! s:GetLevelOfHeaderAtLine(linenum)
     let l:lines = join(getline(a:linenum, a:linenum + 1), "\n")
     for l:key in keys(s:levelRegexpDict)
@@ -56,16 +48,10 @@ function! s:GetLevelOfHeaderAtLine(linenum)
     return 0
 endfunction
 
-" - if line is inside a header, return the header level (h1 -> 1, h2 -> 2, etc.).
-"
-" - if line is at top level outside any headers, return `0`.
-"
+" If line is inside a header, return the header level (h1 -> 1, h2 -> 2, etc.).
+" If line is at top level outside any headers, return `0`.
 function! s:GetHeaderLevel(...)
-    if a:0 == 0
-        let l:line = line('.')
-    else
-        let l:line = a:1
-    endif
+    let l:line = (a:0 > 0 ? a:1 : line('.'))
     let l:linenum = s:GetHeaderLineNum(l:line)
     if l:linenum != 0
         return s:GetLevelOfHeaderAtLine(l:linenum)
@@ -73,14 +59,9 @@ function! s:GetHeaderLevel(...)
         return 0
     endif
 endfunction
-" -  if inside a header goes to it.
-"    Return its line number.
-"
-" -  if on top level outside any headers,
-"    print a warning
-"    Return `0`.
-"
-"
+
+" If inside a header goes to it, returns its line number.
+" If on top level outside any headers, print a warning and returns 0`.
 function! s:Markdown_GoToCurrHeader(mode)
     if a:mode ==# 'v' | execute "normal! gv" | endif
     let l:lineNum = s:GetHeaderLineNum()
@@ -93,9 +74,7 @@ function! s:Markdown_GoToCurrHeader(mode)
 endfunction
 
 " Move cursor to next header of any level.
-"
 " If there are no more headers, print a warning.
-"
 function! s:Markdown_GoToNextHeader(mode)
     if a:mode ==# 'v' | execute "normal! gv" | endif
     if search(s:headersRegexp, 'W') == 0
@@ -104,30 +83,21 @@ function! s:Markdown_GoToNextHeader(mode)
 endfunction
 
 " Move cursor to previous header (before current) of any level.
-"
 " If it does not exist, print a warning.
-"
 function! s:Markdown_GoToPreviousHeader(mode)
     if a:mode ==# 'v' | execute "normal! gv" | endif
     let l:curHeaderLineNumber = s:GetHeaderLineNum()
-    let l:noPreviousHeader = 0
-    if l:curHeaderLineNumber <= 1
-        let l:noPreviousHeader = 1
-    else
-        let l:previousHeaderLineNumber = s:GetHeaderLineNum(l:curHeaderLineNumber - 1)
-        if l:previousHeaderLineNumber == 0
-            let l:noPreviousHeader = 1
-        else
-            call cursor(l:previousHeaderLineNumber, 1)
-        endif
-    endif
-    if l:noPreviousHeader | echo 'No previous header' | endif
+
+    if l:curHeaderLineNumber <= 1 | echo 'No previous header' | return | endif
+
+    let l:previousHeaderLineNumber = s:GetHeaderLineNum(l:curHeaderLineNumber - 1)
+    if l:previousHeaderLineNumber == 0 | echo 'No previous header' | return | endif
+
+    call cursor(l:previousHeaderLineNumber, 1)
 endfunction
 
 " Move cursor to parent header of the current header.
-"
 " If it does not exit, print a warning and do nothing.
-"
 function! s:Markdown_GoToParentHeader(mode)
     if a:mode ==# 'v' | execute "normal! gv" | endif
     let l:linenum = s:GetParentHeaderLineNumber()
@@ -139,123 +109,60 @@ function! s:Markdown_GoToParentHeader(mode)
 endfunction
 
 " Return the line number of the parent header of line `line`.
-"
 " If it has no parent, return `0`.
-"
 function! s:GetParentHeaderLineNumber(...)
-    if a:0 == 0
-        let l:line = line('.')
-    else
-        let l:line = a:1
-    endif
+    let l:line = (a:0 > 0 ? a:1 : line('.'))
     let l:level = s:GetHeaderLevel(l:line)
     if l:level > 1
-        let l:linenum = s:GetPreviousHeaderLineNumberAtLevel(l:level - 1, l:line)
+        let l:linenum = s:GetHeaderLineNumberAtLevel(l:level-1, -1, l:line)
         return l:linenum
     endif
     return 0
 endfunction
 
-" Return the line number of the previous header of given level.
+" Return the line number of the next header of given level.
 " in relation to line `a:1`. If not given, `a:1 = getline()`
-"
 " `a:1` line is included, and this may return the current header.
-"
 " If none return 0.
-"
-function! s:GetNextHeaderLineNumberAtLevel(level, ...)
-    if a:0 < 1
-        let l:line = line('.')
-    else
-        let l:line = a:1
-    endif
-    let l:l = l:line
-    while l:l <= line('$')
-        if join(getline(l:l, l:l + 1), "\n") =~ get(s:levelRegexpDict, a:level)
-            return l:l
+function! s:GetHeaderLineNumberAtLevel(level, direction, ...)
+    let l:line = (a:0 > 0 ? a:1 : line('.'))
+    while 0 < l:line && l:line <= line('$')
+        if join(getline(l:line, l:line+1), "\n") =~ get(s:levelRegexpDict, a:level)
+            return l:line
         endif
-        let l:l += 1
-    endwhile
-    return 0
-endfunction
-
-" Return the line number of the previous header of given level.
-" in relation to line `a:1`. If not given, `a:1 = getline()`
-"
-" `a:1` line is included, and this may return the current header.
-"
-" If none return 0.
-"
-function! s:GetPreviousHeaderLineNumberAtLevel(level, ...)
-    if a:0 == 0
-        let l:line = line('.')
-    else
-        let l:line = a:1
-    endif
-    let l:l = l:line
-    while l:l > 0
-        if join(getline(l:l, l:l + 1), "\n") =~ get(s:levelRegexpDict, a:level)
-            return l:l
-        endif
-        let l:l -= 1
+        let l:line += a:direction
     endwhile
     return 0
 endfunction
 
 " Move cursor to next sibling header.
-"
 " If there is no next siblings, print a warning and don't move.
-"
-function! s:Markdown_GoToNextSiblingHeader(mode)
+function! s:Markdown_GoToSiblingHeader(direction, mode)
     if a:mode ==# 'v' | execute "normal! gv" | endif
     let l:curHeaderLineNumber = s:GetHeaderLineNum()
     let l:curHeaderLevel = s:GetLevelOfHeaderAtLine(l:curHeaderLineNumber)
     let l:curHeaderParentLineNumber = s:GetParentHeaderLineNumber()
-    let l:nextHeaderSameLevelLineNumber = s:GetNextHeaderLineNumberAtLevel(l:curHeaderLevel, l:curHeaderLineNumber + 1)
-    let l:noNextSibling = 0
-    if l:nextHeaderSameLevelLineNumber == 0
-        let l:noNextSibling = 1
-    else
-        let l:nextHeaderSameLevelParentLineNumber = s:GetParentHeaderLineNumber(l:nextHeaderSameLevelLineNumber)
-        if l:curHeaderParentLineNumber == l:nextHeaderSameLevelParentLineNumber
-            call cursor(l:nextHeaderSameLevelLineNumber, 1)
-        else
-            let l:noNextSibling = 1
-        endif
-    endif
-    if l:noNextSibling | echo 'No next sibling header' | endif
+    let l:nextHeaderSameLevelLineNumber = s:GetHeaderLineNumberAtLevel(l:curHeaderLevel, a:direction, l:curHeaderLineNumber+a:direction)
+
+    let l:err_msg = "No " . (a:direction == 1 ? "next" : "previous") . " sibling header"
+    if l:nextHeaderSameLevelLineNumber == 0 | echo l:err_msg | return | endif
+
+    let l:nextHeaderSameLevelParentLineNumber = s:GetParentHeaderLineNumber(l:nextHeaderSameLevelLineNumber)
+    if l:curHeaderParentLineNumber != l:nextHeaderSameLevelParentLineNumber | echo l:err_msg | return | endif
+
+    call cursor(l:nextHeaderSameLevelLineNumber, 1)
 endfunction
 
-" Move cursor to previous sibling header.
-"
-" If there is no previous siblings, print a warning and do nothing.
-"
+function! s:Markdown_GoToNextSiblingHeader(mode)
+    call s:Markdown_GoToSiblingHeader(1, a:mode)
+endfunction
+
 function! s:Markdown_GoToPreviousSiblingHeader(mode)
-    if a:mode ==# 'v' | execute "normal! gv" | endif
-    let l:curHeaderLineNumber = s:GetHeaderLineNum()
-    let l:curHeaderLevel = s:GetLevelOfHeaderAtLine(l:curHeaderLineNumber)
-    let l:curHeaderParentLineNumber = s:GetParentHeaderLineNumber()
-    let l:previousHeaderSameLevelLineNumber = s:GetPreviousHeaderLineNumberAtLevel(l:curHeaderLevel, l:curHeaderLineNumber - 1)
-    let l:noPreviousSibling = 0
-    if l:previousHeaderSameLevelLineNumber == 0
-        let l:noPreviousSibling = 1
-    else
-        let l:previousHeaderSameLevelParentLineNumber = s:GetParentHeaderLineNumber(l:previousHeaderSameLevelLineNumber)
-        if l:curHeaderParentLineNumber == l:previousHeaderSameLevelParentLineNumber
-            call cursor(l:previousHeaderSameLevelLineNumber, 1)
-        else
-            let l:noPreviousSibling = 1
-        endif
-    endif
-    if l:noPreviousSibling | echo 'No previous sibling header' | endif
+    call s:Markdown_GoToSiblingHeader(-1, a:mode)
 endfunction
 
 function! s:Toc(...)
-    if a:0 > 0
-        let l:window_type = a:1
-    else
-        let l:window_type = 'vertical'
-    endif
+    let l:window_type = (a:0 > 0 ? a:1 : 'vertical')
 
     let l:filename = expand('%:t')
     let l:bufnr = bufnr('%')
@@ -272,11 +179,7 @@ function! s:Toc(...)
         let l:l1 = getline(i+1)
         let l:line = substitute(l:lineraw, "#", "\\\#", "g")
         if l:line =~ '````*' || l:line =~ '\~\~\~\~*'
-            if l:fenced_block == 0
-                let l:fenced_block = 1
-            elseif l:fenced_block == 1
-                let l:fenced_block = 0
-            endif
+            let l:fenced_block = (1 - l:fenced_block)
         elseif l:vim_markdown_frontmatter == 1
             if l:front_matter == 1
                 if l:line == '---'
@@ -314,7 +217,7 @@ function! s:Toc(...)
     endfor
     call setloclist(0, l:header_list)
     if len(l:header_list) == 0
-        echom "Toc: No headers."
+        echomsg "Toc: No headers."
         return
     endif
 
@@ -365,9 +268,7 @@ function! s:Toc(...)
 endfunction
 
 " Convert Setex headers in range `line1 .. line2` to Atx.
-"
 " Return the number of conversions.
-"
 function! s:SetexToAtx(line1, line2)
     let l:originalNumLines = line('$')
     execute 'silent! ' . a:line1 . ',' . a:line2 . 'substitute/\v(.*\S.*)\n\=+$/# \1/'
@@ -376,15 +277,9 @@ function! s:SetexToAtx(line1, line2)
 endfunction
 
 " If `a:1` is 0, decrease the level of all headers in range `line1 .. line2`.
-"
 " Otherwise, increase the level. `a:1` defaults to `0`.
-"
 function! s:HeaderDecrease(line1, line2, ...)
-    if a:0 > 0
-        let l:increase = a:1
-    else
-        let l:increase = 0
-    endif
+    let l:increase = (a:0 > 0 ? a:1 : 0)
     if l:increase
         let l:forbiddenLevel = 6
         let l:replaceLevels = [5, 1]
@@ -413,7 +308,6 @@ endfunction
 " - step +1 for right, -1 for left
 "
 " TODO: multiple lines.
-"
 function! s:FindCornerOfSyntax(lnum, col, step)
     let l:col = a:col
     let l:syn = synIDattr(synID(a:lnum, l:col, 1), 'name')
@@ -427,7 +321,6 @@ endfunction
 " inclusive on the given position.
 "
 " TODO: multiple lines
-"
 function! s:FindNextSyntax(lnum, col, name)
     let l:col = a:col
     let l:step = 1
@@ -455,10 +348,8 @@ endfunction
 " - an empty string if the cursor is not on a link
 "
 " TODO
-"
 " - multiline support
 " - give an error if the separator does is not on a link
-"
 function! s:Markdown_GetUrlForPosition(lnum, col)
     let l:lnum = a:lnum
     let l:col = a:col
@@ -490,11 +381,10 @@ function! s:Markdown_GetUrlForPosition(lnum, col)
 endfunction
 
 " Front end for GetUrlForPosition.
-"
 function! s:OpenUrlUnderCursor()
     let l:url = s:Markdown_GetUrlForPosition(line('.'), col('.'))
     if l:url != ''
-        call s:VersionAwareNetrwBrowseX(l:url)
+        call netrw#BrowseX(l:url, 0)
     else
         echomsg 'The cursor is not on a link.'
     endif
@@ -560,112 +450,6 @@ if !exists('*s:EditUrlUnderCursor')
     endfunction
 endif
 
-function! s:VersionAwareNetrwBrowseX(url)
-    if has('patch-7.4.567')
-        call netrw#BrowseX(a:url, 0)
-    else
-        call netrw#NetrwBrowseX(a:url, 0)
-    endif
-endf
-" Heavily based on vim-notes - http://peterodding.com/code/vim/notes/
-if exists('g:vim_markdown_fenced_languages')
-    let s:filetype_dict = {}
-    for s:filetype in g:vim_markdown_fenced_languages
-        let key = matchstr(s:filetype, "[^=]*")
-        let val = matchstr(s:filetype, "[^=]*$")
-        let s:filetype_dict[key] = val
-    endfor
-else
-    let s:filetype_dict = {
-        \ 'c++': 'cpp',
-        \ 'viml': 'vim',
-        \ 'bash': 'sh',
-        \ 'ini': 'dosini'
-    \ }
-endif
-
-function! s:Markdown_HighlightSources(force)
-    " Syntax highlight source code embedded in notes.
-    " Look for code blocks in the current file
-    let filetypes = {}
-    for line in getline(1, '$')
-        let ft = matchstr(line, '```\s*\zs[0-9A-Za-z_+-]*')
-        if !empty(ft) && ft !~ '^\d*$' | let filetypes[ft] = 1 | endif
-    endfor
-    if !exists('b:mkd_known_filetypes')
-        let b:mkd_known_filetypes = {}
-    endif
-    if !exists('b:mkd_included_filetypes')
-        " set syntax file name included
-        let b:mkd_included_filetypes = {}
-    endif
-    if !a:force && (b:mkd_known_filetypes == filetypes || empty(filetypes))
-        return
-    endif
-
-    " Now we're ready to actually highlight the code blocks.
-    let startgroup = 'mkdCodeStart'
-    let endgroup = 'mkdCodeEnd'
-    for ft in keys(filetypes)
-        if a:force || !has_key(b:mkd_known_filetypes, ft)
-            if has_key(s:filetype_dict, ft)
-                let filetype = s:filetype_dict[ft]
-            else
-                let filetype = ft
-            endif
-            let group = 'mkdSnippet' . toupper(substitute(filetype, "[+-]", "_", "g"))
-            if !has_key(b:mkd_included_filetypes, filetype)
-                let include = s:SyntaxInclude(filetype)
-                let b:mkd_included_filetypes[filetype] = 1
-            else
-                let include = '@' . toupper(filetype)
-            endif
-            let command = 'syntax region %s matchgroup=%s start="^\s*```\s*%s$" matchgroup=%s end="\s*```$" keepend contains=%s%s'
-            execute printf(command, group, startgroup, ft, endgroup, include, has('conceal') && get(g:, 'vim_markdown_conceal', 1) && get(g:, 'vim_markdown_conceal_code_blocks', 1) ? ' concealends' : '')
-            execute printf('syntax cluster mkdNonListItem add=%s', group)
-
-            let b:mkd_known_filetypes[ft] = 1
-        endif
-    endfor
-endfunction
-
-function! s:SyntaxInclude(filetype)
-    " Include the syntax highlighting of another {filetype}.
-    let grouplistname = '@' . toupper(a:filetype)
-    " Unset the name of the current syntax while including the other syntax
-    " because some syntax scripts do nothing when "b:current_syntax" is set
-    if exists('b:current_syntax')
-        let syntax_save = b:current_syntax
-        unlet b:current_syntax
-    endif
-    try
-        execute 'syntax include' grouplistname 'syntax/' . a:filetype . '.vim'
-        execute 'syntax include' grouplistname 'after/syntax/' . a:filetype . '.vim'
-    catch /E484/
-        " Ignore missing scripts
-    endtry
-    " Restore the name of the current syntax
-    if exists('syntax_save')
-        let b:current_syntax = syntax_save
-    elseif exists('b:current_syntax')
-        unlet b:current_syntax
-    endif
-    return grouplistname
-endfunction
-
-
-function! s:Markdown_RefreshSyntax(force)
-    if &filetype =~ 'markdown' && line('$') > 1
-        call s:Markdown_HighlightSources(a:force)
-    endif
-endfunction
-
-function! s:Markdown_ClearSyntaxVariables()
-    if &filetype =~ 'markdown'
-        unlet! b:mkd_included_filetypes
-    endif
-endfunction
-
 function! s:Markdown_ShouldIndent()
     let l:line = getline('.')
     let l:is_bullet = '^\s*[+*-]\%( \[.\]\)\?\s*.*$'
@@ -678,29 +462,24 @@ function! s:Markdown_ShouldIndent()
 endfunction
 
 function! s:Markdown_ModifyBullet(direction, ...)
-    if a:0 > 0
-        let l:line_nb = a:1
-    else
-        let l:line_nb = '.'
-    endif
+    let l:line_nb = (a:0 > 0 ? a:1 : line('.'))
 
     let l:line = getline(l:line_nb)
     let l:bullets = ['-', '+', '*']
     let l:regex = '^\s*\([+*-]\)\%(\s\+.*\)\?$'
 
     let l:match = matchlist(l:line, l:regex)
-    if !empty(l:match)
-        let l:bullet = l:match[1]
-        let l:index = index(l:bullets, l:bullet) + a:direction
+    if empty(l:match) | return | endif
 
-        " Don't modify bullet if on first column and going left
-        if a:direction == 1 || stridx(l:line, l:bullet) > 1  
-            let l:new_bullet = l:bullets[l:index % 3]
-            let l:new_line = substitute(l:line, l:bullet, l:new_bullet, "")
-            call setline(l:line_nb, l:new_line)
-        endif
+    let l:bullet = l:match[1]
+    let l:index = index(l:bullets, l:bullet) + a:direction
 
-    endif
+    " Don't modify bullet if on first column and going left
+    if a:direction == -1 && stridx(l:line, l:bullet) == 0 | return | endif
+
+    let l:new_bullet = l:bullets[l:index % 3]
+    let l:new_line = substitute(l:line, l:bullet, l:new_bullet, "")
+    call setline(l:line_nb, l:new_line)
 endfunction
 
 function! s:Markdown_RemoveBullet()
@@ -714,8 +493,18 @@ function! s:Markdown_RemoveBullet()
         else
             execute "normal! a\<Space>"
         endif
-    
+
     endif
+endfunction
+
+function! s:Markdown_Indent()
+    normal! >>
+    call s:TodoList_UpdateParent(line('.') - 1)
+endfunction
+
+function! s:Markdown_Dedent()
+    normal! <<
+    call s:TodoList_UpdateParent(line('.') - 1)
 endfunction
 
 function! s:Markdown_ModifyIndentRange(type)
@@ -731,6 +520,7 @@ function! s:Markdown_ModifyIndentRange(type)
         call s:Markdown_ModifyBullet(1, l:lnum)
         execute l:lnum . "normal! >>"
     endfor
+    call s:TodoList_UpdateParent(l:max_line)
 endfunction
 
 function! s:Markdown_ModifyDedentRange(type)
@@ -746,6 +536,7 @@ function! s:Markdown_ModifyDedentRange(type)
         call s:Markdown_ModifyBullet(-1, l:lnum)
         execute l:lnum . "normal! <<"
     endfor
+    call s:TodoList_UpdateParent(l:min_line - 1)
 endfunction
 
 
@@ -793,33 +584,26 @@ endfunction
 " Returns the line number of the parent
 function! s:TodoList_FindParent(lineno)
     let l:indent = indent(a:lineno)
-    let l:parent_lineno = -1
+    if l:indent == 0 | return -1 | endif
 
     for current_line in range(a:lineno, 1, -1)
-        if (s:TodoList_LineIsItem(getline(current_line)) &&
-                    \ indent(current_line) < l:indent)
-            let l:parent_lineno = current_line
-            break
+        if s:TodoList_LineIsItem(getline(current_line)) && indent(current_line) < l:indent
+            return current_line
         endif
     endfor
 
-    return l:parent_lineno
+    return -1
 endfunction
 
 
 " Returns the line number of the last child
 function! s:TodoList_FindLastChild(lineno)
+    if a:lineno == line('$') | return a:lineno | endif
     let l:indent = indent(a:lineno)
     let l:last_child_lineno = a:lineno
 
-    " If item is the last line in the buffer it has no children
-    if a:lineno == line('$')
-        return l:last_child_lineno
-    endif
-
     for current_line in range (a:lineno + 1, line('$'))
-        if (s:TodoList_LineIsItem(getline(current_line)) &&
-                    \ indent(current_line) > l:indent)
+        if s:TodoList_LineIsItem(getline(current_line)) && indent(current_line) > l:indent
             let l:last_child_lineno = current_line
         else
             break
@@ -832,29 +616,20 @@ endfunction
 
 " Marks the parent done if all children are done
 function! s:TodoList_UpdateParent(lineno)
-    if s:disable_undo
-        return
-    endif
-
     let l:parent_lineno = s:TodoList_FindParent(a:lineno)
-
-    " No parent item
-    if l:parent_lineno == -1
-        return
-    endif
+    if l:parent_lineno == -1 | return | endif
 
     let l:last_child_lineno = s:TodoList_FindLastChild(l:parent_lineno)
+    if l:last_child_lineno == l:parent_lineno | return | endif
 
-    " There is no children
-    if l:last_child_lineno == l:parent_lineno
-        return
-    endif
-
+    " If (parent done && one child not done) || (parent not done && all child done), update
+    let l:parent_done = s:TodoList_ItemIsDone(getline(l:parent_lineno))
     for current_line in range(l:parent_lineno + 1, l:last_child_lineno)
-        if s:TodoList_ItemIsNotDone(getline(current_line)) == 1
-            " Not all children are done
-            call s:TodoList_SetItemNotDone(l:parent_lineno)
-            call s:TodoList_UpdateParent(l:parent_lineno)
+        if s:TodoList_ItemIsNotDone(getline(current_line))
+            if l:parent_done
+                call s:TodoList_SetItemNotDone(l:parent_lineno)
+                call s:TodoList_UpdateParent(l:parent_lineno)
+            endif
             return
         endif
     endfor
@@ -864,9 +639,10 @@ function! s:TodoList_UpdateParent(lineno)
 endfunction
 
 
-function! s:TodoList_UpdateItems(lineno)
-    call s:TodoList_UpdateParent(a:lineno-1)
-    call s:TodoList_UpdateParent(a:lineno)
+function! s:TodoList_UpdateParents(...)
+    for line in a:000
+        call s:TodoList_UpdateParent(line('.') + line)
+    endfor
 endfunction
 
 
@@ -885,7 +661,7 @@ endfunction
 " Creates a new item above the current line
 function! s:TodoList_CreateNewItemAbove()
     normal! O
-    call s:TodoList_CreateNewItem()
+    call s:TodoList_CreateNewItem(line('.'))
     startinsert!
 endfunction
 
@@ -893,20 +669,20 @@ endfunction
 " Creates a new item below the current line
 function! s:TodoList_CreateNewItemBelow()
     normal! o
-    call s:TodoList_CreateNewItem()
+    call s:TodoList_CreateNewItem(line('.')-1)
     startinsert!
 endfunction
 
 
 " Creates a new item in the current line
-function! s:TodoList_CreateNewItem()
+function! s:TodoList_CreateNewItem(update_line)
     " If prev line is empty item, delete it
-    if getline(line('.')-1) =~ '^\s*\%([-*+]\|\d\+\.\) \[[ X ]\]\s*$'
-        call setline(line('.')-1, '')
-        call s:TodoList_UpdateParent(line('.')-2)
+    if getline(line('.') - 1) =~ '^\s*\%([-*+]\|\d\+\.\) \[[ X ]\]\s*$'
+        call setline(line('.') - 1, '')
+        call s:TodoList_UpdateParent(line('.') - 2)
     endif
 
-    let l:prev_line_non_empty_nb = line('.')-1
+    let l:prev_line_non_empty_nb = line('.') - 1
     while l:prev_line_non_empty_nb > 0 && getline(l:prev_line_non_empty_nb) =~ '^\s*$'
         let l:prev_line_non_empty_nb -= 1
     endwhile
@@ -916,21 +692,23 @@ function! s:TodoList_CreateNewItem()
         let l:beg_ind = match(l:prev_line_non_empty, '\d')
         let l:end_ind = match(l:prev_line_non_empty, '\.')
         let l:bullet_nb = str2nr(l:prev_line_non_empty[l:beg_ind: l:end_ind-1]) + 1
-        execute "normal! 0i" . l:bullet_nb . ". [ ] "
+        call setline(line('.'), l:prev_line_non_empty[:l:beg_ind-1] . l:bullet_nb . ". [ ] ")
         startinsert!
         return
     endif
 
     let l:prev_line = getline(line('.')-1)
-    normal! 0i- [ ] 
     if s:TodoList_LineIsItem(l:prev_line)
-        let l:indent = indent(line('.')-1)
-        if l:indent > 0
-            for l:i in range(l:indent / &shiftwidth)
-                normal >>
-            endfor
+        let l:end_index = match(l:prev_line, '\] ')
+        if s:TodoList_LineIsItem(l:prev_line)
+            let l:prev_line = substitute(l:prev_line, '^\(\s*\%([-*+]\|\d\+\.\) \)\[[-X]\]', '\1[ ]', '')
         endif
+        call setline(line('.'), l:prev_line[:l:end_index+1])
+    else
+        call setline(line('.'), '- [ ] ')
     endif
+
+    call s:TodoList_UpdateParent(a:update_line)
     startinsert!
 endfunction
 
@@ -1093,11 +871,16 @@ function! s:TodoList_SetInProgItem()
 endfunction
 
 
-function! s:TodoList_DeleteItem(lineno)
+function! s:TodoList_DeleteItem(lineno, update)
     let l:indent = indent(a:lineno)
     execute "normal! :" . a:lineno . "," . s:TodoList_FindLastChild(a:lineno) . "d\<CR>"
     if l:indent == 0 && getline(a:lineno) == ''
         normal! dd
+    endif
+
+    if a:update
+        " If next indentation is lower, update previous line, else update current line
+        call s:TodoList_UpdateParent(line('.') - (indent(line('.')) < l:indent))
     endif
 endfunction
 
@@ -1107,7 +890,7 @@ function! s:TodoList_CleanItemsDone()
     while l:lineno <= line('$')
         let l:line = getline(l:lineno)
         if s:TodoList_LineIsItem(l:line) && s:TodoList_ItemIsDone(l:line)
-            call s:TodoList_DeleteItem(l:lineno)
+            call s:TodoList_DeleteItem(l:lineno, 0)
         else
             let l:lineno += 1
         endif
@@ -1115,32 +898,10 @@ function! s:TodoList_CleanItemsDone()
 endfunction
 
 
-" Increases the indent level
-function! s:TodoList_IncreaseIndent()
-    normal! >>
-endfunction
-
-
-" Decreases the indent level
-function! s:TodoList_DecreaseIndent()
-    normal! <<
-endfunction
-
-
-function s:TodoList_EnableUndo()
-    let s:disable_undo = 0
-endfunction
-
-
-function s:TodoList_Undo()
-    let s:disable_undo = 1
-    normal! u
-endfunction
-
-
-function s:TodoList_Redo()
-    let s:disable_undo = 1
-    normal! 
+function! s:TodoList_MakeHeader()
+    if getline('.') =~ '^\s*\%([-*+]\|\d\+\.\) \[.\]\s\+# .*'
+        normal! 0dt#$
+    endif
 endfunction
 
 
@@ -1162,8 +923,8 @@ function! s:SetCommonMappings()
     nnoremap <buffer><silent> ge :call <SID>EditUrlUnderCursor()<CR>
 
     " Indentation mappings
-    nnoremap <buffer><silent> <Plug>Markdown_Increment :call <SID>Markdown_ModifyBullet( 1) \| execute "normal! >>" \| call repeat#set("\<Plug>Markdown_Increment")<CR>
-    nnoremap <buffer><silent> <Plug>Markdown_Decrement :call <SID>Markdown_ModifyBullet(-1) \| execute "normal! <<" \| call repeat#set("\<Plug>Markdown_Decrement")<CR>
+    nnoremap <buffer><silent> <Plug>Markdown_Increment :call <SID>Markdown_ModifyBullet( 1) \| call <SID>Markdown_Indent() \| call repeat#set("\<Plug>Markdown_Increment")<CR>
+    nnoremap <buffer><silent> <Plug>Markdown_Decrement :call <SID>Markdown_ModifyBullet(-1) \| call <SID>Markdown_Dedent() \| call repeat#set("\<Plug>Markdown_Decrement")<CR>
     nmap <buffer> >> <Plug>Markdown_Increment
     nmap <buffer> << <Plug>Markdown_Decrement
 
@@ -1172,20 +933,16 @@ function! s:SetCommonMappings()
     vnoremap <buffer><silent> > :<C-u>call <SID>Markdown_ModifyIndentRange('visual')<CR>
     vnoremap <buffer><silent> < :<C-u>call <SID>Markdown_ModifyDedentRange('visual')<CR>
 
-    inoremap <buffer><silent>       <C-T> <C-O>:call <SID>Markdown_ModifyBullet(1)<CR><C-T>
-    inoremap <buffer><silent><expr> <C-D> col('.')>strlen(getline('.'))?"<C-O>:call <SID>Markdown_ModifyBullet(-1)<CR><C-D>":"<Del>"
+    inoremap <buffer><silent>       <C-T> <C-O>:call <SID>Markdown_ModifyBullet(1) \| call <SID>TodoList_UpdateParents(-1)<CR><C-T>
+    inoremap <buffer><silent><expr> <C-D> col('.')>strlen(getline('.'))?"<C-O>:call <SID>Markdown_ModifyBullet(-1)<CR><C-D><C-O>:call <SID>TodoList_UpdateParents(-1)<CR>":"<Del>"
 
-    inoremap <buffer><silent><expr> <Tab>   <SID>Markdown_ShouldIndent()?"<C-\><C-O>:call <SID>Markdown_ModifyBullet(1)<CR><C-T>":"<Tab>"
-    inoremap <buffer><silent>       <S-Tab> <C-O>:call <SID>Markdown_ModifyBullet(-1)<CR><C-D>
+    inoremap <buffer><silent><expr> <Tab>   <SID>Markdown_ShouldIndent()?"<C-\><C-O>:call <SID>Markdown_ModifyBullet(1)<CR><C-T><C-\><C-O>:call <SID>TodoList_UpdateParents(-1)<CR>":"<Tab>"
+    inoremap <buffer><silent>       <S-Tab> <C-O>:call <SID>Markdown_ModifyBullet(-1)<CR><C-D><C-O>:call <SID>TodoList_UpdateParents(-1)<CR>
 endfunction
 
 
 " Sets mapping for normal navigation and editing mode
 function! s:SetMarkdownMode()
-    augroup Todo
-        autocmd!
-    augroup END
-
     if exists('s:cursorline_backup')
         let &cursorline = s:cursorline_backup
     endif
@@ -1195,12 +952,13 @@ function! s:SetMarkdownMode()
     setlocal formatoptions-=c
     setlocal comments+=b:*,b:+,b:-
 
-    let s:todo_mode = 0
-    let s:disable_undo = 1
+    let b:todo_mode = 0
 
     silent! nunmap <buffer> j
     silent! nunmap <buffer> k
     silent! nunmap <buffer> dd
+    silent! nunmap <buffer> -
+    silent! nunmap <buffer> _
     silent! nunmap <buffer> <leader>d
     silent! iunmap <buffer> <CR>
     silent! unmap  <buffer> <Tab>
@@ -1231,13 +989,6 @@ endfunction
 
 " Sets mappings for faster item navigation and editing
 function! s:SetTodoMode()
-    augroup Todo
-        autocmd!
-
-        autocmd TextChanged * call s:TodoList_UpdateItems(line('.'))
-        autocmd InsertEnter * call s:TodoList_UpdateItems(line('.'))
-    augroup END
-
     let s:cursorline_backup = &cursorline
     let s:autoindent_backup = &autoindent
     setlocal cursorline
@@ -1245,8 +996,7 @@ function! s:SetTodoMode()
     setlocal formatoptions+=c
     setlocal comments-=b:*,b:+,b:-
 
-    let s:todo_mode = 1
-    let s:disable_undo = 0
+    let b:todo_mode = 1
 
     silent! unmap <buffer> ]]
     silent! unmap <buffer> [[
@@ -1260,9 +1010,13 @@ function! s:SetTodoMode()
     nnoremap <buffer><silent> O :call <SID>TodoList_CreateNewItemAbove()<CR>
     nnoremap <buffer><silent> j :call <SID>TodoList_GoToNextItem()<CR>
     nnoremap <buffer><silent> k :call <SID>TodoList_GoToPreviousItem()<CR>
-    nnoremap <buffer><silent> dd :call <SID>TodoList_DeleteItem(line('.'))<CR>
+    nnoremap <buffer><silent> dd :call <SID>TodoList_DeleteItem(line('.'), 1)<CR>
+
+    nnoremap <buffer><silent> - :m .+1 \| call <SID>TodoList_UpdateParents(-1, 1, -2)<CR>
+    nnoremap <buffer><silent> _ :m .-2 \| call <SID>TodoList_UpdateParents(-1, 1, 2)<CR>
+
     nnoremap <buffer><silent> <leader>d :call <SID>TodoList_CleanItemsDone()<CR>
-    inoremap <buffer><silent> <CR> <CR><ESC>d0:call <SID>TodoList_CreateNewItem()<CR>
+    inoremap <buffer> <CR> <C-O>:call <SID>TodoList_MakeHeader()<CR><CR><C-O>:call <SID>TodoList_CreateNewItem(line('.')-1)<CR>
     nmap <buffer> <Tab>   <Plug>Markdown_Increment
     nmap <buffer> <S-Tab> <Plug>Markdown_Decrement
 
@@ -1273,24 +1027,7 @@ function! s:SetTodoMode()
     call s:MapKey(']u', "<SID>TodoList_GoToParentItem")
 
     noremap  <buffer><silent> <leader>e :silent call <SID>SetMarkdownMode()<CR>
-
-    nnoremap <buffer><silent> u :call <SID>TodoList_Undo()<CR>:call <SID>TodoList_EnableUndo()<CR>
-    nnoremap <buffer><silent> <C-R> :call <SID>TodoList_Redo()<CR>:call <SID>TodoList_EnableUndo()<CR>
 endfunction
-
-
-" Plugin Setup {{{1
-
-augroup Mkd
-    " These autocmd calling s:Markdown_RefreshSyntax need to be kept in sync with
-    " the autocmds calling s:Markdown_SetupFolding in after/ftplugin/markdown.vim.
-    autocmd! * <buffer>
-    autocmd BufWinEnter <buffer> call s:Markdown_RefreshSyntax(1)
-    autocmd BufUnload <buffer> call s:Markdown_ClearSyntaxVariables()
-    autocmd BufWritePost <buffer> call s:Markdown_RefreshSyntax(0)
-    autocmd InsertEnter,InsertLeave <buffer> call s:Markdown_RefreshSyntax(0)
-    autocmd CursorHold,CursorHoldI <buffer> call s:Markdown_RefreshSyntax(0)
-augroup END
 
 command! -buffer -range=% HeaderDecrease call s:HeaderDecrease(<line1>, <line2>)
 command! -buffer -range=% HeaderIncrease call s:HeaderDecrease(<line1>, <line2>, 1)
@@ -1316,15 +1053,15 @@ endif
 " StatusLine Indicator {{{1
 
 function! StatuslineTodo()
-    if s:todo_mode
+    if exists("b:todo_mode") && b:todo_mode
         return get(g:, 'markdown#todo_indicator', '[T]')
     endif
     return ''
 endfunction
 
-let s:index_right = stridx(&statusline, '%=')
-if stridx(&statusline, '%{StatuslineTodo()}') == -1 && s:index_right >= 0
-    let &statusline = &statusline[:s:index_right-1] . '%{StatuslineTodo()}' . &statusline[s:index_right:]
+let b:index_right = stridx(&statusline, '%=')
+if stridx(&statusline, '%{StatuslineTodo()}') == -1 && b:index_right >= 0
+    let &l:statusline = &statusline[:b:index_right-1] . '%{StatuslineTodo()}' . &statusline[b:index_right:]
 endif
 
 " Modeline {{{1

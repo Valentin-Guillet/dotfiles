@@ -46,14 +46,6 @@ if has("autocmd")
     augroup END
 endif
 
-
-" Convenient command to see the difference between the current buffer and the
-" file it was loaded from, thus the changes you made.
-if !exists(":DiffOrig")
-    command DiffOrig vert new | set bt=nofile | r ++edit # | 0d_ | diffthis
-            \ | wincmd p | diffthis
-endif
-
 " Prevent that the langmap option applies to characters that result from a mapping
 if has('langmap') && exists('+langnoremap')
     set langnoremap
@@ -125,7 +117,7 @@ set undofile
 
 set backupdir=$HOME/.cache/vim/backup//,/tmp// | call mkdir(&backupdir, 'p', 0700)
 set directory=$HOME/.cache/vim/swap//,/tmp//   | call mkdir(&directory, 'p', 0700)
-set viewdir=$HOME/.cache/vim/view//,/tmp//     | call mkdir(&viewdir, 'p', 0700)
+set viewdir=$HOME/.cache/vim/view              | call mkdir(&viewdir, 'p', 0700)
 set undodir=$HOME/.cache/vim/undo//,/tmp//     | call mkdir(&undodir, 'p', 0700)
 
 set viminfo+='1000,n$HOME/.cache/vim/viminfo
@@ -307,22 +299,18 @@ endif
 " Command to diff if there are two splits on current window
 function! DiffToggle()
     if &diff
-        let l:win_nr = winnr()
         windo diffoff
-        execute l:win_nr . 'wincmd w'
+        execute winnr() . 'wincmd w'
         return
     endif
 
     if tabpagewinnr('.', '$') != 2
-        echohl ErrorMsg
-        echo "Can only diff two files"
-        echohl None
+        echohl ErrorMsg | echo "Can only diff two files" | echohl None
         return
     endif
 
-    let l:win_nr = winnr()
     windo diffthis
-    execute l:win_nr . 'wincmd w'
+    execute winnr() . 'wincmd w'
 endfunction
 if !exists(":DiffToggle")
     command DiffToggle call DiffToggle()
@@ -344,6 +332,26 @@ augroup whitespaceHighlight
     autocmd InsertLeave * redraw!
 augroup END
 
+" {{{1 SAVE FOLDS
+
+let g:skipview_files = []
+function! MakeViewCheck()
+    " Buffer is marked as not a file
+    if &buftype =~ 'nofile' | return 0 | endif
+    " Diff buffer
+    if &diff | return 0 | endif
+    " File does not exist on disk
+    if empty(glob(expand('%:p'))) | return 0 | endif
+    " File is in skip list
+    if index(g:skipview_files, expand('%')) >= 0 | return 0 | endif
+    return 1
+endfunction
+augroup vimrcAutoView
+    autocmd!
+
+    autocmd BufWritePost,BufLeave,WinLeave ?* if MakeViewCheck() | mkview | endif
+    autocmd BufWinEnter ?* if MakeViewCheck() | silent loadview | endif
+augroup END
 
 " {{{1 TAB LINE
 

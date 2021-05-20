@@ -1,9 +1,9 @@
 " Vim syntax file
 " Language:	Markdown
 " Maintainer:	Ben Williams <benw@plasticboy.com>
-" URL:		http://plasticboy.com/markdown-vim-mode/
+" URL:    http://plasticboy.com/markdown-vim-mode/
 " Remark:	Uses HTML syntax file
-" TODO: 	Handle stuff contained within stuff (e.g. headings within blockquotes)
+" TODO:   Handle stuff contained within stuff (e.g. headings within blockquotes)
 
 
 " Read the HTML syntax to start with
@@ -107,11 +107,11 @@ syn match  mkdCode         /\%^\(\(\s\{4,}[^ ]\|\t\+[^\t]\).*\n\)\+/
 syn match  mkdCode         /^\s*\n\(\(\s\{4,}[^ ]\|\t\+[^\t]\).*\n\)\+/ contained
 syn match  mkdListItem     /^\s*\%([-*+]\|\d\+\.\)\ze\s\+/ contained
 syn match  mkdTodoItem     /^\s*\%([-*+]\|\d\+\.\)\s\+\[.\]/ contained
+syn match  mkdTodoItemDone /^\s*\%([-*+]\|\d\+\.\)\s\+\[X\].*/ contained contains=@mkdNonListItem
 syn match  mkdArrows       /[-=]>/ contained
 syn match  mkdAcronyms     /\<\(\u\|\d\)\{3,}s\?\>/ contained contains=@NoSpell
-syn region mkdListItemLine start="^\s*\%([-*+]\|\d\+\.\)\s\+" end="$" oneline contains=@mkdNonListItem,mkdListItem,mkdTodoItem,mkdArrows,mkdAcronyms,@Spell
+syn region mkdListItemLine start="^\s*\%([-*+]\|\d\+\.\)\s\+" end="$" oneline contains=@mkdNonListItem,mkdListItem,mkdTodoItem,mkdTodoItemDone,mkdArrows,mkdAcronyms,@Spell
 syn region mkdNonListItemBlock start="\(^\(\s*\([-*+]\|\d\+\.\)\s\+\)\@!\|\n\(\_^\_$\|\s\{4,}[^ ]\|\t+[^\t]\)\@!\)" end="^\(\s*\([-*+]\|\d\+\.\)\s\+\)\@=" contains=@mkdNonListItem,mkdArrows,mkdAcronyms,@Spell
-syn match  mkdTodoItemDone /^\s*\%([-*+]\|\d\+\.\)\s\+\[X\].*/ contains=@mkdNonListItem
 syn match  mkdRule         /^\s*\*\s\{0,1}\*\s\{0,1}\*\(\*\|\s\)*$/
 syn match  mkdRule         /^\s*-\s\{0,1}-\s\{0,1}-\(-\|\s\)*$/
 syn match  mkdRule         /^\s*_\s\{0,1}_\s\{0,1}_\(_\|\s\)*$/

@@ -192,10 +192,3 @@ endfunction
 call s:MarkdownSetupFoldLevel()
 call s:MarkdownSetupFolding()
 
-augroup Mkd
-    " These autocmds need to be kept in sync with the autocmds calling
-    " s:MarkdownRefreshSyntax in ftplugin/markdown.vim.
-    autocmd BufWinEnter,BufWritePost <buffer> call s:MarkdownSetupFolding()
-    autocmd InsertEnter,InsertLeave <buffer> call s:MarkdownSetupFolding()
-    autocmd CursorHold,CursorHoldI <buffer> call s:MarkdownSetupFolding()
-augroup END
