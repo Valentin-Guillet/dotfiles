@@ -132,12 +132,24 @@ function s:SetTags()
     execute "setlocal tags=" . s:GetTagsPath()
 endfunction
 
+function! s:DeleteTagFile()
+    if empty(&l:tags) | echo "No tag file" | return | endif
+    let l:escaped_tags = substitute(&l:tags, '%', '\\%', 'g')
+    execute "silent !rm " . l:escaped_tags
+    redraw!
+    echo "Tag file (" . l:escaped_tags . ") removed"
+    call s:SetTags()
+endfunction
+
 augroup Tags
     autocmd!
 
     autocmd BufNewFile,BufRead * call <SID>SetTags()
 augroup END
 
+
+command! -bar TagFileDelete call <SID>DeleteTagFile()
+command! -bar TagFileSet call <SID>SetTags()
 
 nnoremap <silent> <leader>G :if <SID>UpdateTagsFile() \| call <SID>SetTags() \| endif<CR>
 nnoremap <silent> <C-]> :call <SID>TagGoToOpenedTab(expand("<cword>"))<CR>

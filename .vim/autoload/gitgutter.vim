@@ -66,10 +66,12 @@ function! gitgutter#disable() abort
   endfor
 
   let g:gitgutter_enabled = 0
+  redrawstatus!
 endfunction
 
 function! gitgutter#enable() abort
   let g:gitgutter_enabled = 1
+  redrawstatus!
   call gitgutter#all(1)
 endfunction
 

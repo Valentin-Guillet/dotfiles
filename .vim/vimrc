@@ -97,6 +97,7 @@ set foldlevelstart=0
 
 set notagrelative       " cf plugin/hidden_tags.vim
 
+set viewoptions-=options        " To omit local options when restoring file (cf. mkview, loadview)
 set sessionoptions-=options     " To restore syntax highlighting when restoring session (unzoom)
 
 if has("autocmd")
@@ -119,6 +120,7 @@ set backupdir=$HOME/.cache/vim/backup//,/tmp// | call mkdir(&backupdir, 'p', 070
 set directory=$HOME/.cache/vim/swap//,/tmp//   | call mkdir(&directory, 'p', 0700)
 set viewdir=$HOME/.cache/vim/view              | call mkdir(&viewdir, 'p', 0700)
 set undodir=$HOME/.cache/vim/undo//,/tmp//     | call mkdir(&undodir, 'p', 0700)
+let g:netrw_home=$HOME . "/.cache/vim/"
 
 set viminfo+='1000,n$HOME/.cache/vim/viminfo
 
@@ -141,14 +143,25 @@ let g:AutoPairsShortcutJump = '<M-v>'
 let g:AutoPairsShortcutBackInsert = '<M-c>'
 let g:AutoPairsCenterLine = 0
 
-" Git Gutter
+" GitGutter
 set updatetime=100
-let g:gitgutter_highlight_lines = 1
 let g:gitgutter_enabled = 0
-nnoremap <leader>g :GitGutterToggle<CR>
+let g:gitgutter_highlight_lines = 1
+let g:gitgutter_preview_win_floating = 1
+
+nnoremap <silent> <leader>g :GitGutterToggle \| echo "GitGutter " . (g:gitgutter_enabled ? "enabled" : "disabled")<CR>
 highlight GitGutterAdd    ctermfg=2
 highlight GitGutterChange ctermfg=3
 highlight GitGutterDelete ctermfg=1
+
+highlight GitGutterStatuslineAdd    ctermfg=2 ctermbg=238
+highlight GitGutterStatuslineChange ctermfg=3 ctermbg=238
+highlight GitGutterStatuslineDelete ctermfg=1 ctermbg=238
+
+highlight GitGutterStatuslineAddNC    cterm=bold ctermfg=2 ctermbg=244
+highlight GitGutterStatuslineChangeNC cterm=bold ctermfg=3 ctermbg=244
+highlight GitGutterStatuslineDeleteNC cterm=bold ctermfg=1 ctermbg=244
+
 
 " Markdown
 let g:vim_markdown_toc_autofit = 1
@@ -398,22 +411,43 @@ set tabline=%!TabLine()
 " {{{1 STATUS LINE
 
 function! StatuslineGit()
-    let l:branchname = system("git rev-parse --abbrev-ref HEAD 2>/dev/null | tr -d '\n'")
-    return !empty(l:branchname) ? '  ' . l:branchname . ' ' : ''
+    if !exists("b:statusline_git_branch")
+        let l:command = "git -C " . expand("%:h") . " rev-parse --abbrev-ref HEAD 2>/dev/null | tr -d '\n'"
+        let b:statusline_git_branch = system(l:command)
+        if !empty(b:statusline_git_branch)
+            let b:statusline_git_branch = '  ' . b:statusline_git_branch . ' '
+        endif
+    endif
+    return b:statusline_git_branch
+endfunction
+
+function! MyStatusLine()
+    let l:my_statusline  =  ''
+    let l:my_statusline .= '%#PmenuSel#%{StatuslineGit()}%0*'
+    let l:my_statusline .= ' %n ➤  %f%m'
+    let l:my_statusline .= '%{zoom#statusline()}'
+
+    if g:gitgutter_enabled
+        let [a, m, r] = gitgutter#hunk#summary(winbufnr(g:statusline_winid))
+        let l:inactive = winbufnr(g:statusline_winid) != winnr() ? "NC" : ""
+        let l:my_statusline .= ' ['
+        let l:my_statusline .= '%#GitGutterStatuslineAdd' . l:inactive . '#'
+        let l:my_statusline .= '+' . a . ' '
+        let l:my_statusline .= '%#GitGutterStatuslineChange' . l:inactive . '#'
+        let l:my_statusline .= '~' . m . ' '
+        let l:my_statusline .= '%#GitGutterStatuslineDelete' . l:inactive . '#'
+        let l:my_statusline .= '-' . r
+        let l:my_statusline .= '%0*'
+        let l:my_statusline .= '] '
+    endif
+
+    let l:my_statusline .= '%='
+    let l:my_statusline .= '%y %#PmenuSel# %l/%L %3c| '
+    return l:my_statusline
 endfunction
 
 set laststatus=2
-set statusline=
-set statusline+=%#PmenuSel#
-set statusline+=%{StatuslineGit()}
-set statusline+=%#LineNr#
-set statusline+=%0*
-set statusline+=\ %f
-set statusline+=%m
-set statusline+=%{zoom#statusline()}
-set statusline+=%=
-set statusline+=\ %l/%L
-set statusline+=\ (%p%%)
+set statusline=%!MyStatusLine()
 
 
 " {{{1 FIXES
