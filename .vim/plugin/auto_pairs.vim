@@ -241,7 +241,6 @@ func! AutoPairsInsert(key)
 
             " Don't insert pair of ' or " if there's an odd number on the line
             if (open == close || open == '\v(^|\W)\zs''') && (count(before, close) + count(afterline, close)) % 2
-                echom 'Test'
                 return close
             endif
 
@@ -608,7 +607,7 @@ func! AutoPairsInit()
     endfor
 
     " Still use <buffer> level mapping for <BS> <SPACE>
-    if g:AutoPairsMapBS
+    if g:AutoPairsMapBS && get(b:, "autopairs_map_bs", 1)
         " Use <C-R> instead of <expr> for issue #14 sometimes press BS output strange words
         execute 'inoremap <buffer> <silent> <BS> <C-R>=AutoPairsDelete()<CR>'
     end
@@ -690,7 +689,7 @@ func! AutoPairsTryInit()
 
     " Buffer level keys mapping
     " comptible with other plugin
-    if g:AutoPairsMapCR
+    if g:AutoPairsMapCR && get(b:, "autopairs_map_cr", 1)
         if v:version == 703 && has('patch32') || v:version > 703
             " VIM 7.3 supports advancer maparg which could get <expr> info
             " then auto-pairs could remap <CR> in any case.

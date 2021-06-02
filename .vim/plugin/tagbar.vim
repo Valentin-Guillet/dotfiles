@@ -177,7 +177,7 @@ function! s:setup_keymaps() abort
 endfunction
 call s:setup_keymaps()
 
-augroup TagbarSession
+augroup restoreTagbarSession
     autocmd!
     autocmd SessionLoadPost * nested call tagbar#RestoreSession()
 augroup END

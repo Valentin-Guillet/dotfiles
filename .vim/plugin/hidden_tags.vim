@@ -141,7 +141,7 @@ function! s:DeleteTagFile()
     call s:SetTags()
 endfunction
 
-augroup Tags
+augroup setTags
     autocmd!
 
     autocmd BufNewFile,BufRead * call <SID>SetTags()

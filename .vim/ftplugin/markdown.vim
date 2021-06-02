@@ -452,11 +452,11 @@ endif
 
 function! s:Markdown_ShouldIndent()
     let l:line = getline('.')
-    let l:is_bullet = '^\s*[+*-]\%( \[.\]\)\?\s*.*$'
-    let l:no_text_yet = '^\s*[+*-]\%( \[.\]\)\?\s*$'
+    let l:is_bullet = '^\s*[-+*.|]\%( \[.\]\)\?\s*.*$'
+    let l:no_text_yet = '^\s*[-+*.|]\%( \[.\]\)\?\s*$'
 
     let l:beginning_line = l:line[:col('.')-1]
-    let l:is_not_letters = '^\s*\%(\|[+*-]\%(\| \[.\]\)\)\?$'
+    let l:is_not_letters = '^\s*\%(\|[-+*.|]\%(\| \[.\]\)\)\?$'
 
     return l:line =~ l:is_bullet && (l:line =~ l:no_text_yet || l:beginning_line =~ l:is_not_letters)
 endfunction
@@ -465,8 +465,9 @@ function! s:Markdown_ModifyBullet(direction, ...)
     let l:line_nb = (a:0 > 0 ? a:1 : line('.'))
 
     let l:line = getline(l:line_nb)
-    let l:bullets = ['-', '+', '*']
-    let l:regex = '^\s*\([+*-]\)\%(\s\+.*\)\?$'
+    let l:bullets = ['-', '+', '*', '.', '|']
+    let l:regex = '^\s*\([-+*.|]\)\%(\s\+.*\)\?$'
+
 
     let l:match = matchlist(l:line, l:regex)
     if empty(l:match) | return | endif
@@ -477,15 +478,16 @@ function! s:Markdown_ModifyBullet(direction, ...)
     " Don't modify bullet if on first column and going left
     if a:direction == -1 && stridx(l:line, l:bullet) == 0 | return | endif
 
-    let l:new_bullet = l:bullets[l:index % 3]
+    let l:bullet = (l:bullet == '.' ? '\V.' : l:bullet)
+    let l:new_bullet = l:bullets[l:index % len(l:bullets)]
     let l:new_line = substitute(l:line, l:bullet, l:new_bullet, "")
     call setline(l:line_nb, l:new_line)
 endfunction
 
 function! s:Markdown_RemoveBullet()
-    if getline('.') =~ '^\s*[+*-]\s*$'
+    if getline('.') =~ '^\s*[-+*.|]\s*$'
 
-        let l:line_to_bullet = matchlist(getline('.'), '^\(\s*[+*-]\).*$')[1]
+        let l:line_to_bullet = matchlist(getline('.'), '^\(\s*[-+*.|]\).*$')[1]
         let l:len_line = len(l:line_to_bullet)
 
         if getline(line('.')+1)[: l:len_line-1] !=# l:line_to_bullet
@@ -499,12 +501,12 @@ endfunction
 
 function! s:Markdown_Indent()
     normal! >>
-    call s:TodoList_UpdateParent(line('.') - 1)
+    call s:TodoList_UpdateParents(-1, 0)
 endfunction
 
 function! s:Markdown_Dedent()
     normal! <<
-    call s:TodoList_UpdateParent(line('.') - 1)
+    call s:TodoList_UpdateParents(-1, 0)
 endfunction
 
 function! s:Markdown_ModifyIndentRange(type)
@@ -545,39 +547,39 @@ endfunction
 " Sets the item done
 function! s:TodoList_SetItemDone(lineno)
     let l:line = getline(a:lineno)
-    call setline(a:lineno, substitute(l:line, '^\(\s*\%([-*+]\|\d\+\.\) \)\[[^X]\]', '\1[X]', ''))
+    call setline(a:lineno, substitute(l:line, '^\(\s*\%([-+*.|]\|\d\+\.\) \)\[[^X]\]', '\1[X]', ''))
 endfunction
 
 
 " Sets the item not done
 function! s:TodoList_SetItemNotDone(lineno)
     let l:line = getline(a:lineno)
-    call setline(a:lineno, substitute(l:line, '^\(\s*\%([-*+]\|\d\+\.\) \)\[[-X]\]', '\1[ ]', ''))
+    call setline(a:lineno, substitute(l:line, '^\(\s*\%([-+*.|]\|\d\+\.\) \)\[[-X]\]', '\1[ ]', ''))
 endfunction
 
 
 " Sets the item in progress
 function! s:TodoList_SetItemInProg(lineno)
     let l:line = getline(a:lineno)
-    call setline(a:lineno, substitute(l:line, '^\(\s*\%([-*+]\|\d\+\.\) \)\[[^X]\]', '\1[-]', ''))
+    call setline(a:lineno, substitute(l:line, '^\(\s*\%([-+*.|]\|\d\+\.\) \)\[[^X]\]', '\1[-]', ''))
 endfunction
 
 
 " Checks that line is a todo list item
 function! s:TodoList_LineIsItem(line)
-    return a:line =~ '^\s*\%([-*+]\|\d\+\.\) \[.\].*'
+    return a:line =~ '^\s*\%([-+*.|]\|\d\+\.\) \[.\].*'
 endfunction
 
 
 " Checks that item is not done
 function! s:TodoList_ItemIsNotDone(line)
-    return a:line =~ '^\s*\%([-*+]\|\d\+\.\) \[[^X]\].*'
+    return a:line =~ '^\s*\%([-+*.|]\|\d\+\.\) \[[^X]\].*'
 endfunction
 
 
 " Checks that item is done
 function! s:TodoList_ItemIsDone(line)
-    return a:line =~ '^\s*\%([-*+]\|\d\+\.\) \[X\].*'
+    return a:line =~ '^\s*\%([-+*.|]\|\d\+\.\) \[X\].*'
 endfunction
 
 
@@ -677,7 +679,7 @@ endfunction
 " Creates a new item in the current line
 function! s:TodoList_CreateNewItem(update_line)
     " If prev line is empty item, delete it
-    if getline(line('.') - 1) =~ '^\s*\%([-*+]\|\d\+\.\) \[[ X ]\]\s*$'
+    if getline(line('.') - 1) =~ '^\s*\%([-+*.|]\|\d\+\.\) \[[ X ]\]\s*$'
         call setline(line('.') - 1, '')
         call s:TodoList_UpdateParent(line('.') - 2)
     endif
@@ -692,20 +694,24 @@ function! s:TodoList_CreateNewItem(update_line)
         let l:beg_ind = match(l:prev_line_non_empty, '\d')
         let l:end_ind = match(l:prev_line_non_empty, '\.')
         let l:bullet_nb = str2nr(l:prev_line_non_empty[l:beg_ind: l:end_ind-1]) + 1
-        call setline(line('.'), l:prev_line_non_empty[:l:beg_ind-1] . l:bullet_nb . ". [ ] ")
+        let l:indent = l:beg_ind > 0 ? l:prev_line_non_empty[:l:beg_ind-1] : ''
+        call setline(line('.'), l:indent . l:bullet_nb . ". [ ] ")
         startinsert!
         return
     endif
 
+    " If previous line is an item, copy its bullet type and indentation by
+    " copying the beginning of the line
     let l:prev_line = getline(line('.')-1)
     if s:TodoList_LineIsItem(l:prev_line)
         let l:end_index = match(l:prev_line, '\] ')
-        if s:TodoList_LineIsItem(l:prev_line)
-            let l:prev_line = substitute(l:prev_line, '^\(\s*\%([-*+]\|\d\+\.\) \)\[[-X]\]', '\1[ ]', '')
-        endif
-        call setline(line('.'), l:prev_line[:l:end_index+1])
+        call setline(line('.'), l:prev_line[:l:end_index+1] . getline('.'))
+        call s:TodoList_SetItemNotDone(line('.'))
+
+        " If prev line now ends with a space, remove it
+        if l:prev_line[-1:] == ' ' | call setline(line('.')-1, l:prev_line[:-2]) | endif
     else
-        call setline(line('.'), '- [ ] ')
+        call setline(line('.'), '- [ ] ' . getline('.'))
     endif
 
     call s:TodoList_UpdateParent(a:update_line)
@@ -714,20 +720,32 @@ endfunction
 
 
 " Moves the cursor to the next item
-function! s:TodoList_GoToNextItem()
+function! s:TodoList_GoToNextItem(count)
+    let l:saved_shortmess = &shortmess
+    set shortmess+=s
     normal! $
-    silent! exec '/^\s*\%([-*+]\|\d\+\.\) \[.\]'
+    silent! exec '/^\s*\%([-+*.|]\|\d\+\.\) \[.\]'
+    for i in range(a:count-1)
+        keepjumps normal! nw
+    endfor
     silent! exec 'noh'
-    normal! l
+    normal! 6l
+    let &shortmess = l:saved_shortmess
 endfunction
 
 
 " Moves the cursor to the previous item
-function! s:TodoList_GoToPreviousItem()
+function! s:TodoList_GoToPreviousItem(count)
+    let l:saved_shortmess = &shortmess
+    set shortmess+=s
     normal! 0
-    silent! exec '?^\s*\%([-*+]\|\d\+\.\) \[.\]'
+    silent! exec '?^\s*\%([-+*.|]\|\d\+\.\) \[.\]'
+    for i in range(a:count-1)
+        keepjumps normal! 0nw
+    endfor
     silent! exec 'noh'
-    normal! l
+    normal! 6l
+    let &shortmess = l:saved_shortmess
 endfunction
 
 
@@ -735,7 +753,7 @@ endfunction
 function! s:TodoList_GoToNextBaseItem(mode)
     if a:mode ==# 'v' | execute "normal! gv" | endif
     normal! $
-    silent! exec '/^\%([-*+]\|\d\+\.\) \[.\]'
+    silent! exec '/^\%([-+*.|]\|\d\+\.\) \[.\]'
     silent! exec 'noh'
     normal! l
 endfunction
@@ -745,7 +763,7 @@ endfunction
 function! s:TodoList_GoToPreviousBaseItem(mode)
     if a:mode ==# 'v' | execute "normal! gv" | endif
     normal! 0
-    silent! exec '?^\%([-*+]\|\d\+\.\) \[.\]'
+    silent! exec '?^\%([-+*.|]\|\d\+\.\) \[.\]'
     silent! exec 'noh'
     normal! l
 endfunction
@@ -831,6 +849,23 @@ function! s:TodoList_GoToParentItem(mode)
     endif
 endfunction
 
+" Move cursor to next undone item
+function! s:TodoList_GoToNextUndoneItem(mode)
+    if a:mode ==# 'v' | execute "normal! gv" | endif
+    call s:TodoList_GoToNextItem(1)
+    while !s:TodoList_ItemIsNotDone(getline('.'))
+        call s:TodoList_GoToNextItem(1)
+    endwhile
+endfunction
+
+" Move cursor to prev undone item
+function! s:TodoList_GoToPrevUndoneItem(mode)
+    if a:mode ==# 'v' | execute "normal! gv" | endif
+    call s:TodoList_GoToPreviousItem(1)
+    while !s:TodoList_ItemIsNotDone(getline('.'))
+        call s:TodoList_GoToPreviousItem(1)
+    endwhile
+endfunction
 
 " Toggles todo list item
 function! s:TodoList_ToggleItem()
@@ -874,7 +909,7 @@ endfunction
 function! s:TodoList_DeleteItem(lineno, update)
     let l:indent = indent(a:lineno)
     execute "normal! :" . a:lineno . "," . s:TodoList_FindLastChild(a:lineno) . "d\<CR>"
-    if l:indent == 0 && getline(a:lineno) == ''
+    if line('.') < line('$') && l:indent == 0 && getline(a:lineno) == ''
         normal! dd
     endif
 
@@ -899,8 +934,29 @@ endfunction
 
 
 function! s:TodoList_MakeHeader()
-    if getline('.') =~ '^\s*\%([-*+]\|\d\+\.\) \[.\]\s\+# .*'
+    if getline('.') =~ '^\s*\%([-+*.|]\|\d\+\.\) \[.\]\s\+# .*'
         normal! 0dt#$
+    endif
+endfunction
+
+function! s:TodoList_JoinLine()
+    if line('.') != line('$') && s:TodoList_LineIsItem(getline(line('.')+1))
+        normal! j0df]k
+    endif
+
+    normal! J
+endfunction
+
+function! s:TodoList_BackSpace()
+    if getline('.')[:col('.')-2] !~ '^\s*\%([-+*.|]\|\d\+\.\) \[.\] \?$'
+        return
+    endif
+
+    normal! 0df]
+    if getline('.') ==# ' '
+        normal! x
+    elseif !s:TodoList_LineIsItem(getline(line('.')-1))
+        normal! xgP
     endif
 endfunction
 
@@ -919,14 +975,16 @@ function! s:SetCommonMappings()
     noremap <buffer><silent> <Space> :call <SID>TodoList_ToggleItem()<CR>
     noremap <buffer><silent> g<Space> :call <SID>TodoList_SetInProgItem()<CR>
 
+    nnoremap <buffer><silent> J :call <SID>TodoList_JoinLine()<CR>
+
     nnoremap <buffer><silent> gx :call <SID>OpenUrlUnderCursor()<CR>
     nnoremap <buffer><silent> ge :call <SID>EditUrlUnderCursor()<CR>
 
     " Indentation mappings
     nnoremap <buffer><silent> <Plug>Markdown_Increment :call <SID>Markdown_ModifyBullet( 1) \| call <SID>Markdown_Indent() \| call repeat#set("\<Plug>Markdown_Increment")<CR>
     nnoremap <buffer><silent> <Plug>Markdown_Decrement :call <SID>Markdown_ModifyBullet(-1) \| call <SID>Markdown_Dedent() \| call repeat#set("\<Plug>Markdown_Decrement")<CR>
-    nmap <buffer> >> <Plug>Markdown_Increment
-    nmap <buffer> << <Plug>Markdown_Decrement
+    nmap <buffer><silent> >> <Plug>Markdown_Increment
+    nmap <buffer><silent> << <Plug>Markdown_Decrement
 
     nnoremap <buffer><silent> > :set opfunc=<SID>Markdown_ModifyIndentRange<CR>g@
     nnoremap <buffer><silent> < :set opfunc=<SID>Markdown_ModifyDedentRange<CR>g@
@@ -961,6 +1019,7 @@ function! s:SetMarkdownMode()
     silent! nunmap <buffer> _
     silent! nunmap <buffer> <leader>d
     silent! iunmap <buffer> <CR>
+    silent! iunmap <buffer> <BS>
     silent! unmap  <buffer> <Tab>
     silent! unmap  <buffer> <S-Tab>
     silent! unmap  <buffer> ]]
@@ -968,6 +1027,8 @@ function! s:SetMarkdownMode()
     silent! unmap  <buffer> ][
     silent! unmap  <buffer> []
     silent! unmap  <buffer> ]u
+    silent! unmap  <buffer> [i
+    silent! unmap  <buffer> ]i
     silent! nunmap <buffer> u
     silent! nunmap <buffer> <C-R>
     silent! nunmap <buffer> <Tab>
@@ -980,9 +1041,9 @@ function! s:SetMarkdownMode()
     call s:MapKey(']u', "<SID>Markdown_GoToParentHeader")
     call s:MapKey(']y', "<SID>Markdown_GoToCurrHeader")
 
-    nnoremap <buffer> o A<CR>
-    nnoremap <buffer> O kA<CR>
-    inoremap <buffer> <CR> <C-O>:call <SID>Markdown_RemoveBullet()<CR><CR>
+    nnoremap <buffer><silent> o A<CR>
+    nnoremap <buffer><silent> O kA<CR>
+    inoremap <buffer><silent> <CR> <C-O>:call <SID>Markdown_RemoveBullet()<CR><CR>
 
     noremap  <buffer><silent> <leader>e :call <SID>SetTodoMode()<CR>
 endfunction
@@ -1008,23 +1069,26 @@ function! s:SetTodoMode()
 
     nnoremap <buffer><silent> o :call <SID>TodoList_CreateNewItemBelow()<CR>
     nnoremap <buffer><silent> O :call <SID>TodoList_CreateNewItemAbove()<CR>
-    nnoremap <buffer><silent> j :call <SID>TodoList_GoToNextItem()<CR>
-    nnoremap <buffer><silent> k :call <SID>TodoList_GoToPreviousItem()<CR>
+    nnoremap <buffer><silent> j :<C-U>call <SID>TodoList_GoToNextItem(v:count1)<CR>
+    nnoremap <buffer><silent> k :<C-U>call <SID>TodoList_GoToPreviousItem(v:count1)<CR>
     nnoremap <buffer><silent> dd :call <SID>TodoList_DeleteItem(line('.'), 1)<CR>
 
     nnoremap <buffer><silent> - :m .+1 \| call <SID>TodoList_UpdateParents(-1, 1, -2)<CR>
     nnoremap <buffer><silent> _ :m .-2 \| call <SID>TodoList_UpdateParents(-1, 1, 2)<CR>
 
     nnoremap <buffer><silent> <leader>d :call <SID>TodoList_CleanItemsDone()<CR>
-    inoremap <buffer> <CR> <C-O>:call <SID>TodoList_MakeHeader()<CR><CR><C-O>:call <SID>TodoList_CreateNewItem(line('.')-1)<CR>
-    nmap <buffer> <Tab>   <Plug>Markdown_Increment
-    nmap <buffer> <S-Tab> <Plug>Markdown_Decrement
+    inoremap <buffer><silent> <BS> <C-\><C-O>:call <SID>TodoList_BackSpace()<CR><BS>
+    inoremap <buffer><silent> <CR> <C-O>:call <SID>TodoList_MakeHeader()<CR><CR><C-O>:call <SID>TodoList_CreateNewItem(line('.')-1)<CR>
+    nmap <buffer><silent> <Tab>   <Plug>Markdown_Increment
+    nmap <buffer><silent> <S-Tab> <Plug>Markdown_Decrement
 
     call s:MapKey(']]', "<SID>TodoList_GoToNextBaseItem")
     call s:MapKey('[[', "<SID>TodoList_GoToPreviousBaseItem")
     call s:MapKey('][', "<SID>TodoList_GoToNextSiblingItem")
     call s:MapKey('[]', "<SID>TodoList_GoToPreviousSiblingItem")
     call s:MapKey(']u', "<SID>TodoList_GoToParentItem")
+    call s:MapKey('[i', "<SID>TodoList_GoToPrevUndoneItem")
+    call s:MapKey(']i', "<SID>TodoList_GoToNextUndoneItem")
 
     noremap  <buffer><silent> <leader>e :silent call <SID>SetMarkdownMode()<CR>
 endfunction
@@ -1042,26 +1106,13 @@ setlocal conceallevel=2 concealcursor=c
 setlocal shiftwidth=2 tabstop=2 expandtab
 
 
+let b:autopairs_map_cr = 0
+let b:autopairs_map_bs = 0
 call s:SetCommonMappings()
 if expand('%:t') =~ '.*\.todo' || expand('%:t') =~ 'ToDo'
     call s:SetTodoMode()
 else
     call s:SetMarkdownMode()
-endif
-
-
-" StatusLine Indicator {{{1
-
-function! StatuslineTodo()
-    if exists("b:todo_mode") && b:todo_mode
-        return get(g:, 'markdown#todo_indicator', '[T]')
-    endif
-    return ''
-endfunction
-
-let b:index_right = stridx(&statusline, '%=')
-if stridx(&statusline, '%{StatuslineTodo()}') == -1 && b:index_right >= 0
-    let &l:statusline = &statusline[:b:index_right-1] . '%{StatuslineTodo()}' . &statusline[b:index_right:]
 endif
 
 " Modeline {{{1
