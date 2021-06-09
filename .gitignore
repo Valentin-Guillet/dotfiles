@@ -29,34 +29,34 @@
 !.config/readline
 !.config/readline/**
 
-!.config/sublime-text-3/
-!.config/sublime-text-3/Packages/
+!.config/sublime-text/
+!.config/sublime-text/Packages/
 
-!.config/sublime-text-3/Packages/BetterFindBuffer/
-!.config/sublime-text-3/Packages/BetterFindBuffer/FindResults.hidden-tmTheme
+!.config/sublime-text/Packages/BetterFindBuffer/
+!.config/sublime-text/Packages/BetterFindBuffer/FindResults.hidden-tmTheme
 
-!.config/sublime-text-3/Packages/Default/
-!.config/sublime-text-3/Packages/Default/symbol.py
+!.config/sublime-text/Packages/Default/
+!.config/sublime-text/Packages/Default/symbol.py
 
-!.config/sublime-text-3/Packages/Jump\ Along\ Indent/
-!.config/sublime-text-3/Packages/Jump\ Along\ Indent/*
+!.config/sublime-text/Packages/Jump\ Along\ Indent/
+!.config/sublime-text/Packages/Jump\ Along\ Indent/*
 
-!.config/sublime-text-3/Packages/MaxPane/
-!.config/sublime-text-3/Packages/MaxPane/*
+!.config/sublime-text/Packages/MaxPane/
+!.config/sublime-text/Packages/MaxPane/*
 
-!.config/sublime-text-3/Packages/MultiEditUtils/
-!.config/sublime-text-3/Packages/MultiEditUtils/*
+!.config/sublime-text/Packages/MultiEditUtils/
+!.config/sublime-text/Packages/MultiEditUtils/*
 
-!.config/sublime-text-3/Packages/ProjectManager/
-!.config/sublime-text-3/Packages/ProjectManager/*
+!.config/sublime-text/Packages/ProjectManager/
+!.config/sublime-text/Packages/ProjectManager/*
 
-!.config/sublime-text-3/Packages/Vintage/
-!.config/sublime-text-3/Packages/Vintage/*
+!.config/sublime-text/Packages/Vintage/
+!.config/sublime-text/Packages/Vintage/*
 
-!.config/sublime-text-3/Packages/User/
-!.config/sublime-text-3/Packages/User/*
-.config/sublime-text-3/Packages/User/Package\ Control*
-.config/sublime-text-3/Packages/User/SBSCompare*
+!.config/sublime-text/Packages/User/
+!.config/sublime-text/Packages/User/*
+.config/sublime-text/Packages/User/Package\ Control*
+.config/sublime-text/Packages/User/SBSCompare*
 
 !.config/sublime-merge/
 !.config/sublime-merge/Packages/

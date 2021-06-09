@@ -137,7 +137,8 @@
     { "keys": ["ctrl+k"], "command": "scroll_lines", "args": {"amount":1.0},
         "context": [ {"key": "setting.command_mode", "operand": true} ] },
 
-    // Ctrl+r to redo in vim mode
+    // Undo/redo with [u|C-r]
+    { "keys": ["u"], "command": "undo", "context": [{"key": "setting.command_mode"}] },
     { "keys": ["ctrl+r"], "command": "redo", "context": [{"key": "setting.command_mode"}] },
 
     { "keys": ["a"], "command": "enter_insert_mode", "context":
@@ -145,6 +146,7 @@
           { "key": "selection_empty", "operator": "equal", "operand": false, "match_all": false } ]
     },
 
+    // Switch line with [-|_]
     { "keys": ["_"], "command": "swap_line_up", "context":
         [ {"key": "setting.command_mode", "operand": true} ] },
     { "keys": ["-"], "command": "swap_line_down", "context":
