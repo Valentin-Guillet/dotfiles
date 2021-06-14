@@ -141,10 +141,10 @@ catch /.*/
 endtry
 
 " Auto-pairs
-let g:AutoPairsShortcutToggle = ''
-let g:AutoPairsShortcutJump = '<M-v>'
-let g:AutoPairsShortcutBackInsert = '<M-c>'
-let g:AutoPairsCenterLine = 0
+let g:autopairs_shortcut_toggle = ''
+let g:autopairs_shortcut_jump = '<M-v>'
+let g:autopairs_shortcut_back_insert = '<M-c>'
+let g:autopairs_center_line = 0
 
 " GitGutter
 set updatetime=100
@@ -217,8 +217,8 @@ nnoremap <silent> <leader>t :tab split<CR>
 nnoremap <silent> <leader>T :tabnew<CR>
 nnoremap <silent> <leader>n :tabnext<CR>
 nnoremap <silent> <leader>p :tabprev<CR>
-for i in range(1, 9)
-    execute "nnoremap <silent> <leader>" . i . " :" . i . "tabnext<CR>"
+for s:i in range(1, 9)
+    execute "nnoremap <silent> <leader>" . s:i . " :" . s:i . "tabnext<CR>"
 endfor
 
 nnoremap <leader>N :tabm <C-R>=(tabpagenr()+1)%(tabpagenr('$')+1)<CR><CR>
@@ -430,7 +430,7 @@ set tabline=%!TabLine()
 
 if !exists('g:statusline_git_branch')
     let g:statusline_git_branch = {}
-    let g:is_tracked = {}
+    let g:statusline_git_is_tracked = {}
 endif
 
 augroup setStatusline
@@ -438,22 +438,22 @@ augroup setStatusline
 
     autocmd BufRead,BufEnter * call s:SetStatuslineGit()
     autocmd BufDelete * silent! unlet g:statusline_git_branch[expand("<abuf>")] |
-                      \ silent! unlet g:is_tracked[expand("<abuf>")]
+                      \ silent! unlet g:statusline_git_is_tracked[expand("<abuf>")]
 augroup END
 
 function! s:SetStatuslineGit()
     let l:command = "git -C " . expand("%:h") . " rev-parse --abbrev-ref HEAD 2>/dev/null | tr -d '\n'"
     let l:git_branch = system(l:command)
-    if !empty(l:git_branch) | let l:git_branch = ' ' . l:git_branch . ' ' | endif
+    let l:git_tracked = system("git ls-files " . expand("%:p:S") . " 2>/dev/null")
 
-    let g:statusline_git_branch[bufnr()] = l:git_branch
-    let g:is_tracked[bufnr()] = !empty(expand("%:p")) && !empty(system("git ls-files " . expand("%:p")))
+    let g:statusline_git_branch[bufnr()] = (!empty(l:git_branch) ? ' ' . l:git_branch . ' ' : '')
+    let g:statusline_git_is_tracked[bufnr()] = !empty(expand("%:p")) && !empty(l:git_tracked)
 endfunction
 
 function! MyStatusLine()
     let l:curr_winnr = winbufnr(g:statusline_winid)
     let l:git_branch = get(g:statusline_git_branch, l:curr_winnr, "")
-    let l:is_tracked = get(g:is_tracked, l:curr_winnr, 0)
+    let l:is_tracked = get(g:statusline_git_is_tracked, l:curr_winnr, 0)
 
     let l:my_statusline  = ''
     if l:is_tracked | let l:my_statusline .= '%#PmenuSel#' . l:git_branch . '%0*' | endif
@@ -490,12 +490,12 @@ noremap [1;5C <C-Right>
 noremap! [1;5C <C-Right>
 
 " Fix Alt shortcuts <M-key>
-let c='a'
-while c <= 'z'
-    exec "set <M-".c.">=\e".c
-    exec "imap \e".c." <M-".c.">"
-    let c = nr2char(1+char2nr(c))
-endw
+let s:c = 'a'
+while s:c <= 'z'
+    exec "set <M-" . s:c . ">=\e" . s:c
+    exec "imap \e" . s:c . " <M-" . s:c . ">"
+    let s:c = nr2char(1+char2nr(s:c))
+endwhile
 
 " Toggle paste mode each time pasting from clipboard, and remove it after
 " Source : https://coderwall.com/p/if9mda/automatically-set-paste-mode-in-vim-when-pasting-in-insert-mode

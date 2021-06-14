@@ -26,6 +26,9 @@ alias td='[ -d "$NOTES_DIR" ] || mkdir -p "$NOTES_DIR" ; tmux rename-window "ToD
 alias py=python3
 alias youtube-dl-video='youtube-dl --config-location ~/.config/youtube-dl/config_video'
 
-alias config='vim ~/.config/bash/local_aliases; source ~/.bashrc'
+alias configa='vim ~/.config/bash/local_aliases; source ~/.bashrc'
+alias configp='vim ~/.config/bash/local_path; source ~/.bashrc'
 alias configg='vim ~/.bashrc; source ~/.bashrc'
+alias configga='vim ~/.config/bash/aliases; source ~/.bashrc'
+alias configgf='vim ~/.config/bash/functions; source ~/.bashrc'
 

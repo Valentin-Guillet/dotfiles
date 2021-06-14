@@ -1106,8 +1106,8 @@ setlocal conceallevel=2 concealcursor=c
 setlocal shiftwidth=2 tabstop=2 expandtab
 
 
-let b:autopairs_map_cr = 0
-let b:autopairs_map_bs = 0
+let b:autopairs_map_CR = 0
+let b:autopairs_map_BS = 0
 call s:SetCommonMappings()
 if expand('%:t') =~ '.*\.todo' || expand('%:t') =~ 'ToDo'
     call s:SetTodoMode()
