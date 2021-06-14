@@ -310,6 +310,14 @@ inoremap <silent> <C-k> <C-G>u<Esc>:call <SID>FixLineSpellError()<CR>`]a<C-G>u
 vnoremap q <C-c>
 
 
+" Display word frequency for text-oriented files
+augroup freqCount
+    autocmd!
+
+    autocmd FileType text,markdown,bib,tex nnoremap <buffer><silent> <leader>f :Freq<CR>
+augroup END
+
+
 " {{{1 UTILITY FUNCTIONS / COMMANDS
 
 " Function to open file in split if buffer not empty
@@ -373,8 +381,8 @@ augroup END
 
 " {{{1 SAVE FOLDS
 
-let g:skipview_files = []
-function! MakeViewCheck()
+let s:skipview_files = []
+function! s:MakeViewCheck()
     " Buffer is marked as not a file
     if &buftype =~ 'nofile' | return 0 | endif
     " Diff buffer
@@ -382,16 +390,31 @@ function! MakeViewCheck()
     " File does not exist on disk
     if empty(glob(expand('%:p'))) | return 0 | endif
     " File is in skip list
-    if index(g:skipview_files, expand('%')) >= 0 | return 0 | endif
+    if index(s:skipview_files, expand('%')) >= 0 | return 0 | endif
     return 1
 endfunction
 
 augroup vimrcAutoView
     autocmd!
 
-    autocmd BufWritePost,WinLeave ?* if MakeViewCheck() | mkview | endif
-    autocmd BufWinEnter ?* if MakeViewCheck() | silent loadview | endif
+    autocmd BufWritePost,WinLeave ?* if <SID>MakeViewCheck() | mkview | endif
+    autocmd BufWinEnter ?* if <SID>MakeViewCheck() | silent loadview | endif
 augroup END
+
+" {{{1 FULLSCREEN HELP
+
+function! s:FullscreenHelpIfEmpty()
+    wincmd p
+    if line('$') == 1 && getline(1) == '' | close | endif
+    wincmd p
+endfunction
+
+augroup fullscreenHelp
+    autocmd!
+
+    autocmd FileType help call <SID>FullscreenHelpIfEmpty()
+augroup END
+
 
 " {{{1 TAB LINE
 

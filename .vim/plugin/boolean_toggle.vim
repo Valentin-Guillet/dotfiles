@@ -1,4 +1,9 @@
 
+if exists("g:loaded_boolean_toggle")
+    finish
+endif
+let g:loaded_boolean_toggle = 1
+
 let s:translate_dict = {
     \ 'true': 'false',
     \ 'false': 'true',

@@ -408,7 +408,7 @@ function! better_search#print_matches()
     else
         " If there are no matches, search fails before we get here. The only way
         " we could see zero results is on 'g/' (but that's a reasonable result).
-        let [l:current, l:total] = s:match_counts()
+        let [l:current, l:total] = better_search#match_counts()
         let l:msg = '[' . l:current . '/' . l:total . ']  ' . l:dir_char . @/
     endif
 
@@ -434,7 +434,7 @@ endfunction
 
 " Return 2-element array, containing current index and total number of matches
 " of @/ (last search pattern) in the current buffer.
-function! s:match_counts()
+function! better_search#match_counts()
     " both :s and search() modify cursor position
     let win_view = winsaveview()
     " folds affect range of ex commands (issue #4)

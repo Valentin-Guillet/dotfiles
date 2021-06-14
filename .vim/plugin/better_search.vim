@@ -66,5 +66,22 @@ endfor
 nnoremap <silent> <C-l> <C-l>:call better_search#clear_all()<CR>
 
 
+function! s:FrequencyCount(...)
+    let l:saved_search = @/
+    let l:word = (a:0 ? a:1 : expand("<cword>"))
+    let @/ = l:word
+
+    silent! unlet b:better_search_cache_key
+    let [l:current, l:total] = better_search#match_counts()
+    echom l:word . ": [" . l:current . "/" . l:total . "]"
+
+    let @/ = l:saved_search
+endfunction
+
+if !exists(":Freq")
+    command -bar -nargs=? Freq call <SID>FrequencyCount(<f-args>)
+endif
+
+
 let &cpoptions = s:save_cpo
 unlet s:save_cpo

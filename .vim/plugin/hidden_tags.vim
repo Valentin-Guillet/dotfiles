@@ -1,4 +1,9 @@
 
+if exists("g:loaded_hidden_tags")
+    finish
+endif
+let g:loaded_hidden_tags = 1
+
 if !exists('g:tags_dir')
     let g:tags_dir = $HOME . "/.cache/vim/tags/"
 endif
@@ -38,6 +43,9 @@ function s:UpdateTagsFile()
         let l:tags_file = substitute(l:raw_tags_file, '%', '\\%', 'g')
     endif
 
+    " Create the tag file in advance so that GetTagsPath() finds it, even if
+    " the background `ctags` command takes time to finish
+    silent execute "!touch " . g:tags_dir . l:tags_file
     silent execute "!ctags -Rf " . l:tags_file . " " . l:project_path . " && mv " . l:tags_file . " " . g:tags_dir . " &"
     redraw!
     echom !empty(l:tags_path) ? "Tags updated" : "Tags created"
