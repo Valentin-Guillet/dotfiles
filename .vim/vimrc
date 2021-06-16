@@ -102,6 +102,8 @@ set sessionoptions-=options     " To restore syntax highlighting when restoring 
 
 set bufhidden=delete    " To delete buffer instead of just unloading them
 
+set nojoinspaces        " Only add a single space when `J`oining two lines, even if it ends with '.'
+
 if has("autocmd")
     augroup dashKeyword
         autocmd!

@@ -15,7 +15,7 @@ if readline.get_current_history_length() == 0:
 atexit.register(readline.write_history_file, histfile)
 
 # Autocomplete
-pdb.Pdb.complete = rlcompleter.Completer(locals()).complete
+pdb.Pdb.complete = rlcompleter.Completer(locals() | globals()).complete
 
 # Cleanup any variables that could otherwise clutter up the namespace.
 try:

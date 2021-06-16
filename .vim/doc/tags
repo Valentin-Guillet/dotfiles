@@ -1,3 +1,4 @@
+:AnsiEsc	ansi_esc.txt	/*:AnsiEsc*
 :Commentary	commentary.txt	/*:Commentary*
 :HeaderDecrease	vim-markdown.txt	/*:HeaderDecrease*
 :HeaderIncrease	vim-markdown.txt	/*:HeaderIncrease*
@@ -23,6 +24,12 @@
 :Toct	vim-markdown.txt	/*:Toct*
 :Tocv	vim-markdown.txt	/*:Tocv*
 <Plug>SearchIndex	searchindex.txt	/*<Plug>SearchIndex*
+AnsiEsc	ansi_esc.txt	/*AnsiEsc*
+AnsiEsc-contents	ansi_esc.txt	/*AnsiEsc-contents*
+AnsiEsc-copyright	ansi_esc.txt	/*AnsiEsc-copyright*
+AnsiEsc-history	ansi_esc.txt	/*AnsiEsc-history*
+AnsiEsc-manual	ansi_esc.txt	/*AnsiEsc-manual*
+AnsiEsc.txt	ansi_esc.txt	/*AnsiEsc.txt*
 autopairs-contents	autopairs.txt	/*autopairs-contents*
 autopairs-features	autopairs.txt	/*autopairs-features*
 autopairs-flymode	autopairs.txt	/*autopairs-flymode*
