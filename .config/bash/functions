@@ -4,7 +4,7 @@ lsf() {
     if [ "$1" = "-i" ]
     then
         shift
-        find "${2:-.}" -iname "*$1*" 2>/dev/null | grep "$1"
+        find "${2:-.}" -iname "*$1*" 2>/dev/null | grep -i "$1"
     else
         find "${2:-.}" -name "*$1*" 2>/dev/null | grep "$1"
     fi

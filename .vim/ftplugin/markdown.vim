@@ -500,13 +500,17 @@ function! s:Markdown_RemoveBullet()
 endfunction
 
 function! s:Markdown_Indent()
-    normal! >>
+    call s:Markdown_ModifyBullet(1)
+    normal! >>6l
     call s:TodoList_UpdateParents(-1, 0)
+    call repeat#set("\<Plug>Markdown_Indent", -1)
 endfunction
 
 function! s:Markdown_Dedent()
-    normal! <<
+    call s:Markdown_ModifyBullet(-1)
+    normal! <<6l
     call s:TodoList_UpdateParents(-1, 0)
+    call repeat#set("\<Plug>Markdown_Dedent", -1)
 endfunction
 
 function! s:Markdown_ModifyIndentRange(type)
@@ -947,11 +951,11 @@ function! s:TodoList_JoinLine()
     normal! J
 endfunction
 
-function! s:TodoList_BackSpace()
-    if getline('.')[:col('.')-2] !~ '^\s*\%([-+*.|]\|\d\+\.\) \[.\] \?$'
-        return
-    endif
+function! s:TodoList_ShouldBS()
+    return getline('.')[:col('.')-2] =~ '^\s*\%([-+*.|]\|\d\+\.\) \[.\] \?$'
+endfunction
 
+function! s:TodoList_BackSpace()
     normal! 0df]
     if getline('.') ==# ' '
         normal! x
@@ -981,21 +985,21 @@ function! s:SetCommonMappings()
     nnoremap <buffer><silent> ge :call <SID>EditUrlUnderCursor()<CR>
 
     " Indentation mappings
-    nnoremap <buffer><silent> <Plug>Markdown_Increment :call <SID>Markdown_ModifyBullet( 1) \| call <SID>Markdown_Indent() \| call repeat#set("\<Plug>Markdown_Increment")<CR>
-    nnoremap <buffer><silent> <Plug>Markdown_Decrement :call <SID>Markdown_ModifyBullet(-1) \| call <SID>Markdown_Dedent() \| call repeat#set("\<Plug>Markdown_Decrement")<CR>
-    nmap <buffer><silent> >> <Plug>Markdown_Increment
-    nmap <buffer><silent> << <Plug>Markdown_Decrement
+    nnoremap <buffer><silent> <Plug>Markdown_Indent :call <SID>Markdown_Indent()<CR>
+    nnoremap <buffer><silent> <Plug>Markdown_Dedent :call <SID>Markdown_Dedent()<CR>
+    nmap <buffer><silent> >> <Plug>Markdown_Indent
+    nmap <buffer><silent> << <Plug>Markdown_Dedent
 
     nnoremap <buffer><silent> > :set opfunc=<SID>Markdown_ModifyIndentRange<CR>g@
     nnoremap <buffer><silent> < :set opfunc=<SID>Markdown_ModifyDedentRange<CR>g@
     vnoremap <buffer><silent> > :<C-u>call <SID>Markdown_ModifyIndentRange('visual')<CR>
     vnoremap <buffer><silent> < :<C-u>call <SID>Markdown_ModifyDedentRange('visual')<CR>
 
-    inoremap <buffer><silent>       <C-T> <C-O>:call <SID>Markdown_ModifyBullet(1) \| call <SID>TodoList_UpdateParents(-1)<CR><C-T>
-    inoremap <buffer><silent><expr> <C-D> col('.')>strlen(getline('.'))?"<C-O>:call <SID>Markdown_ModifyBullet(-1)<CR><C-D><C-O>:call <SID>TodoList_UpdateParents(-1)<CR>":"<Del>"
+    inoremap <buffer><silent>       <C-T> <C-T><C-O>:call <SID>Markdown_ModifyBullet(1) \| call <SID>TodoList_UpdateParents(-1, 0)<CR>
+    inoremap <buffer><silent><expr> <C-D> col('.')>strlen(getline('.')) ? "<C-D><C-O>:call <SID>Markdown_ModifyBullet(-1) \| call <SID>TodoList_UpdateParents(-1, 0)<CR>" : "<Del>"
 
-    inoremap <buffer><silent><expr> <Tab>   <SID>Markdown_ShouldIndent()?"<C-\><C-O>:call <SID>Markdown_ModifyBullet(1)<CR><C-T><C-\><C-O>:call <SID>TodoList_UpdateParents(-1)<CR>":"<Tab>"
-    inoremap <buffer><silent>       <S-Tab> <C-O>:call <SID>Markdown_ModifyBullet(-1)<CR><C-D><C-O>:call <SID>TodoList_UpdateParents(-1)<CR>
+    inoremap <buffer><silent><expr> <Tab>   <SID>Markdown_ShouldIndent() ? "<C-T><C-\><C-O>:call <SID>Markdown_ModifyBullet(1) \| call <SID>TodoList_UpdateParents(-1, 0)<CR>" : "<Tab>"
+    inoremap <buffer><silent>       <S-Tab> <C-D><C-O>:call <SID>Markdown_ModifyBullet(-1) \| call <SID>TodoList_UpdateParents(-1, 0)<CR>
 endfunction
 
 
@@ -1071,16 +1075,17 @@ function! s:SetTodoMode()
     nnoremap <buffer><silent> O :call <SID>TodoList_CreateNewItemAbove()<CR>
     nnoremap <buffer><silent> j :<C-U>call <SID>TodoList_GoToNextItem(v:count1)<CR>
     nnoremap <buffer><silent> k :<C-U>call <SID>TodoList_GoToPreviousItem(v:count1)<CR>
-    nnoremap <buffer><silent> dd :call <SID>TodoList_DeleteItem(line('.'), 1)<CR>
+
+    nnoremap <buffer><silent> dd        :call <SID>TodoList_DeleteItem(line('.'), 1) \| call repeat#set("dd", -1)<CR>
+    nnoremap <buffer><silent> <leader>d :call <SID>TodoList_CleanItemsDone()<CR>
 
     nnoremap <buffer><silent> - :m .+1 \| call <SID>TodoList_UpdateParents(-1, 1, -2)<CR>
     nnoremap <buffer><silent> _ :m .-2 \| call <SID>TodoList_UpdateParents(-1, 1, 2)<CR>
 
-    nnoremap <buffer><silent> <leader>d :call <SID>TodoList_CleanItemsDone()<CR>
-    inoremap <buffer><silent> <BS> <C-\><C-O>:call <SID>TodoList_BackSpace()<CR><BS>
+    inoremap <buffer><silent><expr> <BS> <SID>TodoList_ShouldBS() ? "<C-\><C-O>:call <SID>TodoList_BackSpace()<CR><BS>" : "<C-R>=AutoPairsDelete()<CR>"
     inoremap <buffer><silent> <CR> <C-O>:call <SID>TodoList_MakeHeader()<CR><CR><C-O>:call <SID>TodoList_CreateNewItem(line('.')-1)<CR>
-    nmap <buffer><silent> <Tab>   <Plug>Markdown_Increment
-    nmap <buffer><silent> <S-Tab> <Plug>Markdown_Decrement
+    nmap <buffer><silent> <Tab>   <Plug>Markdown_Indent
+    nmap <buffer><silent> <S-Tab> <Plug>Markdown_Dedent
 
     call s:MapKey(']]', "<SID>TodoList_GoToNextBaseItem")
     call s:MapKey('[[', "<SID>TodoList_GoToPreviousBaseItem")

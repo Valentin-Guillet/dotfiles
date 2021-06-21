@@ -20,6 +20,7 @@ function! s:ToggleBoolean()
             execute "normal! ciw" . l:value
         endif
     endfor
+    call repeat#set("\<Plug>ToggleBoolean")
 endfunction
 
 function! s:ToggleBooleanVisual()
@@ -29,6 +30,8 @@ function! s:ToggleBooleanVisual()
 endfunction
 
 
-nnoremap <silent> g! :call <SID>ToggleBoolean()<CR>
+nnoremap <silent> <Plug>ToggleBoolean :call <SID>ToggleBoolean()<CR>
+nmap g! <Plug>ToggleBoolean
+
 vnoremap <silent> g! :call <SID>ToggleBooleanVisual()<CR>
 

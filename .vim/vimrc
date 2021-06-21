@@ -291,7 +291,7 @@ inoremap <S-Tab> <C-d>
 nnoremap <silent><expr> <CR> getcmdwintype() !~ '[:/?]' ? ':silent! execute "normal! zO\n"<CR>' : '<CR>'
 
 " Display current fold name
-nnoremap <silent> z/ zc:echo foldtextresult(foldclosed('.'))<CR>zo
+nnoremap <silent> z/ zc:echo foldtextresult(foldclosed('.'))[:&columns-13] \| normal zo<CR>
 
 " Cancel autocomplete but reprint longest match
 cmap <C-x> <C-l><C-n><C-p><C-u><C-y><C-z>
@@ -406,9 +406,9 @@ augroup END
 " {{{1 FULLSCREEN HELP
 
 function! s:FullscreenHelpIfEmpty()
-    wincmd p
+    silent! wincmd p
     if line('$') == 1 && getline(1) == '' | close | endif
-    wincmd p
+    silent! wincmd p
 endfunction
 
 augroup fullscreenHelp
@@ -476,9 +476,9 @@ function! s:SetStatuslineGit()
 endfunction
 
 function! MyStatusLine()
-    let l:curr_winnr = winbufnr(g:statusline_winid)
-    let l:git_branch = get(g:statusline_git_branch, l:curr_winnr, "")
-    let l:is_tracked = get(g:statusline_git_is_tracked, l:curr_winnr, 0)
+    let l:curr_bufnr = winbufnr(g:statusline_winid)
+    let l:git_branch = get(g:statusline_git_branch, l:curr_bufnr, "")
+    let l:is_tracked = get(g:statusline_git_is_tracked, l:curr_bufnr, 0)
 
     let l:my_statusline  = ''
     if l:is_tracked | let l:my_statusline .= '%#PmenuSel#' . l:git_branch . '%0*' | endif
@@ -488,8 +488,8 @@ function! MyStatusLine()
 
     " Git gutter
     if g:gitgutter_enabled && !empty(l:git_branch) && l:is_tracked
-        let [a, m, r] = gitgutter#hunk#summary(l:curr_winnr)
-        let l:inactive = l:curr_winnr != winnr() ? "NC" : ""
+        let [a, m, r] = gitgutter#hunk#summary(l:curr_bufnr)
+        let l:inactive = win_id2win(g:statusline_winid) != winnr() ? "NC" : ""
         let l:my_statusline .= ' ['
         let l:my_statusline .= '%#GitGutterStatuslineAdd' . l:inactive . '#+' . a . ' '
         let l:my_statusline .= '%#GitGutterStatuslineChange' . l:inactive . '#~' . m . ' '

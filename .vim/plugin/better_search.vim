@@ -40,13 +40,12 @@ silent! cmap <unique><expr> <CR>
             \ "\<CR>" . (getcmdtype() =~ '[/?]' ? ":call better_search#print_matches()<CR>" : "")
 
 if exists('*getcmdwintype')
-    augroup searchindex_cmdwin
+    augroup searchindexCmdwin
         autocmd!
         " WARNING: don't add a space between the <CR> and the | at the risk of breaking everything
         autocmd CmdWinEnter * if getcmdwintype() =~ '[/?]' | silent! nnoremap <buffer> <CR> <CR>:call better_search#print_matches()<CR>| endif
     augroup END
 endif
-
 
 
 " Mappings
@@ -66,20 +65,18 @@ endfor
 nnoremap <silent> <C-l> <C-l>:call better_search#clear_all()<CR>
 
 
-function! s:FrequencyCount(...)
-    let l:saved_search = @/
+function! s:FrequencyCount(search_words, ...)
     let l:word = (a:0 ? a:1 : expand("<cword>"))
+    if a:search_words | let l:word = "\\<" . l:word . "\\>" | endif
     let @/ = l:word
-
-    silent! unlet b:better_search_cache_key
-    let [l:current, l:total] = better_search#match_counts()
-    echom l:word . ": [" . l:current . "/" . l:total . "]"
-
-    let @/ = l:saved_search
+    call better_search#search_next_end()
 endfunction
 
 if !exists(":Freq")
-    command -bar -nargs=? Freq call <SID>FrequencyCount(<f-args>)
+    command -bar -nargs=? Freq call <SID>FrequencyCount(0, <f-args>)
+endif
+if !exists(":Freqw")
+    command -bar -nargs=? Freqw call <SID>FrequencyCount(1, <f-args>)
 endif
 
 
