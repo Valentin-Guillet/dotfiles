@@ -1,3 +1,10 @@
+'g:tex_fold_additional_envs'	tex-fold.txt	/*'g:tex_fold_additional_envs'*
+'g:tex_fold_allow_marker'	tex-fold.txt	/*'g:tex_fold_allow_marker'*
+'g:tex_fold_env_char'	tex-fold.txt	/*'g:tex_fold_env_char'*
+'g:tex_fold_ignore_envs'	tex-fold.txt	/*'g:tex_fold_ignore_envs'*
+'g:tex_fold_override_foldtext'	tex-fold.txt	/*'g:tex_fold_override_foldtext'*
+'g:tex_fold_sec_char'	tex-fold.txt	/*'g:tex_fold_sec_char'*
+'g:tex_fold_use_default_envs'	tex-fold.txt	/*'g:tex_fold_use_default_envs'*
 :AnsiEsc	ansi_esc.txt	/*:AnsiEsc*
 :Commentary	commentary.txt	/*:Commentary*
 :HeaderDecrease	vim-markdown.txt	/*:HeaderDecrease*
@@ -295,6 +302,12 @@ tagbar-statusline	tagbar.txt	/*tagbar-statusline*
 tagbar-todo	tagbar.txt	/*tagbar-todo*
 tagbar-usage	tagbar.txt	/*tagbar-usage*
 tagbar.txt	tagbar.txt	/*tagbar.txt*
+tex-fold-changelog	tex-fold.txt	/*tex-fold-changelog*
+tex-fold-contents	tex-fold.txt	/*tex-fold-contents*
+tex-fold-license	tex-fold.txt	/*tex-fold-license*
+tex-fold-options	tex-fold.txt	/*tex-fold-options*
+tex-fold-usage	tex-fold.txt	/*tex-fold-usage*
+tex-fold.txt	tex-fold.txt	/*tex-fold.txt*
 tmux-navigator	tmux-navigator.txt	/*tmux-navigator*
 tmux-navigator-configuration	tmux-navigator.txt	/*tmux-navigator-configuration*
 tmux-navigator-contents	tmux-navigator.txt	/*tmux-navigator-contents*
