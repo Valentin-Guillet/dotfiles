@@ -48,6 +48,12 @@ endif
 "}}}
 "{{{ Functions
 
+let s:env_title_label = {
+            \ 'equation': '\label',
+            \ 'figure': '\label',
+            \ 'frame': '\frametitle',
+            \ }
+
 function! TeXFold(lnum)
     let line = getline(a:lnum)
     let default_envs = g:tex_fold_use_default_envs?
@@ -89,15 +95,31 @@ function! TeXFold(lnum)
     return '='
 endfunction
 
+function! s:ScanFor(label, foldstart, foldend)
+    for line in getline(a:foldstart, a:foldend)
+        if line =~ '^\s*\' . a:label . '{\([^}]*\)}'
+            return matchstr(line, '^\s*\' . a:label . '{\zs[^}]*\ze}')
+        endif
+    endfor
+endfunction
+
 function! TeXFoldText()
     let fold_line = getline(v:foldstart)
 
     if fold_line =~ '^\s*\\\(sub\)*section'
         let pattern = '\\\(sub\)*section\*\={\([^}]*\)}'
         let repl = ' ' . g:tex_fold_sec_char . ' \2'
+
     elseif fold_line =~ '^\s*\\begin'
-        let pattern = '\\begin{\([^}]*\)}'
-        let repl = ' ' . g:tex_fold_env_char . ' \1'
+        let pattern = '\\begin{\([^}]*\)}\(.*\)'
+        let repl = ' ' . g:tex_fold_env_char . ' \1\2'
+
+        let env = matchstr(fold_line, '^\s*\\begin{\zs[^}]*\ze}')
+        if has_key(s:env_title_label, env)
+            let label = s:ScanFor(s:env_title_label[env], v:foldstart, v:foldend)
+            if !empty(label) | let repl .= ': ' . label | endif
+        endif
+
     elseif fold_line =~ '^[^%]*%[^{]*{{{'
         let pattern = '^[^{]*{' . '{{\([.]*\)'
         let repl = '\1'
