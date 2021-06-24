@@ -5,7 +5,7 @@
 " ---------------------------------------------------------------------
 "  Load Once: {{{1
 if &cp || exists("g:loaded_AnsiEscPlugin")
- finish
+    finish
 endif
 let g:loaded_AnsiEscPlugin = "v13i"
 let s:keepcpo              = &cpo
@@ -19,12 +19,12 @@ au BufReadPost * :call ansi_esc#BufReadPost()
 
 " DrChip Menu Support: {{{2
 if !exists('g:no_drchip_menu') && !exists('g:no_ansiesc_menu')
- if has("gui_running") && has("menu") && &go =~ 'm'
-  if !exists("g:DrChipTopLvlMenu")
-   let g:DrChipTopLvlMenu= "DrChip."
-  endif
-  exe 'menu '.g:DrChipTopLvlMenu.'AnsiEsc.Start<tab>:AnsiEsc		:AnsiEsc<cr>'
- endif
+    if has("gui_running") && has("menu") && &go =~ 'm'
+        if !exists("g:DrChipTopLvlMenu")
+            let g:DrChipTopLvlMenu= "DrChip."
+        endif
+        exe 'menu ' . g:DrChipTopLvlMenu . 'AnsiEsc.Start<tab>:AnsiEsc		:AnsiEsc<cr>'
+    endif
 endif
 
 " ---------------------------------------------------------------------

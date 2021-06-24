@@ -52,19 +52,15 @@ function s:UpdateTagsFile()
     return empty(l:tags_path)
 endfunction
 
-function s:TagGoToOpenedTab(tag)
+function s:TagsGoToOpenedTab(tag)
     if empty(tagfiles())
-        echohl ErrorMsg
-        echo "E433: No tags file"
-        echohl None
+        echohl ErrorMsg | echo "E433: No tags file" | echohl None
         return
     endif
 
     let l:tag_list = taglist('^' . a:tag . '$')
     if empty(l:tag_list)
-        echohl ErrorMsg
-        echo "E426: tag not found: " . a:tag
-        echohl None
+        echohl ErrorMsg | echo "E426: tag not found: " . a:tag | echohl None
         return
     endif
 
@@ -107,7 +103,7 @@ function s:TagGoToOpenedTab(tag)
     endif
 
     execute l:found_tab_nr . "tabnext"
-    execute "normal! " . bufwinnr(bufname(l:found_buf_nr)) . "\<C-W>\<C-W>"
+    execute bufwinnr(bufname(l:found_buf_nr)) . "wincmd w"
     call s:SetTags()
     execute "tag " . a:tag
 endfunction
@@ -140,13 +136,38 @@ function s:SetTags()
     execute "setlocal tags=" . s:GetTagsPath()
 endfunction
 
-function! s:DeleteTagFile()
+function! s:DeleteTagsFile()
     if empty(&l:tags) | echo "No tag file" | return | endif
     let l:escaped_tags = substitute(&l:tags, '%', '\\%', 'g')
     execute "silent !rm " . l:escaped_tags
     redraw!
-    echo "Tag file (" . l:escaped_tags . ") removed"
+    echo "Tags file (" . l:escaped_tags . ") removed"
     call s:SetTags()
+endfunction
+
+function! s:CleanTagsFiles()
+    let l:list_files = globpath(g:tags_dir, '*', 0, 1)
+    let l:count = 0
+    for l:file in l:list_files
+        let l:lines = readfile(l:file, '', 1)
+        if empty(l:lines) || l:lines[0] !~ '^!_TAG_'
+            continue
+        endif
+        let l:rel_file = fnamemodify(l:file, ":t")
+        let l:dir = substitute(l:rel_file, '%', '/', 'g')
+        if !isdirectory(l:dir)
+            let l:escaped_file = substitute(l:file, '%', '\\%', 'g')
+            execute "silent !rm " . shellescape(l:escaped_file)
+            let l:count += 1
+        endif
+    endfor
+    redraw!
+
+    if l:count
+        echo l:count . " file" . (l:count > 1 ? 's' : '') . " removed"
+    else
+        echo "No file to remove"
+    endif
 endfunction
 
 augroup setTags
@@ -156,13 +177,15 @@ augroup setTags
 augroup END
 
 
-command! -bar TagFileDelete call <SID>DeleteTagFile()
-command! -bar TagFileSet call <SID>SetTags()
+command! -bar TagsFileDelete call <SID>DeleteTagsFile()
+command! -bar TagsFileSet call <SID>SetTags()
+command! -bar TagsFileClean call <SID>CleanTagsFiles()
 
 nnoremap <silent> <leader>G :if <SID>UpdateTagsFile() \| call <SID>SetTags() \| endif<CR>
-nnoremap <silent> <C-]> :call <SID>TagGoToOpenedTab(expand("<cword>"))<CR>
+nnoremap <silent> <C-]> :call <SID>TagsGoToOpenedTab(expand("<cword>"))<CR>
 nnoremap <silent> <leader>] :vsp <CR>:execute "tag " . expand("<cword>")<CR>
 nnoremap <silent> <leader>} :tab split<CR>:execute "tag " . expand("<cword>")<CR>
 nnoremap <silent> <leader><C-o> :call <SID>UpTabJumpList()<CR>
 nnoremap <silent> <leader><C-i> :call <SID>DownTabJumpList()<CR>
 
+" vim: fdm=indent
