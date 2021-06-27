@@ -245,8 +245,8 @@ inoremap kJ <Esc>l
 inoremap KJ <Esc>l
 
 " Move line
-nnoremap <silent> - :m .+1<CR>==
-nnoremap <silent> _ :m .-2<CR>==
+nnoremap <silent> - ddp
+nnoremap <silent><expr> _ line('.') == line('$') \|\| line('.') == 1 ? "ddP" : "ddkP"
 vnoremap <silent> - :m '>+1<CR>gv=gv
 vnoremap <silent> _ :m '<-2<CR>gv=gv
 

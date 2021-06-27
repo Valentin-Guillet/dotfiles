@@ -46,20 +46,21 @@ if g:tex_fold_override_foldtext
 endif
 
 "}}}
-"{{{ Functions
-
+"{{{ Script Variables
+"
 let s:env_title_label = {
             \ 'equation': '\label',
             \ 'figure': '\label',
             \ 'frame': '\frametitle',
             \ }
+let s:default_envs = g:tex_fold_use_default_envs ? ['frame', 'table', 'figure', 'align', 'lstlisting', 'equation']: []
+let s:list_envs = '\%(' . join(s:default_envs + g:tex_fold_additional_envs, '\|') . '\)'
+
+"}}}
+"{{{ Functions
 
 function! TeXFold(lnum)
     let line = getline(a:lnum)
-    let default_envs = g:tex_fold_use_default_envs?
-        \['frame', 'table', 'figure', 'align', 'lstlisting', 'equation']: []
-    let envs = '\(' . join(default_envs + g:tex_fold_additional_envs, '\|') . '\)'
-
     if line =~ '^\s*\\section'
         return '>1'
     endif
@@ -73,11 +74,11 @@ function! TeXFold(lnum)
     endif
 
     if !g:tex_fold_ignore_envs
-        if line =~ '^\s*\\begin{' . envs
+        if line =~ '^\s*\\begin{' . s:list_envs
             return 'a1'
         endif
 
-        if line =~ '^\s*\\end{' . envs
+        if line =~ '^\s*\\end{' . s:list_envs
             return 's1'
         endif
     endif
@@ -138,3 +139,7 @@ else
   let b:undo_ftplugin = "setl foldexpr< foldmethod< foldtext<"
 endif
 "}}}
+
+"{{{ Modeline
+" vim: fdm=marker
+" }}}
