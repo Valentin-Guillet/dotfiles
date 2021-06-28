@@ -55,6 +55,7 @@ endif
 " {{{1 GENERAL OPTIONS
 
 let mapleader = ","
+let maplocalleader = ","
 
 set formatoptions+=j    " delete comment character when joining commented lines
 set autoread
@@ -142,11 +143,13 @@ try
 catch /.*/
 endtry
 
+
 " Auto-pairs
 let g:autopairs_shortcut_toggle = ''
 let g:autopairs_shortcut_jump = '<M-v>'
 let g:autopairs_shortcut_back_insert = '<M-c>'
 let g:autopairs_center_line = 0
+
 
 " GitGutter
 set updatetime=100
@@ -287,9 +290,6 @@ cnoremap  <C-w>
 " Shift-Tab to dedent
 inoremap <S-Tab> <C-d>
 
-" Enter opens folds in normal mode
-nnoremap <silent><expr> <CR> getcmdwintype() !~ '[:/?]' ? ':silent! execute "normal! zO\n"<CR>' : '<CR>'
-
 " Display current fold name
 nnoremap <silent> z/ zc:echo foldtextresult(foldclosed('.'))[:&columns-13] \| normal zo<CR>
 
@@ -403,6 +403,22 @@ augroup vimrcAutoView
     autocmd BufWinEnter ?* if <SID>MakeViewCheck() | silent loadview | endif
 augroup END
 
+" Clear view function
+function! s:ClearView()
+    let path = fnamemodify(bufname('%'),':p')
+    let path = substitute(path, '=', '==', 'g')
+    if !empty($HOME)
+        let path = substitute(path, '^'.$HOME, '\~', '')
+    endif
+    let path = substitute(path, '/', '=+', 'g') . '='
+    let path = &viewdir . '/' . path
+    call delete(path)
+    echom "View file deleted !"
+endfunction
+
+command ClearView call s:ClearView()
+
+
 " {{{1 FULLSCREEN HELP
 
 function! s:FullscreenHelpIfEmpty()
@@ -467,9 +483,10 @@ augroup setStatusline
 augroup END
 
 function! s:SetStatuslineGit()
-    let l:command = "git -C " . expand("%:h") . " rev-parse --abbrev-ref HEAD 2>/dev/null | tr -d '\n'"
-    let l:git_branch = system(l:command)
-    let l:git_tracked = system("git ls-files " . expand("%:p:S") . " 2>/dev/null")
+    let l:branch_command = "git -C " . expand("%:h") . " rev-parse --abbrev-ref HEAD 2>/dev/null | tr -d '\n'"
+    let l:git_branch = system(l:branch_command)
+    let l:track_command = "git -C " . expand("%:h") . " ls-files " . expand("%:p:S") . " 2>/dev/null"
+    let l:git_tracked = system(l:track_command)
 
     let g:statusline_git_branch[bufnr()] = (!empty(l:git_branch) ? ' ' . l:git_branch . ' ' : '')
     let g:statusline_git_is_tracked[bufnr()] = !empty(expand("%:p")) && !empty(l:git_tracked)

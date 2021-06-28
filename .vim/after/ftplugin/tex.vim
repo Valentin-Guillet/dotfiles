@@ -126,8 +126,16 @@ function! TeXFoldText()
         let repl = '\1'
     endif
 
-    let line = substitute(fold_line, pattern, repl, '') . ' '
-    return '+' . v:folddashes . line
+    let line = substitute(fold_line, pattern, repl, '')
+
+    let has_numbers = &number || &relativenumber
+    let nucolwidth = &fdc + has_numbers * &numberwidth
+    let windowwidth = winwidth(0) - nucolwidth - 6
+    let foldedlinecount = v:foldend - v:foldstart
+    let line = strpart(line, 0, windowwidth - 2 -len(foldedlinecount))
+    let line = substitute(line, '\%("""\|''''''\)', '', '')
+    let fillcharcount = windowwidth - len(line) - len(foldedlinecount) + 1
+    return '+' . v:folddashes . line . ' ' . repeat("-", fillcharcount) . ' ' . foldedlinecount . ' '
 endfunction
 
 "}}}

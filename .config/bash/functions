@@ -71,3 +71,34 @@ pip_update() {
     rm /tmp/pip_list
 }
 
+ls_stack() {
+    [[ $# != 1 ]] && echo "Usage: ls_stack {cmd}" && return 1
+
+    if [ -e "$1" ]
+    then
+        local file="$1"
+    elif which "$1" &>/dev/null
+    then
+        local file=$(which "$1")
+    else
+        return 1
+    fi
+    local base_dir="$(dirname "$file")"
+
+    local files=( "$file" )
+    local line=$(ls -lh "$file")
+    while [[ $line == *"->"* ]]
+    do
+        file=$(echo "$line" | rev | cut -d' ' -f1 | rev)
+        [[ $file == /* ]] || file="$(realpath -s "$base_dir/$file")"
+
+        [ -d "$file" ] && break
+
+        local base_dir="$(dirname "$file")"
+        files+=( "$file" )
+        local line=$(ls -lh "$file")
+    done
+
+    ls -flh --color=force ${files[@]}
+}
+
