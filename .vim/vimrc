@@ -170,6 +170,8 @@ highlight GitGutterStatuslineAddNC    cterm=bold ctermfg=2 ctermbg=244
 highlight GitGutterStatuslineChangeNC cterm=bold ctermfg=3 ctermbg=244
 highlight GitGutterStatuslineDeleteNC cterm=bold ctermfg=1 ctermbg=244
 
+let g:fastfold_minlines = 10
+
 
 " Markdown
 let g:vim_markdown_toc_autofit = 1
@@ -177,6 +179,14 @@ let g:vim_markdown_follow_anchor = 1
 let g:vim_markdown_strikethrough = 1
 let g:vim_markdown_new_list_item_indent = 2
 let g:vim_markdown_folding_style_pythonic = 1
+
+
+" Qf
+nmap <leader>ak <Plug>(qf_qf_previous)
+nmap <leader>aj <Plug>(qf_qf_next)
+nmap <leader>as <Plug>(qf_qf_switch)
+nmap <leader>aa <Plug>(qf_qf_toggle)
+
 
 " Tagbar
 let g:tagbar_position = 'topleft vertical'
@@ -186,8 +196,20 @@ let g:tagbar_autoclose = 1
 let g:tagbar_jump_offset = 100
 nnoremap <leader>c :TagbarOpen j<CR>
 
+
 " Vim/Tmux navigator
 let g:tmux_navigator_disable_when_zoomed = 1
+
+
+" Vimtex
+let g:vimtex_compiler_latexmk = {'continuous': 0}
+let g:vimtex_quickfix_ignore_filters = ['Underfull', 'Overfull', 'Font Warning']
+augroup vimtexSingleCompile
+    autocmd!
+
+    autocmd FileType tex nmap <localleader>ll <Plug>(vimtex-compile-ss)
+augroup END
+
 
 " Zoom pane
 let g:zoom#statustext = '[Z]'

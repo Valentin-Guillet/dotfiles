@@ -1,0 +1,9 @@
+[submodule ".vim/pack/fastfold/start/FastFold"]
+	path = .vim/pack/fastfold/start/FastFold
+	url = https://github.com/Konfekt/FastFold
+[submodule ".vim/pack/qf/start/vim-qf"]
+	path = .vim/pack/qf/start/vim-qf
+	url = https://github.com/romainl/vim-qf
+[submodule ".vim/pack/vimtex/start/vimtex"]
+	path = .vim/pack/vimtex/start/vimtex
+	url = https://github.com/lervag/vimtex

@@ -1,6 +1,7 @@
 *
 */
 !.bashrc
+!.gitmodules
 !.pdbrc
 !.profile
 !.tmux.conf
@@ -79,6 +80,4 @@
 
 !.vim/
 !.vim/**
-.vim/.netrwhist
-.vim/.netrwbook
 
