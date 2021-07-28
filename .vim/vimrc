@@ -271,8 +271,8 @@ inoremap kJ <Esc>l
 inoremap KJ <Esc>l
 
 " Move line
-nnoremap <silent> - ddp
-nnoremap <silent><expr> _ line('.') == line('$') \|\| line('.') == 1 ? "ddP" : "ddkP"
+nnoremap <silent> - ddp==
+nnoremap <silent><expr> _ line('.') == line('$') \|\| line('.') == 1 ? "ddP==" : "ddkP=="
 vnoremap <silent> - :m '>+1<CR>gv=gv
 vnoremap <silent> _ :m '<-2<CR>gv=gv
 
@@ -329,7 +329,7 @@ augroup END
 " {{{1 UTILITY FUNCTIONS / COMMANDS
 
 " Function to open file in split if buffer not empty
-function! s:OpenInSplitIfNotEmpty(file)
+function s:OpenInSplitIfNotEmpty(file)
     if line('$') == 1 && getline(1) == ''
         exec 'e' a:file
     else
@@ -338,14 +338,14 @@ function! s:OpenInSplitIfNotEmpty(file)
 endfunction
 
 " Function to fix spelling error only on current line
-function! s:FixLineSpellError()
+function s:FixLineSpellError()
     let l:lnum = line('.')
     normal! [s
     if l:lnum != line('.') | return | endif
     normal! 1z=
 endfunction
 
-function! s:DiffToggle()
+function s:DiffToggle()
     if &diff
         windo diffoff
         execute winnr() . 'wincmd w'
@@ -390,7 +390,7 @@ augroup END
 " {{{1 SAVE FOLDS
 
 let s:skipview_files = []
-function! s:MakeViewCheck()
+function s:MakeViewCheck()
     " Buffer is marked as not a file
     if &buftype =~ 'nofile' | return 0 | endif
     " Diff buffer
@@ -402,15 +402,26 @@ function! s:MakeViewCheck()
     return 1
 endfunction
 
+function s:SaveView()
+    let l:save_fdm = &fdm
+    if &foldexpr !=# '0'
+        set foldmethod=expr
+    else
+        set foldmethod=syntax
+    endif
+    mkview!
+    let &foldmethod = l:save_fdm
+endfunction
+
 augroup vimrcAutoView
     autocmd!
 
-    autocmd BufWritePost,WinLeave ?* if <SID>MakeViewCheck() | mkview | endif
-    autocmd BufWinEnter ?* if <SID>MakeViewCheck() | silent loadview | endif
+    autocmd BufWritePost,WinLeave ?* if <SID>MakeViewCheck() | call s:SaveView() | endif
+    autocmd BufWinEnter ?* if <SID>MakeViewCheck() | silent! loadview | endif
 augroup END
 
 " Clear view function
-function! s:ClearView()
+function s:ClearView()
     let path = fnamemodify(bufname('%'),':p')
     let path = substitute(path, '=', '==', 'g')
     if !empty($HOME)
@@ -427,7 +438,7 @@ command ClearView call s:ClearView()
 
 " {{{1 FULLSCREEN HELP
 
-function! s:FullscreenHelpIfEmpty()
+function s:FullscreenHelpIfEmpty()
     silent! wincmd p
     if line('$') == 1 && getline(1) == '' | close | endif
     silent! wincmd p
@@ -442,7 +453,7 @@ augroup END
 
 " {{{1 TAB LINE
 
-function! TabLine()
+function TabLine()
     let l:s = ''
     for l:tab in range(1, tabpagenr('$'))
         let l:winnr = tabpagewinnr(l:tab)
@@ -488,7 +499,7 @@ augroup setStatusline
                       \ silent! unlet g:statusline_git_is_tracked[expand("<abuf>")]
 augroup END
 
-function! s:SetStatuslineGit()
+function s:SetStatuslineGit()
     let l:branch_command = "git -C " . expand("%:h") . " rev-parse --abbrev-ref HEAD 2>/dev/null | tr -d '\n'"
     let l:git_branch = system(l:branch_command)
     let l:track_command = "git -C " . expand("%:h") . " ls-files " . expand("%:p:S") . " 2>/dev/null"
@@ -498,7 +509,7 @@ function! s:SetStatuslineGit()
     let g:statusline_git_is_tracked[bufnr()] = !empty(expand("%:p")) && !empty(l:git_tracked)
 endfunction
 
-function! MyStatusLine()
+function MyStatusLine()
     let l:curr_bufnr = winbufnr(g:statusline_winid)
     let l:git_branch = get(g:statusline_git_branch, l:curr_bufnr, "")
     let l:is_tracked = get(g:statusline_git_is_tracked, l:curr_bufnr, 0)
@@ -552,7 +563,7 @@ let &t_EI .= "\<Esc>[?2004l"
 
 inoremap <special> <expr> <Esc>[200~ XTermPasteBegin()
 
-function! XTermPasteBegin()
+function XTermPasteBegin()
     set pastetoggle=<Esc>[201~
     set paste
     return ""

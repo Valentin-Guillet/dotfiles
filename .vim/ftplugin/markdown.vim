@@ -501,14 +501,14 @@ endfunction
 
 function! s:Markdown_Indent()
     call s:Markdown_ModifyBullet(1)
-    normal! >>6l
+    normal! >>f]2l
     call s:TodoList_UpdateParents(-1, 0)
     call repeat#set("\<Plug>Markdown_Indent", -1)
 endfunction
 
 function! s:Markdown_Dedent()
     call s:Markdown_ModifyBullet(-1)
-    normal! <<6l
+    normal! <<f]2l
     call s:TodoList_UpdateParents(-1, 0)
     call repeat#set("\<Plug>Markdown_Dedent", -1)
 endfunction
@@ -733,7 +733,7 @@ function! s:TodoList_GoToNextItem(count)
         keepjumps normal! nw
     endfor
     silent! exec 'noh'
-    normal! 6l
+    normal! f]2l
     let &shortmess = l:saved_shortmess
 endfunction
 
@@ -748,7 +748,7 @@ function! s:TodoList_GoToPreviousItem(count)
         keepjumps normal! 0nw
     endfor
     silent! exec 'noh'
-    normal! 6l
+    normal! f]2l
     let &shortmess = l:saved_shortmess
 endfunction
 
@@ -938,7 +938,7 @@ endfunction
 
 
 function! s:TodoList_MakeHeader()
-    if getline('.') =~ '^\s*\%([-+*.|]\|\d\+\.\) \[.\]\s\+# .*'
+    if getline('.') =~ '^\s*\%([-+*.|]\|\d\+\.\) \[.\]\s\+#\+ .*'
         normal! 0dt#$
     endif
 endfunction
@@ -1012,7 +1012,7 @@ function! s:SetMarkdownMode()
         let &autoindent = s:autoindent_backup
     endif
     setlocal formatoptions-=c
-    setlocal comments+=b:*,b:+,b:-
+    setlocal comments+=b:*,b:+,b:-,b:.,b:\|
 
     let b:todo_mode = 0
 
@@ -1048,6 +1048,7 @@ function! s:SetMarkdownMode()
     nnoremap <buffer><silent> o A<CR>
     nnoremap <buffer><silent> O kA<CR>
     inoremap <buffer><silent> <CR> <C-O>:call <SID>Markdown_RemoveBullet()<CR><CR>
+    inoremap <buffer><silent> <BS> <C-R>=AutoPairsDelete()<CR>
 
     noremap  <buffer><silent> <leader>e :call <SID>SetTodoMode()<CR>
 endfunction
@@ -1059,7 +1060,7 @@ function! s:SetTodoMode()
     setlocal cursorline
     setlocal noautoindent
     setlocal formatoptions+=c
-    setlocal comments-=b:*,b:+,b:-
+    setlocal comments-=b:*,b:+,b:-,b:.,b:\|
 
     let b:todo_mode = 1
 

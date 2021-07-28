@@ -12,7 +12,7 @@ if get(g:, "vim_markdown_auto_insert_bullets", 1) && !(expand('%:t') =~ '.*\.tod
     " Do not automatically insert bullets when auto-wrapping with text-width
     setlocal formatoptions-=c
     " Accept various markers as bullets
-    setlocal comments+=b:*,b:+,b:-
+    setlocal comments+=b:*,b:+,b:-,b:.,b:\|
 endif
 
 " Only define the function once

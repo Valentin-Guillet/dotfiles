@@ -20,7 +20,7 @@ function s:GetTagsPath()
     let l:list_files = globpath(g:tags_dir, '*', 0, 1)
     call map(l:list_files, {_, val -> val[strridx(val, '/')+1:]})
     call sort(l:list_files, {a, b -> strlen(a) < strlen(b)})
-    let l:curr_file = substitute(getcwd(), '/', '%', 'g')
+    let l:curr_file = substitute(expand("%:p:h"), '/', '%', 'g')
 
     for l:file in l:list_files
         if l:curr_file =~ '^' . l:file
@@ -35,6 +35,10 @@ function s:UpdateTagsFile()
     let l:tags_path = s:GetTagsPath()
 
     if empty(l:tags_path)
+        if confirm("Save project tags file for directory " . getcwd() . " ?", "&Yes\n&No") == 2
+            echom "Aborted"
+            return 0
+        endif
         let l:project_path = getcwd()
         let l:tags_file = substitute(getcwd(), '/', '\\\%', 'g')
     else
@@ -136,7 +140,7 @@ function s:SetTags()
     execute "setlocal tags=" . s:GetTagsPath()
 endfunction
 
-function! s:DeleteTagsFile()
+function s:DeleteTagsFile()
     if empty(&l:tags) | echo "No tag file" | return | endif
     let l:escaped_tags = substitute(&l:tags, '%', '\\%', 'g')
     execute "silent !rm " . l:escaped_tags
@@ -145,7 +149,7 @@ function! s:DeleteTagsFile()
     call s:SetTags()
 endfunction
 
-function! s:CleanTagsFiles()
+function s:CleanTagsFiles()
     let l:list_files = globpath(g:tags_dir, '*', 0, 1)
     let l:count = 0
     for l:file in l:list_files
