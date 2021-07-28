@@ -7,3 +7,6 @@
 [submodule ".vim/pack/vimtex/start/vimtex"]
 	path = .vim/pack/vimtex/start/vimtex
 	url = https://github.com/lervag/vimtex
+[submodule ".vim/pack/targets/start/targets.vim"]
+	path = .vim/pack/targets/start/targets.vim
+	url = https://github.com/wellle/targets.vim

@@ -95,6 +95,7 @@ set linebreak           " break line between words during wrap
 set lazyredraw          " don't update screen during macros
 
 set foldlevelstart=0
+set foldmethod=syntax
 
 set notagrelative       " cf plugin/hidden_tags.vim
 
@@ -277,23 +278,6 @@ vnoremap <silent> _ :m '<-2<CR>gv=gv
 
 " Add a new line
 nnoremap <C-h> o<C-c>
-
-" Operator pending mapping
-onoremap in' :<C-u>normal! f'vi'<CR>
-onoremap in" :<C-u>normal! f"vi"<CR>
-onoremap in` :<C-u>normal! f`vi`<CR>
-onoremap in( :<C-u>normal! f(vi(<CR>
-onoremap in[ :<C-u>normal! f[vi[<CR>
-onoremap in{ :<C-u>normal! f{vi{<CR>
-onoremap in< :<C-u>normal! f<vi<<CR>
-
-onoremap il' :<C-u>normal! F'hvi'<CR>
-onoremap il" :<C-u>normal! F"hvi"<CR>
-onoremap il` :<C-u>normal! F`hvi`<CR>
-onoremap il( :<C-u>normal! F)vi(<CR>
-onoremap il[ :<C-u>normal! F[vi[<CR>
-onoremap il{ :<C-u>normal! F{vi{<CR>
-onoremap il< :<C-u>normal! F<vi<<CR>
 
 " Swap words
 nnoremap <silent> gt "_yiw:s/\(\%#\w\+\)\(\_W\+\)\(\w\+\)/\3\2\1/<CR><C-o>/\w\+\_W\+<CR><C-l>:nohlsearch<CR>
