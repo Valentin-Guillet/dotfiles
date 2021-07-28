@@ -468,7 +468,6 @@ function! s:Markdown_ModifyBullet(direction, ...)
     let l:bullets = ['-', '+', '*', '.', '|']
     let l:regex = '^\s*\([-+*.|]\)\%(\s\+.*\)\?$'
 
-
     let l:match = matchlist(l:line, l:regex)
     if empty(l:match) | return | endif
 
@@ -996,7 +995,7 @@ function! s:SetCommonMappings()
     vnoremap <buffer><silent> < :<C-u>call <SID>Markdown_ModifyDedentRange('visual')<CR>
 
     inoremap <buffer><silent>       <C-T> <C-T><C-O>:call <SID>Markdown_ModifyBullet(1) \| call <SID>TodoList_UpdateParents(-1, 0)<CR>
-    inoremap <buffer><silent><expr> <C-D> col('.')>strlen(getline('.')) ? "<C-D><C-O>:call <SID>Markdown_ModifyBullet(-1) \| call <SID>TodoList_UpdateParents(-1, 0)<CR>" : "<Del>"
+    inoremap <buffer><silent><expr> <C-D> col('.')>strlen(getline('.')) ? "<C-O>:call <SID>Markdown_ModifyBullet(-1) \| call <SID>TodoList_UpdateParents(-1, 0)<CR><C-D>" : "<Del>"
 
     inoremap <buffer><silent><expr> <Tab>   <SID>Markdown_ShouldIndent() ? "<C-T><C-\><C-O>:call <SID>Markdown_ModifyBullet(1) \| call <SID>TodoList_UpdateParents(-1, 0)<CR>" : "<Tab>"
     inoremap <buffer><silent>       <S-Tab> <C-D><C-O>:call <SID>Markdown_ModifyBullet(-1) \| call <SID>TodoList_UpdateParents(-1, 0)<CR>

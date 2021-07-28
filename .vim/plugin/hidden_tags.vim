@@ -191,5 +191,3 @@ nnoremap <silent> <leader>] :vsp <CR>:execute "tag " . expand("<cword>")<CR>
 nnoremap <silent> <leader>} :tab split<CR>:execute "tag " . expand("<cword>")<CR>
 nnoremap <silent> <leader><C-o> :call <SID>UpTabJumpList()<CR>
 nnoremap <silent> <leader><C-i> :call <SID>DownTabJumpList()<CR>
-
-" vim: fdm=indent
