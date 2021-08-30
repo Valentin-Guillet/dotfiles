@@ -210,6 +210,10 @@ xnoremap <silent> <Plug>(GitGutterStageHunk)   :GitGutterStageHunk<CR>
 xnoremap <silent> <Plug>GitGutterStageHunk     :call gitgutter#utility#warn('Please change your map <lt>Plug>GitGutterStageHunk to <lt>Plug>(GitGutterStageHunk)')<CR>
 nnoremap <silent> <Plug>(GitGutterStageHunk)   :GitGutterStageHunk<CR>
 nnoremap <silent> <Plug>GitGutterStageHunk     :call gitgutter#utility#warn('Please change your map <lt>Plug>GitGutterStageHunk to <lt>Plug>(GitGutterStageHunk)')<CR>
+
+xnoremap <Plug>(GitGutterStageNextHunk) :execute "normal \<Plug>(GitGutterStageHunk)\<Plug>(GitGutterNextHunk)" \| silent! call repeat#set("\<lt>Plug>(GitGutterStageNextHunk)")<CR>
+nnoremap <Plug>(GitGutterStageNextHunk) :execute "normal \<Plug>(GitGutterStageHunk)\<Plug>(GitGutterNextHunk)" \| silent! call repeat#set("\<lt>Plug>(GitGutterStageNextHunk)")<CR>
+
 nnoremap <silent> <Plug>(GitGutterUndoHunk)    :GitGutterUndoHunk<CR>
 nnoremap <silent> <Plug>GitGutterUndoHunk      :call gitgutter#utility#warn('Please change your map <lt>Plug>GitGutterUndoHunk to <lt>Plug>(GitGutterUndoHunk)')<CR>
 nnoremap <silent> <Plug>(GitGutterPreviewHunk) :GitGutterPreviewHunk<CR>

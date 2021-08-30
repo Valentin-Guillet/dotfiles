@@ -119,23 +119,29 @@ function! gitgutter#setup_maps()
     return
   endif
 
-  if !hasmapto('<Plug>(GitGutterPrevHunk)') && maparg('[c', 'n') ==# ''
+  if maparg('[c', 'n') ==# ''
     nmap <buffer> [c <Plug>(GitGutterPrevHunk)
   endif
-  if !hasmapto('<Plug>(GitGutterNextHunk)') && maparg(']c', 'n') ==# ''
+  if maparg(']c', 'n') ==# ''
     nmap <buffer> ]c <Plug>(GitGutterNextHunk)
   endif
 
-  if !hasmapto('<Plug>(GitGutterStageHunk)', 'v') && maparg('<Leader>hs', 'x') ==# ''
-    xmap <buffer> <Leader>hs <Plug>(GitGutterStageHunk)
+  if maparg('<Leader>hs', 'x') ==# ''
+    xmap <buffer> <Leader>hs <Plug>(GitGutterStageNextHunk)
   endif
-  if !hasmapto('<Plug>(GitGutterStageHunk)', 'n') && maparg('<Leader>hs', 'n') ==# ''
-    nmap <buffer> <Leader>hs <Plug>(GitGutterStageHunk)
+  if maparg('<Leader>hs', 'n') ==# ''
+    nmap <buffer> <Leader>hs <Plug>(GitGutterStageNextHunk)
   endif
-  if !hasmapto('<Plug>(GitGutterUndoHunk)') && maparg('<Leader>hu', 'n') ==# ''
+  if maparg('<Leader>hS', 'x') ==# ''
+    xmap <buffer> <Leader>hS <Plug>(GitGutterStageHunk)
+  endif
+  if maparg('<Leader>hS', 'n') ==# ''
+    nmap <buffer> <Leader>hS <Plug>(GitGutterStageHunk)
+  endif
+  if maparg('<Leader>hu', 'n') ==# ''
     nmap <buffer> <Leader>hu <Plug>(GitGutterUndoHunk)
   endif
-  if !hasmapto('<Plug>(GitGutterPreviewHunk)') && maparg('<Leader>hp', 'n') ==# ''
+  if maparg('<Leader>hp', 'n') ==# ''
     nmap <buffer> <Leader>hp <Plug>(GitGutterPreviewHunk)
   endif
 
