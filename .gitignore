@@ -4,7 +4,6 @@
 !.gitmodules
 !.pdbrc
 !.profile
-!.tmux.conf
 
 !.config/
 !.config/bash/
@@ -69,6 +68,8 @@
 !.config/tmux/layouts/
 !.config/tmux/layouts/**
 !.config/tmux/plugins/
+!.config/tmux/plugins/regex-search/
+!.config/tmux/plugins/regex-search/**
 !.config/tmux/plugins/session-manager/
 !.config/tmux/plugins/session-manager/**
 
