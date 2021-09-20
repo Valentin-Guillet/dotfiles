@@ -98,6 +98,7 @@ set foldlevelstart=0
 set foldmethod=syntax
 
 set notagrelative       " cf plugin/hidden_tags.vim
+set switchbuf=usetab    " jump to the first tab that contains buffer for quickfix commands
 
 set viewoptions-=options        " To omit local options when restoring file (cf. mkview, loadview)
 set sessionoptions-=options     " To restore syntax highlighting when restoring session (unzoom)
@@ -105,6 +106,8 @@ set sessionoptions-=options     " To restore syntax highlighting when restoring 
 set bufhidden=delete    " To delete buffer instead of just unloading them
 
 set nojoinspaces        " Only add a single space when `J`oining two lines, even if it ends with '.'
+
+set completeopt+=longest        " Only insert longest common text in autocompletion
 
 if has("autocmd")
     augroup dashKeyword
@@ -374,18 +377,26 @@ endif
 
 " {{{1 WHITESPACE HIGHLIGHTING
 
-augroup whitespaceHighlight
+augroup trailingWhitespaceHighlight
     autocmd!
 
-    highlight ExtraWhitespace ctermbg=red
-    match ExtraWhitespace /\s\+$\| \+\ze\t/
-    autocmd WinEnter * match ExtraWhitespace /\s\+$\| \+\ze\t/
-    autocmd InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$\| \+\ze\t/
-    autocmd InsertLeave * match ExtraWhitespace /\s\+$\| \+\ze\t/
+    highlight TrailingWhitespace ctermbg=red
+    match TrailingWhitespace /\s\+$\| \+\ze\t/
+    autocmd WinEnter * match TrailingWhitespace /\s\+$\| \+\ze\t/
+    autocmd InsertEnter * match TrailingWhitespace /\s\+\%#\@<!$\| \+\ze\t/
+    autocmd InsertLeave * match TrailingWhitespace /\s\+$\| \+\ze\t/
     autocmd WinLeave * call clearmatches()
 
     autocmd InsertLeave * redraw!
 augroup END
+
+function! s:RemoveTrailingWhitespace()
+    let l:save = winsaveview()
+    %s/\s\+$//e
+    call winrestview(l:save)
+endfunction
+
+command RemoveTrailingWhitespace call s:RemoveTrailingWhitespace()
 
 " {{{1 SAVE FOLDS
 

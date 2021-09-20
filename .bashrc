@@ -97,7 +97,8 @@ if [ -x /usr/bin/dircolors ]; then
     alias egrep='egrep --color=auto'
 fi
 
-EDITOR=$(which vim)
+export VISUAL=$(which vim)
+export EDITOR="$VISUAL"
 
 # Alias definitions
 [ -f "$XDG_CONFIG_HOME"/bash/aliases ] && . "$XDG_CONFIG_HOME"/bash/aliases
