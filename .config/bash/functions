@@ -63,12 +63,15 @@ pip_update() {
         mv /tmp/pip_list_tmp /tmp/pip_list
     fi
 
+    local exit_code=0
     if [ -s /tmp/pip_list ]
     then
         vim /tmp/pip_list
         cat /tmp/pip_list | cut -d = -f 1 | xargs -n 1 pip3 install -U
+        exit_code=$?
     fi
     rm /tmp/pip_list
+    return $exit_code
 }
 
 ls_stack() {

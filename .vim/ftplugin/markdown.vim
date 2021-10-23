@@ -698,7 +698,7 @@ function! s:TodoList_CreateNewItem(update_line)
         let l:end_ind = match(l:prev_line_non_empty, '\.')
         let l:bullet_nb = str2nr(l:prev_line_non_empty[l:beg_ind: l:end_ind-1]) + 1
         let l:indent = l:beg_ind > 0 ? l:prev_line_non_empty[:l:beg_ind-1] : ''
-        call setline(line('.'), l:indent . l:bullet_nb . ". [ ] ")
+        call setline(line('.'), l:indent . l:bullet_nb . ". [ ] " . getline('.'))
         startinsert!
         return
     endif

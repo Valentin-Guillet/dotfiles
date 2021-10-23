@@ -109,6 +109,8 @@ set nojoinspaces        " Only add a single space when `J`oining two lines, even
 
 set completeopt+=longest        " Only insert longest common text in autocompletion
 
+let g:is_bash = 1       " Set bash syntax instead of sh
+
 if has("autocmd")
     augroup dashKeyword
         autocmd!
@@ -228,6 +230,9 @@ nnoremap <leader>r :source $MYVIMRC \| redraw \| echo "Config reloaded !"<CR>
 
 " Write file with <leader>w
 nnoremap <leader>w :update <CR>
+
+" Make with <leader>m
+nnoremap <leader>m :execute 'silent !clear' \| silent make \| redraw! \| cwindow<CR>
 
 " Split
 nnoremap <silent> <leader>\ :vsplit<CR>
