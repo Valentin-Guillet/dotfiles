@@ -66,12 +66,12 @@ endfunction
 
 function s:DeleteLocalRcFile()
     let l:local_rc = s:GetLocalRcPath()
-    if empty(l:local_rc) | echo "No local rc file" | return | endif
+    if empty(l:local_rc) | echom "No local rc file" | return | endif
 
     let l:escaped_local_rc = substitute(l:local_rc, '%', '\\%', 'g')
     execute "silent !rm " . l:escaped_local_rc
     redraw!
-    echo "Local rc file (" . l:escaped_local_rc . ") removed"
+    echom "Local rc file (" . l:escaped_local_rc . ") removed"
 endfunction
 
 function s:CleanLocalRcFiles()
@@ -90,9 +90,9 @@ function s:CleanLocalRcFiles()
     redraw!
 
     if l:count
-        echo l:count . " file" . (l:count > 1 ? 's' : '') . " removed"
+        echom l:count . " file" . (l:count > 1 ? 's' : '') . " removed"
     else
-        echo "No file to remove"
+        echom "No file to remove"
     endif
 endfunction
 
