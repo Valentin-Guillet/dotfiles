@@ -16,6 +16,7 @@ export INPUTRC="$XDG_CONFIG_HOME"/readline/inputrc
 export PYTHONSTARTUP="$XDG_CONFIG_HOME"/python/pythonrc.py
 
 mkdir -p "$XDG_CACHE_HOME"/history
+export PARALLEL_HOME="$XDG_CACHE_HOME"/parallel
 export ICEAUTHORITY="$XDG_CACHE_HOME"/ICEauthority
 export XAUTHORITY="$XDG_CACHE_HOME"/Xauthority
 export LESSHISTFILE="$XDG_CACHE_HOME"/history/less_history

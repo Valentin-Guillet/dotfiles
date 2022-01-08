@@ -225,14 +225,15 @@ function! s:Toc(...)
         lopen
     elseif l:window_type ==# 'vertical'
         vertical topleft lopen
+        " Reposition after qf
+        execute "normal! \<C-W>H"
+
         " auto-fit toc window when possible to shrink it
         if (&columns/2) > l:header_max_len && l:vim_markdown_toc_autofit == 1
             execute 'vertical resize ' . (l:header_max_len + 1)
         else
             execute 'vertical resize ' . (&columns/2)
         endif
-    elseif l:window_type ==# 'tab'
-        tab lopen
     else
         lopen
     endif
@@ -1104,7 +1105,6 @@ command! -buffer -range=% SetexToAtx call s:SetexToAtx(<line1>, <line2>)
 command! -buffer Toc call s:Toc()
 command! -buffer Toch call s:Toc('horizontal')
 command! -buffer Tocv call s:Toc('vertical')
-command! -buffer Toct call s:Toc('tab')
 
 
 setlocal conceallevel=2 concealcursor=c

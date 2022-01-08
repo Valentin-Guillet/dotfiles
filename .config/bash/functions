@@ -95,7 +95,7 @@ ls_stack() {
         file=$(echo "$line" | rev | cut -d' ' -f1 | rev)
         [[ $file == /* ]] || file="$(realpath -s "$base_dir/$file")"
 
-        [ -d "$file" ] && break
+        [ ! -h "$file" ] && break
 
         local base_dir="$(dirname "$file")"
         files+=( "$file" )

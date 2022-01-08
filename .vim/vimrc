@@ -200,7 +200,11 @@ let g:tagbar_sort = 0
 let g:tagbar_autofocus = 1
 let g:tagbar_autoclose = 1
 let g:tagbar_jump_offset = 100
-nnoremap <leader>c :TagbarOpen j<CR>
+augroup tagbarMap
+    autocmd!
+
+    autocmd BufEnter * if &ft != "markdown" | nnoremap <buffer> <leader>c :TagbarOpen j<CR> | endif
+augroup END
 
 
 " Vim/Tmux navigator
@@ -374,6 +378,36 @@ if !exists(":DiffToggle")
     command -bar DiffToggle call <SID>DiffToggle()
 endif
 
+function s:OpenHeader()
+    let l:file = expand("%:p")
+
+    " C++ files
+    if l:file =~ "\v.*\.cpp$"
+        let l:header = substitute(l:file, "\.cpp$", ".hpp", "")
+        execute "vsplit " . l:header
+    elseif l:file =~ "\v.*\.hpp$"
+        let l:source = substitute(l:file, "\.hpp$", ".cpp", "")
+        execute "vsplit " . l:source
+        normal! r
+
+    " C files
+    elseif l:file =~ "\v.*\.c$"
+        let l:header = substitute(l:file, "\.c$", ".h", "")
+        execute "vsplit " . l:header
+    elseif l:file =~ "\v.*\.h$"
+        let l:source = substitute(l:file, "\.h$", ".c", "")
+        execute "vsplit " . l:source
+        normal! r
+
+    else
+        echom "Current file is not a source nor a header"
+    endif
+endfunction
+
+if !exists(":OpenHeader")
+    command -bar OpenHeader call <SID>OpenHeader()
+endif
+
 " Command to write read-only file
 if !exists(":W")
     command W execute 'silent! write !sudo /usr/bin/tee "%" >/dev/null' <bar> edit!
@@ -445,8 +479,11 @@ function s:ClearView()
     endif
     let path = substitute(path, '/', '=+', 'g') . '='
     let path = &viewdir . '/' . path
-    call delete(path)
-    echom "View file deleted !"
+    if delete(path) == 0
+        echom "View file deleted !"
+    else
+        echom "Error: view file not found"
+    endif
 endfunction
 
 command ClearView call s:ClearView()

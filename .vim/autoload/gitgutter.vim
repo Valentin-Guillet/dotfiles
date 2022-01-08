@@ -119,11 +119,11 @@ function! gitgutter#setup_maps()
     return
   endif
 
-  if maparg('[c', 'n') ==# ''
-    nmap <buffer> [c <Plug>(GitGutterPrevHunk)
+  if maparg('[h', 'n') ==# ''
+    nmap <buffer> [h <Plug>(GitGutterPrevHunk)
   endif
-  if maparg(']c', 'n') ==# ''
-    nmap <buffer> ]c <Plug>(GitGutterNextHunk)
+  if maparg(']h', 'n') ==# ''
+    nmap <buffer> ]h <Plug>(GitGutterNextHunk)
   endif
 
   if maparg('<Leader>hs', 'x') ==# ''

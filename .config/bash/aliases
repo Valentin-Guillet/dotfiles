@@ -11,6 +11,7 @@ CYAN=$(tput setaf 6)
 WHITE=$(tput setaf 7)
 BOLD=$(tput smso)
 UNBOLD=$(tput rmso)
+RESET=$(tput sgr0)
 
 # User general aliases
 alias ll='ls -ahlF'
