@@ -17,7 +17,7 @@ if !exists('g:session_default_name')
 endif
 
 
-function g:GetSessionNames(...)
+function g:GetSessionNames()
     let l:list_files = globpath(g:local_sessions_dir, '*', 0, 1)
     call map(l:list_files, {_, val -> val[strridx(val, '/')+1:]})
     call sort(l:list_files, {a, b -> strlen(a) < strlen(b)})
@@ -36,10 +36,10 @@ endfunction
 
 function s:GetSessionName(name, default=0)
     let l:session_names = GetSessionNames()
-    if empty(l:session_names) | echom "No session exist in this directory" | return "" | endif
+    if empty(l:session_names) | echo "No session exist in this directory" | return "" | endif
     if !empty(a:name)
         if index(l:session_names, a:name) == -1
-            echom "No such session in this directory"
+            echo "No such session in this directory"
             return ""
         endif
         let l:session_name = a:name
@@ -52,7 +52,7 @@ function s:GetSessionName(name, default=0)
                 if empty(l:session_name) | let l:session_name = g:session_default_name | endif
             else
                 redraw
-                echom "Aborted"
+                echo "Aborted"
             endif
         endif
     endif
@@ -83,7 +83,7 @@ function s:SaveSession(name="")
     if (!exists("g:session_name") || !empty(a:name)) &&
                 \ filereadable(substitute(l:session_file, '\\', '', 'g')) &&
                 \ confirm("A session file with the name \"" . l:session_name . "\" already exists. Do you want to overwrite ?", "&Yes\n&No") == 2
-        echom "Aborted"
+        echo "Aborted"
         return 0
     endif
 
@@ -106,7 +106,7 @@ function s:OpenSession(name="")
     if exists("g:session_name")
         if l:session_name ==# g:session_name
             redraw
-            echom "Session already opened"
+            echo "Session already opened"
             return 1
         else
             call s:CloseSession()
@@ -116,7 +116,7 @@ function s:OpenSession(name="")
     let l:curr_path = substitute(getcwd(), '/', '%', 'g')
     let l:session_file = g:local_sessions_dir . '/' . l:curr_path . '#' . l:session_name
 
-    if !filereadable(l:session_file) | redraw | echom "No such session in this directory" | return | endif
+    if !filereadable(l:session_file) | redraw | echo "No such session in this directory" | return | endif
 
     let g:session_name = l:session_name
     let l:escaped_session_file = substitute(l:session_file, '%', '\\%', 'g')
@@ -127,13 +127,13 @@ function s:OpenSession(name="")
 endfunction
 
 function s:CloseSession()
-    if !exists("g:session_name") | echom "No opened session" | return | endif
+    if !exists("g:session_name") | echo "No opened session" | return | endif
 
     if !s:SaveSession("") | return 1 | endif
     unlet g:session_name
 
     tabedit
-    bufdo bdelete
+    %bdelete
 endfunction
 
 function s:DeleteSessionFile(name="")
@@ -143,13 +143,13 @@ function s:DeleteSessionFile(name="")
     if exists("g:session_name") && l:session_name ==# g:session_name
         unlet g:session_name
         tabedit
-        bufdo bdelete
+        %bdelete
     endif
 
     let l:curr_path = substitute(getcwd(), '/', '%', 'g')
     let l:session_file = g:local_sessions_dir . '/' . l:curr_path . '#' . l:session_name
 
-    if !filereadable(l:session_file) | redraw | echom "No local session file" | return | endif
+    if !filereadable(l:session_file) | redraw | echo "No local session file" | return | endif
 
     let l:escaped_session_file = substitute(l:session_file, '%', '\\%', 'g')
     let l:escaped_session_file = substitute(l:escaped_session_file, '#', '\\#', 'g')
@@ -171,11 +171,12 @@ function s:CleanSessionFiles()
     let l:list_files = globpath(g:local_sessions_dir, '*', 0, 1)
     let l:count = 0
     for l:file in l:list_files
-        let l:lines = readfile(l:file, '', 1)
         let l:rel_file = fnamemodify(l:file, ":t")
         let l:dir = substitute(l:rel_file, '%', '/', 'g')
+        let l:dir = l:dir[:strridx(l:dir, '#')-1]
         if !isdirectory(l:dir)
             let l:escaped_file = substitute(l:file, '%', '\\%', 'g')
+            let l:escaped_file = substitute(l:escaped_file, '#', '\\#', 'g')
             execute "silent !rm " . shellescape(l:escaped_file)
             let l:count += 1
         endif
@@ -183,11 +184,36 @@ function s:CleanSessionFiles()
     redraw!
 
     if l:count
-        echo l:count . " file" . (l:count > 1 ? 's' : '') . " removed"
+        echom l:count . " file" . (l:count > 1 ? 's' : '') . " removed"
     else
         echo "No file to remove"
     endif
 endfunction
+
+function s:AutoOpenSession()
+    let l:session_names = GetSessionNames()
+    if empty(l:session_names) | return | endif
+
+    call sort(l:session_names)
+    if len(l:session_names) == 1
+        let l:choice = confirm("A vim session has been found, do you want to open it ?", "&Yes\n&No", 1)
+    else
+        echo "Multiple vim sessions have been found."
+        let l:choice = confirm("Do you want to open one ?", "&Yes\n&No", 1)
+        redraw
+        if l:choice == 1
+            echo "Existing sessions:\n" . join(map(l:session_names, '"- " . v:val'), "\n")
+        endif
+    endif
+    if l:choice == 1 | call s:OpenSession() | endif
+endfunction
+
+
+augroup localSession
+    autocmd!
+
+    autocmd VimEnter * call s:AutoOpenSession()
+augroup END
 
 
 command! -nargs=? -bar SessionSave call <SID>SaveSession(<f-args>)
