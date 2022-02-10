@@ -437,57 +437,6 @@ endfunction
 
 command RemoveTrailingWhitespace call s:RemoveTrailingWhitespace()
 
-" {{{1 SAVE FOLDS
-
-let s:skipview_files = []
-function s:MakeViewCheck()
-    " Buffer is marked as not a file
-    if &buftype =~ 'nofile' | return 0 | endif
-    " Diff buffer
-    if &diff | return 0 | endif
-    " File does not exist on disk
-    if empty(glob(expand('%:p'))) | return 0 | endif
-    " File is in skip list
-    if index(s:skipview_files, expand('%')) >= 0 | return 0 | endif
-    return 1
-endfunction
-
-function s:SaveView()
-    let l:save_fdm = &fdm
-    if &foldexpr !=# '0'
-        set foldmethod=expr
-    else
-        set foldmethod=syntax
-    endif
-    mkview!
-    let &foldmethod = l:save_fdm
-endfunction
-
-augroup vimrcAutoView
-    autocmd!
-
-    autocmd BufWritePost,WinLeave ?* if <SID>MakeViewCheck() | call s:SaveView() | endif
-    autocmd BufWinEnter ?* if <SID>MakeViewCheck() | silent! loadview | endif
-augroup END
-
-" Clear view function
-function s:ClearView()
-    let path = fnamemodify(bufname('%'),':p')
-    let path = substitute(path, '=', '==', 'g')
-    if !empty($HOME)
-        let path = substitute(path, '^'.$HOME, '\~', '')
-    endif
-    let path = substitute(path, '/', '=+', 'g') . '='
-    let path = &viewdir . '/' . path
-    if delete(path) == 0
-        echom "View file deleted !"
-    else
-        echom "Error: view file not found"
-    endif
-endfunction
-
-command ClearView call s:ClearView()
-
 
 " {{{1 FULLSCREEN HELP
 
