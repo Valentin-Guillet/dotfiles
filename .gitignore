@@ -76,6 +76,9 @@
 !.config/vimium/
 !.config/vimium/**
 
+!.config/wget/
+!.config/wget/**
+
 !.config/youtube-dl/
 !.config/youtube-dl/**
 

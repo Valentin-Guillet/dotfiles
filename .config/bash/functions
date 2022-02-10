@@ -97,9 +97,9 @@ ls_stack() {
 
         [ ! -h "$file" ] && break
 
-        local base_dir="$(dirname "$file")"
+        base_dir="$(dirname "$file")"
         files+=( "$file" )
-        local line=$(ls -lh "$file")
+        line=$(ls -lh "$file")
     done
 
     ls -flh --color=force ${files[@]}

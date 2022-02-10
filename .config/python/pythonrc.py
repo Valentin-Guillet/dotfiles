@@ -6,7 +6,9 @@ import readline
 
 
 if sys.version_info > (3, 6):
-    histfile = os.path.join(os.path.expanduser("~"), ".cache/history/python_history")
+    cache_dir = os.path.expanduser("~/.cache/python")
+    os.makedirs(cache_dir, exist_ok=True)
+    histfile = os.path.join(cache_dir, "history")
 
     try:
         readline.read_history_file(histfile)

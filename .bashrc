@@ -14,12 +14,12 @@ export XDG_CACHE_HOME=$HOME/.cache
 
 export INPUTRC="$XDG_CONFIG_HOME"/readline/inputrc
 export PYTHONSTARTUP="$XDG_CONFIG_HOME"/python/pythonrc.py
+export WGETRC="$XDG_CONFIG_HOME"/wget/wgetrc
 
-mkdir -p "$XDG_CACHE_HOME"/history
 export PARALLEL_HOME="$XDG_CACHE_HOME"/parallel
 export ICEAUTHORITY="$XDG_CACHE_HOME"/ICEauthority
 export XAUTHORITY="$XDG_CACHE_HOME"/Xauthority
-export LESSHISTFILE="$XDG_CACHE_HOME"/history/less_history
+export LESSHISTFILE="$XDG_CACHE_HOME"/less/history
 export CUDA_CACHE_PATH="$XDG_CACHE_HOME"/nv
 
 # Auto launch tmux
@@ -41,9 +41,10 @@ then
 fi
 
 # Set up history
+mkdir -p $XDG_CACHE_HOME/bash
 HISTCONTROL=ignoreboth   # Don't put duplicate lines or lines starting with space
 HISTSIZE=1000            # Set up length
-HISTFILE="$XDG_CACHE_HOME"/history/bash_history
+HISTFILE="$XDG_CACHE_HOME"/bash/history
 HISTFILESIZE=20000
 shopt -s histappend      # Append to the history file, don't overwrite it
 

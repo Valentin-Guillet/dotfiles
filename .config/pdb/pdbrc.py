@@ -1,11 +1,15 @@
 
 import atexit
+import os
+import pdb
 import readline
 import rlcompleter
-import pdb
+
 
 # Command line history:
-histfile = os.path.expanduser("~/.cache/history/python_history")
+cache_dir = os.path.expanduser("~/.cache/python")
+os.makedirs(cache_dir, exist_ok=True)
+histfile = os.path.join(cache_dir, "history")
 if readline.get_current_history_length() == 0:
     try:
         readline.read_history_file(histfile)
@@ -21,9 +25,10 @@ pdb.Pdb.complete = rlcompleter.Completer(locals() | globals()).complete
 try:
     del atexit
     del histfile
+    del os
+    del pdb
     del readline
     del rlcompleter
-    del pdb
 
 except NameError:
     pass
