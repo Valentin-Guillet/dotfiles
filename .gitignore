@@ -72,6 +72,8 @@
 !.config/tmux/plugins/regex-search/**
 !.config/tmux/plugins/session-manager/
 !.config/tmux/plugins/session-manager/**
+!.config/tmux/plugins/single-pane/
+!.config/tmux/plugins/single-pane/**
 
 !.config/vimium/
 !.config/vimium/**
