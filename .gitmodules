@@ -11,5 +11,29 @@
 	path = .vim/pack/targets/start/targets.vim
 	url = https://github.com/wellle/targets.vim
 [submodule ".vim/pack/vim-stay/start/vim-stay"]
-	path = .vim/pack/vim-stay/start/vim-stay
+	path = .vim/pack/stay/start/vim-stay
 	url = https://github.com/zhimsel/vim-stay
+[submodule ".vim/pack/vim-gitgutter/start/vim-gitgutter"]
+	path = .vim/pack/gitgutter/start/vim-gitgutter
+	url = https://github.com/airblade/vim-gitgutter
+[submodule ".vim/pack/rsi/start/vim-rsi"]
+	path = .vim/pack/rsi/start/vim-rsi
+	url = https://github.com/tpope/vim-rsi
+[submodule ".vim/pack/commentary/start/vim-commentary"]
+	path = .vim/pack/commentary/start/vim-commentary
+	url = https://github.com/tpope/vim-commentary
+[submodule ".vim/pack/repeat/start/vim-repeat"]
+	path = .vim/pack/repeat/start/vim-repeat
+	url = https://github.com/tpope/vim-repeat
+[submodule ".vim/pack/surround/start/vim-surround"]
+	path = .vim/pack/surround/start/vim-surround
+	url = https://github.com/tpope/vim-surround
+[submodule ".vim/pack/tagbar/start/tagbar"]
+	path = .vim/pack/tagbar/start/tagbar
+	url = https://github.com/preservim/tagbar
+[submodule ".vim/pack/zoom/start/vim-zoom"]
+	path = .vim/pack/zoom/start/vim-zoom
+	url = https://github.com/dhruvasagar/vim-zoom
+[submodule ".vim/pack/tmux-navigator/start/vim-tmux-navigator"]
+	path = .vim/pack/tmux-navigator/start/vim-tmux-navigator
+	url = https://github.com/christoomey/vim-tmux-navigator

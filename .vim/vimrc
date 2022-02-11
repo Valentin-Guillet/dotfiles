@@ -164,9 +164,15 @@ let g:gitgutter_highlight_lines = 1
 let g:gitgutter_preview_win_floating = 1
 
 nnoremap <silent> <leader>g :GitGutterToggle \| echo "GitGutter " . (g:gitgutter_enabled ? "enabled" : "disabled")<CR>
-highlight GitGutterAdd    ctermfg=2
-highlight GitGutterChange ctermfg=3
-highlight GitGutterDelete ctermfg=1
+nmap [h <Plug>(GitGutterPrevHunk)
+nmap ]h <Plug>(GitGutterNextHunk)
+
+xnoremap <Plug>(GitGutterStageNextHunk) :execute "normal \<Plug>(GitGutterStageHunk)\<Plug>(GitGutterNextHunk)" \| silent! call repeat#set("\<lt>Plug>(GitGutterStageNextHunk)")<CR>
+nnoremap <Plug>(GitGutterStageNextHunk) :execute "normal \<Plug>(GitGutterStageHunk)\<Plug>(GitGutterNextHunk)" \| silent! call repeat#set("\<lt>Plug>(GitGutterStageNextHunk)")<CR>
+xmap ,hs <Plug>(GitGutterStageNextHunk)
+nmap ,hs <Plug>(GitGutterStageNextHunk)
+xmap ,hS <Plug>(GitGutterStageHunk)
+nmap ,hS <Plug>(GitGutterStageHunk)
 
 highlight GitGutterStatuslineAdd    ctermfg=2 ctermbg=238
 highlight GitGutterStatuslineChange ctermfg=3 ctermbg=238
@@ -208,10 +214,21 @@ augroup END
 
 
 " Vim/Tmux navigator
+let g:tmux_navigator_no_mappings = 1
 let g:tmux_navigator_disable_when_zoomed = 1
+nnoremap <silent> <M-h> :TmuxNavigateLeft<cr>
+nnoremap <silent> <M-j> :TmuxNavigateDown<cr>
+nnoremap <silent> <M-k> :TmuxNavigateUp<cr>
+nnoremap <silent> <M-l> :TmuxNavigateRight<cr>
+
+inoremap <silent> <M-h> <Esc>:TmuxNavigateLeft<cr>
+inoremap <silent> <M-j> <Esc>:TmuxNavigateDown<cr>
+inoremap <silent> <M-k> <Esc>:TmuxNavigateUp<cr>
+inoremap <silent> <M-l> <Esc>:TmuxNavigateRight<cr>
 
 
 " Vimtex
+let g:vimtex_fold_enabled = 1
 let g:vimtex_compiler_latexmk = {'continuous': 0}
 let g:vimtex_quickfix_ignore_filters = ['Underfull', 'Overfull', 'Font Warning']
 augroup vimtexSingleCompile
@@ -223,6 +240,7 @@ augroup END
 
 " Zoom pane
 let g:zoom#statustext = '[Z]'
+nmap <leader>z <Plug>(zoom-toggle)
 
 
 " {{{1 USER MAPPINGS
