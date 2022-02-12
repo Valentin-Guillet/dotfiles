@@ -262,7 +262,7 @@ nnoremap <silent> <leader><bar> :vsplit \| enew<CR>
 nnoremap <silent> <leader>- :split<CR>
 nnoremap <silent> <leader>_ :split \| enew<CR>
 nnoremap <silent> <leader>= <C-w>=
-nnoremap <silent> <leader>q :if get(t:, 'zoomed', 0) \| call zoom#toggle() \| endif \| quit<CR>
+nnoremap <silent> <leader>q :call <SID>CloseWin()<CR>
 
 " Move splits around
 nnoremap <leader>H <C-w>H
@@ -357,6 +357,13 @@ augroup END
 
 
 " {{{1 UTILITY FUNCTIONS / COMMANDS
+
+" Function to unzoom before close and close both files when in diff mode
+function s:CloseWin()
+    if get(t:, 'zoomed', 0) | call zoom#toggle() | endif
+    quit
+    if &diff && tabpagewinnr('.', '$') == 1 | quit | endif
+endfunction
 
 " Function to open file in split if buffer not empty
 function s:OpenInSplitIfNotEmpty(file)

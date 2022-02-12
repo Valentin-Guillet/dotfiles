@@ -31,7 +31,7 @@ main() {
     local is_single_ssh="[ \$(tmux list-panes | wc -l) = 1 ] && [ \$(tmux display-message -p '#{pane_current_command}') = ssh ]"
     if [ $send_vim = 1 ]
     then
-        local is_vim="tmux display-message -p '#{pane_current_command}' | grep -iqE 'g?(view|n?vim?x?)(diff)?\$'"
+        local is_vim="ps -o state= -o comm= -t \$(tmux display-message -p '#{pane_tty}') | grep -iqE '^[^TXZ ]+ +(\S+\/)?g?(view|n?vim?x?)(diff)?\$'"
 
         is_single_ssh="$is_single_ssh || $is_vim"
     fi

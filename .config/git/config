@@ -19,7 +19,6 @@
     ls = ls-files --exclude-standard
 	st = status -s
 	unstage = reset HEAD --
-
     update-submodules = "!f() { \
         git submodule update --init --recursive; \
         git submodule foreach --recursive git fetch; \
@@ -28,3 +27,10 @@
         f"
 [push]
 	default = simple
+[merge]
+	tool = vimdiff
+	conflictStyle = diff3
+[difftool]
+	prompt = false
+[difftool "vimdiff"]
+	cmd = vim -f -d -c \"wincmd l\" -c 'cd \"$GIT_PREFIX\"' \"$LOCAL\" \"$REMOTE\"

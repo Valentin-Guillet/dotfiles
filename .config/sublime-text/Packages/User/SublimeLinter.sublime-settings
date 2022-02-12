@@ -6,7 +6,7 @@
 			"args":
 			[
 				"--ignore=E111, E114, E226, E501, F403, F405, W503",
-				"--max-line-length=79"
+				"--max-line-length=88"
 			],
 			"disable": true,
 		},
