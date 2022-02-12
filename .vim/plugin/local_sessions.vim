@@ -17,7 +17,8 @@ if !exists('g:session_default_name')
 endif
 
 
-function g:GetSessionNames()
+" ... arg is used for autocompletion
+function g:GetSessionNames(...)
     let l:list_files = globpath(g:local_sessions_dir, '*', 0, 1)
     call map(l:list_files, {_, val -> val[strridx(val, '/')+1:]})
     call sort(l:list_files, {a, b -> strlen(a) < strlen(b)})
@@ -202,7 +203,9 @@ function s:AutoOpenSession()
         let l:choice = confirm("Do you want to open one ?", "&Yes\n&No", 1)
         redraw
         if l:choice == 1
-            echo "Existing sessions:\n" . join(map(l:session_names, '"- " . v:val'), "\n")
+            let &cmdheight = len(l:session_names) + 2
+            echo "Existing sessions:\n" . join(map(l:session_names, '"- " . v:val'), "\n") . "\n"
+            let &cmdheight = 1
         endif
     endif
     if l:choice == 1 | call s:OpenSession() | endif
@@ -212,7 +215,7 @@ endfunction
 augroup localSession
     autocmd!
 
-    autocmd VimEnter * call s:AutoOpenSession()
+    autocmd VimEnter * nested if !argc() | call s:AutoOpenSession() | endif
 augroup END
 
 

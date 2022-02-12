@@ -101,7 +101,9 @@ set notagrelative       " cf plugin/hidden_tags.vim
 set switchbuf=usetab    " jump to the first tab that contains buffer for quickfix commands
 
 set viewoptions-=options        " To omit local options when restoring file (cf. mkview, loadview)
+set sessionoptions-=folds
 set sessionoptions-=options     " To restore syntax highlighting when restoring session (unzoom)
+set sessionoptions-=winsize
 
 set bufhidden=delete    " To delete buffer instead of just unloading them
 
@@ -404,24 +406,28 @@ if !exists(":DiffToggle")
 endif
 
 function s:OpenHeader()
-    let l:file = expand("%:p")
+    let l:file = expand("%")
 
     " C++ files
-    if l:file =~ "\v.*\.cpp$"
+    if l:file =~ "\\v.*\\.cpp$"
         let l:header = substitute(l:file, "\.cpp$", ".hpp", "")
         execute "vsplit " . l:header
-    elseif l:file =~ "\v.*\.hpp$"
+        cd .
+    elseif l:file =~ "\\v.*\\.hpp$"
         let l:source = substitute(l:file, "\.hpp$", ".cpp", "")
         execute "vsplit " . l:source
+        cd .
         normal! r
 
     " C files
-    elseif l:file =~ "\v.*\.c$"
+    elseif l:file =~ "\\v.*\\.c$"
         let l:header = substitute(l:file, "\.c$", ".h", "")
         execute "vsplit " . l:header
-    elseif l:file =~ "\v.*\.h$"
+        cd .
+    elseif l:file =~ "\\v.*\\.h$"
         let l:source = substitute(l:file, "\.h$", ".c", "")
         execute "vsplit " . l:source
+        cd .
         normal! r
 
     else
