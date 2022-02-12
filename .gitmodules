@@ -10,9 +10,6 @@
 [submodule ".vim/pack/targets/start/targets.vim"]
 	path = .vim/pack/targets/start/targets.vim
 	url = https://github.com/wellle/targets.vim
-[submodule ".vim/pack/vim-stay/start/vim-stay"]
-	path = .vim/pack/stay/start/vim-stay
-	url = https://github.com/zhimsel/vim-stay
 [submodule ".vim/pack/vim-gitgutter/start/vim-gitgutter"]
 	path = .vim/pack/gitgutter/start/vim-gitgutter
 	url = https://github.com/airblade/vim-gitgutter

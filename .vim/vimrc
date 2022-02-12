@@ -101,6 +101,7 @@ set notagrelative       " cf plugin/hidden_tags.vim
 set switchbuf=usetab    " jump to the first tab that contains buffer for quickfix commands
 
 set viewoptions-=options        " To omit local options when restoring file (cf. mkview, loadview)
+set sessionoptions-=buffers
 set sessionoptions-=folds
 set sessionoptions-=options     " To restore syntax highlighting when restoring session (unzoom)
 set sessionoptions-=winsize

@@ -32,6 +32,10 @@ function g:GetSessionNames(...)
         endif
     endfor
 
+    if a:0 > 1 && !empty(a:1)
+        let l:paths = filter(l:paths, 'v:val =~ "^" . a:1')
+    endif
+
     return l:paths
 endfunction
 
@@ -133,7 +137,6 @@ function s:CloseSession()
     if !s:SaveSession("") | return 1 | endif
     unlet g:session_name
 
-    tabedit
     %bdelete
 endfunction
 
@@ -143,7 +146,6 @@ function s:DeleteSessionFile(name="")
 
     if exists("g:session_name") && l:session_name ==# g:session_name
         unlet g:session_name
-        tabedit
         %bdelete
     endif
 
