@@ -110,6 +110,7 @@ set bufhidden=delete    " To delete buffer instead of just unloading them
 
 set nojoinspaces        " Only add a single space when `J`oining two lines, even if it ends with '.'
 
+set complete-=i                 " Remove include completion (too slow)
 set completeopt+=longest        " Only insert longest common text in autocompletion
 
 let g:is_bash = 1       " Set bash syntax instead of sh
@@ -224,10 +225,10 @@ nnoremap <silent> <M-j> :TmuxNavigateDown<CR>
 nnoremap <silent> <M-k> :TmuxNavigateUp<CR>
 nnoremap <silent> <M-l> :TmuxNavigateRight<CR>
 
-inoremap <silent> <M-h> <C-o>:TmuxNavigateLeft<CR>
-inoremap <silent> <M-j> <C-o>:TmuxNavigateDown<CR>
-inoremap <silent> <M-k> <C-o>:TmuxNavigateUp<CR>
-inoremap <silent> <M-l> <C-o>:TmuxNavigateRight<CR>
+inoremap <silent> <M-h> <Esc>:TmuxNavigateLeft<CR>
+inoremap <silent> <M-j> <Esc>:TmuxNavigateDown<CR>
+inoremap <silent> <M-k> <Esc>:TmuxNavigateUp<CR>
+inoremap <silent> <M-l> <Esc>:TmuxNavigateRight<CR>
 
 
 " Vimtex
@@ -345,7 +346,7 @@ nnoremap <silent> <leader>o :only<CR>
 inoremap <C-l> <C-o><C-l>
 
 " Correct last misspelled word
-inoremap <silent> <C-k> <C-G>u<Esc>:call <SID>FixLineSpellError()<CR>`]a<C-G>u
+inoremap <silent> <C-k>k <C-G>u<Esc>:call <SID>FixLineSpellError()<CR>`]a<C-G>u
 
 " Quit visual mode with q
 vnoremap q <C-c>
@@ -468,6 +469,7 @@ function! s:RemoveTrailingWhitespace()
 endfunction
 
 command RemoveTrailingWhitespace call s:RemoveTrailingWhitespace()
+command DisableTrailingWhitespace highlight clear TrailingWhitespace
 
 
 " {{{1 FULLSCREEN HELP

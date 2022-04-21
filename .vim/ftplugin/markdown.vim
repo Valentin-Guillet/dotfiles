@@ -914,7 +914,7 @@ function! s:TodoList_DeleteItem(lineno, update)
     let l:indent = indent(a:lineno)
     execute "normal! :" . a:lineno . "," . s:TodoList_FindLastChild(a:lineno) . "d\<CR>"
     if line('.') < line('$') && l:indent == 0 && getline(a:lineno) == ''
-        normal! dd
+        normal! "_dd
     endif
 
     if a:update
