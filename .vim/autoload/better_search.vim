@@ -167,7 +167,13 @@ endfunction
 
 
 function! s:normalize_zs_pattern(search_pattern)
-    let [head, tail] = split(a:search_pattern, '\\zs')
+    let pattern = split(a:search_pattern, '\\zs')
+    if len(pattern) == 1
+        let head = pattern[0]
+        return '\m\%('.head.'\m\)\@<=\%#'.s:extract_magic(head)
+    endif
+
+    let [head, tail] = pattern
     return '\m\%('.head.'\m\)\@<=\%#'.s:extract_magic(head).tail
 endfunction
 

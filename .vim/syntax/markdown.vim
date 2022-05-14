@@ -157,6 +157,8 @@ endif
 
 syn cluster mkdNonListItem contains=@htmlTop,htmlUnderline,htmlBold,htmlBoldUnderline,mkdFootnotes,mkdInlineURL,mkdLink,mkdLinkDef,mkdLineBreak,mkdBlockquote,mkdCode,mkdRule,htmlH1,htmlH2,htmlH3,htmlH4,htmlH5,htmlH6,mkdMath,mkdStrike
 
+syn clear htmlTag
+
 "highlighting for Markdown groups
 hi def link mkdString        String
 hi def link mkdCode          String
