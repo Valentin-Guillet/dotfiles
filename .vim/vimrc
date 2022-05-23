@@ -468,8 +468,16 @@ function! s:RemoveTrailingWhitespace()
     call winrestview(l:save)
 endfunction
 
+function! s:ToggleTrailingWhitespace()
+    if execute("highlight TrailingWhitespace") =~ "cleared"
+        highlight TrailingWhitespace ctermbg=red
+    else
+        highlight clear TrailingWhitespace
+    endif
+endfunction
+
 command RemoveTrailingWhitespace call s:RemoveTrailingWhitespace()
-command DisableTrailingWhitespace highlight clear TrailingWhitespace
+command ToggleTrailingWhitespace call s:ToggleTrailingWhitespace()
 
 
 " {{{1 FULLSCREEN HELP

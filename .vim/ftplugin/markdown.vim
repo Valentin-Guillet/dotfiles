@@ -1046,7 +1046,7 @@ function! s:SetMarkdownMode()
     call s:MapKey(']y', "<SID>Markdown_GoToCurrHeader")
 
     nnoremap <buffer><silent> o A<CR>
-    nnoremap <buffer><silent> O kA<CR>
+    nnoremap <buffer><silent> <expr> O line('.') == 1 ? "O" : "kA<CR>"
     inoremap <buffer><silent> <CR> <C-O>:call <SID>Markdown_RemoveBullet()<CR><CR>
     inoremap <buffer><silent> <BS> <C-R>=AutoPairsDelete()<CR>
 
