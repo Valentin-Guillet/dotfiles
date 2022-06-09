@@ -34,3 +34,6 @@
 [submodule ".vim/pack/tmux-navigator/start/vim-tmux-navigator"]
 	path = .vim/pack/tmux-navigator/start/vim-tmux-navigator
 	url = https://github.com/christoomey/vim-tmux-navigator
+[submodule ".vim/pack/flake8/start/vim-flake8"]
+	path = .vim/pack/flake8/start/vim-flake8
+	url = https://github.com/nvie/vim-flake8
