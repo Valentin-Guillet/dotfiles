@@ -516,7 +516,7 @@ func! s:AutoPairsMap(key)
     end
     let escaped_key = substitute(key, "'", "''", 'g')
     " use expr will cause search() doesn't work
-    execute 'inoremap <buffer> <silent> '.key." <C-R>=<SID>AutoPairsInsert('".escaped_key."')<CR>"
+    execute 'inoremap <buffer> <silent> '.key." <C-]><C-R>=<SID>AutoPairsInsert('".escaped_key."')<CR>"
 endf
 
 func! s:AutoPairsToggle()
