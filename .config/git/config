@@ -19,6 +19,8 @@
     ls = ls-files --exclude-standard
 	st = status -s
 	unstage = reset HEAD --
+    ignore = "!git rev-parse --is-inside-work-tree > /dev/null 2>&1 && \
+              vim $(git rev-parse --show-toplevel)/.gitignore"
     update-submodules = "!f() { \
         git submodule update --init --recursive; \
         git submodule foreach --recursive git fetch; \
