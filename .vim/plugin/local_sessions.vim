@@ -124,9 +124,7 @@ function s:OpenSession(name="")
     if !filereadable(l:session_file) | redraw | echo "No such session in this directory" | return | endif
 
     let g:session_name = l:session_name
-    let l:escaped_session_file = substitute(l:session_file, '%', '\\%', 'g')
-    let l:escaped_session_file = substitute(l:escaped_session_file, '#', '\\#', 'g')
-    execute "source " . l:escaped_session_file
+    execute "source " . fnameescape(l:session_file)
     redraw!
     echom "Session " . l:session_name . " loaded"
 endfunction
@@ -154,11 +152,9 @@ function s:DeleteSessionFile(name="")
 
     if !filereadable(l:session_file) | redraw | echo "No local session file" | return | endif
 
-    let l:escaped_session_file = substitute(l:session_file, '%', '\\%', 'g')
-    let l:escaped_session_file = substitute(l:escaped_session_file, '#', '\\#', 'g')
-    execute "silent !rm " . l:escaped_session_file
+    execute "silent !rm " . fnameescape(l:session_file)
     redraw!
-    echom "Local session file (" . l:escaped_session_file . ") removed"
+    echom "Local session file (" . l:session_file . ") removed"
 endfunction
 
 function s:ListSessions()
@@ -178,9 +174,7 @@ function s:CleanSessionFiles()
         let l:dir = substitute(l:rel_file, '%', '/', 'g')
         let l:dir = l:dir[:strridx(l:dir, '#')-1]
         if !isdirectory(l:dir)
-            let l:escaped_file = substitute(l:file, '%', '\\%', 'g')
-            let l:escaped_file = substitute(l:escaped_file, '#', '\\#', 'g')
-            execute "silent !rm " . shellescape(l:escaped_file)
+            execute "silent !rm " . shellescape(fnameescape(l:escaped_file))
             let l:count += 1
         endif
     endfor
@@ -213,6 +207,66 @@ function s:AutoOpenSession()
     if l:choice == 1 | call s:OpenSession() | endif
 endfunction
 
+function s:ChangeDirSession()
+    let l:list_files = globpath(g:local_sessions_dir, '*', 0, 1)
+    call map(l:list_files, {_, val -> val[strridx(val, '/')+1:]})
+    call sort(l:list_files, {a, b -> strlen(a) < strlen(b)})
+
+    if empty(l:list_files)
+        echo "No session files !"
+        return 1
+    endif
+
+    let l:list_paths_with_dup = map(copy(l:list_files), 'v:val[:strridx(v:val, "#")-1]')
+    let l:list_paths = []
+    for path in l:list_paths_with_dup
+        if index(l:list_paths, path) == -1
+            let l:list_paths += [path]
+        endif
+    endfor
+    let l:display_paths = map(copy(l:list_paths), 'substitute(v:val, "\%", "/", "g")')
+    let l:display_paths = map(copy(l:display_paths), 'substitute(v:val, $HOME, "~", "g")')
+    let l:display_paths = map(l:display_paths, {key, val -> string(key+1) . ". " . val})
+
+    let &cmdheight = len(l:list_paths) + 2
+    echo "Existing session paths:\n" . join(l:display_paths, "\n") . "\n"
+    let &cmdheight = 1
+    call inputsave()
+    let l:choice = input("Which folder do you want to import ? ")
+    call inputrestore()
+
+    if l:choice !~# '^\d\+$' || str2nr(l:choice) < 1 || len(l:list_paths) < str2nr(l:choice)
+        echo "\nInvalid choice !"
+        return 1
+    endif
+
+    let l:old_sess_path = l:list_paths[l:choice - 1]
+    let l:new_sess_path = substitute(getcwd(), '/', '%', 'g')
+
+    if l:old_sess_path == l:new_sess_path
+        echo "\nTrying to move session file to the same place !"
+        return 1
+    endif
+
+    for l:file in l:list_files
+        if stridx(l:file, l:old_sess_path . "#") >= 0
+            let l:new_file = substitute(l:file, l:old_sess_path, l:new_sess_path, '')
+
+            let l:path_in_session_file = substitute(l:new_sess_path, "\%", "/", "g")
+            let l:path_in_session_file = substitute(l:path_in_session_file, $HOME, "~", "g")
+            let l:path_in_session_file = fnameescape(l:path_in_session_file)
+
+            let l:old_path = g:local_sessions_dir . fnameescape(l:file)
+            let l:new_path = g:local_sessions_dir . fnameescape(l:new_file)
+
+            execute "silent !mv " . shellescape(l:old_path) . " " . shellescape(l:new_path)
+            execute "silent !sed -i 's;^cd .*$;cd " . l:path_in_session_file . ";' " . shellescape(l:new_path)
+            redraw!
+            echom "Renaming " . l:file . " in " . l:new_file
+        endif
+    endfor
+endfunction
+
 
 augroup localSession
     autocmd!
@@ -227,6 +281,7 @@ command! -bar SessionClose call <SID>CloseSession()
 command! -nargs=? -bar SessionDelete call <SID>DeleteSessionFile(<f-args>)
 command! -bar SessionClean call <SID>CleanSessionFiles()
 command! -bar SessionList call <SID>ListSessions()
+command! -bar SessionChDir call <SID>ChangeDirSession()
 
 nnoremap <leader>ss :SessionSave<CR>
 nnoremap <leader>so :SessionOpen<CR>
