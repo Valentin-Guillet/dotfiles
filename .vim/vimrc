@@ -290,8 +290,15 @@ nnoremap <leader>L <C-w>L
 " Tabs
 nnoremap <silent> <leader>t :tab split<CR>
 nnoremap <silent> <leader>T :tabnew<CR>
-nnoremap <silent> <leader>n :tabnext<CR>
-nnoremap <silent> <leader>p :tabprev<CR>
+
+function s:TabSwitch(count)
+    let l:target_tab = (tabpagenr() + a:count - 1) % tabpagenr('$') + 1
+    execute "tabnext " . l:target_tab
+endfunction
+nnoremap <silent> <leader>n :<C-U>call <SID>TabSwitch(v:count1)<CR>
+nnoremap <silent> <leader>p :<C-U>call <SID>TabSwitch(tabpagenr('$')-v:count1)<CR>
+
+nnoremap <silent> <leader>0 :$tabnext<CR>
 for s:i in range(1, 9)
     execute "nnoremap <silent> <leader>" . s:i . " :" . s:i . "tabnext<CR>"
 endfor
