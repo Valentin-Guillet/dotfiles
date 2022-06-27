@@ -20,6 +20,9 @@
 !.config/git/
 !.config/git/**
 
+!.config/keyboard/
+!.config/keyboard/**
+
 !.config/my_config/
 !.config/my_config/**
 
