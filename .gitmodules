@@ -1,39 +1,52 @@
 [submodule ".vim/pack/fastfold/start/FastFold"]
 	path = .vim/pack/fastfold/start/FastFold
 	url = https://github.com/Konfekt/FastFold
+    update = merge
 [submodule ".vim/pack/qf/start/vim-qf"]
 	path = .vim/pack/qf/start/vim-qf
 	url = https://github.com/romainl/vim-qf
+    update = merge
 [submodule ".vim/pack/vimtex/start/vimtex"]
 	path = .vim/pack/vimtex/start/vimtex
 	url = https://github.com/lervag/vimtex
+    update = merge
 [submodule ".vim/pack/targets/start/targets.vim"]
 	path = .vim/pack/targets/start/targets.vim
 	url = https://github.com/wellle/targets.vim
+    update = merge
 [submodule ".vim/pack/vim-gitgutter/start/vim-gitgutter"]
 	path = .vim/pack/gitgutter/start/vim-gitgutter
 	url = https://github.com/airblade/vim-gitgutter
+    update = merge
 [submodule ".vim/pack/rsi/start/vim-rsi"]
 	path = .vim/pack/rsi/start/vim-rsi
 	url = https://github.com/tpope/vim-rsi
+    update = merge
 [submodule ".vim/pack/commentary/start/vim-commentary"]
 	path = .vim/pack/commentary/start/vim-commentary
 	url = https://github.com/tpope/vim-commentary
+    update = merge
 [submodule ".vim/pack/repeat/start/vim-repeat"]
 	path = .vim/pack/repeat/start/vim-repeat
 	url = https://github.com/tpope/vim-repeat
+    update = merge
 [submodule ".vim/pack/surround/start/vim-surround"]
 	path = .vim/pack/surround/start/vim-surround
 	url = https://github.com/tpope/vim-surround
+    update = merge
 [submodule ".vim/pack/tagbar/start/tagbar"]
 	path = .vim/pack/tagbar/start/tagbar
 	url = https://github.com/preservim/tagbar
+    update = merge
 [submodule ".vim/pack/zoom/start/vim-zoom"]
 	path = .vim/pack/zoom/start/vim-zoom
 	url = https://github.com/dhruvasagar/vim-zoom
+    update = merge
 [submodule ".vim/pack/tmux-navigator/start/vim-tmux-navigator"]
 	path = .vim/pack/tmux-navigator/start/vim-tmux-navigator
 	url = https://github.com/christoomey/vim-tmux-navigator
+    update = merge
 [submodule ".vim/pack/flake8/start/vim-flake8"]
 	path = .vim/pack/flake8/start/vim-flake8
 	url = https://github.com/nvie/vim-flake8
+    update = merge
