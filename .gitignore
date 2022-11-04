@@ -74,6 +74,8 @@
 !.config/tmux/layouts/
 !.config/tmux/layouts/**
 !.config/tmux/plugins/
+!.config/tmux/plugins/notify/
+!.config/tmux/plugins/notify/**
 !.config/tmux/plugins/regex-search/
 !.config/tmux/plugins/regex-search/**
 !.config/tmux/plugins/session-manager/
