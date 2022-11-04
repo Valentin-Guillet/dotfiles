@@ -55,7 +55,7 @@ ct() {
 }
 
 pip_update() {
-    pip3 list -o --format=freeze > /tmp/pip_list
+    pip3 list -o | cut -d ' ' -f 1 | tail -n +3 > /tmp/pip_list
     [[ $? == 1 ]] && return 1
     if [ ! "$1" = "-a" -a ! "$1" = '--all' ] && [ -s ~/.config/pip/pip_exclude ]
     then
@@ -67,7 +67,7 @@ pip_update() {
     if [ -s /tmp/pip_list ]
     then
         vim /tmp/pip_list
-        cat /tmp/pip_list | cut -d = -f 1 | xargs -n 1 pip3 install -U
+        cat /tmp/pip_list | xargs -n 1 pip3 install -U
         exit_code=$?
     fi
     rm /tmp/pip_list
