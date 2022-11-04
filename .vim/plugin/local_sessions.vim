@@ -271,7 +271,7 @@ endfunction
 augroup localSession
     autocmd!
 
-    autocmd VimEnter * nested if !argc() | call s:AutoOpenSession() | endif
+    autocmd VimEnter * nested if len(v:argv) == 1 | call s:AutoOpenSession() | endif
 augroup END
 
 
