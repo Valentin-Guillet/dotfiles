@@ -303,8 +303,12 @@ for s:i in range(1, 9)
     execute "nnoremap <silent> <leader>" . s:i . " :" . s:i . "tabnext<CR>"
 endfor
 
-nnoremap <leader>N :tabm <C-R>=(tabpagenr()+1)%(tabpagenr('$')+1)<CR><CR>
-nnoremap <leader>P :tabm <C-R>=(tabpagenr()+tabpagenr('$')-1)%(tabpagenr('$')+1)<CR><CR>
+function s:TabMove(count)
+    let l:target_count = (tabpagenr() + a:count) % (tabpagenr('$') + 1)
+    execute "tabmove " . l:target_count
+endfunction
+nnoremap <silent> <leader>N :<C-U>call <SID>TabMove(v:count1)<CR>
+nnoremap <silent> <leader>P :<C-U>call <SID>TabMove(tabpagenr('$')-v:count1)<CR>
 
 nnoremap <leader>< <C-W>R
 nnoremap <leader>> <C-W>r
