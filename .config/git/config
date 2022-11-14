@@ -6,7 +6,7 @@
 	status = auto
 [user]
 	name = Val95240
-	email = Valentin.GUILLET@isae-supaero.fr
+	email = guillet.valentin95240@gmail.com
 [alias]
 	br = branch
 	cam = commit -am
@@ -21,13 +21,6 @@
 	unstage = reset HEAD --
     ignore = "!git rev-parse --is-inside-work-tree > /dev/null 2>&1 && \
               vim $(git rev-parse --show-toplevel)/.gitignore"
-    update-submodules = "!f() { \
-        git submodule update --init --recursive; \
-        git submodule foreach --recursive git fetch; \
-        git submodule foreach --recursive git pull --ff-only origin master; \
-        git add -u .vim/pack/; \
-        }; \
-        f"
 [push]
 	default = simple
 [merge]
