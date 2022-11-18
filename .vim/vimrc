@@ -470,6 +470,11 @@ if !exists(":W")
     command W execute 'silent! write !sudo /usr/bin/tee "%" >/dev/null' <bar> edit!
 endif
 
+" Command to format json file
+if !exists(":JsonPrettify")
+    command JsonPrettify %!/usr/bin/env python -m json.tool
+endif
+
 
 " {{{1 WHITESPACE HIGHLIGHTING
 

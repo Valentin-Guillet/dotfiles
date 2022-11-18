@@ -1,3 +1,12 @@
+" This plugin is a merge between vim-evanesco (https://github.com/pgdouyon/vim-evanesco)
+" and vim-searchindex (https://github.com/google/vim-searchindex)
+"
+" Evanesco automatically clears search highlight whenever the cursor moves or
+" insert mode is entered
+"
+" Searchindex shows how many times a search pattern occurs in the current
+" buffer (same as `set shortmessage-=S`, but without a limit of 99 and
+" displayed right next to the search term)
 
 if exists("g:loaded_better_search")
     finish
@@ -78,6 +87,14 @@ endif
 if !exists(":Freqw")
     command -bar -nargs=? Freqw call <SID>FrequencyCount(1, <f-args>)
 endif
+
+
+" Set hlsearch when searching to see all matches
+augroup incsearch_highlight
+    autocmd!
+    autocmd CmdlineEnter /,\? :set hlsearch
+    autocmd CmdlineLeave /,\? :set nohlsearch
+augroup END
 
 
 let &cpoptions = s:save_cpo
