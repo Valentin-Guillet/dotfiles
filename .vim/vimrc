@@ -310,6 +310,29 @@ endfunction
 nnoremap <silent> <leader>N :<C-U>call <SID>TabMove(v:count1)<CR>
 nnoremap <silent> <leader>P :<C-U>call <SID>TabMove(tabpagenr('$')-v:count1)<CR>
 
+function s:JoinWindow()
+    let l:str_src_tab = input("Join window from : ")
+    let l:src_tab = str2nr(l:str_src_tab)
+    if l:src_tab <= 0 || tabpagenr('$') < l:src_tab
+        echo "\rCan't find tab : " . l:str_src_tab . "  "
+        return
+    endif
+    if l:src_tab == tabpagenr()
+        echo "\rSource and target tabs must be different"
+        return
+    endif
+
+    " Reopen buffer in a split
+    let l:src_win = tabpagewinnr(l:src_tab)
+    let l:buff_nr = tabpagebuflist(l:src_tab)[l:src_win-1]
+    execute "split #" . l:buff_nr
+
+    " Close window opened in src tab
+    let l:win_id = win_getid(l:src_win, l:src_tab)
+    call win_execute(l:win_id, "close")
+endfunction
+nnoremap <silent> <leader>u :<C-U>call <SID>JoinWindow()<CR>
+
 nnoremap <leader>< <C-W>R
 nnoremap <leader>> <C-W>r
 
