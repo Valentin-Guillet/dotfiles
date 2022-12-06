@@ -1,4 +1,3 @@
-:AnsiEsc	ansi_esc.txt	/*:AnsiEsc*
 :HeaderDecrease	vim-markdown.txt	/*:HeaderDecrease*
 :HeaderIncrease	vim-markdown.txt	/*:HeaderIncrease*
 :SearchIndex	searchindex.txt	/*:SearchIndex*
@@ -10,12 +9,6 @@
 :Toct	vim-markdown.txt	/*:Toct*
 :Tocv	vim-markdown.txt	/*:Tocv*
 <Plug>SearchIndex	searchindex.txt	/*<Plug>SearchIndex*
-AnsiEsc	ansi_esc.txt	/*AnsiEsc*
-AnsiEsc-contents	ansi_esc.txt	/*AnsiEsc-contents*
-AnsiEsc-copyright	ansi_esc.txt	/*AnsiEsc-copyright*
-AnsiEsc-history	ansi_esc.txt	/*AnsiEsc-history*
-AnsiEsc-manual	ansi_esc.txt	/*AnsiEsc-manual*
-AnsiEsc.txt	ansi_esc.txt	/*AnsiEsc.txt*
 BufStayLoadPost	vim-stay.txt	/*BufStayLoadPost*
 BufStayLoadPre	vim-stay.txt	/*BufStayLoadPre*
 BufStaySavePost	vim-stay.txt	/*BufStaySavePost*
