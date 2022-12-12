@@ -499,40 +499,6 @@ if !exists(":JsonPrettify")
 endif
 
 
-" {{{1 WHITESPACE HIGHLIGHTING
-
-augroup trailingWhitespaceHighlight
-    autocmd!
-
-    highlight TrailingWhitespace ctermbg=red
-    match TrailingWhitespace /\s\+$\| \+\ze\t/
-    autocmd WinEnter * match TrailingWhitespace /\s\+$\| \+\ze\t/
-    autocmd InsertEnter * match TrailingWhitespace /\s\+\%#\@<!$\| \+\ze\t/
-    autocmd InsertLeave * match TrailingWhitespace /\s\+$\| \+\ze\t/
-    autocmd WinLeave * call clearmatches()
-
-    autocmd InsertLeave * redraw!
-augroup END
-
-function! s:RemoveTrailingWhitespace()
-    let l:save = winsaveview()
-    %s/\s\+$//e
-    call winrestview(l:save)
-endfunction
-
-function! s:ToggleTrailingWhitespace()
-    if execute("highlight TrailingWhitespace") =~ "cleared"
-        highlight TrailingWhitespace ctermbg=red
-    else
-        highlight clear TrailingWhitespace
-    endif
-endfunction
-
-command TWRemove call s:RemoveTrailingWhitespace()
-command TWToggle call s:ToggleTrailingWhitespace()
-command TWFind lvimgrep '\s\+$\| \+\ze\t' %
-
-
 " {{{1 FULLSCREEN HELP
 
 function s:FullscreenHelpIfEmpty()
