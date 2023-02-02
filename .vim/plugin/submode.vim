@@ -1,3 +1,10 @@
+" Define a submode in which to resize different panes in the same fashion as
+" tmux pane management
+
+if exists('g:loaded_submode')
+    finish
+endif
+let g:loaded_submode = 1
 
 let g:submode_timeout = 0
 

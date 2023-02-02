@@ -1,3 +1,5 @@
+" This plugin allows the user to define a folder-wise configuration vimrc that
+" is kept in a hidden folder, by default in $HOME/.cache/vim/local_rc/
 
 if exists("g:loaded_local_rc")
     finish

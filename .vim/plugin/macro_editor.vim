@@ -1,3 +1,10 @@
+" Plugin to modify a macro visually in a split pane
+" Taken from https://github.com/dohsimpson/vim-macroeditor
+
+if exists("g:loaded_macroeditor")
+    finish
+endif
+let g:loaded_macroeditor = 1
 
 function! YankToRegister()
     execute 'normal! ^"' . b:registername . 'y$'

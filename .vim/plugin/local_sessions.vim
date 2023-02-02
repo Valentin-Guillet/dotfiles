@@ -1,3 +1,6 @@
+" This plugin allows the user to define a folder-wise session (buffers, tabs,
+" views, folds...) that is kept in a hidden folder, by default in
+" $HOME/.cache/vim/sessions/
 
 if exists("g:loaded_local_sessions")
     finish

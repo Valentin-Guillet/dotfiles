@@ -1,3 +1,5 @@
+" This plugin simply toggles boolean, i.e. changes common forms of "true" in
+" "false" and vice versa
 
 if exists("g:loaded_boolean_toggle")
     finish
