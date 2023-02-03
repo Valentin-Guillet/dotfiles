@@ -43,3 +43,6 @@
 [submodule ".vim/pack/readline/start/readline.vim"]
 	path = .vim/pack/readline/start/readline.vim
 	url = https://github.com/ryvnf/readline.vim
+[submodule ".vim/pack/all/start/vim-all"]
+	path = .vim/pack/all/start/vim-all
+	url = https://github.com/vim-utils/vim-all
