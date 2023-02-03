@@ -217,6 +217,10 @@ endfunction
 nmap <expr> <leader>aa <SID>ToggleQfOrLoc()
 
 
+" Readline
+let g:readline_ctrl_t = 0
+
+
 " Tagbar
 let g:tagbar_position = 'topleft vertical'
 let g:tagbar_sort = 0
@@ -370,9 +374,6 @@ nnoremap K <nop>
 
 " Y same as D or C
 nnoremap Y y$
-
-" Delete last word in command mode
-cnoremap  <C-w>
 
 " Shift-Tab to dedent
 inoremap <S-Tab> <C-d>
