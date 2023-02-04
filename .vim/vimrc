@@ -161,11 +161,6 @@ let g:autopairs_shortcut_back_insert = '<M-c>'
 let g:autopairs_center_line = 0
 
 
-" Flake8
-let g:flake8_cmd = 'flake8 --config $HOME/.config/flake8/config'
-let g:flake8_quickfix_height = 8
-
-
 " GitGutter
 set updatetime=100
 let g:gitgutter_enabled = 0
