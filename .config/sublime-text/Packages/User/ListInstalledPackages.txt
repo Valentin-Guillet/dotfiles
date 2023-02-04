@@ -1,6 +1,7 @@
 Compare Side-by-Side
 Increment Selection
 Jump Along Indent
+LSP
 MarkdownPreview
 MaxPane
 MoreLayouts
@@ -8,5 +9,3 @@ MultiEditUtils
 PackageResourceViewer
 ProjectManager (PackageManager -> Add Repository https://github.com/Val95240/ProjectManager
                                -> Install ProjectManager)
-SublimeLinter
-SublimeLinter-flake8

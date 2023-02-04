@@ -47,6 +47,9 @@
 !.config/sublime-text/Packages/Jump\ Along\ Indent/
 !.config/sublime-text/Packages/Jump\ Along\ Indent/*
 
+!.config/sublime-text/Packages/LSP/
+!.config/sublime-text/Packages/LSP/*
+
 !.config/sublime-text/Packages/MaxPane/
 !.config/sublime-text/Packages/MaxPane/*
 

@@ -118,10 +118,6 @@
         "context": [ {"key": "setting.is_widget", "operator": "equal", "operand": false} ]
     },
 
-    // Python f-string
-    { "keys": ["alt+f"], "command": "convert_to_fstring" },
-
-
     // ============================ VIM MODE ============================
 
     // Exit vim mode with kj
@@ -163,14 +159,17 @@
     },
 
 
-    // ============================ LINTERS ============================
+    // =============================== LSP ==============================
 
-    // Toggle every linter
-    { "keys": ["alt+l"], "command": "toggle_linters" },
-    { "keys": ["alt+n"], "command": "sublime_linter_goto_error",
-        "args": {"direction": "next"}
+    { "keys": ["alt+n"], "command": "lsp_next_diagnostic",
+        "context": [{"key": "setting.lsp_active"}]
     },
-    { "keys": ["alt+p"], "command": "sublime_linter_goto_error",
-        "args": {"direction": "previous"}
+    { "keys": ["alt+p"], "command": "lsp_prev_diagnostic",
+        "context": [{"key": "setting.lsp_active"}]
+    },
+    { "keys": ["alt+f"], "command": "lsp_code_actions"},
+
+    { "keys": ["alt+l"], "command": "lsp_toggle_ruff",
+        "context": [{"key": "selector", "operator": "equal", "operand": "source.python"}]
     },
 ]
