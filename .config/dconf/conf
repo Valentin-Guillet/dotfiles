@@ -1,94 +1,24 @@
-[org/gnome/settings-daemon/plugins/color]
-night-light-schedule-automatic=false
-night-light-schedule-to=7.0
-night-light-schedule-from=22.0
-night-light-enabled=true
-
-[org/gnome/settings-daemon/plugins/media-keys]
-custom-keybindings=['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2/']
-www=['<Primary><Alt>w']
-screensaver=['<Super>f']
-home=['<Primary><Alt>r']
-terminal=['<Control><Alt>t']
-
-[org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0]
-binding='<Primary><Shift><Alt>s'
-command='sh -c "PATH=/opt/miniconda3/bin:$PATH subl -n"'
-name='Sublime Text (New Window)'
-
-[org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1]
-binding='<Primary><Alt>s'
-command='sh -c "PATH=/opt/miniconda3/bin:$PATH subl"'
-name='Sublime Text'
-
-[org/gnome/shell]
-enabled-extensions=['update-extensions@franglais125.gmail.com', 'workspace-grid@mathematical.coffee.gmail.com', 'putWindow@clemens.lab21.org', 'cpupower@mko-sl.de', 'pixel-saver@deadalnix.me', 'night-light-slider.timur@linux.com', 'wsmatrix@martin.zurowietz.de', 'user-theme@gnome-shell-extensions.gcampax.github.com']
-disable-user-extensions=false
-enable-hot-corners=false
-favorite-apps=['org.gnome.Terminal.desktop', 'firefox.desktop', 'thunderbird.desktop', 'org.gnome.Nautilus.desktop', 'libreoffice-writer.desktop']
-
-[org/gnome/shell/app-switcher]
-current-workspace-only=true
-
-[org/gnome/shell/overrides]
-dynamic-workspaces=false
-
-[org/gnome/shell/extensions/nightlightslider]
-brightness-sync=false
-enable-always=false
-show-always=true
-show-in-submenu=false
-show-status-icon=true
-
-[org/gnome/shell/extensions/wsmatrix]
-num-columns=2
-num-rows=3
-
-[org/gnome/shell/extensions/org-lab21-putwindow]
-move-focus-north-enabled=0
-move-focus-right-screen=@as []
-move-focus-east-enabled=0
-move-focus-east=@as []
-center-height-2=100
-move-focus-left-screen-enabled=0
-move-focus-north=@as []
-move-focus-west=@as []
-enable-move-workspace=1
-move-focus-cycle-enabled=0
-put-to-left-screen-enabled=0
-move-focus-south=@as []
-put-to-left-screen=@as []
-center-width-2=100
-put-to-right-screen=@as []
-move-focus-cycle=@as []
-move-focus-south-enabled=0
-move-focus-left-screen=@as []
-put-to-right-screen-enabled=0
-move-focus-west-enabled=0
-move-focus-right-screen-enabled=0
-
-[org/gnome/desktop/interface]
-clock-show-date=true
-clock-show-seconds=false
-show-battery-percentage=true
+[org/gnome/desktop/input-sources]
+mru-sources=[('xkb', 'custom'), ('xkb', 'fr+oss'), ('xkb', 'es')]
+per-window=false
+sources=[('xkb', 'custom'), ('xkb', 'fr+oss'), ('xkb', 'es')]
+xkb-options=@as []
 
 [org/gnome/desktop/peripherals/mouse]
 natural-scroll=false
 
 [org/gnome/desktop/peripherals/touchpad]
 natural-scroll=false
+two-finger-scrolling-enabled=true
 
-[org/gnome/desktop/calendar]
-show-weekdate=false
-
-[org/gnome/desktop/wm/preferences]
-num-workspaces=6
+[org/gnome/desktop/privacy]
+report-technical-problems=false
 
 [org/gnome/desktop/wm/keybindings]
-activate-window-menu=['<Alt>space']
 always-on-top=['<Control>space']
 close=['<Alt>a']
 maximize=['<Super>Up', '<Super>k']
+unmaximize=['<Super>Down', '<Super>j']
 minimize=['<Super>m']
 move-to-monitor-down=['<Super><Shift>Down', '<Super><Shift>j']
 move-to-monitor-left=['<Super><Shift>Left', '<Super><Shift>h']
@@ -98,26 +28,55 @@ move-to-workspace-down=['<Control><Shift><Alt>Down', '<Control><Shift><Alt>j']
 move-to-workspace-left=['<Control><Shift><Alt>Left', '<Control><Shift><Alt>h']
 move-to-workspace-right=['<Control><Shift><Alt>Right', '<Control><Shift><Alt>l']
 move-to-workspace-up=['<Control><Shift><Alt>Up', '<Control><Shift><Alt>k']
-show-desktop=['<Control><Super>d']
+switch-applications=['<Alt>Tab']
+switch-applications-backward=['<Shift><Alt>Tab']
 switch-to-workspace-down=['<Control><Alt>Down', '<Control><Alt>j']
 switch-to-workspace-left=['<Control><Alt>Left', '<Control><Alt>h']
 switch-to-workspace-right=['<Control><Alt>Right', '<Control><Alt>l']
 switch-to-workspace-up=['<Control><Alt>Up', '<Control><Alt>k']
-unmaximize=['<Super>Down', '<Super>j']
+switch-windows=['<Super>Tab']
+switch-windows-backward=['<Shift><Super>Tab']
 
-[org/gnome/desktop/input-sources]
-sources=[('xkb', 'us'), ('xkb', 'fr+oss')]
-mru-sources=[('xkb', 'us'), ('xkb', 'fr+oss')]
-xkb-options=['esperanto:qwerty', 'lv3:ralt_switch']
+[org/gnome/desktop/wm/preferences]
+num-workspaces=6
 
 [org/gnome/mutter]
 dynamic-workspaces=false
-workspaces-only-on-primary=true
 
 [org/gnome/mutter/keybindings]
-toggle-tiled-right=['<Super>Right', '<Super>l']
 toggle-tiled-left=['<Super>Left', '<Super>h']
+toggle-tiled-right=['<Super>Right', '<Super>l']
 
-[system/locale]
-region='en_US.UTF-8'
+[org/gnome/settings-daemon/plugins/media-keys]
+custom-keybindings=['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/']
+home=['<Primary><Alt>e']
+screensaver=['<Super>f']
+www=['<Primary><Alt>w']
 
+[org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0]
+binding='<Primary><Alt>s'
+command='sh -c "PATH=$HOME/.local/venv/bin:$PATH subl"'
+name='Sublime Text'
+
+[org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1]
+binding='<Primary><Shift><Alt>s'
+command='sh -c "PATH=$HOME/.local/venv/bin:$PATH subl -n"'
+name='Sublime Text (New Window)'
+
+[org/gnome/shell]
+favorite-apps=['org.gnome.Terminal.desktop', 'brave-browser.desktop', 'thunderbird.desktop', 'firefox_firefox.desktop', 'org.gnome.Nautilus.desktop']
+
+[org/gnome/shell/app-switcher]
+current-workspace-only=true
+
+[org/gnome/shell/extensions/dash-to-dock]
+isolate-workspaces=true
+
+[org/gnome/shell/extensions/wsmatrix]
+num-rows=3
+
+[org/gnome/shell/keybindings]
+toggle-message-tray=['<Super>v']
+
+[org/gnome/system/location]
+enabled=false
