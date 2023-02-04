@@ -1,0 +1,55 @@
+
+select = [
+    "F",     # Pyflakes
+    "E",     # Codestyle
+    "W",
+    "I",     # Import sort
+    "N",     # Naming convention
+    "UP",    # Syntax upgrade
+    "YTT",   # Version tests
+    "BLE",   # Blind excepts
+    "FBT",   # Boolean traps
+    "B",     # Bugbear
+    "A",     # Builtin shadowing
+    "COM",   # Trailing commas
+    "C4",    # Comprehensions
+    "T10",   # Debugger calls
+    "EM",    # Messages in exceptions
+    "EXE",   # Executables stuff
+    "ISC",   # String concat
+    "ICN",   # Import conventions
+    "G",     # Logging format
+    "PIE",   # Misc.
+    "PT",    # Pytest style
+    "Q",     # Quotes
+    "RET",   # Returns
+    "SIM",   # Simplify
+    "TID",   # Tidy imports
+    "TCH",   # Type checking
+    "ARG",   # Unused arguments
+    "PTH",   # Pathlib
+    "PD",    # Pandas vet
+    "PLC",   # Pylint
+    "TRY",   # Try-except blocks
+    "RSE",   # Raise statements
+    "SLF",   # Private member access
+    "RUF",   # Ruff errors
+]
+
+ignore = [
+    "C90",   # McCabe complexity
+    "D",     # Docstrings
+    "ANN",   # Annotations
+    "S",     # Security vulnerabilities
+    "DTZ",   # Datetime zones
+    "INP",   # No __init__.py file
+    "PT",    # Print statements
+    "ERA",   # Commented code
+    "PGH",   # Pygrep hooks
+
+    "E501",     # Line length
+    "ARG002",   # Named unused argument
+]
+
+line-length = 120
+

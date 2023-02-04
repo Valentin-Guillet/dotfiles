@@ -14,9 +14,6 @@
 !.config/dconf/
 !.config/dconf/conf
 
-!.config/flake8/
-!.config/flake8/**
-
 !.config/git/
 !.config/git/**
 
@@ -34,6 +31,9 @@
 
 !.config/readline
 !.config/readline/**
+
+!.config/ruff/
+!.config/ruff/**
 
 !.config/sublime-text/
 !.config/sublime-text/Packages/
