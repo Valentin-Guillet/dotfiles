@@ -1,4 +1,6 @@
 
+cache-dir = "~/.cache/ruff"
+
 select = [
     "F",     # Pyflakes
     "E",     # Codestyle
