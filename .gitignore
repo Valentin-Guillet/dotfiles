@@ -10,6 +10,9 @@
 !.config/bash/aliases
 !.config/bash/functions
 
+!.config/config_switcher/
+!.config/config_switcher/**
+
 !.config/
 !.config/dconf/
 !.config/dconf/conf
@@ -22,9 +25,6 @@
 
 !.config/keyboard/
 !.config/keyboard/**
-
-!.config/my_config/
-!.config/my_config/**
 
 !.config/pdb/
 !.config/pdb/**
