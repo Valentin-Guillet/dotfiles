@@ -104,6 +104,9 @@ fi
 export VISUAL=$(which vim)
 export EDITOR="$VISUAL"
 
+# FuzzyCD
+[ -f "$XDG_CONFIG_HOME"/fuzzycd/fuzzycd_wrapper.sh ] && . "$XDG_CONFIG_HOME"/fuzzycd/fuzzycd_wrapper.sh
+
 # Alias definitions
 [ -f "$XDG_CONFIG_HOME"/bash/aliases ] && . "$XDG_CONFIG_HOME"/bash/aliases
 [ -f "$XDG_CONFIG_HOME"/bash/functions ] && . "$XDG_CONFIG_HOME"/bash/functions
