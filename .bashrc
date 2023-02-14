@@ -106,6 +106,7 @@ export EDITOR="$VISUAL"
 
 # FuzzyCD
 [ -f "$XDG_CONFIG_HOME"/fuzzycd/fuzzycd_wrapper.sh ] && . "$XDG_CONFIG_HOME"/fuzzycd/fuzzycd_wrapper.sh
+[ -f "$XDG_CONFIG_HOME"/fuzzycd/fuzzycd_completion.sh ] && . "$XDG_CONFIG_HOME"/fuzzycd/fuzzycd_completion.sh
 
 # Alias definitions
 [ -f "$XDG_CONFIG_HOME"/bash/aliases ] && . "$XDG_CONFIG_HOME"/bash/aliases

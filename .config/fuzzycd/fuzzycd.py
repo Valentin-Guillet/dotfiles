@@ -116,7 +116,7 @@ def name_match(pattern, name):
         if index < prev_index:
             return False
 
-        prev_index = index
+        prev_index = index + 1
 
     return True
 
@@ -154,8 +154,7 @@ def filter_matches(pattern, found_dirs):
 
 
 def matches_by_chars(root, path_pattern):
-    """ Return an array of all matches for a given tuple of single letter path parts,
-    filtered by `filter_match()`.
+    """ Return an array of all matches for a given tuple of single letter path parts.
     """
     found_dirs = [root]
     for char in path_pattern:
@@ -183,8 +182,9 @@ def matches_by_chars(root, path_pattern):
     return found_dirs
 
 
-def matches_for_path(path):
-    """ Return an array of all matches for a given path, filtered by `filter_match()`.
+def matches_for_path(path, filter_fn=None):
+    """ Return an array of all matches for a given path, possibly filtered by a given function
+    (by default, `filter_match()`).
     Each part of the path is a globed (fuzzy) match. For example:
       `p` matches `places/` and `suspects/`
       `p/h` matches `places/home` and `suspects/harry`
@@ -220,11 +220,18 @@ def matches_for_path(path):
             new_found_dirs.extend([subdir for subdir in directory.iterdir()
                                   if subdir.is_dir() and name_match(pattern, subdir.name)])
 
-        found_dirs = filter_matches(pattern, new_found_dirs)
+        found_dirs = new_found_dirs
+        if filter_fn is not None:
+            found_dirs = filter_fn(pattern, found_dirs)
+        else:
+            found_dirs = filter_matches(pattern, found_dirs)
 
         # If no matching dir has been found for the first pattern and path
         # is only composed of one part, treat each character as a pattern
         if i == 0 and not found_dirs:
+            if pattern[0] == "~":
+                root = Path.home()
+                pattern = pattern[1:]
             found_dirs = matches_by_chars(root, tuple(pattern))
 
     return [str(directory) for directory in found_dirs]
