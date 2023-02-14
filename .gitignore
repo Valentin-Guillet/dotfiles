@@ -13,7 +13,6 @@
 !.config/config_switcher/
 !.config/config_switcher/**
 
-!.config/
 !.config/dconf/
 !.config/dconf/conf
 
@@ -76,18 +75,7 @@
 !.config/sublime-merge/Packages/User/*
 
 !.config/tmux/
-!.config/tmux/*
-!.config/tmux/layouts/
-!.config/tmux/layouts/**
-!.config/tmux/plugins/
-!.config/tmux/plugins/notify/
-!.config/tmux/plugins/notify/**
-!.config/tmux/plugins/regex-search/
-!.config/tmux/plugins/regex-search/**
-!.config/tmux/plugins/session-manager/
-!.config/tmux/plugins/session-manager/**
-!.config/tmux/plugins/single-pane/
-!.config/tmux/plugins/single-pane/**
+!.config/tmux/**
 
 !.config/vimium/
 !.config/vimium/**
