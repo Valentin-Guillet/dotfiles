@@ -1,0 +1,57 @@
+#!/bin/bash
+
+usage() {
+    echo "usage: git ignore [<options>]"
+    echo ""
+    echo "    -a, --add [<patterns>]   if no file is given, git add .gitignore"
+    echo "                             else, append given patterns to .gitignore"
+    echo "    -r, --reset              git reset .gitignore"
+    echo "    -v                       print .gitignore"
+    echo "    -h                       show this help"
+}
+
+main() {
+    # Not in a git repository
+    if ! git rev-parse --is-inside-work-tree &> /dev/null
+    then
+        echo "fatal: not a git repository (or any of the parent directories)"
+        exit 128
+    fi
+
+    gitignore_file="$(git rev-parse --show-toplevel)/.gitignore"
+    if [ "$#" -eq 0 ]
+    then
+        $EDITOR "$gitignore_file"
+        exit $?
+    fi
+
+    case "$1" in
+        -a|--add)
+            shift
+            if [ "$#" -eq 0 ]
+            then
+                git add "$gitignore_file"
+            else
+                for pattern in "$@"
+                do
+                    echo "$pattern" >> "$gitignore_file"
+                done
+            fi
+            ;;
+        -r|--reset)
+            git reset "$gitignore_file"
+            ;;
+        -v)
+            cat "$gitignore_file"
+            ;;
+        -h)
+            usage
+            ;;
+        *)
+            echo "error: unknown switch \`${1:1}'"
+            usage
+            ;;
+    esac
+}
+
+main "$@"

@@ -9,6 +9,7 @@
 !.config/bash/
 !.config/bash/aliases
 !.config/bash/functions
+!.config/bash/paths
 
 !.config/config_switcher/
 !.config/config_switcher/**

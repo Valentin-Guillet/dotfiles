@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# FuzzyCD
+[ -f "$XDG_CONFIG_HOME"/fuzzycd/fuzzycd_wrapper.sh ] && source "$XDG_CONFIG_HOME"/fuzzycd/fuzzycd_wrapper.sh
+[ -f "$XDG_CONFIG_HOME"/fuzzycd/fuzzycd_completion.sh ] && source "$XDG_CONFIG_HOME"/fuzzycd/fuzzycd_completion.sh
+
+# Git custom commands
+export PATH="$XDG_CONFIG_HOME"/git/custom_commands/:$PATH

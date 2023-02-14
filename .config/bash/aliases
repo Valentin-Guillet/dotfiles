@@ -33,4 +33,5 @@ alias configp='vim ~/.config/bash/local_path; source ~/.bashrc'
 alias configg='vim ~/.bashrc; source ~/.bashrc'
 alias configga='vim ~/.config/bash/aliases; source ~/.bashrc'
 alias configgf='vim ~/.config/bash/functions; source ~/.bashrc'
+alias configgp='vim ~/.config/bash/paths; source ~/.bashrc'
 
