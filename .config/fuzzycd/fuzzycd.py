@@ -182,7 +182,7 @@ def matches_by_chars(root, path_pattern):
     return found_dirs
 
 
-def matches_for_path(path, filter_fn=None):
+def matches_for_path(cd_args, filter_fn=None):
     """ Return an array of all matches for a given path, possibly filtered by a given function
     (by default, `filter_match()`).
     Each part of the path is a globed (fuzzy) match. For example:
@@ -190,8 +190,9 @@ def matches_for_path(path, filter_fn=None):
       `p/h` matches `places/home` and `suspects/harry`
     """
     root = Path()
-    path = path.replace(" ", "/")
-    path_pattern = Path(path).parts
+    path_pattern = ()
+    for arg in cd_args:
+        path_pattern += Path(arg).parts
 
     # If start with home, add it to root
     home_parts = Path.home().parts
@@ -214,11 +215,10 @@ def matches_for_path(path, filter_fn=None):
         for directory in found_dirs:
             try:
                 next(directory.iterdir())
+                new_found_dirs.extend([subdir for subdir in directory.iterdir()
+                                       if subdir.is_dir() and name_match(pattern, subdir.name)])
             except (PermissionError, StopIteration):
                 continue
-
-            new_found_dirs.extend([subdir for subdir in directory.iterdir()
-                                  if subdir.is_dir() and name_match(pattern, subdir.name)])
 
         found_dirs = new_found_dirs
         if filter_fn is not None:
@@ -237,10 +237,14 @@ def matches_for_path(path, filter_fn=None):
     return [str(directory) for directory in found_dirs]
 
 
-def passthrough(cd_path):
-    if not cd_path:
+def passthrough(cd_args):
+    if not cd_args:
         return True
 
+    if len(cd_args) != 1:
+        return False
+
+    cd_path = cd_args[0]
     if cd_path in (".", "/", "-", str(Path.home())):
         return True
 
@@ -254,16 +258,16 @@ def passthrough(cd_path):
 
 
 def main():
-    cd_path = " ".join(sys.argv[1:])
+    cd_args = sys.argv[1:]
     out_file = Path("/tmp/fuzzycd.out")
 
     # Just invoke cd directly in certain special cases
-    if passthrough(cd_path):
+    if passthrough(cd_args):
         with out_file.open("w") as file:
             file.write("@passthrough")
         return
 
-    matches = matches_for_path(cd_path)
+    matches = matches_for_path(cd_args)
     with out_file.open("w") as file:
         if not matches:
             file.write("@nomatches")

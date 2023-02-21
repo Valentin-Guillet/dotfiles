@@ -11,27 +11,27 @@ then
     eval $(type cd | grep -v 'cd is a function' | sed 's/^cd/original_cd/' | sed 's/^}/;}/' )
 else
     # Otherwise, we just define "original_cd" to directly call the builtin.
-    eval "original_cd() { builtin cd \$*; }"
+    eval "original_cd() { builtin cd \"\$@\"; }"
 fi
 
 cd() {
     if [ ! -x $HOME/.config/fuzzycd/fuzzycd.py ]
     then
         echo "Fuzzycd not found or not executable"
-        original_cd "$*"
+        original_cd "$@"
         return
     fi
 
-    $HOME/.config/fuzzycd/fuzzycd.py $*
+    $HOME/.config/fuzzycd/fuzzycd.py "$@"
 
     # fuzzycd communicates to this bash wrapper through a temp file, because it uses STDOUT for other purposes.
     output=$(cat /tmp/fuzzycd.out)
     rm /tmp/fuzzycd.out
 
     if [ "$output" = "@nomatches" ]; then
-        echo "No files match \"$*\""
+        echo "No files match \"$@\""
     elif [ "$output" = "@passthrough" ]; then
-        original_cd "$*"
+        original_cd "$@"
     elif [ "$output" != "@exit" ]; then
         original_cd "$output"
     fi

@@ -41,13 +41,12 @@ def filter_first_chars(pattern, found_dirs):
 
 
 def main():
-    args = sys.argv[2:]
+    args = [arg.replace('\\ ', ' ') for arg in sys.argv[2:]]
 
-    paths = "/".join(args)
-    if exist_and_dont_have_subdirs(paths):
+    if exist_and_dont_have_subdirs("/".join(args)):
         return
 
-    matches = matches_for_path(paths, filter_fn=filter_first_chars)
+    matches = matches_for_path(args, filter_fn=filter_first_chars)
     if not matches:
         return
 
