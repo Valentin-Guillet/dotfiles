@@ -154,6 +154,11 @@ catch /.*/
 endtry
 
 
+" Ansi-Esc
+let g:no_cecutil_maps = 1
+let g:no_ansiesc_menu = 1
+
+
 " Auto-pairs
 let g:autopairs_shortcut_toggle = ''
 let g:autopairs_shortcut_jump = '<M-v>'
