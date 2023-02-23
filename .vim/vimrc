@@ -211,6 +211,9 @@ function s:ToggleQfOrLoc()
 endfunction
 nmap <expr> <leader>aa <SID>ToggleQfOrLoc()
 
+nnoremap <expr> [s (&spell ? "[s" : "\<Plug>(qf_qf_previous) \| \<Plug>(qf_loc_previous)")
+nnoremap <expr> ]s (&spell ? "]s" : "\<Plug>(qf_qf_next) \| \<Plug>(qf_loc_next)")
+
 
 " Readline
 let g:readline_ctrl_t = 0
