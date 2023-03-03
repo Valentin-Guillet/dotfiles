@@ -1,0 +1,75 @@
+{
+    "telemetry.telemetryLevel": "off",
+    "workbench.colorTheme": "Default Dark+",
+
+    "git.openRepositoryInParentFolders": "never",
+    
+    "terminal.integrated.commandsToSkipShell": [
+        "-workbench.action.quickOpen",
+    ],
+
+    "vim.handleKeys": {
+        "<C-d>": true,
+        "<C-k>": false,
+        "<C-n>": false,
+        "<C-o>": false,
+        "<C-s>": false,
+        "<C-w>": false,
+        "<C-z>": false
+    },
+    "vim.leader": ",",
+    "vim.insertModeKeyBindingsNonRecursive": [
+        {
+            "before": ["k", "j"],
+            "after": ["<Esc>"],
+        }
+    ],
+    "vim.normalModeKeyBindingsNonRecursive": [
+        {
+            "before": ["leader", "p"],
+            "commands": ["workbench.action.previousEditor"]
+        },
+        {
+            "before": ["leader", "n"],
+            "commands": ["workbench.action.nextEditor"]
+        },
+        {
+            "before": ["leader", "<"],
+            "commands": ["workbench.action.moveEditorLeftInGroup"]
+        },
+        {
+            "before": ["leader", ">"],
+            "commands": ["workbench.action.moveEditorRightInGroup"]
+        },
+        {
+            "before": ["leader", "m"],
+            "commands": ["makefile.buildTarget"]
+        },
+        {
+            "before": ["[", "s"],
+            "commands": ["editor.action.marker.prevInFiles"]
+        },
+        {
+            "before": ["]", "s"],
+            "commands": ["editor.action.marker.nextInFiles"]
+        },
+        {
+            "before": ["_"],
+            "commands": ["editor.action.moveLinesUpAction"],
+            "when": "editorTextFocus && !editorReadonly"
+        },
+        {
+            "before": ["-"],
+            "commands": ["editor.action.moveLinesDownAction"],
+            "when": "editorTextFocus && !editorReadonly"
+        },
+        {
+            "before": ["leader", "w"],
+            "commands": ["workbench.action.files.save"]
+        },
+        {
+            "before": ["leader", "q"],
+            "commands": ["workbench.action.terminal.killEditor"]
+        },
+    ],
+}
