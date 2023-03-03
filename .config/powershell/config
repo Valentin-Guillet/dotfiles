@@ -1,0 +1,40 @@
+
+Set-PSReadLineOption -EditMode Emacs
+
+$LOCAL_PROFILE = "$(Split-Path -Parent $PROFILE)\Microsoft.PowerShell_local_profile.ps1"
+
+# Source local profile
+if (Test-Path -Path $LOCAL_PROFILE -PathType Leaf) {
+    . $LOCAL_PROFILE
+}
+
+
+# Aliases
+
+Set-Alias -Name touch -Value New-Item
+Set-Alias -Name which -Value Get-Command
+
+
+# Functions
+
+function la {
+    ls -Force
+}
+
+function configg {
+    vim $PROFILE
+    . $PROFILE
+}
+
+function configa {
+    vim $LOCAL_PROFILE
+    . $PROFILE
+}
+
+function head {
+    cat @Args | Select -First 10
+}
+
+function tail {
+    cat @Args | Select -Last 10
+}
