@@ -15,6 +15,7 @@ this is required because this script uses STDOUT to show the interactive menu wh
 Largely inspired by FuzzyCD from PhilC (https://github.com/philc/fuzzycd)
 """
 
+import os
 import shutil
 import sys
 import termios
@@ -41,6 +42,14 @@ def colorize_blue(text):
     """ Insert bash color escape codes to render the given text in blue. """
     return "\033[01;34m" + text + "\033[0m"
 
+
+def get_subdirs(directory):
+    """ Return the list of all subdirs of a given directory that are readable"""
+    if not os.access(directory, os.R_OK):
+        return []
+
+    return [subdir for subdir in directory.iterdir()
+            if os.access(subdir, os.R_OK) and subdir.is_dir()]
 
 def menu_with_options(options):
     """ Return a string representing a color-coded menu which presents a series of options.
@@ -161,15 +170,7 @@ def matches_by_chars(root, path_pattern):
         dir_pattern_index = {}
 
         for directory in found_dirs:
-            try:
-                next(directory.iterdir())
-            except (PermissionError, StopIteration):
-                continue
-
-            for subdir in directory.iterdir():
-                if not subdir.is_dir():
-                    continue
-
+            for subdir in get_subdirs(directory):
                 name = subdir.name.lower() if char.islower() else subdir.name
                 if char in name:
                     dir_pattern_index.setdefault(name.index(char), []).append(subdir)
@@ -213,12 +214,8 @@ def matches_for_path(cd_args, filter_fn=None):
 
         new_found_dirs = []
         for directory in found_dirs:
-            try:
-                next(directory.iterdir())
-                new_found_dirs.extend([subdir for subdir in directory.iterdir()
-                                       if subdir.is_dir() and name_match(pattern, subdir.name)])
-            except (PermissionError, StopIteration):
-                continue
+            new_found_dirs.extend([subdir for subdir in get_subdirs(directory)
+                                   if name_match(pattern, subdir.name)])
 
         found_dirs = new_found_dirs
         if filter_fn is not None:
