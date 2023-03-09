@@ -46,3 +46,6 @@
 [submodule ".vim/pack/all/start/vim-all"]
 	path = .vim/pack/all/start/vim-all
 	url = https://github.com/vim-utils/vim-all
+[submodule ".vim/pack/indent-object/start/vim-indent-object"]
+	path = .vim/pack/indent-object/start/vim-indent-object
+	url = https://github.com/michaeljsmith/vim-indent-object
