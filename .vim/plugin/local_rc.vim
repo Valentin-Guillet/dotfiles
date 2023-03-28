@@ -14,12 +14,14 @@ if !isdirectory(g:local_rc_dir)
     call mkdir(g:local_rc_dir, 'p')
 endif
 
+let s:sep = (has("win32") || has("win64")) ? '\' : '/'
 
 function s:GetLocalRcPath()
     let l:list_files = globpath(g:local_rc_dir, '*', 0, 1)
-    call map(l:list_files, {_, val -> val[strridx(val, '/')+1:]})
+    call map(l:list_files, {_, val -> val[strridx(val, s:sep)+1:]})
     call sort(l:list_files, {a, b -> strlen(a) < strlen(b)})
-    let l:curr_file = substitute(expand("%:p:h"), '/', '%', 'g')
+    let l:curr_file = substitute(expand("%:p:h"), s:sep, '%', 'g')
+    let l:curr_file = substitute(l:curr_file, ':', '%', 'g')  " Remove drive separator on Windows
 
     for l:file in l:list_files
         if l:curr_file =~ '^' . l:file
@@ -44,7 +46,8 @@ function s:EditLocalRcFile()
             echom "Aborted"
             return 0
         endif
-        let l:local_rc_file = g:local_rc_dir . substitute(getcwd(), '/', '\\\%', 'g')
+        let l:local_rc_file = substitute(getcwd(), s:sep, '\\\%', 'g')
+        let l:local_rc_file = g:local_rc_dir . substitute(l:local_rc_file,  ':', '\\\%', 'g')
     else
         let l:local_rc_file = substitute(l:local_rc_path, '%', '\\%', 'g')
     endif
@@ -70,22 +73,21 @@ function s:DeleteLocalRcFile()
     let l:local_rc = s:GetLocalRcPath()
     if empty(l:local_rc) | echom "No local rc file" | return | endif
 
-    let l:escaped_local_rc = substitute(l:local_rc, '%', '\\%', 'g')
-    execute "silent !rm " . l:escaped_local_rc
-    redraw!
-    echom "Local rc file (" . l:escaped_local_rc . ") removed"
+    call delete(l:local_rc)
+    echom "Local rc file (" . l:local_rc . ") removed"
 endfunction
 
 function s:CleanLocalRcFiles()
+    " Remove local_rc files when the corresponding directory
+    " does not exist anymore
     let l:list_files = globpath(g:local_rc_dir, '*', 0, 1)
     let l:count = 0
     for l:file in l:list_files
-        let l:lines = readfile(l:file, '', 1)
         let l:rel_file = fnamemodify(l:file, ":t")
-        let l:dir = substitute(l:rel_file, '%', '/', 'g')
+        let l:dir = substitute(l:rel_file, '%%', ':/', 'g')  " Drive separator on Windows
+        let l:dir = substitute(l:dir, '%', '/', 'g')
         if !isdirectory(l:dir)
-            let l:escaped_file = substitute(l:file, '%', '\\%', 'g')
-            execute "silent !rm " . shellescape(l:escaped_file)
+            call delete(l:file)
             let l:count += 1
         endif
     endfor

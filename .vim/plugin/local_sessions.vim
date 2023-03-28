@@ -19,13 +19,16 @@ if !exists('g:session_default_name')
     let g:session_default_name = "main"
 endif
 
+let s:sep = (has("win32") || has("win64")) ? '\' : '/'
+
 
 " ... arg is used for autocompletion
 function g:GetSessionNames(...)
     let l:list_files = globpath(g:local_sessions_dir, '*', 0, 1)
-    call map(l:list_files, {_, val -> val[strridx(val, '/')+1:]})
+    call map(l:list_files, {_, val -> val[strridx(val, s:sep)+1:]})
     call sort(l:list_files, {a, b -> strlen(a) < strlen(b)})
-    let l:curr_path = substitute(getcwd(), '/', '%', 'g')
+    let l:curr_path = substitute(getcwd(), s:sep, '%', 'g')
+    let l:curr_path = substitute(l:curr_path, ':', '%', 'g')  " Remove drive separator on Windows
 
     let l:paths = []
     for l:file in l:list_files
@@ -85,8 +88,18 @@ function s:SaveSession(name="")
         let l:session_name = g:session_name
     endif
 
-    let l:session_file = g:local_sessions_dir . substitute(getcwd(), '/', '\\\%', 'g')
+    let l:session_file = substitute(getcwd(), s:sep, '\\\%', 'g')
+    let l:session_file = g:local_sessions_dir . substitute(l:session_file, ':', '\\\%', 'g')
     let l:session_file .= "\\#" . l:session_name
+
+    " On Windows, vim can't source a file containing "%vim%" in it (probably
+    " because of environment variable expansion ?)
+    " We thus prevent all session creation in a path containing a "vim"
+    " directory
+    if s:sep == '\' && stridx(l:session_file, "\\%vim\\%") != -1
+        echoerr "Sorry, can't create a session in a subdirectory of a directory only named \"vim\""
+        return 0
+    endif
 
     if (!exists("g:session_name") || !empty(a:name)) &&
                 \ filereadable(substitute(l:session_file, '\\', '', 'g')) &&
@@ -121,8 +134,9 @@ function s:OpenSession(name="")
         endif
     endif
 
-    let l:curr_path = substitute(getcwd(), '/', '%', 'g')
-    let l:session_file = g:local_sessions_dir . '/' . l:curr_path . '#' . l:session_name
+    let l:curr_path = substitute(getcwd(), s:sep, '%', 'g')
+    let l:curr_path = substitute(l:curr_path, ':', '%', 'g')
+    let l:session_file = g:local_sessions_dir . s:sep . l:curr_path . '#' . l:session_name
 
     if !filereadable(l:session_file) | redraw | echo "No such session in this directory" | return | endif
 
@@ -150,13 +164,13 @@ function s:DeleteSessionFile(name="")
         %bdelete
     endif
 
-    let l:curr_path = substitute(getcwd(), '/', '%', 'g')
-    let l:session_file = g:local_sessions_dir . '/' . l:curr_path . '#' . l:session_name
+    let l:curr_path = substitute(getcwd(), s:sep, '%', 'g')
+    let l:curr_path = substitute(l:curr_path, ':', '%', 'g')
+    let l:session_file = g:local_sessions_dir . s:sep . l:curr_path . '#' . l:session_name
 
     if !filereadable(l:session_file) | redraw | echo "No local session file" | return | endif
 
-    execute "silent !rm " . fnameescape(l:session_file)
-    redraw!
+    call delete(l:session_file)
     echom "Local session file (" . l:session_file . ") removed"
 endfunction
 
@@ -174,10 +188,11 @@ function s:CleanSessionFiles()
     let l:count = 0
     for l:file in l:list_files
         let l:rel_file = fnamemodify(l:file, ":t")
-        let l:dir = substitute(l:rel_file, '%', '/', 'g')
+        let l:dir = substitute(l:rel_file, '%%', ':/', 'g')  " Drive separator on Windows
+        let l:dir = substitute(l:dir, '%', '/', 'g')
         let l:dir = l:dir[:strridx(l:dir, '#')-1]
         if !isdirectory(l:dir)
-            execute "silent !rm " . shellescape(fnameescape(l:escaped_file))
+            call delete(l:file)
             let l:count += 1
         endif
     endfor
@@ -186,7 +201,7 @@ function s:CleanSessionFiles()
     if l:count
         echom l:count . " file" . (l:count > 1 ? 's' : '') . " removed"
     else
-        echo "No file to remove"
+        echom "No file to remove"
     endif
 endfunction
 
@@ -211,8 +226,12 @@ function s:AutoOpenSession()
 endfunction
 
 function s:ChangeDirSession()
+    " We need `mv` and `sed` command to call this function,
+    " so abort if on Windows
+    if !has("unix") | echo "Can't do that on Windows" | return | endif
+
     let l:list_files = globpath(g:local_sessions_dir, '*', 0, 1)
-    call map(l:list_files, {_, val -> val[strridx(val, '/')+1:]})
+    call map(l:list_files, {_, val -> val[strridx(val, s:sep)+1:]})
     call sort(l:list_files, {a, b -> strlen(a) < strlen(b)})
 
     if empty(l:list_files)
@@ -227,7 +246,8 @@ function s:ChangeDirSession()
             let l:list_paths += [path]
         endif
     endfor
-    let l:display_paths = map(copy(l:list_paths), 'substitute(v:val, "\%", "/", "g")')
+    let l:display_paths = map(copy(l:list_paths), 'substitute(v:val, "\%\%", ":/", "g")')
+    let l:display_paths = map(copy(l:display_paths), 'substitute(v:val, "\%", "/", "g")')
     let l:display_paths = map(copy(l:display_paths), 'substitute(v:val, $HOME, "~", "g")')
     let l:display_paths = map(l:display_paths, {key, val -> string(key+1) . ". " . val})
 
@@ -244,7 +264,8 @@ function s:ChangeDirSession()
     endif
 
     let l:old_sess_path = l:list_paths[l:choice - 1]
-    let l:new_sess_path = substitute(getcwd(), '/', '%', 'g')
+    let l:new_sess_path = substitute(getcwd(), ':', '%', 'g')
+    let l:new_sess_path = substitute(l:new_sess_path, s:sep, '%', 'g')
 
     if l:old_sess_path == l:new_sess_path
         echo "\nTrying to move session file to the same place !"
