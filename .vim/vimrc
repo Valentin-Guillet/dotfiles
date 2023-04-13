@@ -166,6 +166,11 @@ let g:autopairs_shortcut_back_insert = '<M-c>'
 let g:autopairs_center_line = 0
 
 
+" Better Whitespace
+nnoremap ]w :NextTrailingWhitespace<CR>
+nnoremap [w :PrevTrailingWhitespace<CR>
+
+
 " GitGutter
 set updatetime=100
 let g:gitgutter_enabled = 0

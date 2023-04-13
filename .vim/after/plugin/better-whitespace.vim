@@ -1,0 +1,5 @@
+
+delcommand ToggleStripWhitespaceOnSave
+delcommand EnableStripWhitespaceOnSave
+delcommand DisableStripWhitespaceOnSave
+
