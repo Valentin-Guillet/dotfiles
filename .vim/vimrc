@@ -199,6 +199,10 @@ highlight GitGutterStatuslineDeleteNC cterm=bold ctermfg=1 ctermbg=244
 let g:fastfold_minlines = 10
 
 
+" Linediff
+let g:linediff_indent = 1
+
+
 " Markdown
 let g:vim_markdown_toc_autofit = 1
 let g:vim_markdown_follow_anchor = 1

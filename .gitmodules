@@ -49,3 +49,6 @@
 [submodule ".vim/pack/indent-object/start/vim-indent-object"]
 	path = .vim/pack/indent-object/start/vim-indent-object
 	url = https://github.com/michaeljsmith/vim-indent-object
+[submodule ".vim/pack/linediff/start/linediff.vim"]
+	path = .vim/pack/linediff/start/linediff.vim
+	url = https://github.com/AndrewRadev/linediff.vim
