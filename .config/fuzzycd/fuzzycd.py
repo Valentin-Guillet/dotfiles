@@ -166,6 +166,16 @@ def matches_by_chars(root, path_pattern):
     """ Return an array of all matches for a given tuple of single letter path parts.
     """
     found_dirs = [root]
+
+    # Expand `...` and more in `../..`
+    while path_pattern[:2] == (".", "."):
+        found_dirs = [d.absolute().parent for d in found_dirs]
+        path_pattern = path_pattern[1:]
+
+    # Remove leading ".", either intentional of aftermath of "..." expansion
+    if path_pattern[0] == ".":
+        path_pattern = path_pattern[1:]
+
     for char in path_pattern:
         dir_pattern_index = {}
 
@@ -205,6 +215,22 @@ def matches_for_path(cd_args, filter_fn=None):
     if path_pattern[0] in ("/", "//"):
         root = Path("/")
         path_pattern = path_pattern[1:]
+
+    path_pattern = list(path_pattern)
+
+    # Expand `...` and more in `../..`
+    index = 0
+    while index < len(path_pattern):
+        pattern = path_pattern[index]
+        if not (len(pattern) > 2 and pattern == "." * len(pattern)):
+            index += 1
+            continue
+
+        path_pattern[index] = ".."
+        for _ in range(len(pattern) - 2):
+            path_pattern.insert(index + 1, "..")
+
+        index += len(pattern) - 2 + 1
 
     found_dirs = [root]
     for i, pattern in enumerate(path_pattern):
