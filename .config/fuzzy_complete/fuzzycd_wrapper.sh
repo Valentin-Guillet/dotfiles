@@ -8,21 +8,21 @@ if [ x`type -t cd` == "xfunction" ] && ! type cd | grep fuzzycd &> /dev/null
 then
     # In this case, we define a new "original_cd" function with the same body as the previously defined "cd"
     # function.
-    eval $(type cd | grep -v 'cd is a function' | sed 's/^cd/original_cd/' | sed 's/^}/;}/' )
+    eval "$(type cd | grep -v 'cd is a function' | sed 's/^cd/original_cd/' | sed 's/^}/;}/' )"
 else
     # Otherwise, we just define "original_cd" to directly call the builtin.
     eval "original_cd() { builtin cd \"\$@\"; }"
 fi
 
 cd() {
-    if [ ! -x $HOME/.config/fuzzycd/fuzzycd.py ]
+    if [ ! -x $HOME/.config/fuzzy_complete/fuzzycd.py ]
     then
         echo "Fuzzycd not found or not executable"
         original_cd "$@"
         return
     fi
 
-    $HOME/.config/fuzzycd/fuzzycd.py "$@"
+    $HOME/.config/fuzzy_complete/fuzzycd.py "$@"
 
     # fuzzycd communicates to this bash wrapper through a temp file, because it uses STDOUT for other purposes.
     output=$(cat /tmp/fuzzycd.out)

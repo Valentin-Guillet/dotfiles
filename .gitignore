@@ -17,8 +17,8 @@
 !.config/dconf/
 !.config/dconf/conf
 
-!.config/fuzzycd/
-!.config/fuzzycd/**
+!.config/fuzzy_complete/
+!.config/fuzzy_complete/**
 
 !.config/git/
 !.config/git/**

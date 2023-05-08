@@ -1,0 +1,16 @@
+
+
+- [ ] Write tests
+    + [ ] test factory ?
+    + [ ] `cd`
+    + [ ] `ls`
+    + [ ] `vim` ?
+
+- [ ] If arg finishes by `/`, don't try to extend last pattern
+- [ ] Update `fuzzy_lib.py` docstring
+
+- [ ] Don't work:
+    + [X] `cd doc aoc[TAB]`
+    + [X] `cd / vo[TAB]`
+    + [ ] `cd doc [TAB]`
+    + [ ] `cd ~ [TAB][TAB]`
