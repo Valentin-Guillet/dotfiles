@@ -8,11 +8,7 @@ if (Test-Path -Path $LOCAL_PROFILE -PathType Leaf) {
     . $LOCAL_PROFILE
 }
 
-
-# Aliases
-
-Set-Alias -Name touch -Value New-Item
-Set-Alias -Name which -Value Get-Command
+Set-Alias -Name unzip -Value Expand-Archive
 
 
 # Functions
@@ -31,10 +27,30 @@ function configa {
     . $PROFILE
 }
 
+function touch($file) {
+    "" | Out-File $file -Encoding ASCII
+}
+
+function which($name) {
+    Get-Command $name | Select-Object -ExpandProperty Definition
+}
+
+function grep($regex, $dir) {
+    if ($dir) {
+        Get-ChildItem $dir | select-string $regex
+    } else {
+        $input | select-string $regex
+    }
+}
+
 function head {
     cat @Args | Select -First 10
 }
 
 function tail {
     cat @Args | Select -Last 10
+}
+
+function td {
+    vim ~\.cache\ToDo
 }
