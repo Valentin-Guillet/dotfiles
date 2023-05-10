@@ -19,9 +19,11 @@ _filedir() {
     [[ ${1-} == -d ]] && only_dir=1
 
     # If no candidates, call fuzzy completion
-    if [ ${#COMPREPLY[@]} == 0 ] || [ $only_dir == 1 -a ${#COMP_WORDS[@]} -gt 2 ]
+    # if [ ${#COMPREPLY[@]} == 0 ] || [ $only_dir == 1 -a ${#COMP_WORDS[@]} -gt 2 ]
+    if [ ${#COMPREPLY[@]} == 0 ]
     then
-        COMPREPLY=( $(/usr/bin/env python -B $HOME/.config/fuzzy_complete/fuzzy_complete.py $only_dir "${COMP_WORDS[@]}") )
+        local IFS=$'\n'
+        COMPREPLY=( $(/usr/bin/env python -B $HOME/.config/fuzzy_complete/fuzzy_complete.py $only_dir $COMP_CWORD "${COMP_WORDS[@]}") )
         compopt -o filenames
     fi
 }
