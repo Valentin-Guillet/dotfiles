@@ -31,9 +31,6 @@
 [submodule ".vim/pack/tmux-navigator/start/vim-tmux-navigator"]
 	path = .vim/pack/tmux-navigator/start/vim-tmux-navigator
 	url = https://github.com/christoomey/vim-tmux-navigator
-[submodule ".vim/pack/flake8/start/vim-flake8"]
-	path = .vim/pack/flake8/start/vim-flake8
-	url = https://github.com/nvie/vim-flake8
 [submodule ".vim/pack/ansi-esc/start/vim-plugin-AnsiEsc"]
 	path = .vim/pack/ansi-esc/start/vim-plugin-AnsiEsc
 	url = https://github.com/powerman/vim-plugin-AnsiEsc
@@ -52,3 +49,6 @@
 [submodule ".vim/pack/linediff/start/linediff.vim"]
 	path = .vim/pack/linediff/start/linediff.vim
 	url = https://github.com/AndrewRadev/linediff.vim
+[submodule ".vim/pack/dockerfile/start/Dockerfile.vim"]
+	path = .vim/pack/dockerfile/start/Dockerfile.vim
+	url = https://github.com/ekalinin/Dockerfile.vim
