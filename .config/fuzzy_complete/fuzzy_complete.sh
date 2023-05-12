@@ -13,14 +13,20 @@ _filedir() {
     _original_filedir "$@"
 
     # Blacklist rm
-    [ ${COMP_WORDS[0]} == "rm" ] && return
+    local cmd="${COMP_WORDS[0]}"
+    [ "$cmd" == "rm" ] && return
 
     local only_dir=0
     [[ ${1-} == -d ]] && only_dir=1
 
+    local is_cd_cmd=0
+    if [ "$cmd" == "cd" ] || [ "$cmd" == "pushd" ] || [ "$cmd" == "pu" ]
+    then
+        is_cd_cmd=1
+    fi
+
     # If no candidates, call fuzzy completion
-    # if [ ${#COMPREPLY[@]} == 0 ] || [ $only_dir == 1 -a ${#COMP_WORDS[@]} -gt 2 ]
-    if [ ${#COMPREPLY[@]} == 0 ]
+    if [ ${#COMPREPLY[@]} == 0 ] || [ $is_cd_cmd == 1 -a ${#COMP_WORDS[@]} -gt 2 ]
     then
         local IFS=$'\n'
         COMPREPLY=( $(/usr/bin/env python -B $HOME/.config/fuzzy_complete/fuzzy_complete.py $only_dir $COMP_CWORD "${COMP_WORDS[@]}") )

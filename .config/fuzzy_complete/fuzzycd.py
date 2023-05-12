@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env -S python -B
 
 """
 Take a path argument and generates a list of possible completions using fuzzy matching.
@@ -21,8 +21,7 @@ import termios
 import tty
 from pathlib import Path
 
-from fuzzy_lib import matches_for_path, split_root
-from fuzzy_lib import debug
+from fuzzy_lib import find_matching_dirs
 
 
 class TtyRaw:
@@ -132,12 +131,8 @@ def main():
             file.write("@passthrough")
         return
 
-    root, path_patterns = split_root(cd_args)
-    matches = matches_for_path(root, path_patterns)
-
-    debug("Root", root)
-    debug("Path list", path_patterns)
-    debug("Matches", matches)
+    found_dirs, _ = find_matching_dirs(cd_args, only_dir=True)
+    matches = [str(found_dir) for found_dir in found_dirs]
 
     with out_file.open("w") as file:
         if not matches:

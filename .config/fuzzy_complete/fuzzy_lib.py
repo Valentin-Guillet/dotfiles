@@ -24,34 +24,6 @@ def debug(*args):
         file.write(" ".join(map(str, args)) + "\n")
 
 
-def split_root(args):
-    root = Path()
-    path_patterns = []
-    for arg in args:
-        path_patterns += list(Path(arg).parts)
-
-    if not path_patterns:
-        return root, path_patterns
-
-    home_parts = Path.home().parts
-    if path_patterns[0] in ("/", "//"):
-        root = Path("/")
-        del path_patterns[0]
-
-    elif path_patterns[0].startswith("~"):
-        root = Path.home()
-        if len(path_patterns[0]) == 1:
-            path_patterns = path_patterns[1:]
-        else:
-            path_patterns[0] = path_patterns[0][1:]
-
-    elif path_patterns[:len(home_parts)] == home_parts:
-        root = Path.home()
-        path_patterns = path_patterns[len(home_parts):]
-
-    return root, path_patterns
-
-
 def get_subdirs(directory):
     """ Return the list of all subdirs of a given directory that are readable"""
     if not os.access(directory, os.R_OK):
@@ -68,6 +40,30 @@ def get_files(directory):
 
     return [file for file in directory.iterdir()
             if os.access(file, os.R_OK) and file.is_file()]
+
+
+def get_relative_to_cwd(path):
+    i = 0
+    for cwd_part, path_part in zip(Path.cwd().parts, path.parts, strict=False):
+        if cwd_part != path_part:
+            break
+        i += 1
+
+    # No parts in common to the root: return absolute path
+    if i <= 1:
+        return path
+
+    nb_prev = len(Path.cwd().parts) - i
+    nb_next = len(path.parts) - i
+    debug(f"      Rel to: path {path}, cwd {Path.cwd()}")
+    debug(f"      i {i}, nb_prev {nb_prev}, nb_next {nb_next}")
+
+    rel_path = tuple(".." for _ in range(nb_prev))
+    if nb_next:
+        rel_path += path.parts[-nb_next:]
+
+    debug(f"      => {rel_path}")
+    return Path(*rel_path)
 
 
 def name_match(pattern, name):
@@ -126,26 +122,28 @@ def filter_matches(pattern, found_dirs):
     return closest_dirs
 
 
-def matches_by_chars(root, path_patterns, *, include_files=False):
+def matches_by_chars(base_dirs, path_pattern, *, include_files=False):
     """ Return an array of all matches for a given tuple of single letter path parts.
     """
-    found_dirs = [root]
+    found_dirs = base_dirs
 
-    # Expand `...` and more in `../..`
-    while path_patterns[:2] == (".", "."):
+    return_relative_paths = False
+    i = 0
+    while path_pattern[i] == ".":
+        return_relative_paths = True
+        i += 1
+    for _ in range(i - 1):
         found_dirs = [d.absolute().parent for d in found_dirs]
-        path_patterns = path_patterns[1:]
+    char_patterns = tuple(path_pattern[i:])
 
-    # Remove leading ".", either intentional of aftermath of "..." expansion
-    if path_patterns[0] == ".":
-        path_patterns = path_patterns[1:]
+    debug(f"   By chars: base_dirs {base_dirs}, path pattern {path_pattern}, char patterns {char_patterns}")
 
-    for i, char in enumerate(path_patterns):
+    for i, char in enumerate(char_patterns):
         dir_pattern_index = {}
 
         for directory in found_dirs:
             paths = get_subdirs(directory)
-            if include_files and i == len(path_patterns) - 1:
+            if include_files and i == len(char_patterns) - 1:
                 paths.extend(get_files(directory))
 
             for path in paths:
@@ -158,67 +156,82 @@ def matches_by_chars(root, path_patterns, *, include_files=False):
 
         found_dirs = dir_pattern_index[min(dir_pattern_index)]
 
+    if return_relative_paths:
+        found_dirs = [get_relative_to_cwd(found_dir) for found_dir in found_dirs]
+
     return found_dirs
 
 
-def matches_for_path(root, path_patterns, *, include_files=False, filter_fn=None):
+def matches_for_path(base_dirs, path_arg, allow_by_char, *,
+                     include_files=False, filter_fn=filter_matches):
     """ Return an array of all matches for a given path, possibly filtered by a given function
-    (by default, `filter_match()`).
+    (by default, `filter_matches()`).
     Each part of the path is a globed (fuzzy) match. For example:
       `p` matches `places/` and `suspects/`
       `p/h` matches `places/home` and `suspects/harry`
     """
-    # path_patterns = []
-    # for path in path_list:
-    #     path_patterns += list(Path(path).parts)
+    if not base_dirs:
+        return []
 
-    # home_parts = Path.home().parts
+    if not path_arg:
+        return base_dirs
 
-    # # If args start with ~, expand user
-    # if path_patterns[0].startswith("~"):
-    #     new_path_patterns = home_parts
-    #     if len(path_patterns[0]) > 1:
-    #         new_path_patterns += (path_patterns[0][1:], )
-    #     new_path_patterns += path_patterns[1:]
-    #     path_patterns = new_path_pattern
+    path_patterns = list(Path(path_arg).parts)
+    debug(f"  In matches_for_path: {base_dirs}, {path_patterns}")
 
-    # # If start with home, add it to root
-    # if path_patterns[:len(home_parts)] == home_parts:
-    #     root = Path.home()
-    #     path_patterns = path_patterns[len(home_parts):]
+    if path_patterns[0] == "/":
+        base_dirs = [Path("/")]
+        path_patterns = path_patterns[1:]
 
-    # if not path_patterns:
-    #     return []
+    elif path_patterns[0].startswith("~"):
+        base_dirs = [Path.home()]
+        if path_patterns[0] == "~":
+            path_patterns = path_patterns[1:]
+        else:
+            path_patterns[0] = path_patterns[0][1:]
 
-    # # If start with /, add it to root
-    # if path_patterns[0] in ("/", "//"):
-    #     root = Path("/")
-    #     path_patterns = path_patterns[1:]
+    # # Expand `...` and more in `../..`
+    # index = 0
+    # while index < len(path_patterns):
+    #     pattern = path_patterns[index]
+    #     if not (len(pattern) > 2 and pattern == "." * len(pattern)):
+    #         index += 1
+    #         continue
 
-    # path_patterns = list(path_patterns)
+    #     path_patterns[index] = ".."
+    #     for _ in range(len(pattern) - 2):
+    #         path_patterns.insert(index + 1, "..")
 
-    debug(f"  In matches_for_path: {root}, {path_patterns}")
+    #     index += len(pattern) - 2 + 1
 
-    # Expand `...` and more in `../..`
-    index = 0
-    while index < len(path_patterns):
-        pattern = path_patterns[index]
-        if not (len(pattern) > 2 and pattern == "." * len(pattern)):
-            index += 1
-            continue
+    #     return_relative_paths = True
 
-        path_patterns[index] = ".."
-        for _ in range(len(pattern) - 2):
-            path_patterns.insert(index + 1, "..")
+    # debug(f"  After ... expansion: {path_patterns}")
 
-        index += len(pattern) - 2 + 1
-
-    found_dirs = [root]
+    is_first_word_path = True
+    return_relative_paths = False
+    found_dirs = base_dirs
     found_files = []
     for i, pattern in enumerate(path_patterns):
-        if pattern == "..":
-            found_dirs = [d.absolute().parent for d in found_dirs]
+        debug("  Start found dirs", found_dirs)
+
+        if i == 0 and pattern == "/":
+            found_dirs = [Path("/")]
             continue
+
+        if i == 0 and pattern == "~":
+            found_dirs = [Path.home()]
+            continue
+
+        if pattern == "." * len(pattern):
+            return_relative_paths = True
+            for _ in range(len(pattern) - 1):
+                found_dirs = [d.absolute().parent for d in found_dirs]
+            continue
+
+        # if pattern == "..":
+        #     found_dirs = [d.absolute().parent for d in found_dirs]
+        #     continue
 
         new_found_dirs = []
         for directory in found_dirs:
@@ -228,21 +241,52 @@ def matches_for_path(root, path_patterns, *, include_files=False, filter_fn=None
         # When considering the last pattern, add files if include_files is True
         if include_files and i == len(path_patterns) - 1:
             for directory in found_dirs:
-                found_files = [file for file in get_files(directory)
-                               if name_match(pattern, file.name)]
+                found_files.extend([file for file in get_files(directory)
+                                    if name_match(pattern, file.name)])
+                debug("Found files:", found_files)
+            found_files = filter_fn(pattern, found_files)
 
-        found_dirs = new_found_dirs
-        if filter_fn is None:
-            filter_fn = filter_matches
-        found_dirs = filter_fn(pattern, found_dirs)
+        found_dirs = filter_fn(pattern, new_found_dirs)
 
         # If no matching dir has been found for the first pattern and path
         # is only composed of one part, treat each character as a pattern
-        if i == 0 and not found_dirs:
-            found_dirs = matches_by_chars(root, tuple(pattern), include_files=include_files)
+        if allow_by_char and is_first_word_path and not found_dirs:
+            found_dirs = matches_by_chars(base_dirs, pattern, include_files=include_files)
+
+        debug("  -> Found dirs", found_dirs)
+        is_first_word_path = False
+
+    if return_relative_paths:
+        found_dirs = [get_relative_to_cwd(found_dir) for found_dir in found_dirs]
+        found_files = [get_relative_to_cwd(found_file) for found_file in found_files]
 
     if include_files:
-        return [str(path) for path in found_dirs + found_files]
+        return found_dirs + found_files
 
-    return [str(directory) for directory in found_dirs]
+    return found_dirs
+
+
+def find_matching_dirs(args, *, only_dir, filter_fn=filter_matches):
+    found_dirs = [Path()]
+    allow_by_char = True
+    nb_parts_last_arg = 0
+    nb_parts_prev_arg = 0
+    for i, arg in enumerate(args):
+        found_dirs = matches_for_path(found_dirs, arg, allow_by_char,
+                                      include_files=(not only_dir),
+                                      filter_fn=filter_fn)
+
+        debug("Arg", arg)
+        debug("Found dirs", found_dirs)
+        debug("Allow chars", allow_by_char)
+
+        if found_dirs:
+            nb_part = len(found_dirs[0].parts)
+            nb_parts_last_arg = nb_part - nb_parts_prev_arg
+            nb_parts_prev_arg = nb_part
+
+        if not (i == 0 and arg in ("/", "~")):
+            allow_by_char = False
+
+    return found_dirs, nb_parts_last_arg
 

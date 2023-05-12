@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 from fuzzy_lib import debug
-from fuzzy_lib import matches_for_path, split_root
+from fuzzy_lib import find_matching_dirs
 
 
 def exist_and_dont_have_subdirs(path_str):
@@ -41,35 +41,71 @@ def filter_first_chars(pattern, found_dirs):
     return best_matches
 
 
+# def count_parts(arg):
+#     nb_parts = 0
+
+#     # Each `...` count as a part
+#     while arg[nb_parts:].startswith("..."):
+#         nb_parts += 1
+
+#     nb_parts += arg.count("/")
+
+#     return nb_parts
+
+
 def main():
     only_dir = (sys.argv[1] == "1")
     cword = int(sys.argv[2])
     cmd_is_cd = (sys.argv[3] in ("cd", "pushd", "pu"))
     args = [arg.replace("\\ ", " ") for arg in sys.argv[4:]]
 
-    # Only apply completion in arguments > 2 for `cd`
-    # (i.e. `cd doc exp` -> `cd doc Example/`)
-    if cmd_is_cd:
-        root, path_patterns = split_root(args)
-    else:
-        root = Path()
-        path_patterns = list(Path(args[cword - 1]).parts)
-
-
     debug("-"*50)
     debug("Args", args)
     debug("Cword", cword)
-    debug("Root", root)
     debug("Only dir", only_dir)
-    debug("Path patterns", path_patterns)
 
-    if only_dir and exist_and_dont_have_subdirs("/".join(path_patterns)):
-        return
+    # Only apply completion in arguments > 2 for `cd`
+    # (i.e. `cd doc exp` -> `cd doc Example/`)
+    # Otherwise, only complete CWORD argument
+    if not cmd_is_cd:
+        args = [args[cword - 1]]
 
-    matches = matches_for_path(root, path_patterns,
-                               include_files=(not only_dir),
-                               filter_fn=filter_first_chars)
+    found_dirs, nb_parts_last_arg = find_matching_dirs(args,
+                                                       only_dir=only_dir,
+                                                       filter_fn=filter_first_chars)
+
+    # found_dirs = [Path()]
+    # allow_by_char = True
+    # nb_parts_last_arg = 0
+    # nb_parts_prev_arg = 0
+    # for i, arg in enumerate(args):
+    #     found_dirs = matches_for_path(found_dirs, arg, allow_by_char,
+    #                                   include_files=(not only_dir),
+    #                                   filter_fn=filter_first_chars)
+
+    #     debug("Arg", arg)
+    #     debug("Found dirs", found_dirs)
+    #     debug("Allow chars", allow_by_char)
+
+    #     if found_dirs:
+    #         nb_part = len(found_dirs[0].parts)
+    #         nb_parts_last_arg = nb_part - nb_parts_prev_arg
+    #         nb_parts_prev_arg = nb_part
+
+    #     if not (i == 0 and arg in ("/", "~")):
+    #         allow_by_char = False
+
+    matches = [Path(*found_dir.parts[-nb_parts_last_arg:]) for found_dir in found_dirs]
+
     debug("Matches", matches)
+
+    # if only_dir and exist_and_dont_have_subdirs("/".join(path_patterns)):
+    #     return
+
+    # matches = matches_for_path(root, path_patterns,
+    #                            include_files=(not only_dir),
+    #                            filter_fn=filter_first_chars)
+    # debug("Matches", matches)
     if not matches:
         return
 
@@ -83,40 +119,34 @@ def main():
     # This character is a special unicode whitespace with a high code so
     # that it appears after all other options and don't leave an empty box
     if len(matches) != 1:
-        output = "\n".join(matches)
+        output = "\n".join(map(str, matches))
         if cmd_is_cd:
             output += "\n\u1160"
         print(output)
         return
 
-    matching_path = Path(matches[0])
+    matching_path = matches[0]
     debug("Matching path:", matching_path)
 
     # match_by_char case: replace with the whole path
-    if len(path_patterns) == 1 and len(matching_path.parts) > 1:
+    # if len(args) == 1 and len(matching_path.parts) > 1:
         # Must remove prefix in the cd case called with split root
         # e.g. `cd / vo` -> `cd /var/opt` instead of `cd / /var/opt`
-        if cmd_is_cd and len(args) > 1:
-            matching_path = matching_path.relative_to(root)
-        print(str(matching_path))
-        return
-
-    # if not cmd_is_cd:
-    #     print(str(matching_path))
-    #     return
+        # debug("Matching by char")
+        # if cmd_is_cd and len(args) > 1:
+        #     matching_path = matching_path.relative_to(root)
+        # print(str(matching_path))
+        # return
 
     # Last argument is not empty: user is currently inputing a word
-    if path_patterns[-1]:
-        if not cmd_is_cd:
-            print(str(matching_path))
-            return
+    if args[-1]:
+        # For cd, if there's only one match, only expand the last part of the input
+        if cmd_is_cd:
+            matching_path = Path(*matching_path.parts[-nb_parts_last_arg:])
+            debug("Nb parts", nb_parts_last_arg)
+            debug("Truncated", matching_path)
 
-        # For cd, if there's only one match, complete just this last part
-        nb_parts = path_patterns[-1].count("/", 1)
-        truncated_path = Path(*matching_path.parts[-nb_parts-1:])
-        debug("Nb parts", nb_parts)
-        debug("Truncated", truncated_path)
-        print(str(truncated_path))
+        print(str(matching_path))
         return
 
     # The last argument is empty: acts as ls and complete with all
@@ -140,4 +170,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
+

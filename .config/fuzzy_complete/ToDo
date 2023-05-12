@@ -1,16 +1,11 @@
 
 
-- [ ] Write tests
-    + [ ] test factory ?
-    + [ ] `cd`
-    + [ ] `ls`
-    + [ ] `vim` ?
+- [ ] Clean current code
+
+- [ ] Modify vim autocompletion
+    + [ ] Write tests
 
 - [ ] If arg finishes by `/`, don't try to extend last pattern
+
 - [ ] Update `fuzzy_lib.py` docstring
 
-- [ ] Don't work:
-    + [X] `cd doc aoc[TAB]`
-    + [X] `cd / vo[TAB]`
-    + [ ] `cd doc [TAB]`
-    + [ ] `cd ~ [TAB][TAB]`
