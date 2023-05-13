@@ -131,7 +131,7 @@ def main():
             file.write("@passthrough")
         return
 
-    found_dirs, _ = find_matching_dirs(cd_args, only_dir=True)
+    found_dirs, _ = find_matching_dirs(cd_args, only_dir=True, expand_last_sep=False)
     matches = [str(found_dir) for found_dir in found_dirs]
 
     with out_file.open("w") as file:

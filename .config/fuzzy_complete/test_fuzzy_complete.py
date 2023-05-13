@@ -100,6 +100,7 @@ def define_test_class(cmd, only_dir):
 if __name__ == "__main__":
     LsTest = define_test_class("ls", only_dir=False)
     define_test(LsTest, "ls_simple", ["Doc"], ["Documents"])
+    define_test(LsTest, "ls_simple_slash", ["dw/"], ["Downloads/book.epub", "Downloads/video.mp4"])
     define_test(LsTest, "ls_case", ["doc"], ["Documents"])
     define_test(LsTest, "ls_skip_letters", ["dw"], ["Downloads"])
     define_test(LsTest, "ls_file", ["dw/b"], ["Downloads/book.epub"])
@@ -188,7 +189,12 @@ if __name__ == "__main__":
     define_test(CdTest, "cd_slash_last", ["doc", "mi/"], ["Documents/Misc/dependency", "Documents/Misc/subdir", "\u1160"])
     define_test(CdTest, "cd_slash_last_mult", ["doc", "pro/"], ["Documents/program/utils", "Documents/project/__pycache__", "\u1160"])
 
-    # define_test(CdTest, "cd_TODEFINE", ["doc", "mi", ".."], ["TODEFINE"])
-    # define_test(CdTest, "cd_TODEFINE", ["doc", "mi", "./"], ["TODEFINE"])
+    define_test(CdTest, "cd_dot", ["doc", "mi", "./"], ["Documents/Misc/dependency", "Documents/Misc/subdir", "\u1160"])
+    define_test(CdTest, "cd_double_dot_space", ["doc", "mi", "dependency", "..", ""], ["Documents/Misc/dependency", "Documents/Misc/subdir", "\u1160"])
+    define_test(CdTest, "cd_double_dot", ["doc", "mi", ".."], ["../"])
+    define_test(CdTest, "cd_multi_dot", ["....."], ["../../../../"], workdir=workdir)
+    define_test(CdTest, "cd_multi_dot_space", ["....", ""], ["Documents", "Downloads", "Videos", "\u1160"], workdir=workdir)
+    define_test(CdTest, "cd_multi_dot_slash", ["...../"], ["../../../Documents", "../../../Downloads", "../../../Videos", "\u1160"], workdir=workdir)
+    define_test(CdTest, "cd_multi_dot_split_slash", ["../../../"], ["../../../Documents", "../../../Downloads", "../../../Videos", "\u1160"], workdir=workdir)
 
     unittest.main()

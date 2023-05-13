@@ -148,14 +148,18 @@ def main():
         # print(str(matching_path))
         # return
 
-    output = str(Path(*matching_path.parts[-nb_parts_last_arg:]))
+    if nb_parts_last_arg < 1:
+        output = str(matching_path)
+    else:
+        output = str(Path(*matching_path.parts[-nb_parts_last_arg:]))
 
     # Add slash when there's only one possibility to complete cd
     # e.g. `cd doc exmp` -> `cd doc examples/`
     if matching_path.is_dir() and cmd_is_cd and not output.endswith("/"):
         output += "/"
 
-    debug("Last arg not empty, truncating and expanding:", output)
+    debug("Last arg not empty, truncating and expanding:", nb_parts_last_arg)
+    debug(output)
     # print(str(Path(*matching_path.parts[-nb_parts_last_arg:])))
     print(output)
     return
