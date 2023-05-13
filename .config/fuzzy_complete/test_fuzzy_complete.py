@@ -157,7 +157,7 @@ if __name__ == "__main__":
     define_test(CdTest, "cd_previous", [".../pg"], ["../../program"], workdir=workdir)
     define_test(CdTest, "cd_previous_split", ["...", "pg"], ["program"], workdir=workdir)
     define_test(CdTest, "cd_previous_mult", [".../p"], ["../../project", "../../program", "\u1160"], workdir=workdir)
-    define_test(CdTest, "cd_previous_mult_split", ["...", "p"], ["project", "program", "\u1160"], workdir=workdir)
+    define_test(CdTest, "cd_previous_mult_split", ["...", "p"], ["../../project", "../../program", "\u1160"], workdir=workdir)
     define_test(CdTest, "cd_previous_root", ["............./v/o"], ["/var/opt"])
     define_test(CdTest, "cd_previous_root_spaces", [".............", "v", "o"], ["opt"])
     define_test(CdTest, "cd_previous_chars", ["...ms"], ["../subdir"], workdir=workdir)

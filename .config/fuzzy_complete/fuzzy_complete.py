@@ -95,18 +95,7 @@ def main():
     #     if not (i == 0 and arg in ("/", "~")):
     #         allow_by_char = False
 
-    matches = [Path(*found_dir.parts[-nb_parts_last_arg:]) for found_dir in found_dirs]
-
-    debug("Matches", matches)
-
-    # if only_dir and exist_and_dont_have_subdirs("/".join(path_patterns)):
-    #     return
-
-    # matches = matches_for_path(root, path_patterns,
-    #                            include_files=(not only_dir),
-    #                            filter_fn=filter_first_chars)
-    # debug("Matches", matches)
-    if not matches:
+    if not found_dirs:
         return
 
     # Normally readline wants to complete with the longest common parts
@@ -118,12 +107,28 @@ def main():
     # can't modify the user's input
     # This character is a special unicode whitespace with a high code so
     # that it appears after all other options and don't leave an empty box
-    if len(matches) != 1:
-        output = "\n".join(map(str, matches))
+    if len(found_dirs) != 1:
+        output = "\n".join(map(str, found_dirs))
         if cmd_is_cd:
             output += "\n\u1160"
         print(output)
         return
+
+    # Truncate the path to modify only the last part of the arguments in the case of cd
+    # i.e. `cd doc ex` => `found_dirs = ["Documents/example1"]`
+    #                  => matches = ["example1"]
+    #                  => `cd doc example1` instead of `cd doc Documents/example1`
+    matches = [Path(*found_dir.parts[-nb_parts_last_arg:]) for found_dir in found_dirs]
+
+    debug("Matches", matches)
+
+    # if only_dir and exist_and_dont_have_subdirs("/".join(path_patterns)):
+    #     return
+
+    # matches = matches_for_path(root, path_patterns,
+    #                            include_files=(not only_dir),
+    #                            filter_fn=filter_first_chars)
+    # debug("Matches", matches)
 
     matching_path = matches[0]
     debug("Matching path:", matching_path)
