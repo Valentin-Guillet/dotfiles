@@ -41,6 +41,12 @@ def filter_first_chars(pattern, found_dirs):
     return best_matches
 
 
+def display_path(path, cmd_is_cd):
+    output = str(path)
+    if path.is_dir() and cmd_is_cd:
+        output += "/"
+    return output
+
 # def count_parts(arg):
 #     nb_parts = 0
 
@@ -109,6 +115,8 @@ def main():
     # that it appears after all other options and don't leave an empty box
     if len(found_dirs) != 1:
         output = "\n".join(map(str, found_dirs))
+        # output = "\n".join([display_path(found_dir, cmd_is_cd) for found_dir in found_dirs])
+        debug("Several found dirs:", found_dirs)
         if cmd_is_cd:
             output += "\n\u1160"
         print(output)
@@ -118,20 +126,17 @@ def main():
     # i.e. `cd doc ex` => `found_dirs = ["Documents/example1"]`
     #                  => matches = ["example1"]
     #                  => `cd doc example1` instead of `cd doc Documents/example1`
-    matches = [Path(*found_dir.parts[-nb_parts_last_arg:]) for found_dir in found_dirs]
-
-    debug("Matches", matches)
+    matching_path = found_dirs[0]
+    debug("Matching path:", matching_path)
 
     # if only_dir and exist_and_dont_have_subdirs("/".join(path_patterns)):
     #     return
 
+    # matches = [Path(*found_dir.parts[-nb_parts_last_arg:]) for found_dir in found_dirs]
     # matches = matches_for_path(root, path_patterns,
     #                            include_files=(not only_dir),
     #                            filter_fn=filter_first_chars)
     # debug("Matches", matches)
-
-    matching_path = matches[0]
-    debug("Matching path:", matching_path)
 
     # match_by_char case: replace with the whole path
     # if len(args) == 1 and len(matching_path.parts) > 1:
@@ -143,35 +148,40 @@ def main():
         # print(str(matching_path))
         # return
 
-    # Last argument is not empty: user is currently inputing a word
-    if args[-1]:
-        # For cd, if there's only one match, only expand the last part of the input
-        if cmd_is_cd:
-            matching_path = Path(*matching_path.parts[-nb_parts_last_arg:])
-            debug("Nb parts", nb_parts_last_arg)
-            debug("Truncated", matching_path)
+    output = str(Path(*matching_path.parts[-nb_parts_last_arg:]))
 
-        print(str(matching_path))
-        return
+    # Add slash when there's only one possibility to complete cd
+    # e.g. `cd doc exmp` -> `cd doc examples/`
+    if matching_path.is_dir() and cmd_is_cd and not output.endswith("/"):
+        output += "/"
 
-    # The last argument is empty: acts as ls and complete with all
-    # existing subdirs
-    try:
-        subdirs = matching_path.iterdir()
-        ans = [str(p) for p in subdirs if p.is_dir()]
-    except (PermissionError, StopIteration):
-        return
+    debug("Last arg not empty, truncating and expanding:", output)
+    # print(str(Path(*matching_path.parts[-nb_parts_last_arg:])))
+    print(output)
+    return
 
-    if not ans:
-        return
+#     debug("Printing listdir of found dirs")
 
-    if len(ans) == 1:
-        print(Path(ans[0]).name)
-        return
+#     # The last argument is empty: acts as ls and complete with all
+#     # existing subdirs
+#     try:
+#         subdirs = matching_path.iterdir()
+#         ans = [subdir for subdir in subdirs if subdir.is_dir()]
+#     except (PermissionError, StopIteration):
+#         return
 
-    ans.sort()
-    # Cf comment above
-    print("\n".join(ans) + "\n\u1160")
+#     debug("Ans: ", ans)
+
+#     if not ans:
+#         return
+
+#     if len(ans) == 1:
+#         print(ans[0].name)
+#         return
+
+#     ans.sort()
+#     # Cf comment above
+#     print("\n".join(map(str, ans)) + "\n\u1160")
 
 if __name__ == "__main__":
     main()

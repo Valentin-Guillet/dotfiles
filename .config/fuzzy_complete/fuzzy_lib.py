@@ -55,14 +55,14 @@ def get_relative_to_cwd(path):
 
     nb_prev = len(Path.cwd().parts) - i
     nb_next = len(path.parts) - i
-    debug(f"      Rel to: path {path}, cwd {Path.cwd()}")
-    debug(f"      i {i}, nb_prev {nb_prev}, nb_next {nb_next}")
+    # debug(f"      Rel to: path {path}, cwd {Path.cwd()}")
+    # debug(f"      i {i}, nb_prev {nb_prev}, nb_next {nb_next}")
 
     rel_path = tuple(".." for _ in range(nb_prev))
     if nb_next:
         rel_path += path.parts[-nb_next:]
 
-    debug(f"      => {rel_path}")
+    # debug(f"      => {rel_path}")
     return Path(*rel_path)
 
 
@@ -73,8 +73,6 @@ def name_match(pattern, name):
     """
     if pattern.islower():
         name = name.lower()
-
-    debug(f"    Name match: {pattern} in {name}")
 
     prev_index = 0
     for char in pattern:
@@ -136,7 +134,7 @@ def matches_by_chars(base_dirs, path_pattern, *, include_files=False):
         found_dirs = [d.absolute().parent for d in found_dirs]
     char_patterns = tuple(path_pattern[i:])
 
-    debug(f"   By chars: base_dirs {base_dirs}, path pattern {path_pattern}, char patterns {char_patterns}")
+    # debug(f"   By chars: base_dirs {base_dirs}, path pattern {path_pattern}, char patterns {char_patterns}")
 
     for i, char in enumerate(char_patterns):
         dir_pattern_index = {}
@@ -174,10 +172,19 @@ def matches_for_path(base_dirs, path_arg, allow_by_char, *,
         return []
 
     if not path_arg:
-        return base_dirs
+        found_dirs = []
+        for base_dir in base_dirs:
+            found_dirs.extend(get_subdirs(base_dir))
+        found_dirs.sort()
+        return found_dirs
+
+    debug("  Path_arg is of length", len(path_arg))
 
     path_patterns = list(Path(path_arg).parts)
     debug(f"  In matches_for_path: {base_dirs}, {path_patterns}")
+
+    if not path_arg or not path_patterns:
+        return base_dirs
 
     if path_patterns[0] == "/":
         base_dirs = [Path("/")]
@@ -271,6 +278,11 @@ def find_matching_dirs(args, *, only_dir, filter_fn=filter_matches):
     allow_by_char = True
     nb_parts_last_arg = 0
     nb_parts_prev_arg = 0
+
+    # If last argument ends with a "/", add an empty pattern to get all subdirs
+    if args[-1].endswith("/"):
+        args.append("")
+
     for i, arg in enumerate(args):
         found_dirs = matches_for_path(found_dirs, arg, allow_by_char,
                                       include_files=(not only_dir),

@@ -1,3 +1,4 @@
+#!/usr/bin/env -S python -B
 
 import io
 import os
@@ -29,7 +30,9 @@ def setUpModule():
         FUZZTEST_DIR/"Documents"/"program",
         FUZZTEST_DIR/"Documents"/"program"/"prog.cpp",
         FUZZTEST_DIR/"Documents"/"program"/"prog.hpp",
+        FUZZTEST_DIR/"Documents"/"program"/"utils",
         FUZZTEST_DIR/"Documents"/"project",
+        FUZZTEST_DIR/"Documents"/"project"/"__pycache__",
         FUZZTEST_DIR/"Documents"/"project"/"package.py",
         FUZZTEST_DIR/"Documents"/"project"/"utils.py",
         FUZZTEST_DIR/"Documents"/"plugin.vim",
@@ -62,13 +65,24 @@ def define_test(cls, name, args, targets, workdir=None):
             fuzzy_complete.main()
 
         output = self.captured_output.getvalue()
-        target_str = "\n".join(map(str, targets))
+        # target_list = []
+        # for target in targets:
+        #     if isinstance(target, str):
+        #         target_list.append(target)
+        #     elif isinstance(target, Path):
+        #         target_list.append(str(target))
+        #         out = str(target)
+        #         if target.is_dir() and "cd" not in name:
+        #             out += "/"
+        #         target_list.append(out)
+        # target_str = "\n".join(target_list)
+        # target_str = "\n".join(map(str, targets))
+        target_str = "\n".join(targets)
         if target_str:
             target_str += "\n"
         self.assertEqual(output, target_str)
 
     setattr(cls, f"test_{name}", _inner_test)
-
 
 def define_test_class(cmd, only_dir):
     class NewClass(unittest.TestCase):
@@ -96,7 +110,12 @@ if __name__ == "__main__":
     define_test(LsTest, "ls_match_chars", ["dmd"], ["Documents/Misc/dependency", "Documents/Misc/dir1_file.txt"])
 
     workdir = FUZZTEST_DIR/"Documents"/"Misc"/"dependency"
-    define_test(LsTest, "ls_match_chars_with_home", ["~fdmd"], [FUZZTEST_DIR/"Documents/Misc/dependency", FUZZTEST_DIR/"Documents/Misc/dir1_file.txt"], workdir=workdir)
+    define_test(LsTest, "ls_match_chars_with_home", ["~fdmd"],
+                [
+                    str(FUZZTEST_DIR)+"/Documents/Misc/dependency",
+                    str(FUZZTEST_DIR)+"/Documents/Misc/dir1_file.txt"
+                ],
+                workdir=workdir)
     define_test(LsTest, "ls_match_chars_with_root", ["/vo"], ["/var/opt"], workdir=workdir)
 
     define_test(LsTest, "ls_previous", [".../pg"],
@@ -107,6 +126,7 @@ if __name__ == "__main__":
                 workdir=workdir)
     define_test(LsTest, "ls_previous_mult", [".../p/p"],
                 [
+                    "../../project/__pycache__",
                     "../../project/package.py",
                     "../../program/prog.hpp",
                     "../../program/prog.cpp",
@@ -133,34 +153,42 @@ if __name__ == "__main__":
     define_test(LsDirTest, "ls_dir_match_chars", ["dmd"], ["Documents/Misc/dependency"])
 
     define_test(LsDirTest, "ls_dir_previous", [".../pg"], ["../../program"], workdir=workdir)
-    define_test(LsDirTest, "ls_dir_previous_mult", [".../p/p"], [""], workdir=workdir)
+    define_test(LsDirTest, "ls_dir_previous_mult", [".../p/b"], [""], workdir=workdir)
 
     CdTest = define_test_class("cd", only_dir=True)
-    define_test(CdTest, "cd_simple", ["Doc"], ["Documents"])
+    define_test(CdTest, "cd_simple", ["Doc"], ["Documents/"])
     define_test(CdTest, "cd_empty", ["Doc", "m", ""], ["Documents/Misc/dependency", "Documents/Misc/subdir", "\u1160"])
-    define_test(CdTest, "cd_case", ["doc"], ["Documents"])
-    define_test(CdTest, "cd_skip_letters", ["dw"], ["Downloads"])
+    define_test(CdTest, "cd_empty_no_dirs", ["Doc", "w", ""], [""])
+    define_test(CdTest, "cd_case", ["doc"], ["Documents/"])
+    define_test(CdTest, "cd_skip_letters", ["dw"], ["Downloads/"])
     define_test(CdTest, "cd_multiple", ["do"], ["Documents", "Downloads", "\u1160"])
-    define_test(CdTest, "cd_successive_joined", ["do/proj"], ["Documents/project"])
-    define_test(CdTest, "cd_successive_split", ["do", "proj"], ["project"])
-    define_test(CdTest, "cd_more_successive_split", ["do", "M", "sub"], ["subdir"])
-    define_test(CdTest, "cd_hidden", ["do/hid"], ["Documents/.hidden"])
-    define_test(CdTest, "cd_hidden_split", ["do", ".h"], [".hidden"])
-    define_test(CdTest, "cd_match_chars", ["dmd"], ["Documents/Misc/dependency"])
+    define_test(CdTest, "cd_successive_joined", ["do/proj"], ["Documents/project/"])
+    define_test(CdTest, "cd_successive_split", ["do", "proj"], ["project/"])
+    define_test(CdTest, "cd_more_successive_split", ["do", "M", "sub"], ["subdir/"])
+    define_test(CdTest, "cd_hidden", ["do/hid"], ["Documents/.hidden/"])
+    define_test(CdTest, "cd_hidden_split", ["do", ".h"], [".hidden/"])
+    define_test(CdTest, "cd_match_chars", ["dmd"], ["Documents/Misc/dependency/"])
 
-    define_test(CdTest, "cd_match_chars_with_home", ["~fdmd"], [FUZZTEST_DIR/"Documents/Misc/dependency"], workdir=workdir)
-    define_test(CdTest, "cd_match_chars_with_home_split", ["~", "fdms"], ["FuzzTest/Documents/Misc/subdir"], workdir=workdir)
-    define_test(CdTest, "cd_match_chars_with_home_plus", ["~", "fdm", "s"], ["subdir"], workdir=workdir)
-    define_test(CdTest, "cd_match_chars_with_root", ["/vo"], ["/var/opt"], workdir=workdir)
-    define_test(CdTest, "cd_match_chars_with_root_split", ["/", "vo"], ["var/opt"], workdir=workdir)
+    define_test(CdTest, "cd_match_chars_with_home", ["~fdmd"], [str(FUZZTEST_DIR)+"/Documents/Misc/dependency/"], workdir=workdir)
+    define_test(CdTest, "cd_match_chars_with_home_split", ["~", "fdms"], ["FuzzTest/Documents/Misc/subdir/"], workdir=workdir)
+    define_test(CdTest, "cd_match_chars_with_home_plus", ["~", "fdm", "s"], ["subdir/"], workdir=workdir)
+    define_test(CdTest, "cd_match_chars_with_root", ["/vo"], ["/var/opt/"], workdir=workdir)
+    define_test(CdTest, "cd_match_chars_with_root_split", ["/", "vo"], ["var/opt/"], workdir=workdir)
 
-    define_test(CdTest, "cd_previous", [".../pg"], ["../../program"], workdir=workdir)
-    define_test(CdTest, "cd_previous_split", ["...", "pg"], ["program"], workdir=workdir)
+    define_test(CdTest, "cd_previous", [".../pg"], ["../../program/"], workdir=workdir)
+    define_test(CdTest, "cd_previous_split", ["...", "pg"], ["program/"], workdir=workdir)
     define_test(CdTest, "cd_previous_mult", [".../p"], ["../../project", "../../program", "\u1160"], workdir=workdir)
     define_test(CdTest, "cd_previous_mult_split", ["...", "p"], ["../../project", "../../program", "\u1160"], workdir=workdir)
-    define_test(CdTest, "cd_previous_root", ["............./v/o"], ["/var/opt"])
-    define_test(CdTest, "cd_previous_root_spaces", [".............", "v", "o"], ["opt"])
-    define_test(CdTest, "cd_previous_chars", ["...ms"], ["../subdir"], workdir=workdir)
-    define_test(CdTest, "cd_previous_chars_plus", ["....dms"], ["../subdir"], workdir=workdir)
+    define_test(CdTest, "cd_previous_root", ["............."], ["/"])
+    define_test(CdTest, "cd_previous_root_plus", ["............./v/o"], ["/var/opt/"])
+    define_test(CdTest, "cd_previous_root_spaces", [".............", "v", "o"], ["opt/"])
+    define_test(CdTest, "cd_previous_chars", ["...ms"], ["../subdir/"], workdir=workdir)
+    define_test(CdTest, "cd_previous_chars_plus", ["....dms"], ["../subdir/"], workdir=workdir)
+
+    define_test(CdTest, "cd_slash_last", ["doc", "mi/"], ["Documents/Misc/dependency", "Documents/Misc/subdir", "\u1160"])
+    define_test(CdTest, "cd_slash_last_mult", ["doc", "pro/"], ["Documents/program/utils", "Documents/project/__pycache__", "\u1160"])
+
+    # define_test(CdTest, "cd_TODEFINE", ["doc", "mi", ".."], ["TODEFINE"])
+    # define_test(CdTest, "cd_TODEFINE", ["doc", "mi", "./"], ["TODEFINE"])
 
     unittest.main()
