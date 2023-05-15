@@ -9,9 +9,14 @@ then
     eval "$(type _filedir | tail +2 | sed -e 's/^_filedir/_original_filedir/')"
 fi
 
-_filedir() {
-    _original_filedir "$@"
+# Same for _xpec completion
+if [[ $(type -t _original_filedir_xspec) != function ]]
+then
+    eval "$(type _filedir_xspec | tail +2 | sed -e 's/^_filedir_xspec/_original_filedir_xspec/')"
+fi
 
+
+_fuzzy_complete() {
     # Blacklist rm
     local cmd="${COMP_WORDS[0]}"
     [ "$cmd" == "rm" ] && return
@@ -32,4 +37,15 @@ _filedir() {
         COMPREPLY=( $(/usr/bin/env python -B $HOME/.config/fuzzy_complete/fuzzy_complete.py $only_dir $COMP_CWORD "${COMP_WORDS[@]}") )
         compopt -o filenames
     fi
+}
+
+_filedir() {
+    _original_filedir "$@"
+    _fuzzy_complete "$@"
+}
+
+
+_filedir_xspec() {
+    _original_filedir_xspec "$@"
+    _fuzzy_complete "$@"
 }
