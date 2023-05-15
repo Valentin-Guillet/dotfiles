@@ -65,18 +65,6 @@ def define_test(cls, name, args, targets, workdir=None):
             fuzzy_complete.main()
 
         output = self.captured_output.getvalue()
-        # target_list = []
-        # for target in targets:
-        #     if isinstance(target, str):
-        #         target_list.append(target)
-        #     elif isinstance(target, Path):
-        #         target_list.append(str(target))
-        #         out = str(target)
-        #         if target.is_dir() and "cd" not in name:
-        #             out += "/"
-        #         target_list.append(out)
-        # target_str = "\n".join(target_list)
-        # target_str = "\n".join(map(str, targets))
         target_str = "\n".join(targets)
         if target_str:
             target_str += "\n"
