@@ -179,7 +179,7 @@ if __name__ == "__main__":
     define_test(CdTest, "cd_previous", [".../pg"], ["../../program/"], workdir=workdir)
     define_test(CdTest, "cd_previous_split", ["...", "pg"], ["program/"], workdir=workdir)
     define_test(CdTest, "cd_previous_mult", [".../p"], ["../../project", "../../program", "\u1160"], workdir=workdir)
-    # define_test(CdTest, "cd_previous_mult_split", ["...", "p"], ["../../project", "../../program", "\u1160"], workdir=workdir)
+    define_test(CdTest, "cd_previous_mult_split", ["...", "p"], ["../../project", "../../program", "\u1160"], workdir=workdir)
     define_test(CdTest, "cd_previous_mult_split", ["...", "p"], [str(FUZZTEST_DIR)+"/Documents/project", str(FUZZTEST_DIR)+"/Documents/program", "\u1160"], workdir=workdir)
     define_test(CdTest, "cd_previous_root", ["............."], ["/"])
     define_test(CdTest, "cd_previous_root_plus", ["............./v/o"], ["/var/opt/"])
@@ -192,10 +192,11 @@ if __name__ == "__main__":
 
     define_test(CdTest, "cd_dot", ["doc", "mi", "./"], ["Documents/Misc/dependency", "Documents/Misc/subdir", "\u1160"])
     define_test(CdTest, "cd_double_dot_space", ["doc", "mi", "dependency", "..", ""], [str(FUZZTEST_DIR)+"/Documents/Misc/dependency", str(FUZZTEST_DIR)+"/Documents/Misc/subdir", "\u1160"])
+    define_test(CdTest, "cd_double_dot_space", ["..", ""], ["utils/"], workdir=FUZZTEST_DIR/"Documents"/"program"/"utils")
     define_test(CdTest, "cd_double_dot", ["doc", "mi", ".."], ["../"])
-    define_test(CdTest, "cd_double_dot", ["doc", "mi", "../"], ["../.hidden", "../Misc", "../program", "../project", "\u1160"])
+    define_test(CdTest, "cd_double_dot_slash", ["doc", "mi", "../"], ["../.hidden", "../Misc", "../program", "../project", "\u1160"])
     define_test(CdTest, "cd_multi_dot", ["....."], ["../../../../"], workdir=workdir)
-    # define_test(CdTest, "cd_multi_dot_space", ["....", ""], ["../../../Documents", "../../../Downloads", "../../../Videos", "\u1160"], workdir=workdir)
+    define_test(CdTest, "cd_multi_dot_space", ["....", ""], [str(FUZZTEST_DIR)+"/Documents", str(FUZZTEST_DIR)+"/Downloads", str(FUZZTEST_DIR)+"/Videos", "\u1160"], workdir=workdir)
     define_test(CdTest, "cd_multi_dot_slash", ["..../"], ["../../../Documents", "../../../Downloads", "../../../Videos", "\u1160"], workdir=workdir)
     define_test(CdTest, "cd_multi_dot_split_slash", ["../../../"], ["../../../Documents", "../../../Downloads", "../../../Videos", "\u1160"], workdir=workdir)
 

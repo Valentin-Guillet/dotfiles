@@ -59,57 +59,96 @@ def get_subdirs_and_files(directories, include_files):
     return found_path
 
 
-def get_relative_to_cwd(path):
-    i = 0
-    for cwd_part, path_part in zip(Path.cwd().parts, path.parts, strict=False):
-        if cwd_part != path_part:
-            break
-        i += 1
+# def get_relative_to_cwd(path):
+#     i = 0
+#     for cwd_part, path_part in zip(Path.cwd().parts, path.parts, strict=False):
+#         if cwd_part != path_part:
+#             break
+#         i += 1
 
-    # No parts in common to the root: return absolute path
-    if i <= 1:
-        return path
+#     # No parts in common to the root: return absolute path
+#     if i <= 1:
+#         return path
 
-    nb_prev = len(Path.cwd().parts) - i
-    nb_next = len(path.parts) - i
-    debug(f"      Rel to: path {path}, cwd {Path.cwd()}")
-    debug(f"      i {i}, nb_prev {nb_prev}, nb_next {nb_next}")
+#     nb_prev = len(Path.cwd().parts) - i
+#     nb_next = len(path.parts) - i
+#     debug(f"      Rel to: path {path}, cwd {Path.cwd()}")
+#     debug(f"      i {i}, nb_prev {nb_prev}, nb_next {nb_next}")
 
-    rel_path = tuple(".." for _ in range(nb_prev))
-    if nb_next:
-        rel_path += path.parts[-nb_next:]
-    else:
-        rel_path = Path.cwd().parts + rel_path
+#     rel_path = tuple(".." for _ in range(nb_prev))
+#     if nb_next:
+#         rel_path += path.parts[-nb_next:]
+#     else:
+#         rel_path = Path.cwd().parts + rel_path
 
-    debug(f"      => {rel_path}")
-    return Path(*rel_path)
+#     debug(f"      => {rel_path}")
+#     return Path(*rel_path)
 
 
-def get_relative_to_dir(base_path, path):
-    base_path = base_path.absolute()
-    path = path.absolute()
+# def get_longest_common_path(paths):
+#     common_path = paths[0]
+#     for path in paths[1:]:
+#         i = 0
 
-    i = 0
-    for base_part, path_part in zip(base_path.parts, path.parts, strict=False):
-        if base_part != path_part:
-            break
-        i += 1
 
-    # No parts in common to the root: return absolute path
-    if i <= 1:
-        return path
+# def get_relative_to_dir(base_path, path):
+#     base_path = base_path.absolute()
+#     path = path.absolute()
 
-    nb_prev = len(base_path.parts) - i
-    nb_next = len(path.parts) - i
-    debug(f"      Rel to: path {path}, base path {base_path}")
-    debug(f"      i {i}, nb_prev {nb_prev}, nb_next {nb_next}")
+#     i = 0
+#     for base_part, path_part in zip(base_path.parts, path.parts, strict=False):
+#         if base_part != path_part:
+#             break
+#         i += 1
 
-    rel_path = tuple(".." for _ in range(nb_prev))
-    if nb_next:
-        rel_path += path.parts[-nb_next:]
+#     # No parts in common to the root: return absolute path
+#     if i <= 1:
+#         return path
 
-    debug(f"      => {rel_path}")
-    return Path(*rel_path)
+#     nb_prev = len(base_path.parts) - i
+#     nb_next = len(path.parts) - i
+#     debug(f"      Rel to: path {path}, base path {base_path}")
+#     debug(f"      i {i}, nb_prev {nb_prev}, nb_next {nb_next}")
+
+#     rel_path = tuple(".." for _ in range(nb_prev))
+#     if nb_next:
+#         rel_path += path.parts[-nb_next:]
+
+#     debug(f"      => {rel_path}")
+#     return Path(*rel_path)
+
+def turn_into_relpath(paths, base_path):
+    if not paths:
+        return paths
+
+    common_path = Path(os.path.commonpath(paths))
+
+    debug(" ==> RELATIVE OF", paths)
+    debug(" ==> Common path", common_path)
+    debug(" ==> Base path", base_path.absolute())
+    debug(" ==> Rel base to common", Path(os.path.relpath(common_path, base_path)))
+    debug(" ==> Rel common to path", Path(os.path.relpath(common_path, paths[0])))
+    debug(" ==> Relative", [Path(os.path.relpath(common_path, base_path)) / Path(os.path.relpath(path, common_path)) for path in paths])
+
+    debug(" ==> ALL COMMONS", os.path.commonpath(paths + [base_path.absolute()]))
+
+    if os.path.commonpath((common_path, base_path.absolute())) == "/":
+        return paths
+
+    # if common_path == Path("/"):
+    #     return paths
+
+    # # Only root in common, no relative
+    # if base_path.absolute().parts[1] != common_path.absolute().parts[1]:
+    #     return paths
+
+    relpaths = []
+    for path in paths:
+        base_to_common = Path(os.path.relpath(common_path, base_path))
+        common_to_path = Path(os.path.relpath(path, common_path))
+        relpaths.append(base_to_common / common_to_path)
+
+    return relpaths
 
 
 def name_match(pattern, name):
@@ -207,7 +246,7 @@ def matches_by_chars(base_dirs, path_pattern, *, include_files=False):
 
 
 def matches_for_path(base_dirs, path_arg, allow_by_char, expand_sep, *,
-                     disp_rel_paths=False, include_files=False, filter_fn=filter_matches):
+                     is_last=False, include_files=False, filter_fn=filter_matches):
     """ Return an array of all matches for a given path, possibly filtered by a given function
     (by default, `filter_matches()`).
     Each part of the path is a globed (fuzzy) match. For example:
@@ -218,7 +257,11 @@ def matches_for_path(base_dirs, path_arg, allow_by_char, expand_sep, *,
         return []
 
     path_patterns = list(Path(path_arg).parts)
-    debug(f"  In matches_for_path: {base_dirs}, {path_patterns}")
+    debug(f"  In matches_for_path: {path_arg} {base_dirs}, {path_patterns}")
+
+    # This takes care of the case where path_arg is (a variation of) `./`
+    if not path_patterns and not is_last:
+        return base_dirs
 
     # If arg is empty, complete with subdirs and files as usual
     # i.e. `ls doc [TAB]` -> `[Documents/example_1, Documents/example_2]`
@@ -273,6 +316,7 @@ def matches_for_path(base_dirs, path_arg, allow_by_char, expand_sep, *,
             return_relative_paths = True
             for _ in range(len(pattern) - 1):
                 found_dirs = [d.absolute().parent for d in found_dirs]
+            # debug("Only dots ! Found dirs", found_dirs)
             continue
 
         # if pattern == "..":
@@ -304,7 +348,7 @@ def matches_for_path(base_dirs, path_arg, allow_by_char, expand_sep, *,
         debug("  -> Found dirs", found_dirs)
         is_first_word_path = False
 
-    # if disp_rel_paths and return_relative_paths:
+    # if is_last and return_relative_paths:
     #     debug("YOOOOO")
     #     debug("    BASE DIR", base_dirs[0].absolute())
     #     debug("    BEFORE", found_dirs, found_files)
@@ -327,8 +371,15 @@ def matches_for_path(base_dirs, path_arg, allow_by_char, expand_sep, *,
         path_output = found_dirs
 
 
-    if disp_rel_paths and return_relative_paths:
-        return [get_relative_to_dir(base_dirs[0], path) for path in path_output]
+    if is_last and return_relative_paths:
+        return turn_into_relpath(path_output, base_dirs[0])
+
+        # common_path = os.path.commonpath(path_output)
+        # return [Path(os.path.relpath(common_path, base_dirs[0])) / Path(os.path.relpath(path, common_path)) for path in path_output]
+        # return [base_dirs[0].absolute() / Path(os.path.relpath(base_dirs[0], common_path)) for path in path_output]
+
+        # longest_common_path = get_longest_common_path(path_output)
+        # return [get_relative_to_dir(base_dirs[0], path, longest_common_path) for path in path_output]
 
     return path_output
 
@@ -355,7 +406,7 @@ def find_matching_dirs(args, *, only_dir,
                 found_dirs, arg, allow_by_char,
                 expand_sep=(expand_last_sep and is_last),
                 # disp_rel_paths=(disp_rel_paths or is_last),
-                disp_rel_paths=is_last,
+                is_last=is_last,
                 include_files=(not only_dir),
                 filter_fn=filter_fn,
         )
