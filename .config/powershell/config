@@ -51,6 +51,19 @@ function tail {
     cat @Args | Select -Last 10
 }
 
+function du($path) {
+    $size = (Get-ChildItem -Recurse $path | Measure-Object -Property Length -sum).sum
+    if ($size / 1KB -lt 1) {
+        "{0:N0}B" -f $size
+    } elseif ($size / 1MB -lt 1) {
+        "{0:N2}KB" -f ($size / 1KB)
+    } elseif ($size / 1GB -lt 1) {
+        "{0:N2}MB" -f ($size / 1MB)
+    } else {
+        "{0:N2}GB" -f ($size / 1GB)
+    }
+}
+
 function td {
     vim ~\.cache\ToDo
 }
