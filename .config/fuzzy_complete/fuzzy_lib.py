@@ -61,7 +61,7 @@ def turn_into_relpath(paths, base_path):
     if not paths:
         return paths
 
-    common_path = Path(os.path.commonpath(paths + [base_path.absolute()]))
+    common_path = Path(os.path.commonpath([*paths, base_path.absolute()]))
 
     if common_path == Path("/"):
         return paths
@@ -255,7 +255,7 @@ def find_matching_dirs(args, *, only_dir, filter_fn=filter_matches, expand_last_
     found_dirs = [Path()]
     allow_by_char = True
     nb_parts_last_arg = 0
-    nb_parts_prev_arg = len(Path.cwd().parts)
+    nb_parts_prev_arg = 0
 
     for i, arg in enumerate(args):
         is_last = (i == len(args) - 1)
@@ -269,7 +269,7 @@ def find_matching_dirs(args, *, only_dir, filter_fn=filter_matches, expand_last_
         )
 
         if found_dirs:
-            nb_part = len(found_dirs[0].resolve().absolute().parts)
+            nb_part = len(found_dirs[0].parts)
             nb_parts_last_arg = nb_part - nb_parts_prev_arg
             nb_parts_prev_arg = nb_part
 

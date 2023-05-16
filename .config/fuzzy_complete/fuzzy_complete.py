@@ -57,10 +57,7 @@ def main():
     # This character is a special unicode whitespace with a high code so
     # that it appears after all other options and don't leave an empty box
     if len(found_dirs) != 1:
-        output = "\n".join(map(str, found_dirs))
-        if cmd_is_cd:
-            output += "\n\u1160"
-        print(output)
+        print("\n".join(map(str, found_dirs)) + "\n\u1160")
         return
 
     matching_path = found_dirs[0]
