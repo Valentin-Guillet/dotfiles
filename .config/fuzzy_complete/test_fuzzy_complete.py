@@ -116,9 +116,9 @@ if __name__ == "__main__":
     define_test(LsTest, "ls_previous_mult", [".../p/p"],
                 [
                     "../../project/__pycache__",
-                    "../../project/package.py",
-                    "../../program/prog.hpp",
                     "../../program/prog.cpp",
+                    "../../program/prog.hpp",
+                    "../../project/package.py",
                 ],
                 workdir=workdir)
     define_test(LsTest, "ls_previous_root", ["............./v/o"], ["/var/opt"])
@@ -166,9 +166,8 @@ if __name__ == "__main__":
 
     define_test(CdTest, "cd_previous", [".../pg"], ["../../program/"], workdir=workdir)
     define_test(CdTest, "cd_previous_split", ["...", "pg"], ["program/"], workdir=workdir)
-    define_test(CdTest, "cd_previous_mult", [".../p"], ["../../project", "../../program", "\u1160"], workdir=workdir)
-    define_test(CdTest, "cd_previous_mult_split", ["...", "p"], ["../../project", "../../program", "\u1160"], workdir=workdir)
-    define_test(CdTest, "cd_previous_mult_split", ["...", "p"], [str(FUZZTEST_DIR)+"/Documents/project", str(FUZZTEST_DIR)+"/Documents/program", "\u1160"], workdir=workdir)
+    define_test(CdTest, "cd_previous_mult", [".../p"], ["../../program", "../../project", "\u1160"], workdir=workdir)
+    define_test(CdTest, "cd_previous_mult_split", ["...", "p"], [str(FUZZTEST_DIR)+"/Documents/program", str(FUZZTEST_DIR)+"/Documents/project", "\u1160"], workdir=workdir)
     define_test(CdTest, "cd_previous_root", ["............."], ["/"])
     define_test(CdTest, "cd_previous_root_plus", ["............./v/o"], ["/var/opt/"])
     define_test(CdTest, "cd_previous_root_spaces", [".............", "v", "o"], ["opt/"])

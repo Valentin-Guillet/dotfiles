@@ -67,9 +67,9 @@ def main():
 
     # Truncate the path to modify only the last part of the arguments in the case of cd
     # i.e. `cd doc ex` => `found_dirs = ["Documents/example1"]`
-    #                  => matches = ["example1"]
-    #                  => `cd doc example1` instead of `cd doc Documents/example1`
-    output = str(Path(*matching_path.parts[-nb_parts_last_arg:])) if nb_parts_last_arg > 0 else str(matching_path)
+    #                  => `matches = ["example1"]`
+    #                  => `cd doc example1` (instead of `cd doc Documents/example1`)
+    output = str(Path(*matching_path.parts[-nb_parts_last_arg:]))
 
     # Add slash when there's only one possibility to complete cd
     # e.g. `cd doc exmp` -> `cd doc examples/`

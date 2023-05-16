@@ -20,21 +20,21 @@ from pathlib import Path
 
 
 def get_subdirs(directory):
-    """ Return the list of all subdirs of a given directory that are readable"""
+    """ Return the sorted list of all subdirs of a given directory that are readable"""
     if not os.access(directory, os.R_OK):
         return []
 
-    return [subdir for subdir in directory.iterdir()
-            if os.access(subdir, os.R_OK) and subdir.is_dir()]
+    return sorted([subdir for subdir in directory.iterdir()
+                   if os.access(subdir, os.R_OK) and subdir.is_dir()])
 
 
 def get_files(directory):
-    """ Return the list of all files of a given directory"""
+    """ Return the sorted list of all files of a given directory that are readable"""
     if not os.access(directory, os.R_OK):
         return []
 
-    return [file for file in directory.iterdir()
-            if os.access(file, os.R_OK) and file.is_file()]
+    return sorted([file for file in directory.iterdir()
+                   if os.access(file, os.R_OK) and file.is_file()])
 
 
 def get_subdirs_and_files(directories, include_files):
@@ -48,19 +48,22 @@ def get_subdirs_and_files(directories, include_files):
         if include_files:
             found_files.extend(get_files(base_dir))
 
-    found_path = found_dirs + found_files
-    found_path.sort()
-
-    return found_path
+    return found_dirs + found_files
 
 
 def turn_into_relpath(paths, base_path):
+    """ Transform absolute path list `paths` in relative paths from `base_path`.
+
+    The relative paths are forced to go through the common path to avoid the following case:
+    turn_into_relpath(["/tmp/ex_1", "/tmp/ex_2", "/tmp/ex_3"], "/tmp/ex_2") = ["../ex_1", "./", "../ex_3"]
+    (instead of ["../ex_1", "../ex_2", "../ex_3"])
+    """
     if not paths:
         return paths
 
-    common_path = Path(os.path.commonpath(paths))
+    common_path = Path(os.path.commonpath(paths + [base_path.absolute()]))
 
-    if os.path.commonpath((common_path, base_path.absolute())) == "/":
+    if common_path == Path("/"):
         return paths
 
     relpaths = []
@@ -127,7 +130,8 @@ def filter_matches(pattern, found_dirs):
 
 
 def matches_by_chars(base_dirs, path_pattern, *, include_files=False):
-    """ Return an array of all matches for a given tuple of single letter path parts.
+    """ Return an array of all matches from a list of base directories for a given pattern
+    of single letter path parts.
     """
     found_dirs = base_dirs
 
@@ -161,8 +165,8 @@ def matches_by_chars(base_dirs, path_pattern, *, include_files=False):
 
 def matches_for_path(base_dirs, path_arg, allow_by_char, expand_sep, *,
                      is_last=False, include_files=False, filter_fn=filter_matches):
-    """ Return an array of all matches for a given path, possibly filtered by a given function
-    (by default, `filter_matches()`).
+    """ Return an array of all matches from a list of base directories for a given path pattern,
+    possibly filtered by a given function (by default, `filter_matches()`).
     Each part of the path is a globed (fuzzy) match. For example:
       `p` matches `places/` and `suspects/`
       `p/h` matches `places/home` and `suspects/harry`
@@ -178,6 +182,7 @@ def matches_for_path(base_dirs, path_arg, allow_by_char, expand_sep, *,
 
     # If arg is empty, complete with subdirs and files as usual
     # i.e. `ls doc [TAB]` -> `[Documents/example_1, Documents/example_2]`
+    # Happens when path_arg is `./` in last or when path_arg == ""
     if not path_arg or not path_patterns:
         return get_subdirs_and_files(base_dirs, include_files)
 
@@ -237,13 +242,8 @@ def matches_for_path(base_dirs, path_arg, allow_by_char, expand_sep, *,
     # Argument ends with a slash, complete with subdirs and files
     if expand_sep and path_arg.endswith("/"):
         path_output = get_subdirs_and_files(found_dirs, include_files)
-
-    elif include_files:
-        path_output = found_dirs + found_files
-
     else:
-        path_output = found_dirs
-
+        path_output = found_dirs + found_files
 
     if is_last and return_relative_paths:
         return turn_into_relpath(path_output, base_dirs[0])
@@ -251,8 +251,7 @@ def matches_for_path(base_dirs, path_arg, allow_by_char, expand_sep, *,
     return path_output
 
 
-def find_matching_dirs(args, *, only_dir,
-                       filter_fn=filter_matches, expand_last_sep=True):
+def find_matching_dirs(args, *, only_dir, filter_fn=filter_matches, expand_last_sep=True):
     found_dirs = [Path()]
     allow_by_char = True
     nb_parts_last_arg = 0
@@ -277,5 +276,5 @@ def find_matching_dirs(args, *, only_dir,
         if not (i == 0 and arg in ("/", "~")):
             allow_by_char = False
 
-    return found_dirs, nb_parts_last_arg
+    return found_dirs, max(nb_parts_last_arg, 0)
 
