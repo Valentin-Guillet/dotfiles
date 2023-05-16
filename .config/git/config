@@ -13,7 +13,7 @@
 	cm = commit -m
 	sw = switch
 	l = log --oneline --graph --decorate --all --color --abbrev-commit -n 10
-    la = log --graph --all --pretty=format:'%C(auto)%h %C(bold blue)<%an> %Cgreen(%cr)%C(auto)%d %C(reset) %s' --abbrev-commit
+    la = log --graph --all --pretty=format:'%C(auto)%h %C(bold blue)<%an> %Cgreen(%cr)%C(auto)%d %C(reset) %s' --abbrev-commit --date-order
 	ll = log --oneline --graph --decorate --all --color --abbrev-commit
 	last = log -1 HEAD
     ls = ls-files --exclude-standard
