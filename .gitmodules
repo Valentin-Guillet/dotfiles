@@ -52,3 +52,6 @@
 [submodule ".vim/pack/dockerfile/start/Dockerfile.vim"]
 	path = .vim/pack/dockerfile/start/Dockerfile.vim
 	url = https://github.com/ekalinin/Dockerfile.vim
+[submodule ".vim/pack/traces/start/traces.vim"]
+	path = .vim/pack/traces/start/traces.vim
+	url = https://github.com/markonm/traces.vim
