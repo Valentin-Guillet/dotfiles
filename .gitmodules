@@ -55,3 +55,6 @@
 [submodule ".vim/pack/traces/start/traces.vim"]
 	path = .vim/pack/traces/start/traces.vim
 	url = https://github.com/markonm/traces.vim
+[submodule ".vim/pack/pythonsense/start/vim-pythonsense"]
+	path = .vim/pack/pythonsense/start/vim-pythonsense
+	url = https://github.com/jeetsukumaran/vim-pythonsense
