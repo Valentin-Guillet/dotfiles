@@ -84,9 +84,11 @@
 !.config/wget/
 !.config/wget/**
 
+!.config/windows_terminal/
+!.config/windows_terminal/**
+
 !.config/youtube-dl/
 !.config/youtube-dl/**
 
 !.vim/
 !.vim/**
-
