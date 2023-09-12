@@ -1,32 +1,33 @@
-
-import sys
 import atexit
 import os
 import readline
+import sys
+from pathlib import Path
 
+
+def write_history(history_path):
+    import readline
+    try:
+        Path(history_path).parent.mkdir(parents=True, exist_ok=True)
+        readline.write_history_file(history_path)
+    except OSError:
+        pass
 
 if sys.version_info > (3, 6):
-    cache_dir = os.path.expanduser("~/.cache/python")
-    os.makedirs(cache_dir, exist_ok=True)
-    histfile = os.path.join(cache_dir, "history")
+    cache_dir = os.environ.get("XDG_CACHE_HOME") or Path("~/.cache").expanduser()
+    history_file = cache_dir / "python" / "history"
 
+    readline.set_history_length(10000)
     try:
-        readline.read_history_file(histfile)
-        h_len = readline.get_current_history_length()
+        readline.read_history_file(history_file)
     except FileNotFoundError:
-        open(histfile, 'wb').close()
-        h_len = 0
+        pass
 
-    def save(prev_h_len, histfile):
-        import readline
-        new_h_len = readline.get_current_history_length()
-        readline.set_history_length(1000)
-        readline.append_history_file(new_h_len - prev_h_len, histfile)
-        del readline
+    # Prevents creation of default history if custom is empty
+    if readline.get_current_history_length() == 0:
+        readline.add_history("# History creation")
 
-    atexit.register(save, h_len, histfile)
+    atexit.register(write_history, history_file)
 
-    del atexit, os, readline
-    del histfile, h_len, save
-
-del sys
+del atexit, os, readline, sys
+del cache_dir, history_file
