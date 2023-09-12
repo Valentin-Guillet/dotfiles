@@ -14,7 +14,7 @@ def write_history(history_path):
         pass
 
 if sys.version_info > (3, 6):
-    cache_dir = os.environ.get("XDG_CACHE_HOME") or Path("~/.cache").expanduser()
+    cache_dir = Path(os.environ.get("XDG_CACHE_HOME") or "~/.cache").expanduser()
     history_file = cache_dir / "python" / "history"
 
     readline.set_history_length(10000)
