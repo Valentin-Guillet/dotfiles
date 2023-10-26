@@ -216,10 +216,42 @@
         {
             "command":
             {
+                "action": "duplicateTab"
+            },
+            "keys": "alt+shift+r"
+        },
+        {
+            "command":
+            {
+                "action": "splitPane",
+                "split": "down",
+                "splitMode": "duplicate"
+            },
+            "keys": "alt+minus"
+        },
+        {
+            "command":
+            {
                 "action": "splitPane",
                 "split": "down"
             },
-            "keys": "alt+minus"
+            "keys": "alt+_"
+        },
+        {
+            "command":
+            {
+                "action": "swapPane",
+                "direction": "nextInOrder"
+            },
+            "keys": "alt+shift+."
+        },
+        {
+            "command":
+            {
+                "action": "swapPane",
+                "direction": "previousInOrder"
+            },
+            "keys": "alt+shift+,"
         },
         {
             "command":
@@ -234,6 +266,22 @@
                 "action": "prevTab"
             },
             "keys": "alt+p"
+        },
+        {
+            "command":
+            {
+                "action": "moveTab",
+                "direction": "forward"
+            },
+            "keys": "alt+shift+n"
+        },
+        {
+            "command":
+            {
+                "action": "moveTab",
+                "direction": "backward"
+            },
+            "keys": "alt+shift+p"
         },
         {
             "command": "closeWindow",
@@ -263,9 +311,18 @@
             "command":
             {
                 "action": "splitPane",
-                "split": "right"
+                "split": "right",
+                "splitMode": "duplicate"
             },
             "keys": "alt+\\"
+        },
+        {
+            "command":
+            {
+                "action": "splitPane",
+                "split": "right"
+            },
+            "keys": "alt+|"
         },
         {
             "command":
@@ -303,5 +360,5 @@
             "command": "togglePaneZoom",
             "keys": "alt+z"
         }
-    ],
+    ]
 }
