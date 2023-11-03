@@ -77,9 +77,11 @@ set path+=**            " set recursive path to use :find
 set splitright          " new splits on the right...
 set splitbelow          " ... and below
 
-" Also set help by default in vertical split
+" Also set help by default in vertical split (with h[elp]) or new tab (with H[elp])
 cabbrev <expr> h ((getcmdtype() == ':' && getcmdpos() <= 2)? 'vert h' : 'h')
 cabbrev <expr> help ((getcmdtype() == ':' && getcmdpos() <= 5)? 'vert help' : 'help')
+cabbrev <expr> H ((getcmdtype() == ':' && getcmdpos() <= 2)? 'tab h' : 'H')
+cabbrev <expr> Help ((getcmdtype() == ':' && getcmdpos() <= 5)? 'tab help' : 'help')
 
 set expandtab
 set smarttab
