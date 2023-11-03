@@ -17,6 +17,7 @@
 	ll = log --oneline --graph --decorate --all --color --abbrev-commit
 	last = log -1 HEAD
     ls = ls-files --exclude-standard
+    msg = commit --amend
 	st = status -s
 [push]
 	default = simple
