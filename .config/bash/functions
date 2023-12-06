@@ -1,5 +1,13 @@
 #!/bin/bash
 
+
+pathadd() {
+    if [ -d "$1" ] && [[ ":$PATH:" != *":$1:"* ]]; then
+        PATH="$1${PATH:+":$PATH"}"
+    fi
+}
+
+
 lsf() {
     if [ "$1" = "-i" ]
     then
