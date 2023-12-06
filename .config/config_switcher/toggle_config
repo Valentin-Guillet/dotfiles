@@ -1,77 +1,126 @@
 #!/bin/bash
 
-save_file() {
-    mv ~/"$1" ~/"$1".save
-    if [ -f "$CONFIG_DIR/$1" ]
+
+CONFIG_DIR="$HOME/.config/config_switcher"
+CACHE_DIR="${XDG_CACHE_HOME:=$HOME/.cache}/config_switcher"
+
+_is_switched() {
+    [ -f "$CONFIG_DIR/status" ] && [ $(cat "$CONFIG_DIR/status")  = "1" ]
+}
+
+_save_files() {
+    local save_dir="$1"
+
+    while read file _ default_file
+    do
+        local dest_filepath="${file#$HOME/}"
+        mkdir -p "$save_dir/$(dirname $dest_filepath)"
+
+        if [ -f "$file" ]
+        then
+            echo "Saving file $file"
+            cp "$file" "$save_dir/$dest_filepath"
+        elif [ -d "$file" ]
+        then
+            echo "Saving dir $file"
+            cp -rT "$file" "$save_dir/$dest_filepath"
+        else
+            echo "ERROR: could not save $file"
+            return 1
+        fi
+    done < <(sed -e "/^\s*#.*$/d" -e "/^\s*$/d" -e "s;^~/;$HOME/;" "$CONFIG_DIR/list_files")
+
+    return 0
+}
+
+_remove_files() {
+    while read file _ default_file
+    do
+        rm -r "$file"
+        [ -f "$default_file" ] && cp "$default_file" "$file"
+    done < <(sed -e "/^\s*#.*$/d" -e "/^\s*$/d" -e "s;^~/;$HOME/;" "$CONFIG_DIR/list_files")
+}
+
+_restore_files() {
+    local restore_dir="$1"
+
+    while read file _ default_file
+    do
+        local source_path="$restore_dir/${file#$HOME/}"
+
+        [ -f "$file" -o -d "$file" ] && rm -r "$file"
+
+        if [ -f "$source_path" ]
+        then
+            echo "Restoring file $file"
+            cp "$source_path" "$file"
+        elif [ -d "$source_path" ]
+        then
+            echo "Restoring dir $file"
+            cp -rT "$source_path" "$file"
+        else
+            echo "ERROR: could not restore $file"
+            return 1
+        fi
+    done < <(sed -e "/^\s*#.*$/d" -e "/^\s*$/d" -e "s;^~/;$HOME/;" "$CONFIG_DIR/list_files")
+
+    return 0
+}
+
+_switch() {
+    _is_switched && echo "Config is already switched !" && return 0
+
+    mkdir -p "$CACHE_DIR"
+
+    if ! _save_files "$CACHE_DIR"
     then
-        cp $CONFIG_DIR/"$1" ~/"$1"
-    elif [ -d "$CONFIG_DIR/$1" ]
+        echo "Could not save all files, aborting..."
+        return 1
+    fi
+    _remove_files
+
+    echo 1 > "$CONFIG_DIR/status"
+
+    gnome-terminal --working-directory=$HOME --maximize
+    kill -9 $PPID
+}
+
+_unswitch() {
+    ! _is_switched && echo "Config is not switched !" && return 0
+
+    if ! _restore_files "$CACHE_DIR"
     then
-        cp -r $CONFIG_DIR/"$1" ~/"$1"
+        echo "Could not restore all files, aborting..."
+        return 1
+    fi
+
+    echo 0 > "$CONFIG_DIR/status"
+
+    gnome-terminal --working-directory=$HOME --maximize -- /bin/sh -c 'unset TMUX && bash'
+    tmux kill-session
+}
+
+main() {
+    if [ "$1" = "backup" ]
+    then
+        _save_files "$CONFIG_DIR/backup"
+
+    elif [ "$1" = "switch" ]
+    then
+        _switch
+
+    elif [ "$1" = "unswitch" ]
+    then
+        _unswitch
+
+    elif [ "$1" = "?" ]
+    then
+        _is_switched && echo "Config is switched !" || echo "Config is not switched !"
+
+    else
+        echo "Command \`$1\` is not recognized"
+        echo "Usage: $0 [backup|switch|unswitch|?]"
     fi
 }
 
-unsave_file() {
-    if [ -f ~/"$1" ]
-    then
-        rm ~/"$1"
-    elif [ -d ~/"$1" ]
-    then
-        rm -r ~/"$1"
-    fi
-    mv ~/"$1".save ~/"$1"
-}
-
-if [ "$1" = "?" ]
-then
-    if [ -z "$CONFIG_DIR" ]
-    then
-        echo "Config is not loaded !"
-    else
-        echo "Config is loaded !"
-    fi
-
-elif [ "$1" = "load" ]
-then
-    if [ -z "$CONFIG_DIR" ]
-    then
-        export CONFIG_DIR="$HOME/.config/valentin_config"
-
-        while read file
-        do
-            save_file "$file" 2>/dev/null
-        done < <(sed -e "/^\s*#.*$/d" -e "/^\s*$/d" $CONFIG_DIR/.config/my_config/list_files)
-
-        echo -e "\n"export CONFIG_DIR="$HOME/.config/valentin_config\n" >> ~/.bashrc
-
-        # Must hide Sublime directory to not be detected as a Package
-        mv $HOME/.config/sublime-text/Packages/User.save $HOME/.config/sublime-text/Packages/.User.save
-
-        gnome-terminal --working-directory=$HOME --maximize
-        kill -9 $PPID
-    else
-        echo "Config is already loaded !"
-    fi
-
-elif [ "$1" = "unload" ]
-then
-    if [ ! -z "$CONFIG_DIR" ]
-    then
-        # Unhide Sublime User directory (cf. load)
-        mv $HOME/.config/sublime-text/Packages/.User.save $HOME/.config/sublime-text/Packages/User.save
-
-        while read file
-        do
-            unsave_file "$file" 2>/dev/null
-        done < <(sed -e "/^\s*#.*$/d" -e "/^\s*$/d" $CONFIG_DIR/.config/my_config/list_files)
-
-        unset CONFIG_DIR
-
-       gnome-terminal --working-directory=$HOME --maximize -- /bin/sh -c 'unset TMUX && bash'
-       tmux kill-session
-    else
-        echo "Config is not loaded !"
-    fi
-else
-    echo "Command $1 is not recognized"
-fi
+main "$@"

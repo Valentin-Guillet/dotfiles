@@ -1,28 +1,35 @@
+# This file lists the files and directories to switch out from the
+# configuration to get a default setup
+# Each non-commented line must be an absolute path to a file to
+# switch out, optionally followed by an arrow (<==>) and the path
+# of a file that must be used as a replacement to this file
+
 # Bash
-.bashrc
-.inputrc
-.profile
-.config/bash
+~/.bashrc        <==>   /etc/skel/.bashrc
+~/.profile       <==>   /etc/skel/.profile
+~/.config/bash/
+~/.config/readline/inputrc
 
 # Git
-.gitconfig
-.gitignore
+~/.git/
+~/.config/git/config
+~/.gitignore
+~/.gitmodules
 
 # Pdb
-.pdbrc
-.config/pdb
+~/.config/pdb/
+~/.pdbrc
 
 # Sublime
-.config/sublime-text/Packages/MaxPane
-.config/sublime-text/Packages/Vintage
+~/.config/sublime-text/Packages/MaxPane/
+~/.config/sublime-text/Packages/Vintage/
 
-.config/sublime-text/Packages/User
-.config/sublime-merge/Packages/User
+~/.config/sublime-merge/Packages/User/
+~/.config/sublime-text/Packages/User/
 
 # Tmux
-.tmux.conf
-.config/tmux
+~/.config/tmux/
 
 # Vim
-.vim
+~/.vim/
 

@@ -13,6 +13,8 @@
 
 !.config/config_switcher/
 !.config/config_switcher/**
+.config/config_switcher/backup/
+.config/config_switcher/status
 
 !.config/dconf/
 !.config/dconf/conf
