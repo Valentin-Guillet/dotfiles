@@ -11,6 +11,9 @@
 !.config/bash/functions
 !.config/bash/paths
 
+!.config/bat/
+!.config/bat/**
+
 !.config/config_switcher/
 !.config/config_switcher/**
 .config/config_switcher/backup/
