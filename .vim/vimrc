@@ -115,6 +115,8 @@ set nojoinspaces        " Only add a single space when `J`oining two lines, even
 set complete-=i                 " Remove include completion (too slow)
 set completeopt+=longest        " Only insert longest common text in autocompletion
 
+set commentstring=#\ %s     " Set default comment type in files without syntax
+
 let g:is_bash = 1       " Set bash syntax instead of sh
 
 if has("autocmd")
