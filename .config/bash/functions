@@ -90,13 +90,42 @@ pip_update() {
 ls_stack() {
     [[ $# != 1 ]] && echo "Usage: ls_stack {cmd}" && return 1
 
-    if [ -e "$1" ]
+    local arg=""
+    if [ "$(type -t "$1")" == "alias" ]
     then
-        local file="$1"
-    elif which "$1" &>/dev/null
-    then
-        local file=$(which "$1")
+        arg=$(alias "$1")
+        arg="${arg#*\'}"
+        arg="${arg::-1}"
+        local first_cmd="${arg%% *}"
+
+        # If sudo as first cmd, ignore it and take second cmd
+        if [ "$first_cmd" == "sudo" ] && [ "$arg" != "sudo" ]
+        then
+            first_cmd="${arg#sudo }"
+            first_cmd="${first_cmd%% *}"
+        fi
+
+        echo -ne "\e[38;5;9malias${RESET} $1 = '$arg'"
+        [ -n "$(which $first_cmd)" ] && echo -ne " -> \e[1;32m$(which $first_cmd)${RESET}"
+        echo
+        arg="$first_cmd"
     else
+        arg="$1"
+    fi
+
+    if [ -e "$arg" ]
+    then
+        local file="$arg"
+    elif which "$arg" &>/dev/null
+    then
+        local file=$(which "$arg")
+    else
+        if command -v "$arg" > /dev/null
+        then
+            echo "$(type $arg)"
+        else
+            echo "Arg '$arg' is not an alias nor an executable"
+        fi
         return 1
     fi
     local base_dir="$(dirname "$file")"
@@ -108,10 +137,10 @@ ls_stack() {
         file=$(echo "$line" | rev | cut -d' ' -f1 | rev)
         [[ $file == /* ]] || file="$(realpath -s "$base_dir/$file")"
 
+        files+=( "$file" )
         [ ! -h "$file" ] && break
 
         base_dir="$(dirname "$file")"
-        files+=( "$file" )
         line=$(ls -lh "$file")
     done
 
