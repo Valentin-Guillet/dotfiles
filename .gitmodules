@@ -58,3 +58,6 @@
 [submodule ".vim/pack/pythonsense/start/vim-pythonsense"]
 	path = .vim/pack/pythonsense/start/vim-pythonsense
 	url = https://github.com/jeetsukumaran/vim-pythonsense
+[submodule ".vim/pack/cpp-syntax/start/vim-cpp-modern"]
+	path = .vim/pack/cpp-syntax/start/vim-cpp-modern
+	url = https://github.com/bfrg/vim-cpp-modern

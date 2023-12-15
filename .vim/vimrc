@@ -146,7 +146,7 @@ set viminfo+='1000,n$HOME/.cache/vim/viminfo
 
 set dictionary+=/usr/share/dict/words
 
-colorscheme molokai
+colorscheme molokai_custom
 filetype detect
 
 
