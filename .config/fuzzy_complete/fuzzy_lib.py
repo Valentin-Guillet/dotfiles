@@ -61,6 +61,7 @@ def turn_into_relpath(paths, base_path):
     if not paths:
         return paths
 
+    paths = list(map(lambda path: path.absolute(), paths))
     common_path = Path(os.path.commonpath([*paths, base_path.absolute()]))
 
     if common_path == Path("/"):

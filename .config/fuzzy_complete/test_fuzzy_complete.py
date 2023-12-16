@@ -17,6 +17,7 @@ def setUpModule():
         FUZZTEST_DIR/"Documents",
 
         FUZZTEST_DIR/"Documents"/".hidden",
+        FUZZTEST_DIR/"Documents"/".conf.vim",
 
         FUZZTEST_DIR/"Documents"/"Misc",
         FUZZTEST_DIR/"Documents"/"Misc"/"dir1_file.txt",
@@ -98,6 +99,7 @@ if __name__ == "__main__":
     define_test(LsTest, "ls_multiple_files", ["v/m"], ["Videos/movie 1.mkv", "Videos/movie 2.mkv"])
     define_test(LsTest, "ls_successive_joined", ["do/proj"], ["Documents/project"])
     define_test(LsTest, "ls_hidden", ["do/hid"], ["Documents/.hidden"])
+    define_test(LsTest, "ls_hidden_file", [".cfv"], [".conf.vim"], workdir=FUZZTEST_DIR/"Documents")
     define_test(LsTest, "ls_match_chars", ["dmd"], ["Documents/Misc/dependency", "Documents/Misc/dir1_file.txt"])
 
     workdir = FUZZTEST_DIR/"Documents"/"Misc"/"dependency"
