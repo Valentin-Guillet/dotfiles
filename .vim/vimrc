@@ -215,6 +215,10 @@ let g:vim_markdown_new_list_item_indent = 2
 let g:vim_markdown_folding_style_pythonic = 1
 
 
+" Python syntax
+let g:python_highlight_all = 1
+
+
 " Qf
 nmap <leader>ak <Plug>(qf_qf_previous) \| <Plug>(qf_loc_previous)
 nmap <leader>aj <Plug>(qf_qf_next) \| <Plug>(qf_loc_next)
