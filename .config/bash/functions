@@ -67,13 +67,17 @@ pip_update() {
     [[ $? == 1 ]] && return 1
 
     # If a pip update is available, start with it
-    grep -q "^pip$" /tmp/pip_list && sed -i "/^pip$/d;1i pip" /tmp/pip_list
+    if grep -q "^pip$" /tmp/pip_list
+    then
+        cat <(echo pip) <(sed "/^pip$/d" /tmp/pip_list) > /tmp/pip_list.tmp
+        mv /tmp/pip_list.tmp /tmp/pip_list
+    fi
 
     # Remove the packages in pip_exclude file
     if [ ! "$1" = "-a" -a ! "$1" = '--all' ] && [ -s ~/.config/pip/pip_exclude ]
     then
-        grep -v -f <(sed -e "/^\s*#.*$/d" -e "/^\s*$/d" ~/.config/pip/pip_exclude) /tmp/pip_list > /tmp/pip_list_tmp
-        mv /tmp/pip_list_tmp /tmp/pip_list
+        grep -v -f <(sed -e "/^\s*#.*$/d" -e "/^\s*$/d" ~/.config/pip/pip_exclude) /tmp/pip_list > /tmp/pip_list.tmp
+        mv /tmp/pip_list.tmp /tmp/pip_list
     fi
 
     local exit_code=0
