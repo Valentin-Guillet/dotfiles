@@ -7,6 +7,7 @@ from pathlib import Path
 
 def write_history(history_path):
     import readline
+    from pathlib import Path
     try:
         Path(history_path).parent.mkdir(parents=True, exist_ok=True)
         readline.write_history_file(history_path)
@@ -31,3 +32,4 @@ if sys.version_info > (3, 6):
 
 del atexit, os, readline, sys
 del cache_dir, history_file
+del Path
