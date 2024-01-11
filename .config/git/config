@@ -1,32 +1,33 @@
+[user]
+	name = Val95240
+	email = guillet.valentin95240@gmail.com
 [core]
     editor = vim
 [color]
 	diff = auto
 	branch = auto
 	status = auto
-[user]
-	name = Val95240
-	email = guillet.valentin95240@gmail.com
 [alias]
 	br = branch
 	cam = commit -am
 	cm = commit -m
-	sw = switch
 	l = log --oneline --graph --decorate --all --color --abbrev-commit -n 10
-    la = log --graph --all --pretty=format:'%C(auto)%h %C(bold blue)<%an> %Cgreen(%ar)%C(auto)%d %C(reset) %s' --abbrev-commit --date-order
 	ll = log --oneline --graph --decorate --all --color --abbrev-commit
-	last = log -1 HEAD
+    la = log --graph --all --pretty=format:'%C(auto)%h %C(bold blue)<%an> %Cgreen(%ar)%C(auto)%d %C(reset) %s' --abbrev-commit --date-order
     ls = ls-files --exclude-standard
     msg = commit --amend
 	st = status -s
+    sw = switch
+[pull]
+	rebase = true
 [push]
 	default = simple
 [merge]
 	tool = vimdiff
 	conflictStyle = diff3
+[diff]
+	submodule = log
 [difftool]
 	prompt = false
 [difftool "vimdiff"]
 	cmd = vim -f -d -c \"wincmd l\" -c 'cd \"$GIT_PREFIX\"' \"$LOCAL\" \"$REMOTE\"
-[diff]
-	submodule = log
