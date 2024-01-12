@@ -1,6 +1,7 @@
 [submodule ".vim/pack/all/start/vim-all"]
 	path = .local/share/vim/pack/all/start/vim-all
 	url = https://github.com/vim-utils/vim-all
+    ignore = dirty
 [submodule ".vim/pack/ansi-esc/start/vim-plugin-AnsiEsc"]
 	path = .local/share/vim/pack/ansi-esc/start/vim-plugin-AnsiEsc
 	url = https://github.com/powerman/vim-plugin-AnsiEsc
@@ -10,6 +11,7 @@
 [submodule ".vim/pack/clang-format/start/vim-clang-format"]
 	path = .local/share/vim/pack/clang-format/start/vim-clang-format
 	url = https://github.com/rhysd/vim-clang-format
+    ignore = dirty
 [submodule ".vim/pack/commentary/start/vim-commentary"]
 	path = .local/share/vim/pack/commentary/start/vim-commentary
 	url = https://github.com/tpope/vim-commentary
@@ -34,9 +36,11 @@
 [submodule ".vim/pack/operator-user/start/vim-operator-user"]
 	path = .local/share/vim/pack/operator-user/start/vim-operator-user
 	url = https://github.com/kana/vim-operator-user
+    ignore = dirty
 [submodule ".vim/pack/python-syntax/start/python-syntax"]
 	path = .local/share/vim/pack/python-syntax/start/python-syntax
 	url = https://github.com/vim-python/python-syntax
+    ignore = dirty
 [submodule ".vim/pack/pythonsense/start/vim-pythonsense"]
 	path = .local/share/vim/pack/pythonsense/start/vim-pythonsense
 	url = https://github.com/jeetsukumaran/vim-pythonsense
@@ -70,3 +74,4 @@
 [submodule ".vim/pack/zoom/start/vim-zoom"]
 	path = .local/share/vim/pack/zoom/start/vim-zoom
 	url = https://github.com/dhruvasagar/vim-zoom
+    ignore = dirty
