@@ -1,21 +1,51 @@
-[submodule ".vim/pack/fastfold/start/FastFold"]
-	path = .vim/pack/fastfold/start/FastFold
-	url = https://github.com/Konfekt/FastFold
-[submodule ".vim/pack/qf/start/vim-qf"]
-	path = .vim/pack/qf/start/vim-qf
-	url = https://github.com/romainl/vim-qf
-[submodule ".vim/pack/vimtex/start/vimtex"]
-	path = .vim/pack/vimtex/start/vimtex
-	url = https://github.com/lervag/vimtex
-[submodule ".vim/pack/targets/start/targets.vim"]
-	path = .vim/pack/targets/start/targets.vim
-	url = https://github.com/wellle/targets.vim
-[submodule ".vim/pack/vim-gitgutter/start/vim-gitgutter"]
-	path = .vim/pack/gitgutter/start/vim-gitgutter
-	url = https://github.com/airblade/vim-gitgutter
+[submodule ".vim/pack/all/start/vim-all"]
+	path = .vim/pack/all/start/vim-all
+	url = https://github.com/vim-utils/vim-all
+[submodule ".vim/pack/ansi-esc/start/vim-plugin-AnsiEsc"]
+	path = .vim/pack/ansi-esc/start/vim-plugin-AnsiEsc
+	url = https://github.com/powerman/vim-plugin-AnsiEsc
+[submodule ".vim/pack/better-whitespace/start/vim-better-whitespace"]
+	path = .vim/pack/better-whitespace/start/vim-better-whitespace
+	url = https://github.com/ntpeters/vim-better-whitespace
+[submodule ".vim/pack/clang-format/start/vim-clang-format"]
+	path = .vim/pack/clang-format/start/vim-clang-format
+	url = https://github.com/rhysd/vim-clang-format
 [submodule ".vim/pack/commentary/start/vim-commentary"]
 	path = .vim/pack/commentary/start/vim-commentary
 	url = https://github.com/tpope/vim-commentary
+[submodule ".vim/pack/cpp-syntax/start/vim-cpp-modern"]
+	path = .vim/pack/cpp-syntax/start/vim-cpp-modern
+	url = https://github.com/bfrg/vim-cpp-modern
+[submodule ".vim/pack/dockerfile/start/Dockerfile.vim"]
+	path = .vim/pack/dockerfile/start/Dockerfile.vim
+	url = https://github.com/ekalinin/Dockerfile.vim
+[submodule ".vim/pack/fastfold/start/FastFold"]
+	path = .vim/pack/fastfold/start/FastFold
+	url = https://github.com/Konfekt/FastFold
+[submodule ".vim/pack/gitgutter/start/vim-gitgutter"]
+	path = .vim/pack/gitgutter/start/vim-gitgutter
+	url = https://github.com/airblade/vim-gitgutter
+[submodule ".vim/pack/indent-object/start/vim-indent-object"]
+	path = .vim/pack/indent-object/start/vim-indent-object
+	url = https://github.com/michaeljsmith/vim-indent-object
+[submodule ".vim/pack/linediff/start/linediff.vim"]
+	path = .vim/pack/linediff/start/linediff.vim
+	url = https://github.com/AndrewRadev/linediff.vim
+[submodule ".vim/pack/operator-user/start/vim-operator-user"]
+	path = .vim/pack/operator-user/start/vim-operator-user
+	url = https://github.com/kana/vim-operator-user
+[submodule ".vim/pack/python-syntax/start/python-syntax"]
+	path = .vim/pack/python-syntax/start/python-syntax
+	url = https://github.com/vim-python/python-syntax
+[submodule ".vim/pack/pythonsense/start/vim-pythonsense"]
+	path = .vim/pack/pythonsense/start/vim-pythonsense
+	url = https://github.com/jeetsukumaran/vim-pythonsense
+[submodule ".vim/pack/qf/start/vim-qf"]
+	path = .vim/pack/qf/start/vim-qf
+	url = https://github.com/romainl/vim-qf
+[submodule ".vim/pack/readline/start/readline.vim"]
+	path = .vim/pack/readline/start/readline.vim
+	url = https://github.com/ryvnf/readline.vim
 [submodule ".vim/pack/repeat/start/vim-repeat"]
 	path = .vim/pack/repeat/start/vim-repeat
 	url = https://github.com/tpope/vim-repeat
@@ -25,42 +55,18 @@
 [submodule ".vim/pack/tagbar/start/tagbar"]
 	path = .vim/pack/tagbar/start/tagbar
 	url = https://github.com/preservim/tagbar
-[submodule ".vim/pack/zoom/start/vim-zoom"]
-	path = .vim/pack/zoom/start/vim-zoom
-	url = https://github.com/dhruvasagar/vim-zoom
+[submodule ".vim/pack/targets/start/targets.vim"]
+	path = .vim/pack/targets/start/targets.vim
+	url = https://github.com/wellle/targets.vim
 [submodule ".vim/pack/tmux-navigator/start/vim-tmux-navigator"]
 	path = .vim/pack/tmux-navigator/start/vim-tmux-navigator
 	url = https://github.com/christoomey/vim-tmux-navigator
-[submodule ".vim/pack/ansi-esc/start/vim-plugin-AnsiEsc"]
-	path = .vim/pack/ansi-esc/start/vim-plugin-AnsiEsc
-	url = https://github.com/powerman/vim-plugin-AnsiEsc
-[submodule ".vim/pack/better-whitespace/start/vim-better-whitespace"]
-	path = .vim/pack/better-whitespace/start/vim-better-whitespace
-	url = https://github.com/ntpeters/vim-better-whitespace
-[submodule ".vim/pack/readline/start/readline.vim"]
-	path = .vim/pack/readline/start/readline.vim
-	url = https://github.com/ryvnf/readline.vim
-[submodule ".vim/pack/all/start/vim-all"]
-	path = .vim/pack/all/start/vim-all
-	url = https://github.com/vim-utils/vim-all
-[submodule ".vim/pack/indent-object/start/vim-indent-object"]
-	path = .vim/pack/indent-object/start/vim-indent-object
-	url = https://github.com/michaeljsmith/vim-indent-object
-[submodule ".vim/pack/linediff/start/linediff.vim"]
-	path = .vim/pack/linediff/start/linediff.vim
-	url = https://github.com/AndrewRadev/linediff.vim
-[submodule ".vim/pack/dockerfile/start/Dockerfile.vim"]
-	path = .vim/pack/dockerfile/start/Dockerfile.vim
-	url = https://github.com/ekalinin/Dockerfile.vim
 [submodule ".vim/pack/traces/start/traces.vim"]
 	path = .vim/pack/traces/start/traces.vim
 	url = https://github.com/markonm/traces.vim
-[submodule ".vim/pack/pythonsense/start/vim-pythonsense"]
-	path = .vim/pack/pythonsense/start/vim-pythonsense
-	url = https://github.com/jeetsukumaran/vim-pythonsense
-[submodule ".vim/pack/cpp-syntax/start/vim-cpp-modern"]
-	path = .vim/pack/cpp-syntax/start/vim-cpp-modern
-	url = https://github.com/bfrg/vim-cpp-modern
-[submodule ".vim/pack/python-syntax/start/python-syntax"]
-	path = .vim/pack/python-syntax/start/python-syntax
-	url = https://github.com/vim-python/python-syntax
+[submodule ".vim/pack/vimtex/start/vimtex"]
+	path = .vim/pack/vimtex/start/vimtex
+	url = https://github.com/lervag/vimtex
+[submodule ".vim/pack/zoom/start/vim-zoom"]
+	path = .vim/pack/zoom/start/vim-zoom
+	url = https://github.com/dhruvasagar/vim-zoom
