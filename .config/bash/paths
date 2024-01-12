@@ -1,12 +1,13 @@
 #!/bin/bash
 
-
 # Spawn panes in same directory in Windows Terminal (cf. https://learn.microsoft.com/en-us/windows/terminal/tutorials/new-tab-same-directory)
 [ -n "$WT_SESSION" ] && PROMPT_COMMAND='printf "\e]9;9;%s\e\\" "$(wslpath -w "$PWD")";'"$PROMPT_COMMAND"
+
+# Vim init
+export VIMINIT="source $XDG_CONFIG_HOME/vim/vimrc"
 
 # Fuzzy complete
 [ -f "$XDG_CONFIG_HOME"/fuzzy_complete/fuzzycd_wrapper.sh ] && source "$XDG_CONFIG_HOME"/fuzzy_complete/fuzzycd_wrapper.sh
 [ -f "$XDG_CONFIG_HOME"/fuzzy_complete/fuzzy_complete.sh ] && source "$XDG_CONFIG_HOME"/fuzzy_complete/fuzzy_complete.sh
-
 
 pathadd "$XDG_CONFIG_HOME"/git/custom_commands

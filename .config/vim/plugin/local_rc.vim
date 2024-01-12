@@ -1,5 +1,5 @@
 " This plugin allows the user to define a folder-wise configuration vimrc that
-" is kept in a hidden folder, by default in $HOME/.cache/vim/local_rc/
+" is kept in a hidden folder, by default in $XDG_STATE_HOME/vim/local_rc/
 
 if exists("g:loaded_local_rc")
     finish
@@ -7,7 +7,7 @@ endif
 let g:loaded_local_rc = 1
 
 if !exists('g:local_rc_dir')
-    let g:local_rc_dir = $HOME . "/.cache/vim/local_rc/"
+    let g:local_rc_dir = $XDG_STATE_HOME . "/vim/local_rc/"
 endif
 
 if !isdirectory(g:local_rc_dir)

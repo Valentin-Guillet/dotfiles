@@ -1,6 +1,6 @@
 " This plugin allows the user to define a folder-wise session (buffers, tabs,
 " views, folds...) that is kept in a hidden folder, by default in
-" $HOME/.cache/vim/sessions/
+" $XDG_STATE_HOME/vim/sessions/
 
 if exists("g:loaded_local_sessions")
     finish
@@ -8,7 +8,7 @@ endif
 let g:loaded_local_sessions = 1
 
 if !exists('g:local_sessions_dir')
-    let g:local_sessions_dir = $HOME . "/.cache/vim/sessions/"
+    let g:local_sessions_dir = $XDG_STATE_HOME . "/vim/sessions/"
 endif
 
 if !isdirectory(g:local_sessions_dir)

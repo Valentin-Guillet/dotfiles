@@ -83,6 +83,9 @@
 !.config/tmux/
 !.config/tmux/**
 
+!.config/vim/
+!.config/vim/**
+
 !.config/vimium/
 !.config/vimium/**
 
@@ -94,6 +97,3 @@
 
 !.config/youtube-dl/
 !.config/youtube-dl/**
-
-!.vim/
-!.vim/**
