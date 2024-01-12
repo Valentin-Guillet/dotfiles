@@ -1,5 +1,10 @@
 
-nnoremap [[ ?{<CR>w99[{
-nnoremap ][ /}<CR>b99]}
-nnoremap ]] j0?{<CR>w99[{%/{<CR>
-nnoremap [] k$/}<CR>b99]}%?}<CR>
+set shiftwidth=2
+set tabstop=2
+
+nnoremap <buffer> [[ ?{<CR>w99[{
+nnoremap <buffer> ][ /}<CR>b99]}
+nnoremap <buffer> ]] j0?{<CR>w99[{%/{<CR>
+nnoremap <buffer> [] k$/}<CR>b99]}%?}<CR>
+
+noremap <buffer> <leader>f <Plug>(operator-clang-format)
