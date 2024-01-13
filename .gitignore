@@ -34,6 +34,9 @@
 !.config/pdb/
 !.config/pdb/**
 
+!.config/powershell/
+!.config/powershell/**
+
 !.config/python
 !.config/python/**
 
@@ -88,6 +91,9 @@
 
 !.config/vimium/
 !.config/vimium/**
+
+!.config/vscode/
+!.config/vscode/**
 
 !.config/wget/
 !.config/wget/**
