@@ -1,34 +1,29 @@
 
 import atexit
 import os
-import pdb
 import readline
-import rlcompleter
-
+from pathlib import Path
 
 # Command line history:
-cache_dir = os.path.expanduser("~/.cache/python")
-os.makedirs(cache_dir, exist_ok=True)
-histfile = os.path.join(cache_dir, "history")
+_pdb_cache_dir = Path(os.environ.get("XDG_CACHE_HOME", "~/.cache")).expanduser()/"python"
+_pdb_cache_dir.mkdir(parents=True, exist_ok=True)
+_pdb_histfile = _pdb_cache_dir/"history"
 if readline.get_current_history_length() == 0:
     try:
-        readline.read_history_file(histfile)
-    except IOError:
+        readline.read_history_file(_pdb_histfile)
+    except OSError:
         pass
 
-atexit.register(readline.write_history_file, histfile)
-
-# Autocomplete
-pdb.Pdb.complete = rlcompleter.Completer(locals() | globals()).complete
+atexit.register(readline.write_history_file, _pdb_histfile)
 
 # Cleanup any variables that could otherwise clutter up the namespace.
 try:
+    del _pdb_cache_dir
+    del _pdb_histfile
+
     del atexit
-    del histfile
     del os
-    del pdb
     del readline
-    del rlcompleter
 
 except NameError:
     pass

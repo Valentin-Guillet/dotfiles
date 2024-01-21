@@ -6,6 +6,9 @@
 # Vim init
 export VIMINIT="source $XDG_CONFIG_HOME/vim/vimrc"
 
+# Python pdbp by default
+export PYTHONBREAKPOINT=pdbp.set_trace
+
 # Fuzzy complete
 [ -f "$XDG_CONFIG_HOME"/fuzzy_complete/fuzzycd_wrapper.sh ] && source "$XDG_CONFIG_HOME"/fuzzy_complete/fuzzycd_wrapper.sh
 [ -f "$XDG_CONFIG_HOME"/fuzzy_complete/fuzzy_complete.sh ] && source "$XDG_CONFIG_HOME"/fuzzy_complete/fuzzy_complete.sh

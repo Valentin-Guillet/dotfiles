@@ -1,9 +1,8 @@
 
 import os
+from pathlib import Path
 
-loaded = 'rc_file' not in locals()
-rc_file = os.path.expanduser("~/.config/pdb/pdbrc.py")
+_pdb_loaded = "_pdb_rc_file" in locals()
+_pdb_rc_file = Path(os.environ.get("XDG_CONFIG_HOME", "~/.config")).expanduser()/"pdb"/"pdbrc.py"
 
-if loaded and os.path.exists(rc_file): exec(open(rc_file).read())
-
-alias st sticky
+if not _pdb_loaded and _pdb_rc_file.exists(): exec(_pdb_rc_file.open().read())
