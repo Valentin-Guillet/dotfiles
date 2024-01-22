@@ -18,6 +18,15 @@ from ptpython.python_input import PythonInput
 __all__ = ["configure"]
 
 
+# UTILS
+
+def find_default_binding(repl, function_name):
+    for binding in repl.app._default_bindings.bindings:
+         if function_name in binding.handler.__qualname__:
+             return binding
+    return None
+
+
 # GENERAL CONFIGURATION
 
 def configure(repl):
@@ -229,9 +238,8 @@ def new_load_history_if_not_yet_loaded(self):
 def fix_operate_and_get_next(repl):
     # Find the default binding that corresponds to "operate-and-get-next"
     # and replace it with our custom function
-    for binding in repl.app._default_bindings.bindings:
-         if "operate_and_get_next" in binding.handler.__qualname__:
-            binding.handler = my_operate_and_get_next
-            break
+    operate_binding = find_default_binding(repl, "operate_and_get_next")
+    if operate_binding:
+        operate_binding.handler = my_operate_and_get_next
 
     Buffer.load_history_if_not_yet_loaded = new_load_history_if_not_yet_loaded
