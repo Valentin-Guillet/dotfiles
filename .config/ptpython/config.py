@@ -40,7 +40,6 @@ def configure(repl):
     repl.confirm_exit = False
     repl.enable_auto_suggest = False      # Line completion from history
     repl.enable_fuzzy_completion = True
-    repl.enable_history_search = True
     repl.enable_input_validation = True
     repl.enable_mouse_support = True
     repl.enable_open_in_editor = True     # 'C-x C-e' (emacs) or 'v' (vim)
@@ -91,8 +90,35 @@ def configure(repl):
     }
     add_abbrev(corrections_bracket, "(")
 
+    set_history_search(repl)
     fix_history()
     fix_operate_and_get_next(repl)
+
+
+# SET HISTORY SEARCH
+
+# By default, [Up|Down] and [C-p|C-n] do the same thing. Here, we modify
+# these key bindings so that [Up|Down] set `repl.enable_history_search`
+# to True before calling handler (so we only search in history), whereas
+# [C-p|C-n] set it to false (so we don't search in history)
+def set_history_search(repl):
+    def wrap_handler(repl, enable_history_search, handler):
+        def wrapped_handler(event):
+            repl.enable_history_search = enable_history_search
+            handler(event)
+        return wrapped_handler
+
+    up_binding = find_default_binding(repl, "load_basic_bindings.<locals>._go_up")
+    up_binding.handler = wrap_handler(repl, True, up_binding.handler)
+
+    down_binding = find_default_binding(repl, "load_basic_bindings.<locals>._go_down")
+    down_binding.handler = wrap_handler(repl, True, down_binding.handler)
+
+    c_p_binding = find_default_binding(repl, "load_emacs_bindings.<locals>._prev")
+    c_p_binding.handler = wrap_handler(repl, False, c_p_binding.handler)
+
+    c_n_binding = find_default_binding(repl, "load_emacs_bindings.<locals>._next")
+    c_n_binding.handler = wrap_handler(repl, False, c_n_binding.handler)
 
 
 # HISTORY FIX
