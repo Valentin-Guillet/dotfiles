@@ -37,6 +37,9 @@
 !.config/powershell/
 !.config/powershell/**
 
+!.config/ptpython
+!.config/ptpython/**
+
 !.config/python
 !.config/python/**
 
