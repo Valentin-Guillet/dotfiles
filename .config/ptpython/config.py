@@ -75,50 +75,10 @@ def configure(repl):
     }
     add_abbrev(corrections_bracket, "(")
 
+    fix_history()
 
-# There seem to be no easy way to modify the history tab shortcuts, as a
-# new `PythonHistory` object is created each time we press the history key,
-# which redefines its shortcuts. So we define a custom function that modifies
-# the default keybindings, and insert it in the creation of the `PythonHistory`
-# object. As we redefine the `enter_history` function in which the history
-# object is created (cf. below), we can add it here.
-# If we did not redefine this function, we could monkey patch the
-# `PythonHistorty.__init__` method
-def setup_history_keybindings(history):
-    # Fix editing mode issue
-    history.app.key_bindings.remove("f4")
 
-    @history.app.key_bindings.add("f4")
-    def _(event):
-        history.python_input.vi_mode = not history.python_input.vi_mode
-        if history.python_input.vi_mode:
-            event.app.editing_mode = EditingMode.VI
-        else:
-            event.app.editing_mode = EditingMode.EMACS
-
-    # We want to modify / remove bindings from the default key bindings
-    # in the history tab, such as q to record a macro
-    # The default key bindings are in `history.app._default_bindings`,
-    # which is a _MergedKeyBindings object.
-    # This object has a list of all bindings in `_bindings2.bindings`,
-    # which is populated when getting the property `bindings`
-    # So first, we call the property to populate `_bindings2`
-    history.app._default_bindings.bindings
-
-    # Then, we can remove `q` from default bindings to get it to
-    # exit history instead of recording a macro
-    history.app._default_bindings._bindings2.remove("q", Keys.Any)
-
-    # Similarly, we remove `escape` that switches from Vi insert mode
-    # to navigation mode (useless in history)
-    history.app._default_bindings._bindings2.remove("escape")
-
-    # We can now add `escape` to quit the history tab
-    main_buffer_focused = HasFocus(history.history_buffer) | HasFocus(history.default_buffer)
-
-    @history.app.key_bindings.add("escape", filter=main_buffer_focused)
-    def _(event):
-        event.app.exit(result=None)
+# HISTORY FIX
 
 # The `PythonInput.enter_history` is bugged: it does not control the input
 # mode correctly. There's two errors:
@@ -129,7 +89,7 @@ def setup_history_keybindings(history):
 #
 # In addition, we set the default input mode as VI in history tab, and we call
 # a custom function on the PythonHistory object in order to customize key bindings
-# (cf. setup_history_keybindings above)
+# (cf. setup_history_keybindings below)
 def new_enter_history(self):
     app = self.app
     app.vi_state.input_mode = InputMode.NAVIGATION
@@ -162,5 +122,52 @@ def new_enter_history(self):
 
     asyncio.ensure_future(do_in_terminal())
 
-PythonInput.enter_history = new_enter_history
+# There seem to be no easy way to modify the history tab shortcuts, as a
+# new `PythonHistory` object is created each time we press the history key,
+# which redefines its shortcuts. So we define a custom function that modifies
+# the default keybindings, and insert it in the creation of the `PythonHistory`
+# object. As we redefine the `enter_history` function in which the history
+# object is created (cf. above), we can add it here.
+# NB: if we did not redefine this function, another solution would be to
+# monkey patch the `PythonHistorty.__init__` method
+def setup_history_keybindings(history):
+    # Fix editing mode issue
+    history.app.key_bindings.remove("f4")
+
+    @history.app.key_bindings.add("escape", "v")
+    @history.app.key_bindings.add("f4")
+    def _(event):
+        history.python_input.vi_mode = not history.python_input.vi_mode
+        if history.python_input.vi_mode:
+            event.app.editing_mode = EditingMode.VI
+        else:
+            event.app.editing_mode = EditingMode.EMACS
+
+    # We want to modify / remove bindings from the default key bindings
+    # in the history tab, such as q to record a macro in Vi mode
+    # The default key bindings are in `history.app._default_bindings`,
+    # which is a _MergedKeyBindings object.
+    # This object has a list of all bindings in `_bindings2.bindings`,
+    # which is populated when getting the property `bindings`
+    # So first, we call the property to populate `_bindings2`
+    _ = history.app._default_bindings.bindings
+
+    # Then, we can remove `q` from default bindings to get it to
+    # exit history instead of recording a macro
+    history.app._default_bindings._bindings2.remove("q", Keys.Any)
+
+    # Similarly, we remove `escape` that switches from Vi insert mode
+    # to navigation mode (useless in history)
+    history.app._default_bindings._bindings2.remove("escape")
+
+    # We can now add `escape` to quit the history tab
+    main_buffer_focused = HasFocus(history.history_buffer) | HasFocus(history.default_buffer)
+
+    @history.app.key_bindings.add("escape", filter=main_buffer_focused)
+    def _(event):
+        event.app.exit(result=None)
+
+def fix_history():
+    PythonInput.enter_history = new_enter_history
+
 
