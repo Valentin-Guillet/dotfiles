@@ -11,6 +11,8 @@ from ptpython.python_input import PythonInput
 __all__ = ["configure"]
 
 
+# GENERAL CONFIGURATION
+
 def configure(repl):
     """
     Configuration method. This is called during the start-up of ptpython.
@@ -35,10 +37,19 @@ def configure(repl):
     repl.show_signature = False
     repl.show_status_bar = True
 
+    @repl.add_key_binding("escape", "b")
+    def _(event):
+        breakpoint()
+
     # `kj` to escape vi-mode
     @repl.add_key_binding("k", "j", filter=ViInsertMode())
     def _(event):
         event.cli.key_processor.feed(KeyPress(Keys("escape")))
+
+    # `M-v` to switch between emacs- and vi-mode
+    @repl.add_key_binding("escape", "v")
+    def _(event):
+        repl.vi_mode = not repl.vi_mode
 
     # Simple autocorrections
     def add_abbrev(abbreviations, key):
