@@ -91,6 +91,7 @@ def configure(repl):
     add_abbrev(corrections_bracket, "(")
 
     set_history_search(repl)
+    set_revert_line(repl)
     fix_history()
     fix_operate_and_get_next(repl)
 
@@ -119,6 +120,66 @@ def set_history_search(repl):
 
     c_n_binding = find_default_binding(repl, "load_emacs_bindings.<locals>._next")
     c_n_binding.handler = wrap_handler(repl, False, c_n_binding.handler)
+
+
+# REVERT LINE
+
+# We replace the `Buffer._set_text` method to save a copy of the currently
+# modified line to be reverted by the `M-r` keybinding
+# When reverting, we check whether a version of the line has been saved,
+# we restore it if needed and we clear it from the revert memory.
+# We also modify the accept handler of the default buffer to clear the
+# memory when accepting an input, as the modifications made on any line
+# are not saved anyway
+
+def new_set_text(self, value):
+    working_index = self.working_index
+    working_lines = self._working_lines
+
+    original_value = working_lines[working_index]
+    working_lines[working_index] = value
+
+    # Saving original line in revert memory if we're modifying line from the history
+    # (i.e. not the last one as it corresponds to the new input line)
+    if working_index < len(working_lines) - 1 and working_index not in self._revert_line_memory:
+        self._revert_line_memory[working_index] = original_value
+
+    if len(value) != len(original_value):
+        return True
+    elif value != original_value:
+        return True
+    return False
+
+def revert_line(self):
+    # Clear text when reverting on new input line
+    if self.working_index == len(self._working_lines) - 1:
+        self.text = ""
+        return
+
+    # Nothing to revert
+    if self.working_index not in self._revert_line_memory:
+        return
+
+    self.text = self._revert_line_memory[self.working_index]
+    self.cursor_position += self.document.get_end_of_line_position()
+    del self._revert_line_memory[self.working_index]
+
+def wrap_accept(handler):
+    def wrapped_handler(self, *args, **kwargs):
+        self._revert_line_memory.clear()
+        return handler(self, *args, **kwargs)
+    return wrapped_handler
+
+def set_revert_line(repl):
+    @repl.add_key_binding("escape", "r", filter=HasFocus(repl.default_buffer))
+    def _(event):
+        event.current_buffer.revert_line()
+
+    Buffer._revert_line_memory = {}
+    Buffer._set_text = new_set_text
+    Buffer.revert_line = revert_line
+
+    repl.default_buffer.accept_handler = wrap_accept(repl.default_buffer.accept_handler)
 
 
 # HISTORY FIX
@@ -229,6 +290,7 @@ def fix_history():
 # So, we overwrite this function with our version of `load_history`, that checks
 # and go to a specific history line (after a `C-o` input) if a new buffer variable
 # called `operate_saved_working_index` has been set
+
 def my_operate_and_get_next(event):
     buff = event.current_buffer
     new_index = buff.working_index + 1
@@ -262,8 +324,6 @@ def new_load_history_if_not_yet_loaded(self):
         self._load_history_task.add_done_callback(load_history_done)
 
 def fix_operate_and_get_next(repl):
-    # Find the default binding that corresponds to "operate-and-get-next"
-    # and replace it with our custom function
     operate_binding = find_default_binding(repl, "operate_and_get_next")
     if operate_binding:
         operate_binding.handler = my_operate_and_get_next
