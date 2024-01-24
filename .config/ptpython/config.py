@@ -25,6 +25,10 @@ _custom_ui_colorscheme = {
     "pygments.name.decorator": "#fc8803",
     "pygments.name.variable.magic": "#fc8803",
     "pygments.operator": "#f9065f",
+
+    "pygments.comment.preprocfile": "#008000",    # cf. fix_traceback_file_color()
+    "pygments.generic.traceback": "#0044dd",
+    "pygments.generic.error": "#e40000",
 }
 
 # GENERAL CONFIGURATION
@@ -55,6 +59,7 @@ def configure(repl):
 
     repl.use_code_colorscheme("monokai")
     apply_custom_colorscheme(repl, _custom_ui_colorscheme)
+    fix_traceback_file_color(repl)
 
     # `kj` to escape vi-mode
     @repl.add_key_binding("k", "j", filter=ViInsertMode())
@@ -112,6 +117,23 @@ def apply_custom_colorscheme(repl, colorscheme):
     curr_style.style_rules.extend(list(colorscheme.items()))
     repl._current_style = repl._generate_style()
 
+# In traceback messages, pygments tokenize the file in which the error is found as
+# Name.Builtin (cf. pygments/lexers/python.py:L748-752), so we can't color it
+# differently than builtin functions
+# We therefore modify the lexer to replace the Name.Builtin tokens with
+# Comment.PreprocFile tokens, as these are not used in Python
+def fix_traceback_file_color(repl):
+    from pygments.lexer import bygroups
+    from pygments.lexers.python import PythonTracebackLexer
+    from pygments.token import Comment, Name, Number, Text, Whitespace
+
+    patt, _ = PythonTracebackLexer.tokens["intb"][0]
+    new_cb = bygroups(Text, Comment.PreprocFile, Text, Number, Text, Name, Whitespace)
+    PythonTracebackLexer.tokens["intb"][0] = (patt, new_cb)
+
+    patt, _ = PythonTracebackLexer.tokens["intb"][1]
+    new_cb = bygroups(Text, Comment.PreprocFile, Text, Number, Whitespace)
+    PythonTracebackLexer.tokens["intb"][1] = (patt, new_cb)
 
 # SET HISTORY SEARCH
 
@@ -296,7 +318,7 @@ def fix_history():
 
 # The `operate-and-get-next` key_binding is broken due to an async error.
 # The original `operate_and_get_next` function adds a callback to the
-# `app.pre_run_callables` list, but as the code is asynchrone, this callback
+# `app.pre_run_callables` list, but as the code is asynchronous, this callback
 # is executed right after the `buffer` object is reset, and before it is filled
 # again with the REPL history. So when executing the `set_working_index`
 # callback, the `buff._working_lines` list is empty, so the callback does nothing.
