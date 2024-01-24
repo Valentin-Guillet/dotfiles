@@ -5,7 +5,8 @@ from prompt_toolkit.application.current import get_app
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.buffer import logger as buffer_logger
 from prompt_toolkit.enums import EditingMode
-from prompt_toolkit.filters import HasFocus, ViInsertMode
+from prompt_toolkit.filters import HasFocus, ViInsertMode, emacs_insert_mode, has_selection
+from prompt_toolkit.key_binding.bindings.named_commands import get_by_name
 from prompt_toolkit.key_binding.key_processor import KeyPress
 from prompt_toolkit.key_binding.vi_state import InputMode
 from prompt_toolkit.keys import Keys
@@ -66,10 +67,18 @@ def configure(repl):
     def _(event):
         event.cli.key_processor.feed(KeyPress(Keys("escape")))
 
-    # `M-v` to switch between emacs- and vi-mode
-    @repl.add_key_binding("escape", "v")
+    # `M-x` to switch between emacs- and vi-mode
+    @repl.add_key_binding("escape", "x")
     def _(event):
         repl.vi_mode = not repl.vi_mode
+
+    # Case modification
+    repl.add_key_binding("c-x", "c-l", filter=emacs_insert_mode)(get_by_name("downcase-word"))
+    repl.add_key_binding("c-x", "c-u", filter=emacs_insert_mode)(get_by_name("uppercase-word"))
+    repl.add_key_binding("c-x", "c-h", filter=emacs_insert_mode)(get_by_name("capitalize-word"))
+
+    # `C-v` instead of `C-q` to insert literal character
+    repl.add_key_binding("c-v", filter=~has_selection)(get_by_name("quoted-insert"))
 
     # `M-m` and `M-i` to add `help()` and `dir()` around line
     wrap_curr_line(repl, "help", ("escape", "m"))
@@ -382,7 +391,7 @@ def setup_history_keybindings(history):
     # Fix editing mode issue
     history.app.key_bindings.remove("f4")
 
-    @history.app.key_bindings.add("escape", "v")
+    @history.app.key_bindings.add("escape", "x")
     @history.app.key_bindings.add("f4")
     def _(event):
         history.python_input.vi_mode = not history.python_input.vi_mode
