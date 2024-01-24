@@ -14,6 +14,7 @@ from prompt_toolkit.keys import Keys
 from ptpython.completer import JediCompleter
 from ptpython.history_browser import PythonHistory
 from ptpython.layout import CompletionVisualisation
+from ptpython.prompt_style import PromptStyle
 from ptpython.python_input import PythonInput
 
 __all__ = ["configure"]
@@ -57,7 +58,9 @@ def configure(repl):
     repl.show_docstring = False
     repl.show_meta_enter_message = True
     repl.show_signature = False
-    repl.show_status_bar = True
+    repl.show_status_bar = False
+
+    set_prompt_style(repl)
 
     repl.use_code_colorscheme("monokai")
     apply_custom_colorscheme(repl, _custom_ui_colorscheme)
@@ -152,6 +155,37 @@ def find_default_binding(repl, function_name):
     return None
 
 
+# PROMPT STYLE
+
+class CustomPrompt(PromptStyle):
+    def __init__(self, python_input):
+        self.python_input = python_input
+
+    def in_prompt(self):
+        if self.python_input.vi_mode:
+            if self.python_input._app.vi_state.input_mode == InputMode.NAVIGATION:
+                return [("class:prompt", "n>> ")]
+            elif self.python_input._app.vi_state.input_mode == InputMode.INSERT:
+                return [("class:prompt", "i>> ")]
+            elif self.python_input._app.vi_state.input_mode == InputMode.INSERT_MULTIPLE:
+                return [("class:prompt", "I>> ")]
+            elif self.python_input._app.vi_state.input_mode == InputMode.REPLACE_SINGLE:
+                return [("class:prompt", "r>> ")]
+            elif self.python_input._app.vi_state.input_mode == InputMode.REPLACE:
+                return [("class:prompt", "R>> ")]
+        return [("class:prompt", ">>> ")]
+
+    def in2_prompt(self, width):
+        return [("class:prompt.dots", "...")]
+
+    def out_prompt(self):
+        return []
+
+def set_prompt_style(repl):
+    repl.all_prompt_styles["custom"] = CustomPrompt(repl)
+    repl.prompt_style = "custom"
+
+
 # COLORSCHEME
 
 def apply_custom_colorscheme(repl, colorscheme):
@@ -207,7 +241,7 @@ def new_load_history_if_not_yet_loaded(self):
                 del self.fixed_pre_run_callbacks[:]
 
         self._load_history_task = get_app().create_background_task(load_history())
-        def load_history_done(f: asyncio.Future[None]) -> None:
+        def load_history_done(f) -> None:
             try:
                 f.result()
             except asyncio.CancelledError:
