@@ -6,10 +6,12 @@ from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.buffer import logger as buffer_logger
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.filters import emacs_insert_mode, has_focus, has_selection, vi_insert_mode
+from prompt_toolkit.formatted_text import to_formatted_text
 from prompt_toolkit.key_binding.bindings.named_commands import get_by_name
 from prompt_toolkit.key_binding.key_processor import KeyPress
 from prompt_toolkit.key_binding.vi_state import InputMode
 from prompt_toolkit.keys import Keys
+from ptpython.completer import JediCompleter
 from ptpython.history_browser import PythonHistory
 from ptpython.layout import CompletionVisualisation
 from ptpython.python_input import PythonInput
@@ -111,6 +113,8 @@ def configure(repl):
     set_revert_line(repl)
     fix_operate_and_get_next(repl)
     fix_history()
+
+    autocomplete_add_bracket_after_function(repl)
 
 
 # UTILS
@@ -431,3 +435,39 @@ def setup_history_keybindings(history):
 
 def fix_history():
     PythonInput.enter_history = new_enter_history
+
+
+# AUTOCOMPLETE BRACKET AFTER FUNCTION
+
+# To get brackets after function completion, we first activate the jedi
+# option for it. But there's two issues then:
+# 1. for an obscure reason, when the application layout is created, the
+#    pop-up window is passed with a `menu_position()` function that sets
+#    its horizontal position to the first bracket of the completion
+#    suggestion (cf. ptpython/layout.py:L594-605)
+#    This makes the window jump horizontally when going through the
+#    completion list, so we remove this function (its a member of a
+#    BufferControl object created here: ptpython/layout.py:L608)
+# 2. the JediCompleter class automatically add a pair of brackets after
+#    a function, so with the added bracket this becomes "(()". We
+#    overwrite the function to modify the suffix to only ")"
+
+def autocomplete_add_bracket_after_function(repl):
+    import jedi.settings
+    jedi.settings.add_bracket_after_function = True
+
+    # 1.
+    repl.ptpython_layout.root_container.children[0].children[0] \
+        .children[0].content.children[0].content.menu_position = None
+
+    # 2.
+    orig_get_completions = JediCompleter.get_completions
+
+    def my_get_completions(self, *args, **kwargs):
+        completions = orig_get_completions(self, *args, **kwargs)
+        for jc in completions:
+            if jc._display_meta == "function":
+                jc.display = to_formatted_text(jc.text + ")")
+            yield jc
+
+    JediCompleter.get_completions = my_get_completions
