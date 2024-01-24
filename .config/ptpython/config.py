@@ -16,14 +16,16 @@ from ptpython.python_input import PythonInput
 __all__ = ["configure"]
 
 
-# UTILS
-
-def find_default_binding(repl, function_name):
-    for binding in repl.app._default_bindings.bindings:
-         if function_name in binding.handler.__qualname__:
-             return binding
-    return None
-
+# Cf. https://pygments.org/docs/tokens/
+_custom_ui_colorscheme = {
+    "pygments.keyword.constant": "#ae81ff",
+    "pygments.keyword.namespace": "#f9065f",
+    "pygments.literal.string": "#ffff87",
+    "pygments.name.builtin.pseudo": "#fc8803",
+    "pygments.name.decorator": "#fc8803",
+    "pygments.name.variable.magic": "#fc8803",
+    "pygments.operator": "#f9065f",
+}
 
 # GENERAL CONFIGURATION
 
@@ -51,9 +53,8 @@ def configure(repl):
     repl.show_signature = False
     repl.show_status_bar = True
 
-    @repl.add_key_binding("escape", "b")
-    def _(event):
-        breakpoint()
+    repl.use_code_colorscheme("monokai")
+    apply_custom_colorscheme(repl, _custom_ui_colorscheme)
 
     # `kj` to escape vi-mode
     @repl.add_key_binding("k", "j", filter=ViInsertMode())
@@ -93,6 +94,23 @@ def configure(repl):
     set_revert_line(repl)
     fix_history()
     fix_operate_and_get_next(repl)
+
+
+# UTILS
+
+def find_default_binding(repl, function_name):
+    for binding in repl.app._default_bindings.bindings:
+         if function_name in binding.handler.__qualname__:
+             return binding
+    return None
+
+
+# COLORSCHEME
+
+def apply_custom_colorscheme(repl, colorscheme):
+    curr_style = repl.code_styles[repl._current_code_style_name]
+    curr_style.style_rules.extend(list(colorscheme.items()))
+    repl._current_style = repl._generate_style()
 
 
 # SET HISTORY SEARCH
