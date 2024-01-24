@@ -71,6 +71,9 @@ def configure(repl):
     def _(event):
         repl.vi_mode = not repl.vi_mode
 
+    # `M-m` and `M-i` to add `help()` and `dir()` around line
+    wrap_curr_line(repl, "help", ("escape", "m"))
+    wrap_curr_line(repl, "dir", ("escape", "i"))
 
     corrections_space = {
         "improt": "import",
@@ -103,6 +106,22 @@ def add_abbrev(repl, abbreviations, key):
             b.delete_before_cursor(count=len(w))
             b.insert_text(abbreviations[w])
         b.insert_text(key)
+
+def wrap_curr_line(repl, text, keys):
+    @repl.add_key_binding(*keys)
+    def _(event):
+        buff = event.current_buffer
+        prev_text = buff.text
+        event.app.clipboard.set_text(prev_text)
+        buff.text = text + "(" + buff.text.rsplit("(", 1)[0] + ")"
+        buff.cursor_position += buff.document.get_end_of_line_position()
+
+        def yank_prev_text(buffer):
+            buffer.text = prev_text
+            buffer.cursor_position += buffer.document.get_end_of_line_position()
+
+        buff.add_pre_run_callable(yank_prev_text)
+        buff.validate_and_handle()
 
 def find_default_binding(repl, function_name):
     for binding in repl.app._default_bindings.bindings:
