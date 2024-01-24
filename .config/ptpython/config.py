@@ -59,7 +59,7 @@ def configure(repl):
 
     repl.use_code_colorscheme("monokai")
     apply_custom_colorscheme(repl, _custom_ui_colorscheme)
-    fix_traceback_file_color(repl)
+    fix_traceback_file_color()
 
     # `kj` to escape vi-mode
     @repl.add_key_binding("k", "j", filter=ViInsertMode())
@@ -71,21 +71,11 @@ def configure(repl):
     def _(event):
         repl.vi_mode = not repl.vi_mode
 
-    # Simple autocorrections
-    def add_abbrev(abbreviations, key):
-        @repl.add_key_binding(key)
-        def _(event):
-            b = event.cli.current_buffer
-            w = b.document.get_word_before_cursor()
-            if w is not None and w in abbreviations:
-                b.delete_before_cursor(count=len(w))
-                b.insert_text(abbreviations[w])
-            b.insert_text(key)
 
     corrections_space = {
-        "impotr": "import",
+        "improt": "import",
     }
-    add_abbrev(corrections_space, " ")
+    add_abbrev(repl, corrections_space, " ")
 
     corrections_bracket = {
         "pritn": "print",
@@ -93,7 +83,7 @@ def configure(repl):
         "breakpoitn": "breakpoint",
         "brekapoitn": "breakpoint",
     }
-    add_abbrev(corrections_bracket, "(")
+    add_abbrev(repl, corrections_bracket, "(")
 
     set_history_search(repl)
     set_revert_line(repl)
@@ -102,6 +92,16 @@ def configure(repl):
 
 
 # UTILS
+
+def add_abbrev(repl, abbreviations, key):
+    @repl.add_key_binding(key)
+    def _(event):
+        b = event.cli.current_buffer
+        w = b.document.get_word_before_cursor()
+        if w is not None and w in abbreviations:
+            b.delete_before_cursor(count=len(w))
+            b.insert_text(abbreviations[w])
+        b.insert_text(key)
 
 def find_default_binding(repl, function_name):
     for binding in repl.app._default_bindings.bindings:
@@ -122,7 +122,7 @@ def apply_custom_colorscheme(repl, colorscheme):
 # differently than builtin functions
 # We therefore modify the lexer to replace the Name.Builtin tokens with
 # Comment.PreprocFile tokens, as these are not used in Python
-def fix_traceback_file_color(repl):
+def fix_traceback_file_color():
     from pygments.lexer import bygroups
     from pygments.lexers.python import PythonTracebackLexer
     from pygments.token import Comment, Name, Number, Text, Whitespace
