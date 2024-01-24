@@ -879,7 +879,8 @@ function! s:TodoList_ToggleItem()
     " Store current cursor position
     let l:cursor_pos = getcurpos()
 
-    if s:TodoList_ItemIsNotDone(l:line) == 1
+    let l:is_not_done = s:TodoList_ItemIsNotDone(l:line)
+    if l:is_not_done == 1
         call s:TodoList_ForEachChild(l:lineno, 's:TodoList_SetItemDone')
     elseif s:TodoList_ItemIsDone(l:line) == 1
         call s:TodoList_ForEachChild(l:lineno, 's:TodoList_SetItemNotDone')
@@ -890,6 +891,11 @@ function! s:TodoList_ToggleItem()
     " Restore the current position
     " Using the {curswant} value to set the proper column
     call cursor(l:cursor_pos[1], l:cursor_pos[4])
+
+    " Go to next item if we marked
+    if l:is_not_done == 1
+        call s:TodoList_GoToNextSiblingItem('n')
+    endif
 endfunction
 
 
