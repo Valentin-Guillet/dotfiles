@@ -72,6 +72,16 @@ def configure(repl):
     def _(event):
         repl.vi_mode = not repl.vi_mode
 
+    # `M-c` to show function docstring
+    @repl.add_key_binding("escape", "c")
+    def _(event):
+        repl.show_docstring = not repl.show_docstring
+
+    # `M-v` to show function signature
+    @repl.add_key_binding("escape", "v")
+    def _(event):
+        repl.show_signature = not repl.show_signature
+
     # Case modification
     repl.add_key_binding("c-x", "c-l", filter=emacs_insert_mode)(get_by_name("downcase-word"))
     repl.add_key_binding("c-x", "c-u", filter=emacs_insert_mode)(get_by_name("uppercase-word"))
