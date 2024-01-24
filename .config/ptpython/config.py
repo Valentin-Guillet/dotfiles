@@ -5,7 +5,7 @@ from prompt_toolkit.application.current import get_app
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.buffer import logger as buffer_logger
 from prompt_toolkit.enums import EditingMode
-from prompt_toolkit.filters import HasFocus, ViInsertMode, emacs_insert_mode, has_selection
+from prompt_toolkit.filters import emacs_insert_mode, has_focus, has_selection, vi_insert_mode
 from prompt_toolkit.key_binding.bindings.named_commands import get_by_name
 from prompt_toolkit.key_binding.key_processor import KeyPress
 from prompt_toolkit.key_binding.vi_state import InputMode
@@ -45,7 +45,6 @@ def configure(repl):
     repl.complete_while_typing = False
     repl.confirm_exit = False
     repl.enable_auto_suggest = False      # Line completion from history
-    repl.enable_fuzzy_completion = True
     repl.enable_input_validation = True
     repl.enable_mouse_support = True
     repl.enable_open_in_editor = True     # 'C-x C-e' (emacs) or 'v' (vim)
@@ -63,7 +62,7 @@ def configure(repl):
     fix_traceback_file_color()
 
     # `kj` to escape vi-mode
-    @repl.add_key_binding("k", "j", filter=ViInsertMode())
+    @repl.add_key_binding("k", "j", filter=vi_insert_mode)
     def _(event):
         event.cli.key_processor.feed(KeyPress(Keys("escape")))
 
@@ -273,11 +272,7 @@ def new_set_text(self, value):
     if working_index < len(working_lines) - 1 and working_index not in self._revert_line_memory:
         self._revert_line_memory[working_index] = original_value
 
-    if len(value) != len(original_value):
-        return True
-    elif value != original_value:
-        return True
-    return False
+    return len(value) != len(original_value) or value != original_value
 
 def revert_line(self):
     # Clear text when reverting on new input line
@@ -300,7 +295,7 @@ def wrap_accept(handler):
     return wrapped_handler
 
 def set_revert_line(repl):
-    @repl.add_key_binding("escape", "r", filter=HasFocus(repl.default_buffer))
+    @repl.add_key_binding("escape", "r", filter=has_focus(repl.default_buffer))
     def _(event):
         event.current_buffer.revert_line()
 
@@ -428,7 +423,7 @@ def setup_history_keybindings(history):
     history.app._default_bindings._bindings2.remove("escape")
 
     # We can now add `escape` to quit the history tab
-    main_buffer_focused = HasFocus(history.history_buffer) | HasFocus(history.default_buffer)
+    main_buffer_focused = has_focus(history.history_buffer) | has_focus(history.default_buffer)
 
     @history.app.key_bindings.add("escape", filter=main_buffer_focused)
     def _(event):
