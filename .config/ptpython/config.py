@@ -6,8 +6,6 @@ from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.buffer import logger as buffer_logger
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.filters import HasFocus, ViInsertMode
-from prompt_toolkit.key_binding.bindings.named_commands import _readline_commands
-from prompt_toolkit.key_binding.key_bindings import key_binding
 from prompt_toolkit.key_binding.key_processor import KeyPress
 from prompt_toolkit.key_binding.vi_state import InputMode
 from prompt_toolkit.keys import Keys
@@ -35,6 +33,7 @@ def configure(repl):
 
     :param repl: `PythonRepl` instance.
     """
+    repl.accept_input_on_enter = 3
     repl.completion_visualisation = CompletionVisualisation.POP_UP
     repl.complete_while_typing = False
     repl.confirm_exit = False
