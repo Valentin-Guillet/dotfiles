@@ -85,10 +85,11 @@ def configure(repl):
     }
     add_abbrev(repl, corrections_bracket, "(")
 
+    fix_buffer_pre_run_callables()
     set_history_search(repl)
     set_revert_line(repl)
-    fix_history()
     fix_operate_and_get_next(repl)
+    fix_history()
 
 
 # UTILS
@@ -134,6 +135,57 @@ def fix_traceback_file_color():
     patt, _ = PythonTracebackLexer.tokens["intb"][1]
     new_cb = bygroups(Text, Comment.PreprocFile, Text, Number, Whitespace)
     PythonTracebackLexer.tokens["intb"][1] = (patt, new_cb)
+
+
+# FIX BUFFER PRE RUN CALLABLES
+
+# There seems to be a bug in the prompt_toolkit Application class regarding
+# the use of pre_run_callables, due to the asynchronous nature of the code.
+# Indeed, the callbacks in the `app.pre_run_callables` list are executed right
+# after the `buffer` object is reset, and before it is filled again with the
+# REPL history.
+# This is an issue for the `operate_and_get_next` function which needs the Buffer
+# object to be filled in order to get the next line from history.
+#
+# To solve this issue, we add a new list of callbacks to the Buffer class, and
+# execute them after the history has been loaded (which is defined in the
+# `load_history_if_not_yet_loaded` method that we overwrite)
+#
+# We also define a `Buffer.add_pre_run_callable` helper method that adds a callback
+# to this new `fixed_pre_run_callbacks` list
+def new_load_history_if_not_yet_loaded(self):
+    if self._load_history_task is None:
+        async def load_history():
+            async for item in self.history.load():
+                self._working_lines.appendleft(item)
+                self._Buffer__working_index += 1
+
+            if hasattr(self, "fixed_pre_run_callbacks"):
+                for c in self.fixed_pre_run_callbacks:
+                    c(self)
+                del self.fixed_pre_run_callbacks[:]
+
+        self._load_history_task = get_app().create_background_task(load_history())
+        def load_history_done(f: asyncio.Future[None]) -> None:
+            try:
+                f.result()
+            except asyncio.CancelledError:
+                pass
+            except GeneratorExit:
+                pass
+            except BaseException:
+                buffer_logger.exception("Loading history failed")
+        self._load_history_task.add_done_callback(load_history_done)
+
+def add_pre_run_callable(self, callback):
+    if not hasattr(self, "fixed_pre_run_callbacks"):
+        self.fixed_pre_run_callbacks = []
+    self.fixed_pre_run_callbacks.append(callback)
+
+def fix_buffer_pre_run_callables():
+    Buffer.load_history_if_not_yet_loaded = new_load_history_if_not_yet_loaded
+    Buffer.add_pre_run_callable = add_pre_run_callable
+
 
 # SET HISTORY SEARCH
 
@@ -219,6 +271,40 @@ def set_revert_line(repl):
     Buffer.revert_line = revert_line
 
     repl.default_buffer.accept_handler = wrap_accept(repl.default_buffer.accept_handler)
+
+
+# OPERATE-AND-GET-NEXT FIX
+
+# The `operate-and-get-next` key_binding is broken due to an async error.
+# The original `operate_and_get_next` function adds a callback to the
+# `app.pre_run_callables` list, but as the code is asynchronous, this callback
+# is executed right after the `buffer` object is reset, and before it is filled
+# again with the REPL history. So when executing the `set_working_index`
+# callback, the `buff._working_lines` list is empty, so the callback does nothing.
+# The only way to fix this I found is to execute the callback right after
+# the history has been filled again, which is done in the asynchronous `load_history`
+# function in the `load_history_if_not_yet_loaded` Buffer method.
+#
+# So, we overwrite this function with our version of `load_history`, that checks
+# and go to a specific history line (after a `C-o` input) if a new buffer variable
+# called `operate_saved_working_index` has been set
+
+def my_operate_and_get_next(event):
+    buff = event.current_buffer
+    new_index = buff.working_index + 1
+    buff.validate_and_handle()
+
+    def set_working_index(buffer):
+        if new_index < len(buffer._working_lines):
+            buffer.working_index = new_index
+            buffer.cursor_position += buffer.document.get_end_of_line_position()
+
+    buff.add_pre_run_callable(set_working_index)
+
+def fix_operate_and_get_next(repl):
+    operate_binding = find_default_binding(repl, "operate_and_get_next")
+    if operate_binding:
+        operate_binding.handler = my_operate_and_get_next
 
 
 # HISTORY FIX
@@ -312,59 +398,3 @@ def setup_history_keybindings(history):
 
 def fix_history():
     PythonInput.enter_history = new_enter_history
-
-
-# OPERATE-AND-GET-NEXT FIX
-
-# The `operate-and-get-next` key_binding is broken due to an async error.
-# The original `operate_and_get_next` function adds a callback to the
-# `app.pre_run_callables` list, but as the code is asynchronous, this callback
-# is executed right after the `buffer` object is reset, and before it is filled
-# again with the REPL history. So when executing the `set_working_index`
-# callback, the `buff._working_lines` list is empty, so the callback does nothing.
-# The only way to fix this I found is to execute the callback right after
-# the history has been filled again, which is done in the asynchronous `load_history`
-# function in the `load_history_if_not_yet_loaded` Buffer method.
-#
-# So, we overwrite this function with our version of `load_history`, that checks
-# and go to a specific history line (after a `C-o` input) if a new buffer variable
-# called `operate_saved_working_index` has been set
-
-def my_operate_and_get_next(event):
-    buff = event.current_buffer
-    new_index = buff.working_index + 1
-    buff.validate_and_handle()
-    def set_working_index():
-        buff.operate_saved_working_index = new_index
-    event.app.pre_run_callables.append(set_working_index)
-
-def new_load_history_if_not_yet_loaded(self):
-    if self._load_history_task is None:
-        async def load_history():
-            async for item in self.history.load():
-                self._working_lines.appendleft(item)
-                self._Buffer__working_index += 1
-
-            if hasattr(self, "operate_saved_working_index") and self.operate_saved_working_index < len(self._working_lines):
-                self._Buffer__working_index = self.operate_saved_working_index
-                self.cursor_position += self.document.get_end_of_line_position()
-                del self.operate_saved_working_index
-
-        self._load_history_task = get_app().create_background_task(load_history())
-        def load_history_done(f: asyncio.Future[None]) -> None:
-            try:
-                f.result()
-            except asyncio.CancelledError:
-                pass
-            except GeneratorExit:
-                pass
-            except BaseException:
-                buffer_logger.exception("Loading history failed")
-        self._load_history_task.add_done_callback(load_history_done)
-
-def fix_operate_and_get_next(repl):
-    operate_binding = find_default_binding(repl, "operate_and_get_next")
-    if operate_binding:
-        operate_binding.handler = my_operate_and_get_next
-
-    Buffer.load_history_if_not_yet_loaded = new_load_history_if_not_yet_loaded
