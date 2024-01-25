@@ -103,21 +103,8 @@ def configure(repl):
     repl.add_key_binding("c-v", filter=~has_selection & ~vi_navigation_mode)(get_by_name("quoted-insert"))
 
     # `M-m` and `M-i` to add `help()` and `dir()` around line
-    wrap_curr_line(repl, "help", ("escape", "m"))
-    wrap_curr_line(repl, "dir", ("escape", "i"))
-
-    corrections_space = {
-        "improt": "import",
-    }
-    add_abbrev(repl, corrections_space, " ")
-
-    corrections_bracket = {
-        "pritn": "print",
-        "brekapoint": "breakpoint",
-        "breakpoitn": "breakpoint",
-        "brekapoitn": "breakpoint",
-    }
-    add_abbrev(repl, corrections_bracket, "(")
+    add_around_line(repl, "help", ("escape", "m"))
+    add_around_line(repl, "dir", ("escape", "i"))
 
     fix_buffer_pre_run_callables()
     set_history_search(repl)
@@ -128,10 +115,32 @@ def configure(repl):
 
     autocomplete_add_bracket_after_function(repl)
 
+    corrections_space = {
+        "improt": "import",
+    }
+    set_abbreviations(repl, corrections_space, " ")
+
+    corrections_bracket = {
+        "pritn": "print",
+        "brekapoint": "breakpoint",
+        "breakpoitn": "breakpoint",
+        "brekapoitn": "breakpoint",
+    }
+    set_abbreviations(repl, corrections_bracket, "(")
+
 
 # UTILS
 
-def add_abbrev(repl, abbreviations, key):
+def find_default_binding(repl, function_name):
+    for binding in repl.app._default_bindings.bindings:
+         if function_name in binding.handler.__qualname__:
+             return binding
+    return None
+
+
+# ABBREVIATIONS / CORRECTIONS
+
+def set_abbreviations(repl, abbreviations, key):
     @repl.add_key_binding(key)
     def _(event):
         b = event.cli.current_buffer
@@ -141,58 +150,41 @@ def add_abbrev(repl, abbreviations, key):
             b.insert_text(abbreviations[w])
         b.insert_text(key)
 
-def wrap_curr_line(repl, text, keys):
-    @repl.add_key_binding(*keys)
-    def _(event):
-        buff = event.current_buffer
-        prev_text = buff.text
-        event.app.clipboard.set_text(prev_text)
-        buff.text = text + "(" + buff.text.rsplit("(", 1)[0] + ")"
-        buff.cursor_position += buff.document.get_end_of_line_position()
 
-        def yank_prev_text(buffer):
-            buffer.text = prev_text
-            buffer.cursor_position += buffer.document.get_end_of_line_position()
+# AUTOCOMPLETE BRACKET AFTER FUNCTION
 
-        buff.add_pre_run_callable(yank_prev_text)
-        buff.validate_and_handle()
+# To get brackets after function completion, we first activate the jedi
+# option for it. But there's two issues then:
+# 1. for an obscure reason, when the application layout is created, the
+#    pop-up window is passed with a `menu_position()` function that sets
+#    its horizontal position to the first bracket of the completion
+#    suggestion (cf. ptpython/layout.py:L594-605)
+#    This makes the window jump horizontally when going through the
+#    completion list, so we remove this function (its a member of a
+#    BufferControl object created here: ptpython/layout.py:L608)
+# 2. the JediCompleter class automatically add a pair of brackets after
+#    a function, so with the added bracket this becomes "(()". We
+#    overwrite the function to modify the suffix to only ")"
 
-def find_default_binding(repl, function_name):
-    for binding in repl.app._default_bindings.bindings:
-         if function_name in binding.handler.__qualname__:
-             return binding
-    return None
+def autocomplete_add_bracket_after_function(repl):
+    import jedi.settings
+    jedi.settings.add_bracket_after_function = True
 
+    # 1.
+    repl.ptpython_layout.root_container.children[0].children[0] \
+        .children[0].content.children[0].content.menu_position = None
 
-# PROMPT STYLE
+    # 2.
+    orig_get_completions = JediCompleter.get_completions
 
-class CustomPrompt(PromptStyle):
-    def __init__(self, python_input):
-        self.python_input = python_input
+    def my_get_completions(self, *args, **kwargs):
+        completions = orig_get_completions(self, *args, **kwargs)
+        for jc in completions:
+            if jc._display_meta == "function":
+                jc.display = to_formatted_text(jc.text + ")")
+            yield jc
 
-    def in_prompt(self):
-        if self.python_input.vi_mode:
-            if self.python_input._app.vi_state.input_mode == InputMode.NAVIGATION:
-                return [("class:prompt", "n>> ")]
-            elif self.python_input._app.vi_state.input_mode == InputMode.INSERT:
-                return [("class:prompt", "i>> ")]
-            elif self.python_input._app.vi_state.input_mode == InputMode.INSERT_MULTIPLE:
-                return [("class:prompt", "I>> ")]
-            elif self.python_input._app.vi_state.input_mode == InputMode.REPLACE_SINGLE:
-                return [("class:prompt", "r>> ")]
-            elif self.python_input._app.vi_state.input_mode == InputMode.REPLACE:
-                return [("class:prompt", "R>> ")]
-        return [("class:prompt", ">>> ")]
-
-    def in2_prompt(self, width):
-        return [("class:prompt.dots", "...")]
-
-    def out_prompt(self):
-        return []
-
-def set_prompt_style(repl):
-    repl.all_prompt_styles["custom"] = CustomPrompt(repl)
-    repl.prompt_style = "custom"
+    JediCompleter.get_completions = my_get_completions
 
 
 # COLORSCHEME
@@ -219,6 +211,40 @@ def fix_traceback_file_color():
     patt, _ = PythonTracebackLexer.tokens["intb"][1]
     new_cb = bygroups(Text, Comment.PreprocFile, Text, Number, Whitespace)
     PythonTracebackLexer.tokens["intb"][1] = (patt, new_cb)
+
+
+# EMACS BINDINGS IN VI INSERT MODE
+
+@Condition
+def not_empty_line_filter():
+    app = get_app()
+    return bool(app.current_buffer.document.current_line)
+
+def set_emacs_bindings_in_vi_insert(repl):
+    focused_insert = has_focus(DEFAULT_BUFFER) & vi_insert_mode
+
+    # Filter on non-empty line to keep the exit-repl default binding
+    repl.add_key_binding("c-d", filter=focused_insert & not_empty_line_filter)(get_by_name("delete-char"))
+
+    keys_cmd_dict = {
+        ("c-a", ): get_by_name("beginning-of-line"),
+        ("c-b", ): get_by_name("backward-char"),
+        ("c-e", ): get_by_name("end-of-line"),
+        ("c-f", ): get_by_name("forward-char"),
+        ("c-k", ): get_by_name("kill-line"),
+        ("c-w", ): get_by_name("unix-word-rubout"),
+        ("c-y", ): get_by_name("yank"),
+        ("c-_", ): get_by_name("undo"),
+        ("c-x", "c-e"): get_by_name("edit-and-execute-command"),
+        ("c-x", "e"): get_by_name("edit-and-execute-command"),
+        ("escape", "b"): get_by_name("backward-word"),
+        ("escape", "d"): get_by_name("kill-word"),
+        ("escape", "f"): get_by_name("forward-word"),
+        ("escape", "c-h" ): get_by_name("backward-kill-word"),
+    }
+
+    for keys, cmd in keys_cmd_dict.items():
+        repl.add_key_binding(*keys, filter=focused_insert)(cmd)
 
 
 # FIX BUFFER PRE RUN CALLABLES
@@ -269,156 +295,6 @@ def add_pre_run_callable(self, callback):
 def fix_buffer_pre_run_callables():
     Buffer.load_history_if_not_yet_loaded = new_load_history_if_not_yet_loaded
     Buffer.add_pre_run_callable = add_pre_run_callable
-
-
-# SET HISTORY SEARCH
-
-# By default, [Up|Down] and [C-p|C-n] do the same thing. Here, we modify
-# these key bindings so that [Up|Down] set `repl.enable_history_search`
-# to True before calling handler (so we only search in history), whereas
-# [C-p|C-n] set it to false (so we don't search in history)
-def set_history_search(repl):
-    def wrap_handler(repl, enable_history_search, handler):
-        def wrapped_handler(event):
-            repl.enable_history_search = enable_history_search
-            handler(event)
-        return wrapped_handler
-
-    up_binding = find_default_binding(repl, "load_basic_bindings.<locals>._go_up")
-    up_binding.handler = wrap_handler(repl, True, up_binding.handler)
-
-    down_binding = find_default_binding(repl, "load_basic_bindings.<locals>._go_down")
-    down_binding.handler = wrap_handler(repl, True, down_binding.handler)
-
-    c_p_binding = find_default_binding(repl, "load_emacs_bindings.<locals>._prev")
-    c_p_binding.handler = wrap_handler(repl, False, c_p_binding.handler)
-
-    c_n_binding = find_default_binding(repl, "load_emacs_bindings.<locals>._next")
-    c_n_binding.handler = wrap_handler(repl, False, c_n_binding.handler)
-
-
-# REVERT LINE
-
-# We replace the `Buffer._set_text` method to save a copy of the currently
-# modified line to be reverted by the `M-r` keybinding
-# When reverting, we check whether a version of the line has been saved,
-# we restore it if needed and we clear it from the revert memory.
-# We also modify the accept handler of the default buffer to clear the
-# memory when accepting an input, as the modifications made on any line
-# are not saved anyway
-
-def new_set_text(self, value):
-    working_index = self.working_index
-    working_lines = self._working_lines
-
-    original_value = working_lines[working_index]
-    working_lines[working_index] = value
-
-    # Saving original line in revert memory if we're modifying line from the history
-    # (i.e. not the last one as it corresponds to the new input line)
-    if working_index < len(working_lines) - 1 and working_index not in self._revert_line_memory:
-        self._revert_line_memory[working_index] = original_value
-
-    return len(value) != len(original_value) or value != original_value
-
-def revert_line(self):
-    # Clear text when reverting on new input line
-    if self.working_index == len(self._working_lines) - 1:
-        self.text = ""
-        return
-
-    # Nothing to revert
-    if self.working_index not in self._revert_line_memory:
-        return
-
-    self.text = self._revert_line_memory[self.working_index]
-    self.cursor_position += self.document.get_end_of_line_position()
-    del self._revert_line_memory[self.working_index]
-
-def wrap_accept(handler):
-    def wrapped_handler(self, *args, **kwargs):
-        self._revert_line_memory.clear()
-        return handler(self, *args, **kwargs)
-    return wrapped_handler
-
-def set_revert_line(repl):
-    @repl.add_key_binding("escape", "r", filter=has_focus(repl.default_buffer))
-    def _(event):
-        event.current_buffer.revert_line()
-
-    Buffer._revert_line_memory = {}
-    Buffer._set_text = new_set_text
-    Buffer.revert_line = revert_line
-
-    repl.default_buffer.accept_handler = wrap_accept(repl.default_buffer.accept_handler)
-
-
-# EMACS BINDINGS IN VI INSERT MODE
-
-@Condition
-def not_empty_line_filter():
-    app = get_app()
-    return bool(app.current_buffer.document.current_line)
-
-def set_emacs_bindings_in_vi_insert(repl):
-    focused_insert = has_focus(DEFAULT_BUFFER) & vi_insert_mode
-
-    # Filter on non-empty line to keep the exit-repl default binding
-    repl.add_key_binding("c-d", filter=focused_insert & not_empty_line_filter)(get_by_name("delete-char"))
-
-    keys_cmd_dict = {
-        ("c-a", ): get_by_name("beginning-of-line"),
-        ("c-b", ): get_by_name("backward-char"),
-        ("c-e", ): get_by_name("end-of-line"),
-        ("c-f", ): get_by_name("forward-char"),
-        ("c-k", ): get_by_name("kill-line"),
-        ("c-w", ): get_by_name("unix-word-rubout"),
-        ("c-y", ): get_by_name("yank"),
-        ("c-_", ): get_by_name("undo"),
-        ("c-x", "c-e"): get_by_name("edit-and-execute-command"),
-        ("c-x", "e"): get_by_name("edit-and-execute-command"),
-        ("escape", "b"): get_by_name("backward-word"),
-        ("escape", "d"): get_by_name("kill-word"),
-        ("escape", "f"): get_by_name("forward-word"),
-        ("escape", "c-h", ): get_by_name("backward-kill-word"),
-    }
-
-    for keys, cmd in keys_cmd_dict.items():
-        repl.add_key_binding(*keys, filter=focused_insert)(cmd)
-
-
-# OPERATE-AND-GET-NEXT FIX
-
-# The `operate-and-get-next` key_binding is broken due to an async error.
-# The original `operate_and_get_next` function adds a callback to the
-# `app.pre_run_callables` list, but as the code is asynchronous, this callback
-# is executed right after the `buffer` object is reset, and before it is filled
-# again with the REPL history. So when executing the `set_working_index`
-# callback, the `buff._working_lines` list is empty, so the callback does nothing.
-# The only way to fix this I found is to execute the callback right after
-# the history has been filled again, which is done in the asynchronous `load_history`
-# function in the `load_history_if_not_yet_loaded` Buffer method.
-#
-# So, we overwrite this function with our version of `load_history`, that checks
-# and go to a specific history line (after a `C-o` input) if a new buffer variable
-# called `operate_saved_working_index` has been set
-
-def my_operate_and_get_next(event):
-    buff = event.current_buffer
-    new_index = buff.working_index + 1
-    buff.validate_and_handle()
-
-    def set_working_index(buffer):
-        if new_index < len(buffer._working_lines):
-            buffer.working_index = new_index
-            buffer.cursor_position += buffer.document.get_end_of_line_position()
-
-    buff.add_pre_run_callable(set_working_index)
-
-def fix_operate_and_get_next(repl):
-    operate_binding = find_default_binding(repl, "operate_and_get_next")
-    if operate_binding:
-        operate_binding.handler = my_operate_and_get_next
 
 
 # HISTORY FIX
@@ -514,37 +390,167 @@ def fix_history():
     PythonInput.enter_history = new_enter_history
 
 
-# AUTOCOMPLETE BRACKET AFTER FUNCTION
+# HISTORY SEARCH
 
-# To get brackets after function completion, we first activate the jedi
-# option for it. But there's two issues then:
-# 1. for an obscure reason, when the application layout is created, the
-#    pop-up window is passed with a `menu_position()` function that sets
-#    its horizontal position to the first bracket of the completion
-#    suggestion (cf. ptpython/layout.py:L594-605)
-#    This makes the window jump horizontally when going through the
-#    completion list, so we remove this function (its a member of a
-#    BufferControl object created here: ptpython/layout.py:L608)
-# 2. the JediCompleter class automatically add a pair of brackets after
-#    a function, so with the added bracket this becomes "(()". We
-#    overwrite the function to modify the suffix to only ")"
+# By default, [Up|Down] and [C-p|C-n] do the same thing. Here, we modify
+# these key bindings so that [Up|Down] set `repl.enable_history_search`
+# to True before calling handler (so we only search in history), whereas
+# [C-p|C-n] set it to false (so we don't search in history)
+def set_history_search(repl):
+    def wrap_handler(repl, enable_history_search, handler):
+        def wrapped_handler(event):
+            repl.enable_history_search = enable_history_search
+            handler(event)
+        return wrapped_handler
 
-def autocomplete_add_bracket_after_function(repl):
-    import jedi.settings
-    jedi.settings.add_bracket_after_function = True
+    up_binding = find_default_binding(repl, "load_basic_bindings.<locals>._go_up")
+    up_binding.handler = wrap_handler(repl, True, up_binding.handler)
 
-    # 1.
-    repl.ptpython_layout.root_container.children[0].children[0] \
-        .children[0].content.children[0].content.menu_position = None
+    down_binding = find_default_binding(repl, "load_basic_bindings.<locals>._go_down")
+    down_binding.handler = wrap_handler(repl, True, down_binding.handler)
 
-    # 2.
-    orig_get_completions = JediCompleter.get_completions
+    c_p_binding = find_default_binding(repl, "load_emacs_bindings.<locals>._prev")
+    c_p_binding.handler = wrap_handler(repl, False, c_p_binding.handler)
 
-    def my_get_completions(self, *args, **kwargs):
-        completions = orig_get_completions(self, *args, **kwargs)
-        for jc in completions:
-            if jc._display_meta == "function":
-                jc.display = to_formatted_text(jc.text + ")")
-            yield jc
+    c_n_binding = find_default_binding(repl, "load_emacs_bindings.<locals>._next")
+    c_n_binding.handler = wrap_handler(repl, False, c_n_binding.handler)
 
-    JediCompleter.get_completions = my_get_completions
+
+# LINE MODIFICATIONS
+
+def add_around_line(repl, text, keys):
+    @repl.add_key_binding(*keys)
+    def _(event):
+        buff = event.current_buffer
+        prev_text = buff.text
+        event.app.clipboard.set_text(prev_text)
+        buff.text = text + "(" + buff.text.rsplit("(", 1)[0] + ")"
+        buff.cursor_position += buff.document.get_end_of_line_position()
+
+        def yank_prev_text(buffer):
+            buffer.text = prev_text
+            buffer.cursor_position += buffer.document.get_end_of_line_position()
+
+        buff.add_pre_run_callable(yank_prev_text)
+        buff.validate_and_handle()
+
+
+# OPERATE-AND-GET-NEXT FIX
+
+# The `operate-and-get-next` key_binding is broken due to an async error.
+# The original `operate_and_get_next` function adds a callback to the
+# `app.pre_run_callables` list, but as the code is asynchronous, this callback
+# is executed right after the `buffer` object is reset, and before it is filled
+# again with the REPL history. So when executing the `set_working_index`
+# callback, the `buff._working_lines` list is empty, so the callback does nothing.
+# The only way to fix this I found is to execute the callback right after
+# the history has been filled again, which is done in the asynchronous `load_history`
+# function in the `load_history_if_not_yet_loaded` Buffer method.
+#
+# So, we overwrite this function with our version of `load_history`, that checks
+# and go to a specific history line (after a `C-o` input) if a new buffer variable
+# called `operate_saved_working_index` has been set
+
+def my_operate_and_get_next(event):
+    buff = event.current_buffer
+    new_index = buff.working_index + 1
+    buff.validate_and_handle()
+
+    def set_working_index(buffer):
+        if new_index < len(buffer._working_lines):
+            buffer.working_index = new_index
+            buffer.cursor_position += buffer.document.get_end_of_line_position()
+
+    buff.add_pre_run_callable(set_working_index)
+
+def fix_operate_and_get_next(repl):
+    operate_binding = find_default_binding(repl, "operate_and_get_next")
+    if operate_binding:
+        operate_binding.handler = my_operate_and_get_next
+
+
+# PROMPT STYLE
+
+class CustomPrompt(PromptStyle):
+    def __init__(self, python_input):
+        self.python_input = python_input
+
+    def in_prompt(self):
+        if self.python_input.vi_mode:
+            if self.python_input._app.vi_state.input_mode == InputMode.NAVIGATION:
+                return [("class:prompt", "n>> ")]
+            elif self.python_input._app.vi_state.input_mode == InputMode.INSERT:
+                return [("class:prompt", "i>> ")]
+            elif self.python_input._app.vi_state.input_mode == InputMode.INSERT_MULTIPLE:
+                return [("class:prompt", "I>> ")]
+            elif self.python_input._app.vi_state.input_mode == InputMode.REPLACE_SINGLE:
+                return [("class:prompt", "r>> ")]
+            elif self.python_input._app.vi_state.input_mode == InputMode.REPLACE:
+                return [("class:prompt", "R>> ")]
+        return [("class:prompt", ">>> ")]
+
+    def in2_prompt(self, width):
+        return [("class:prompt.dots", "...")]
+
+    def out_prompt(self):
+        return []
+
+def set_prompt_style(repl):
+    repl.all_prompt_styles["custom"] = CustomPrompt(repl)
+    repl.prompt_style = "custom"
+
+
+# REVERT LINE
+
+# We replace the `Buffer._set_text` method to save a copy of the currently
+# modified line to be reverted by the `M-r` keybinding
+# When reverting, we check whether a version of the line has been saved,
+# we restore it if needed and we clear it from the revert memory.
+# We also modify the accept handler of the default buffer to clear the
+# memory when accepting an input, as the modifications made on any line
+# are not saved anyway
+
+def new_set_text(self, value):
+    working_index = self.working_index
+    working_lines = self._working_lines
+
+    original_value = working_lines[working_index]
+    working_lines[working_index] = value
+
+    # Saving original line in revert memory if we're modifying line from the history
+    # (i.e. not the last one as it corresponds to the new input line)
+    if working_index < len(working_lines) - 1 and working_index not in self._revert_line_memory:
+        self._revert_line_memory[working_index] = original_value
+
+    return len(value) != len(original_value) or value != original_value
+
+def revert_line(self):
+    # Clear text when reverting on new input line
+    if self.working_index == len(self._working_lines) - 1:
+        self.text = ""
+        return
+
+    # Nothing to revert
+    if self.working_index not in self._revert_line_memory:
+        return
+
+    self.text = self._revert_line_memory[self.working_index]
+    self.cursor_position += self.document.get_end_of_line_position()
+    del self._revert_line_memory[self.working_index]
+
+def wrap_accept(handler):
+    def wrapped_handler(self, *args, **kwargs):
+        self._revert_line_memory.clear()
+        return handler(self, *args, **kwargs)
+    return wrapped_handler
+
+def set_revert_line(repl):
+    @repl.add_key_binding("escape", "r", filter=has_focus(repl.default_buffer))
+    def _(event):
+        event.current_buffer.revert_line()
+
+    Buffer._revert_line_memory = {}
+    Buffer._set_text = new_set_text
+    Buffer.revert_line = revert_line
+
+    repl.default_buffer.accept_handler = wrap_accept(repl.default_buffer.accept_handler)
