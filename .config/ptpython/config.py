@@ -5,7 +5,15 @@ from prompt_toolkit.application.current import get_app
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.buffer import logger as buffer_logger
 from prompt_toolkit.enums import EditingMode
-from prompt_toolkit.filters import emacs_insert_mode, has_focus, has_selection, vi_insert_mode
+from prompt_toolkit.filters import (
+    emacs_insert_mode,
+    has_focus,
+    has_selection,
+    vi_insert_mode,
+    vi_insert_multiple_mode,
+    vi_navigation_mode,
+    vi_replace_mode,
+)
 from prompt_toolkit.formatted_text import to_formatted_text
 from prompt_toolkit.key_binding.bindings.named_commands import get_by_name
 from prompt_toolkit.key_binding.key_processor import KeyPress
@@ -67,9 +75,9 @@ def configure(repl):
     fix_traceback_file_color()
 
     # `kj` to escape vi-mode
-    @repl.add_key_binding("k", "j", filter=vi_insert_mode)
+    @repl.add_key_binding("k", "j", filter=vi_insert_mode | vi_insert_multiple_mode | vi_replace_mode)
     def _(event):
-        event.cli.key_processor.feed(KeyPress(Keys("escape")))
+        repl.app.vi_state.input_mode = InputMode.NAVIGATION
 
     # `M-x` to switch between emacs- and vi-mode
     @repl.add_key_binding("escape", "x")
@@ -92,7 +100,7 @@ def configure(repl):
     repl.add_key_binding("c-x", "c-h", filter=emacs_insert_mode)(get_by_name("capitalize-word"))
 
     # `C-v` instead of `C-q` to insert literal character
-    repl.add_key_binding("c-v", filter=~has_selection)(get_by_name("quoted-insert"))
+    repl.add_key_binding("c-v", filter=~has_selection & ~vi_navigation_mode)(get_by_name("quoted-insert"))
 
     # `M-m` and `M-i` to add `help()` and `dir()` around line
     wrap_curr_line(repl, "help", ("escape", "m"))
