@@ -4,8 +4,9 @@ import asyncio
 from prompt_toolkit.application.current import get_app
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.buffer import logger as buffer_logger
-from prompt_toolkit.enums import EditingMode
+from prompt_toolkit.enums import DEFAULT_BUFFER, EditingMode
 from prompt_toolkit.filters import (
+    Condition,
     emacs_insert_mode,
     has_focus,
     has_selection,
@@ -16,7 +17,6 @@ from prompt_toolkit.filters import (
 )
 from prompt_toolkit.formatted_text import to_formatted_text
 from prompt_toolkit.key_binding.bindings.named_commands import get_by_name
-from prompt_toolkit.key_binding.key_processor import KeyPress
 from prompt_toolkit.key_binding.vi_state import InputMode
 from prompt_toolkit.keys import Keys
 from ptpython.completer import JediCompleter
@@ -122,6 +122,7 @@ def configure(repl):
     fix_buffer_pre_run_callables()
     set_history_search(repl)
     set_revert_line(repl)
+    set_emacs_bindings_in_vi_insert(repl)
     fix_operate_and_get_next(repl)
     fix_history()
 
@@ -350,6 +351,40 @@ def set_revert_line(repl):
     Buffer.revert_line = revert_line
 
     repl.default_buffer.accept_handler = wrap_accept(repl.default_buffer.accept_handler)
+
+
+# EMACS BINDINGS IN VI INSERT MODE
+
+@Condition
+def not_empty_line_filter():
+    app = get_app()
+    return bool(app.current_buffer.document.current_line)
+
+def set_emacs_bindings_in_vi_insert(repl):
+    focused_insert = has_focus(DEFAULT_BUFFER) & vi_insert_mode
+
+    # Filter on non-empty line to keep the exit-repl default binding
+    repl.add_key_binding("c-d", filter=focused_insert & not_empty_line_filter)(get_by_name("delete-char"))
+
+    keys_cmd_dict = {
+        ("c-a", ): get_by_name("beginning-of-line"),
+        ("c-b", ): get_by_name("backward-char"),
+        ("c-e", ): get_by_name("end-of-line"),
+        ("c-f", ): get_by_name("forward-char"),
+        ("c-k", ): get_by_name("kill-line"),
+        ("c-w", ): get_by_name("unix-word-rubout"),
+        ("c-y", ): get_by_name("yank"),
+        ("c-_", ): get_by_name("undo"),
+        ("c-x", "c-e"): get_by_name("edit-and-execute-command"),
+        ("c-x", "e"): get_by_name("edit-and-execute-command"),
+        ("escape", "b"): get_by_name("backward-word"),
+        ("escape", "d"): get_by_name("kill-word"),
+        ("escape", "f"): get_by_name("forward-word"),
+        ("escape", "c-h", ): get_by_name("backward-kill-word"),
+    }
+
+    for keys, cmd in keys_cmd_dict.items():
+        repl.add_key_binding(*keys, filter=focused_insert)(cmd)
 
 
 # OPERATE-AND-GET-NEXT FIX
