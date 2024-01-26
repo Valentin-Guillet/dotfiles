@@ -1,0 +1,20 @@
+#!/bin/bash
+
+if [ -d "${PYTHON_VENV_PATH-$HOME/.local/venv}" ]; then
+    source "${PYTHON_VENV_PATH-$HOME/.local/venv}"/bin/activate
+fi
+
+# Default REPL
+if command -v ptpython > /dev/null; then
+    alias py=ptpython
+else
+    alias py=python3
+fi
+
+# Default debugger
+if command -v pudb > /dev/null; then
+    export PYTHONBREAKPOINT=pudb.set_trace
+fi
+
+# Pdir2 config
+export PDIR2_CONFIG_FILE="$XDG_CONFIG_HOME/python/pdir.conf"

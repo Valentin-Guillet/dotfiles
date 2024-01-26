@@ -21,28 +21,25 @@ alias l='ls -CF'
 alias pu="pushd"
 alias po="popd"
 
-NOTES_DIR="$HOME/Documents/Notes"
-alias td='[ -d "$NOTES_DIR" ] || mkdir -p "$NOTES_DIR" ; tmux rename-window "ToDo" && vim "$NOTES_DIR"/ToDo && tmux set-option automatic-rename on'
 
-if command -v ptpython > /dev/null
-then
-    alias py=ptpython
-else
-    alias py=python3
-fi
+alias configg="vim ~/.bashrc; source ~/.bashrc"
+alias configgp="vim $XDG_CONFIG_HOME/bash/paths; source ~/.bashrc"
+alias configp="vim $XDG_CONFIG_HOME/bash/local_path; source ~/.bashrc"
 
-alias youtube-dl-video='youtube-dl --config-location ~/.config/youtube-dl/config_video'
-alias youtube-dl-playlist='youtube-dl --config-location ~/.config/youtube-dl/config_playlist'
+alias configga="vim $XDG_CONFIG_HOME/bash/aliases; source ~/.bashrc"
+alias configa="vim $XDG_CONFIG_HOME/bash/local_aliases; source ~/.bashrc"
 
-alias configa='vim ~/.config/bash/local_aliases; source ~/.bashrc'
-alias configp='vim ~/.config/bash/local_path; source ~/.bashrc'
-alias configg='vim ~/.bashrc; source ~/.bashrc'
-alias configga='vim ~/.config/bash/aliases; source ~/.bashrc'
-alias configgf='vim ~/.config/bash/functions; source ~/.bashrc'
-alias configgp='vim ~/.config/bash/paths; source ~/.bashrc'
+alias configgf="vim $XDG_CONFIG_HOME/bash/functions; source ~/.bashrc"
+alias configf="vim $XDG_CONFIG_HOME/bash/local_functions; source ~/.bashrc"
 
-if command -v batcat > /dev/null
-then
+alias configgv="vim $XDG_CONFIG_HOME/bash/python_venv; source ~/.bashrc"
+
+
+if command -v batcat > /dev/null; then
     alias cat='batcat'
     export MANPAGER="sh -c 'col -bx | batcat -l man -p --paging=always'"
 fi
+
+NOTES_DIR="$HOME/Documents/Notes"
+alias td='[ -d "$NOTES_DIR" ] || mkdir -p "$NOTES_DIR" ; tmux rename-window "ToDo" && vim "$NOTES_DIR"/ToDo && tmux set-option automatic-rename on'
+

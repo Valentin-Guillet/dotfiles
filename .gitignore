@@ -2,7 +2,7 @@
 */
 !.bashrc
 !.gitmodules
-!.pdbrc
+!.pdbrc.py
 !.profile
 
 !.config/
@@ -10,6 +10,7 @@
 !.config/bash/aliases
 !.config/bash/functions
 !.config/bash/paths
+!.config/bash/python_venv
 
 !.config/bat/
 !.config/bat/**
@@ -30,9 +31,6 @@
 
 !.config/keyboard/
 !.config/keyboard/**
-
-!.config/pdb/
-!.config/pdb/**
 
 !.config/powershell/
 !.config/powershell/**

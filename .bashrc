@@ -114,3 +114,4 @@ export EDITOR="$VISUAL"
 [ -f "$XDG_CONFIG_HOME"/bash/functions ] && . "$XDG_CONFIG_HOME"/bash/functions
 [ -f "$XDG_CONFIG_HOME"/bash/local_functions ] && . "$XDG_CONFIG_HOME"/bash/local_functions
 
+[ -f "$XDG_CONFIG_HOME"/bash/python_venv ] && . "$XDG_CONFIG_HOME"/bash/python_venv
