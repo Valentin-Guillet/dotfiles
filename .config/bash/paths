@@ -1,5 +1,12 @@
 #!/bin/bash
 
+pathadd() {
+    if [ -d "$1" ] && [[ ":$PATH:" != *":$1:"* ]]; then
+        PATH="$1${PATH:+":$PATH"}"
+    fi
+}
+
+
 # Spawn panes in same directory in Windows Terminal (cf. https://learn.microsoft.com/en-us/windows/terminal/tutorials/new-tab-same-directory)
 [ -n "$WT_SESSION" ] && PROMPT_COMMAND='printf "\e]9;9;%s\e\\" "$(wslpath -w "$PWD")";'"$PROMPT_COMMAND"
 
