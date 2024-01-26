@@ -9,8 +9,8 @@ if empty($XDG_CONFIG_HOME) | let $XDG_CONFIG_HOME = $HOME . "/.config"      | en
 if empty($XDG_DATA_HOME)   | let $XDG_DATA_HOME   = $HOME . "/.local/share" | endif
 if empty($XDG_STATE_HOME)  | let $XDG_STATE_HOME  = $HOME . "/.local/state" | endif
 
+set runtimepath^=$XDG_DATA_HOME/vim
 set runtimepath^=$XDG_CONFIG_HOME/vim
-set runtimepath+=$XDG_DATA_HOME/vim
 set runtimepath+=$XDG_CONFIG_HOME/vim/after
 
 set packpath^=$XDG_DATA_HOME/vim,$XDG_CONFIG_HOME/vim
