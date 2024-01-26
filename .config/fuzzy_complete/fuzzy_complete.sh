@@ -34,7 +34,7 @@ _fuzzy_complete() {
     if [ ${#COMPREPLY[@]} == 0 ] || [ $is_cd_cmd == 1 -a ${#COMP_WORDS[@]} -gt 2 ]
     then
         local IFS=$'\n'
-        COMPREPLY=( $(/usr/bin/env python -B $HOME/.config/fuzzy_complete/fuzzy_complete.py $only_dir $COMP_CWORD "${COMP_WORDS[@]}") )
+        COMPREPLY=( $(/usr/bin/env python3 -B $HOME/.config/fuzzy_complete/fuzzy_complete.py $only_dir $COMP_CWORD "${COMP_WORDS[@]}") )
         compopt -o filenames
     fi
 }

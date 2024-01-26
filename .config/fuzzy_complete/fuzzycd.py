@@ -1,4 +1,4 @@
-#!/usr/bin/env -S python -B
+#!/usr/bin/env -S python3 -B
 
 """
 Take a path argument and generates a list of possible completions using fuzzy matching.

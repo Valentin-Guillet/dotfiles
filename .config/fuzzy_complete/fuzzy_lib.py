@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
 Take a path argument and generates a list of possible completions using fuzzy matching.
