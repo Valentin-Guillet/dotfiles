@@ -109,6 +109,7 @@ def configure(repl):
     fix_buffer_pre_run_callables()
     set_history_search(repl)
     set_revert_line(repl)
+    set_transpose_words(repl)
     set_emacs_bindings_in_vi_insert(repl)
     fix_operate_and_get_next(repl)
     fix_history()
@@ -554,3 +555,54 @@ def set_revert_line(repl):
     Buffer.revert_line = revert_line
 
     repl.default_buffer.accept_handler = wrap_accept(repl.default_buffer.accept_handler)
+
+
+# TRANPOSE WORDS
+
+# Using the defined `Buffer` and `Document` methods introduced issues
+# with respect to word definions, so instead we reimplement exactly
+# the same operationa as readline in bash source code (cf. `transpose_words`
+# definition in lib/readline/text.c)
+def set_transpose_words(repl):
+    @repl.add_key_binding("escape", "t", filter=has_focus(DEFAULT_BUFFER) & emacs_insert_mode)
+    @repl.add_key_binding("g", "t", filter=has_focus(DEFAULT_BUFFER) & vi_navigation_mode)
+    def _(event):
+        buff = event.current_buffer
+        text = buff.text
+        pos = buff.cursor_position
+
+        # Find end of word_2: first goto first alnum char,
+        # then continue until non-alnum char
+        while pos < len(text) and not text[pos].isalnum():
+            pos += 1
+        while pos < len(text) and text[pos].isalnum():
+            pos += 1
+        w2_end = pos
+
+        # Find the beginning of word_2: we still start by
+        # checking for non-alnum chars in the case where
+        # there was no chars after cursor (so w2_end is
+        # the end of line)
+        while pos > 0 and not text[pos - 1].isalnum():
+            pos -= 1
+        while pos > 0 and text[pos - 1].isalnum():
+            pos -= 1
+        w2_beg = pos
+
+        while pos > 0 and not text[pos - 1].isalnum():
+            pos -= 1
+        w1_end = pos
+        while pos > 0 and text[pos - 1].isalnum():
+            pos -= 1
+        w1_beg = pos
+
+        if w1_beg == w1_end or w2_beg == w2_end or w1_beg == w2_beg or w2_beg < w1_end:
+            return
+
+        new_text  = text[       : w1_beg]
+        new_text += text[w2_beg : w2_end]
+        new_text += text[w1_end : w2_beg]
+        new_text += text[w1_beg : w1_end]
+        new_text += text[w2_end :       ]
+        buff.text = new_text
+        buff.cursor_position = w2_end
