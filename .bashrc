@@ -104,10 +104,13 @@ fi
 export VISUAL=$(which vim)
 export EDITOR="$VISUAL"
 
-# Alias definitions
-[ -f "$XDG_CONFIG_HOME"/bash/aliases ] && . "$XDG_CONFIG_HOME"/bash/aliases
-[ -f "$XDG_CONFIG_HOME"/bash/functions ] && . "$XDG_CONFIG_HOME"/bash/functions
+# Additional setup, start by path (needed for some aliases)
 [ -f "$XDG_CONFIG_HOME"/bash/paths ] && . "$XDG_CONFIG_HOME"/bash/paths
-[ -f "$XDG_CONFIG_HOME"/bash/local_aliases ] && . "$XDG_CONFIG_HOME"/bash/local_aliases
 [ -f "$XDG_CONFIG_HOME"/bash/local_path ] && . "$XDG_CONFIG_HOME"/bash/local_path
+
+[ -f "$XDG_CONFIG_HOME"/bash/aliases ] && . "$XDG_CONFIG_HOME"/bash/aliases
+[ -f "$XDG_CONFIG_HOME"/bash/local_aliases ] && . "$XDG_CONFIG_HOME"/bash/local_aliases
+
+[ -f "$XDG_CONFIG_HOME"/bash/functions ] && . "$XDG_CONFIG_HOME"/bash/functions
+[ -f "$XDG_CONFIG_HOME"/bash/local_functions ] && . "$XDG_CONFIG_HOME"/bash/local_functions
 

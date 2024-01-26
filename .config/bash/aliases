@@ -24,7 +24,13 @@ alias po="popd"
 NOTES_DIR="$HOME/Documents/Notes"
 alias td='[ -d "$NOTES_DIR" ] || mkdir -p "$NOTES_DIR" ; tmux rename-window "ToDo" && vim "$NOTES_DIR"/ToDo && tmux set-option automatic-rename on'
 
-alias py=python3
+if command -v ptpython > /dev/null
+then
+    alias py=ptpython
+else
+    alias py=python3
+fi
+
 alias youtube-dl-video='youtube-dl --config-location ~/.config/youtube-dl/config_video'
 alias youtube-dl-playlist='youtube-dl --config-location ~/.config/youtube-dl/config_playlist'
 
