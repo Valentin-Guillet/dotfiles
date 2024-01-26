@@ -69,5 +69,5 @@ function s:FormatDiff()
     redraw!
 endfunction
 
-command! -buffer -bar FormatDiff call <SID>FormatDiff()
-nnoremap <buffer> <silent> <leader>F :FormatDiff<CR>
+command! -bar FormatDiff call <SID>FormatDiff()
+nnoremap <silent> <leader>F :FormatDiff<CR>
