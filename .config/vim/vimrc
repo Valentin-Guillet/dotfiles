@@ -631,7 +631,9 @@ function MyStatusLine()
     if l:is_tracked | let l:my_statusline .= '%#PmenuSel#' . l:git_branch . '%0*' | endif
     let l:my_statusline .= ' %n ➤  %f%m'
     let l:my_statusline .= (get(b:, 'todo_mode', 0) ? '[T]' : '')
-    let l:my_statusline .= '%{zoom#statusline()}'
+    if exists("*zoom#statusline")
+        let l:my_statusline .= '%{zoom#statusline()}'
+    endif
 
     " Git gutter
     if g:gitgutter_enabled && !empty(l:git_branch) && l:is_tracked

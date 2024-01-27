@@ -1,5 +1,5 @@
 
-delcommand ToggleStripWhitespaceOnSave
-delcommand EnableStripWhitespaceOnSave
-delcommand DisableStripWhitespaceOnSave
+silent! delcommand ToggleStripWhitespaceOnSave
+silent! delcommand EnableStripWhitespaceOnSave
+silent! delcommand DisableStripWhitespaceOnSave
 
