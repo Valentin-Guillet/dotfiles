@@ -171,12 +171,42 @@ colorscheme molokai_custom
 filetype detect
 
 
-" {{{1 ADDITIONAL PACKAGES
+" {{{1 PACKAGES
 
 try
     packadd matchit
 catch /.*/
 endtry
+
+
+call plug#begin($XDG_DATA_HOME . "/vim/plug-packages/")
+
+Plug 'AndrewRadev/linediff.vim'
+Plug 'Konfekt/FastFold'
+Plug 'airblade/vim-gitgutter'
+Plug 'bfrg/vim-cpp-modern'
+Plug 'christoomey/vim-tmux-navigator'
+Plug 'dhruvasagar/vim-zoom'
+Plug 'ekalinin/Dockerfile.vim'
+Plug 'jeetsukumaran/vim-pythonsense'
+Plug 'kana/vim-operator-user'
+Plug 'lervag/vimtex'
+Plug 'markonm/traces.vim'
+Plug 'michaeljsmith/vim-indent-object'
+Plug 'ntpeters/vim-better-whitespace'
+Plug 'powerman/vim-plugin-AnsiEsc'
+Plug 'preservim/tagbar'
+Plug 'rhysd/vim-clang-format'
+Plug 'romainl/vim-qf'
+Plug 'ryvnf/readline.vim'
+Plug 'tpope/vim-commentary'
+Plug 'tpope/vim-repeat'
+Plug 'tpope/vim-surround'
+Plug 'vim-python/python-syntax'
+Plug 'vim-utils/vim-all'
+Plug 'wellle/targets.vim'
+
+call plug#end()
 
 
 " Ansi-Esc
