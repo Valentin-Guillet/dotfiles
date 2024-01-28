@@ -38,7 +38,7 @@ set showcmd	                " display incomplete commands
 set wildmenu		        " display completion matches in a status line
 
 set ttimeout		        " time out for key codes
-set ttimeoutlen=50	        " wait up to 100ms after Esc for special key
+set ttimeoutlen=50	        " wait up to 50ms after Esc for special key
 
 set display+=lastline
 
@@ -104,12 +104,6 @@ set path+=**            " set recursive path to use :find
 
 set splitright          " new splits on the right...
 set splitbelow          " ... and below
-
-" Also set help by default in vertical split (with h[elp]) or new tab (with H[elp])
-cabbrev <expr> h ((getcmdtype() == ':' && getcmdpos() <= 2)? 'vert h' : 'h')
-cabbrev <expr> help ((getcmdtype() == ':' && getcmdpos() <= 5)? 'vert help' : 'help')
-cabbrev <expr> H ((getcmdtype() == ':' && getcmdpos() <= 2)? 'tab h' : 'H')
-cabbrev <expr> Help ((getcmdtype() == ':' && getcmdpos() <= 5)? 'tab help' : 'help')
 
 set expandtab
 set smarttab
@@ -338,26 +332,32 @@ nmap <leader>z <Plug>(zoom-toggle)
 " {{{1 USER MAPPINGS
 
 " Edit and reload vim config
-nnoremap <leader>e :call <SID>OpenInSplitIfNotEmpty($MYVIMRC)<CR>
-nnoremap <leader>E :tabnew $MYVIMRC<CR>
-nnoremap <leader>r :source $MYVIMRC \| redraw \| echo "Config reloaded !"<CR>
+nnoremap <leader>e <CMD>call <SID>OpenInSplitIfNotEmpty($MYVIMRC)<CR>
+nnoremap <leader>E <CMD>tabnew $MYVIMRC<CR>
+nnoremap <leader>r <CMD>source $MYVIMRC \| redraw \| echo "Config reloaded !"<CR>
+
+" Set help by default in vertical split (with h[elp]) or new tab (with H[elp])
+cabbrev <expr> h ((getcmdtype() == ':' && getcmdpos() <= 2)? 'vert h' : 'h')
+cabbrev <expr> help ((getcmdtype() == ':' && getcmdpos() <= 5)? 'vert help' : 'help')
+cabbrev <expr> H ((getcmdtype() == ':' && getcmdpos() <= 2)? 'tab h' : 'H')
+cabbrev <expr> Help ((getcmdtype() == ':' && getcmdpos() <= 5)? 'tab help' : 'Help')
 
 " Write file with <leader>w
-nnoremap <leader>w :update <CR>
+nnoremap <leader>w <CMD>update<CR>
 
 " Make with <leader>m
-nnoremap <leader>m :execute 'silent !clear' \| silent make \| redraw! \| cwindow<CR>
+nnoremap <leader>m <CMD>execute 'silent !clear' \| silent make \| redraw! \| cwindow<CR>
 
 " ,, as original ,
 nnoremap <leader><leader> ,
 
 " Split
-nnoremap <silent> <leader>\ :vsplit<CR>
-nnoremap <silent> <leader><bar> :vsplit \| enew<CR>
-nnoremap <silent> <leader>- :split<CR>
-nnoremap <silent> <leader>_ :split \| enew<CR>
+nnoremap <silent> <leader>\ <CMD>vsplit<CR>
+nnoremap <silent> <leader><bar> <CMD>vsplit \| enew<CR>
+nnoremap <silent> <leader>- <CMD>split<CR>
+nnoremap <silent> <leader>_ <CMD>split \| enew<CR>
 nnoremap <silent> <leader>= <C-w>=
-nnoremap <silent> <leader>q :call <SID>CloseWin()<CR>
+nnoremap <silent> <leader>q <CMD>call <SID>CloseWin()<CR>
 
 " Move splits around
 nnoremap <leader>H <C-w>H
@@ -366,17 +366,17 @@ nnoremap <leader>K <C-w>K
 nnoremap <leader>L <C-w>L
 
 " Tabs
-nnoremap <silent> <leader>t :tab split<CR>
-nnoremap <silent> <leader>T :tabnew<CR>
+nnoremap <silent> <leader>t <CMD>tab split<CR>
+nnoremap <silent> <leader>T <CMD>tabnew<CR>
 
 function s:TabSwitch(count)
     let l:target_tab = (tabpagenr() + a:count - 1) % tabpagenr('$') + 1
     execute "tabnext " . l:target_tab
 endfunction
-nnoremap <silent> <leader>n :<C-U>call <SID>TabSwitch(v:count1)<CR>
-nnoremap <silent> <leader>p :<C-U>call <SID>TabSwitch(tabpagenr('$')-v:count1)<CR>
+nnoremap <silent> <leader>n <CMD>call <SID>TabSwitch(v:count1)<CR>
+nnoremap <silent> <leader>p <CMD>call <SID>TabSwitch(tabpagenr('$')-v:count1)<CR>
 
-nnoremap <silent> <leader>0 :$tabnext<CR>
+nnoremap <silent> <leader>0 <CMD>$tabnext<CR>
 for s:i in range(1, 9)
     execute "nnoremap <silent> <leader>" . s:i . " :" . s:i . "tabnext<CR>"
 endfor
@@ -385,8 +385,8 @@ function s:TabMove(count)
     let l:target_count = (tabpagenr() + a:count) % (tabpagenr('$') + 1)
     execute "tabmove " . l:target_count
 endfunction
-nnoremap <silent> <leader>N :<C-U>call <SID>TabMove(v:count1)<CR>
-nnoremap <silent> <leader>P :<C-U>call <SID>TabMove(tabpagenr('$')-v:count1)<CR>
+nnoremap <silent> <leader>N <CMD>call <SID>TabMove(v:count1)<CR>
+nnoremap <silent> <leader>P <CMD>call <SID>TabMove(tabpagenr('$')-v:count1)<CR>
 
 function s:JoinWindow()
     let l:str_src_tab = input("Join window from : ")
@@ -409,7 +409,7 @@ function s:JoinWindow()
     let l:win_id = win_getid(l:src_win, l:src_tab)
     call win_execute(l:win_id, "close")
 endfunction
-nnoremap <silent> <leader>u :<C-U>call <SID>JoinWindow()<CR>
+nnoremap <silent> <leader>u <CMD>call <SID>JoinWindow()<CR>
 
 nnoremap <leader>< <C-W>R
 nnoremap <leader>> <C-W>r
@@ -462,7 +462,7 @@ cmap <C-x> <C-l><C-n><C-p><C-u><C-y><C-z>
 cnoremap <C-o> <Space><BS><C-z>
 
 " Kill all windows except current
-nnoremap <silent> <leader>o :only<CR>
+nnoremap <silent> <leader>o <CMD>only<CR>
 
 " Redraw screen in insert mode
 inoremap <C-l> <C-o><C-l>
@@ -478,7 +478,7 @@ vnoremap q <C-c>
 augroup freqCount
     autocmd!
 
-    autocmd FileType text,markdown,bib,tex nnoremap <buffer><silent> <leader>f :Freq<CR>
+    autocmd FileType text,markdown,bib,tex nnoremap <buffer><silent> <leader>f <CMD>Freq<CR>
 augroup END
 
 
