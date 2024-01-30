@@ -178,6 +178,7 @@ call plug#begin($XDG_DATA_HOME . "/vim/plug-packages/")
 Plug 'AndrewRadev/linediff.vim'
 Plug 'Konfekt/FastFold'
 Plug 'LunarWatcher/auto-pairs'
+Plug 'Vimjas/vim-python-pep8-indent'
 Plug 'airblade/vim-gitgutter'
 Plug 'bfrg/vim-cpp-modern'
 Plug 'christoomey/vim-tmux-navigator'
@@ -271,6 +272,10 @@ let g:vim_markdown_folding_style_pythonic = 1
 
 " Python syntax
 let g:python_highlight_all = 1
+
+
+" Python indent
+let g:python_pep8_indent_multiline_string = -2
 
 
 " Qf
