@@ -177,6 +177,7 @@ call plug#begin($XDG_DATA_HOME . "/vim/plug-packages/")
 
 Plug 'AndrewRadev/linediff.vim'
 Plug 'Konfekt/FastFold'
+Plug 'LunarWatcher/auto-pairs'
 Plug 'airblade/vim-gitgutter'
 Plug 'bfrg/vim-cpp-modern'
 Plug 'christoomey/vim-tmux-navigator'
@@ -209,10 +210,18 @@ let g:no_ansiesc_menu = 1
 
 
 " Auto-pairs
-let g:autopairs_shortcut_toggle = ''
-let g:autopairs_shortcut_jump = '<M-v>'
-let g:autopairs_shortcut_back_insert = '<M-c>'
-let g:autopairs_center_line = 0
+let g:AutoPairsCenterLine = 0
+let g:AutoPairsMapBS = 1
+let g:AutoPairsMoveExpression = ''
+let g:AutoPairsMultilineFastWrap = 1
+let g:AutoPairsPreferClose = 0
+
+let g:AutoPairsShortcutBackInsert = '<M-c>'
+let g:AutoPairsShortcutFastWrap = '<M-e>'
+let g:AutoPairsShortcutIgnore = ''
+let g:AutoPairsShortcutJump = '<M-v>'
+let g:AutoPairsShortcutToggle = ''
+let g:AutoPairsShortcutToggleMultilineClose = ''
 
 
 " Better Whitespace
