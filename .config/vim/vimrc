@@ -118,6 +118,8 @@ set smartindent
 set linebreak           " break line between words during wrap
 set lazyredraw          " don't update screen during macros
 
+set smoothscroll
+
 set foldlevelstart=0
 set foldmethod=syntax
 
