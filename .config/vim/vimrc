@@ -242,10 +242,10 @@ nmap ]h <Plug>(GitGutterNextHunk)
 
 xnoremap <Plug>(GitGutterStageNextHunk) :execute "normal \<Plug>(GitGutterStageHunk)\<Plug>(GitGutterNextHunk)" \| silent! call repeat#set("\<lt>Plug>(GitGutterStageNextHunk)")<CR>
 nnoremap <Plug>(GitGutterStageNextHunk) :execute "normal \<Plug>(GitGutterStageHunk)\<Plug>(GitGutterNextHunk)" \| silent! call repeat#set("\<lt>Plug>(GitGutterStageNextHunk)")<CR>
-xmap ,hs <Plug>(GitGutterStageNextHunk)
-nmap ,hs <Plug>(GitGutterStageNextHunk)
-xmap ,hS <Plug>(GitGutterStageHunk)
-nmap ,hS <Plug>(GitGutterStageHunk)
+xmap <leader>hs <Plug>(GitGutterStageNextHunk)
+nmap <leader>hs <Plug>(GitGutterStageNextHunk)
+xmap <leader>hS <Plug>(GitGutterStageHunk)
+nmap <leader>hS <Plug>(GitGutterStageHunk)
 
 highlight GitGutterStatuslineAdd    ctermfg=2 ctermbg=238
 highlight GitGutterStatuslineChange ctermfg=3 ctermbg=238
