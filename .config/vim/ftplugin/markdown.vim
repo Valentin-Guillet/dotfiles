@@ -982,17 +982,17 @@ endfunction
 
 function! s:SetCommonMappings()
     noremap <buffer><silent> <leader>c :<C-U>Toc<CR>
-    noremap <buffer><silent> <Space> :call <SID>TodoList_ToggleItem()<CR>
-    noremap <buffer><silent> g<Space> :call <SID>TodoList_SetInProgItem()<CR>
+    noremap <buffer><silent>  <CR> <cmd>call <SID>TodoList_ToggleItem()<CR>
+    noremap <buffer><silent> g<CR> <cmd>call <SID>TodoList_SetInProgItem()<CR>
 
-    nnoremap <buffer><silent> J :call <SID>TodoList_JoinLine()<CR>
+    nnoremap <buffer><silent> J <cmd>call <SID>TodoList_JoinLine()<CR>
 
-    nnoremap <buffer><silent> gx :call <SID>OpenUrlUnderCursor()<CR>
-    nnoremap <buffer><silent> ge :call <SID>EditUrlUnderCursor()<CR>
+    nnoremap <buffer><silent> gx <cmd>call <SID>OpenUrlUnderCursor()<CR>
+    nnoremap <buffer><silent> ge <cmd>call <SID>EditUrlUnderCursor()<CR>
 
     " Indentation mappings
-    nnoremap <buffer><silent> <Plug>Markdown_Indent :call <SID>Markdown_Indent()<CR>
-    nnoremap <buffer><silent> <Plug>Markdown_Dedent :call <SID>Markdown_Dedent()<CR>
+    nnoremap <buffer><silent> <Plug>Markdown_Indent <cmd>call <SID>Markdown_Indent()<CR>
+    nnoremap <buffer><silent> <Plug>Markdown_Dedent <cmd>call <SID>Markdown_Dedent()<CR>
     nmap <buffer><silent> >> <Plug>Markdown_Indent
     nmap <buffer><silent> << <Plug>Markdown_Dedent
 
@@ -1054,7 +1054,7 @@ function! s:SetMarkdownMode()
     nnoremap <buffer><silent> o A<CR>
     nnoremap <buffer><silent> <expr> O line('.') == 1 ? "O" : "kA<CR>"
     inoremap <buffer><silent> <CR> <C-O>:call <SID>Markdown_RemoveBullet()<CR><CR>
-    inoremap <buffer><silent> <BS> <C-R>=AutoPairsDelete()<CR>
+    inoremap <buffer><silent> <BS> <C-R>=autopairs#AutoPairsDelete()<CR>
 
     noremap  <buffer><silent> <leader>e :call <SID>SetTodoMode()<CR>
 endfunction
@@ -1078,18 +1078,18 @@ function! s:SetTodoMode()
     silent! unmap <buffer> ]y
     silent! iunmap <buffer> <CR>
 
-    nnoremap <buffer><silent> o :call <SID>TodoList_CreateNewItemBelow()<CR>
-    nnoremap <buffer><silent> O :call <SID>TodoList_CreateNewItemAbove()<CR>
+    nnoremap <buffer><silent> o <cmd>call <SID>TodoList_CreateNewItemBelow()<CR>
+    nnoremap <buffer><silent> O <cmd>call <SID>TodoList_CreateNewItemAbove()<CR>
     nnoremap <buffer><silent> j :<C-U>call <SID>TodoList_GoToNextItem(v:count1)<CR>
     nnoremap <buffer><silent> k :<C-U>call <SID>TodoList_GoToPreviousItem(v:count1)<CR>
 
-    nnoremap <buffer><silent> dd        :call <SID>TodoList_DeleteItem(line('.'), 1) \| call repeat#set("dd", -1)<CR>
-    nnoremap <buffer><silent> <leader>d :call <SID>TodoList_CleanItemsDone()<CR>
+    nnoremap <buffer><silent> dd        <cmd>call <SID>TodoList_DeleteItem(line('.'), 1) \| call repeat#set("dd", -1)<CR>
+    nnoremap <buffer><silent> <leader>d <cmd>call <SID>TodoList_CleanItemsDone()<CR>
 
-    nnoremap <buffer><silent> - :m .+1 \| call <SID>TodoList_UpdateParents(-1, 1, -2)<CR>
-    nnoremap <buffer><silent> _ :m .-2 \| call <SID>TodoList_UpdateParents(-1, 1, 2)<CR>
+    nnoremap <buffer><silent> - <cmd>m .+1 \| call <SID>TodoList_UpdateParents(-1, 1, -2)<CR>
+    nnoremap <buffer><silent> _ <cmd>m .-2 \| call <SID>TodoList_UpdateParents(-1, 1, 2)<CR>
 
-    inoremap <buffer><silent><expr> <BS> <SID>TodoList_ShouldBS() ? "<C-\><C-O>:call <SID>TodoList_BackSpace()<CR><BS>" : "<C-R>=AutoPairsDelete()<CR>"
+    inoremap <buffer><silent><expr> <BS> <SID>TodoList_ShouldBS() ? "<C-\><C-O>:call <SID>TodoList_BackSpace()<CR><BS>" : "<C-R>=autopairs#AutoPairsDelete()<CR>"
     inoremap <buffer><silent> <CR> <C-O>:call <SID>TodoList_MakeHeader()<CR><CR><C-O>:call <SID>TodoList_CreateNewItem(line('.')-1)<CR>
     nmap <buffer><silent> <Tab>   <Plug>Markdown_Indent
     nmap <buffer><silent> <S-Tab> <Plug>Markdown_Dedent
@@ -1117,8 +1117,8 @@ setlocal conceallevel=2 concealcursor=c
 setlocal shiftwidth=2 tabstop=2 expandtab
 
 
-let b:autopairs_map_CR = 0
-let b:autopairs_map_BS = 0
+let b:AutoPairsMapCR = 0
+let b:AutoPairsMapBS = 0
 call s:SetCommonMappings()
 if expand('%:t') =~ '.*\.todo' || expand('%:t') =~ 'ToDo'
     call s:SetTodoMode()
