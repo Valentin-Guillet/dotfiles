@@ -169,10 +169,15 @@ filetype detect
 
 " {{{1 PACKAGES
 
-try
-    packadd matchit
-catch /.*/
-endtry
+" Toggle vim default packages
+
+let g:loaded_2html_plugin = 1
+let g:loaded_getscriptPlugin = 1
+let g:loaded_logipat = 1
+let g:loaded_rrhelper = 1
+let g:loaded_vimballPlugin = 1
+
+packadd! matchit
 
 
 call plug#begin($XDG_DATA_HOME . "/vim/plug-packages/")
