@@ -1,10 +1,10 @@
 " Define a submode in which to resize different panes in the same fashion as
 " tmux pane management
 
-if exists('g:loaded_submode')
+if exists('g:loaded_resize_submode')
     finish
 endif
-let g:loaded_submode = 1
+let g:loaded_resize_submode = 1
 
 let g:submode_timeout = 0
 
@@ -14,17 +14,17 @@ let g:submode_keyseqs_to_leave = []
 
 let s:original_split = ''
 
-function! submode#set_split()
+function! resize_submode#set_split()
     let s:original_split = winnr()
 endfunction
 
-function! submode#reset_split()
+function! resize_submode#reset_split()
     execute "normal! " . s:original_split . "\<C-W>\<C-W>"
 endfunction
 
 
-let s:set_split = ':call submode#set_split()<CR>'
-let s:reset_split = ':call submode#reset_split()<CR>' . s:set_split
+let s:set_split = '<cmd>call resize_submode#set_split()<CR>'
+let s:reset_split = '<cmd>call resize_submode#reset_split()<CR>' . s:set_split
 call submode#enter_with('resize', 'n', '', '<leader>j', s:set_split . '<C-w>k5<C-w>+')
 call submode#enter_with('resize', 'n', '', '<leader>k', s:set_split . '<C-w>k5<C-w>-')
 call submode#enter_with('resize', 'n', '', '<leader>h', s:set_split . '<C-w>h5<C-w><')

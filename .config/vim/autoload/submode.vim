@@ -475,7 +475,7 @@ endfunction
 
 function! s:restore_options()  "{{{2
   if submode#current() == "resize"
-    call submode#reset_split()
+    call resize_submode#reset_split()
   endif
   if !s:options_overridden_p
     return
