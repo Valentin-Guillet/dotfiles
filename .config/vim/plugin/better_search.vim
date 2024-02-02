@@ -23,19 +23,19 @@ if !exists('g:better_search_line_limit')
 endif
 
 " Plug mappings
-nnoremap <silent> <Plug>BetterSearch_/ :call better_search#search('/')<CR>
-nnoremap <silent> <Plug>BetterSearch_? :call better_search#search('?')<CR>
+nnoremap <silent> <Plug>BetterSearch_/ <cmd>call better_search#search('/')<CR>
+nnoremap <silent> <Plug>BetterSearch_? <cmd>call better_search#search('?')<CR>
 
-nnoremap <silent> <Plug>BetterSearch_n n:call better_search#search_next_end()<CR>
-nnoremap <silent> <Plug>BetterSearch_N N:call better_search#search_next_end()<CR>
+nnoremap <silent> <Plug>BetterSearch_n n<cmd>call better_search#search_next_end()<CR>
+nnoremap <silent> <Plug>BetterSearch_N N<cmd>call better_search#search_next_end()<CR>
 
-nnoremap <silent> <Plug>BetterSearch_*  :call better_search#search_star()<CR>*:call better_search#search_star_end()<CR>
-nnoremap <silent> <Plug>BetterSearch_#  :call better_search#search_star()<CR>#:call better_search#search_star_end()<CR>
-nnoremap <silent> <Plug>BetterSearch_g* :call better_search#search_star()<CR>g*:call better_search#search_star_end()<CR>
-nnoremap <silent> <Plug>BetterSearch_g# :call better_search#search_star()<CR>g#:call better_search#search_star_end()<CR>
-nnoremap <silent> <Plug>BetterSearch_gd :call better_search#search_star()<CR>gd:call better_search#search_star_end()<CR>
-nnoremap <silent> <Plug>BetterSearch_gD :call better_search#search_star()<CR>gD:call better_search#search_star_end()<CR>
-nnoremap <silent> <Plug>BetterSearch_g/ :call better_search#search_next_end()<CR>
+nnoremap <silent> <Plug>BetterSearch_*  <cmd>call better_search#search_star()<CR>*<cmd>call better_search#search_star_end()<CR>
+nnoremap <silent> <Plug>BetterSearch_#  <cmd>call better_search#search_star()<CR>#<cmd>call better_search#search_star_end()<CR>
+nnoremap <silent> <Plug>BetterSearch_g* <cmd>call better_search#search_star()<CR>g*<cmd>call better_search#search_star_end()<CR>
+nnoremap <silent> <Plug>BetterSearch_g# <cmd>call better_search#search_star()<CR>g#<cmd>call better_search#search_star_end()<CR>
+nnoremap <silent> <Plug>BetterSearch_gd <cmd>call better_search#search_star()<CR>gd<cmd>call better_search#search_star_end()<CR>
+nnoremap <silent> <Plug>BetterSearch_gD <cmd>call better_search#search_star()<CR>gD<cmd>call better_search#search_star_end()<CR>
+nnoremap <silent> <Plug>BetterSearch_g/ <cmd>call better_search#search_next_end()<CR>
 
 xnoremap <silent> <Plug>BetterSearch_* <Esc>:<C-U>call better_search#search_visual_star('/')<CR>
 xnoremap <silent> <Plug>BetterSearch_# <Esc>:<C-U>call better_search#search_visual_star('?')<CR
@@ -58,7 +58,17 @@ endif
 
 
 " Mappings
-for key in ['/', '?', 'n', 'N', '*', '#', 'g*', 'g#', 'gd', 'gD', 'g/']
+if !hasmapto("<Plug>BetterSearch_n", "n") && !hasmapto("<Plug>BetterSearch_N", "n")
+    if get(g:, "better_search_saner_nN", 1)
+        nmap <expr> n "\<Plug>BetterSearch_" . "Nn"[v:searchforward]
+        nmap <expr> N "\<Plug>BetterSearch_" . "nN"[v:searchforward]
+    else
+        nmap n <Plug>BetterSearch_n
+        nmap N <Plug>BetterSearch_N
+    endif
+endif
+
+for key in ['/', '?', '*', '#', 'g*', 'g#', 'gd', 'gD', 'g/']
     if !hasmapto(printf("<Plug>BetterSearch_%s", key), "n")
         execute printf("nmap %s <Plug>BetterSearch_%s", key, key)
     endif
