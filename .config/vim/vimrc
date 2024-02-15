@@ -178,8 +178,6 @@ let g:loaded_logipat = 1
 let g:loaded_rrhelper = 1
 let g:loaded_vimballPlugin = 1
 
-packadd! matchit
-
 
 call plug#begin($XDG_DATA_HOME . "/vim/plug-packages/")
 
@@ -188,6 +186,7 @@ Plug 'Konfekt/FastFold'
 Plug 'LunarWatcher/auto-pairs'
 Plug 'Vimjas/vim-python-pep8-indent'
 Plug 'airblade/vim-gitgutter'
+Plug 'andymass/vim-matchup'
 Plug 'bfrg/vim-cpp-modern'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'dhruvasagar/vim-zoom'
@@ -276,6 +275,10 @@ let g:vim_markdown_follow_anchor = 1
 let g:vim_markdown_strikethrough = 1
 let g:vim_markdown_new_list_item_indent = 2
 let g:vim_markdown_folding_style_pythonic = 1
+
+
+" Matchup
+let g:matchup_matchparen_offscreen = {}
 
 
 " Python syntax
