@@ -82,8 +82,8 @@ endif
 
 " {{{1 GENERAL OPTIONS
 
-let mapleader = ","
-let maplocalleader = ","
+let mapleader = " "
+let maplocalleader = " "
 
 set formatoptions+=j    " delete comment character when joining commented lines
 set autoread
