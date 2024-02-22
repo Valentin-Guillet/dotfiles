@@ -373,9 +373,6 @@ nnoremap <leader>w <CMD>update<CR>
 " Make with <leader>m
 nnoremap <leader>m <CMD>execute 'silent !clear' \| silent make \| redraw! \| cwindow<CR>
 
-" ,, as original ,
-nnoremap <leader><leader> ,
-
 " Split
 nnoremap <silent> <leader>\ <CMD>vsplit<CR>
 nnoremap <silent> <leader><bar> <CMD>vsplit \| enew<CR>
