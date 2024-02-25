@@ -79,8 +79,8 @@ def configure(repl):
     def _(event):
         repl.app.vi_state.input_mode = InputMode.NAVIGATION
 
-    # `M-x` to switch between emacs- and vi-mode
-    @repl.add_key_binding("escape", "x")
+    # `M-v` to switch between emacs- and vi-mode
+    @repl.add_key_binding("escape", "v")
     def _(event):
         repl.vi_mode = not repl.vi_mode
 
@@ -89,8 +89,8 @@ def configure(repl):
     def _(event):
         repl.show_docstring = not repl.show_docstring
 
-    # `M-v` to show function signature
-    @repl.add_key_binding("escape", "v")
+    # `M-x` to show function signature
+    @repl.add_key_binding("escape", "x")
     def _(event):
         repl.show_signature = not repl.show_signature
 
