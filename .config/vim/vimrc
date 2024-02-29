@@ -457,10 +457,6 @@ nnoremap <silent><expr> _ line('.') == line('$') \|\| line('.') == 1 ? "ddP==" :
 vnoremap <silent> - :m '>+1<CR>gv=gv
 vnoremap <silent> _ :m '<-2<CR>gv=gv
 
-" Keep selection when indenting
-xnoremap <  <gv
-xnoremap >  >gv
-
 " Add a new line
 nnoremap <C-h> o<C-c>
 
