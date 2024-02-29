@@ -468,6 +468,10 @@ nnoremap <C-h> o<C-c>
 nnoremap <silent> gt "_yiw:s/\(\%#\w\+\)\(\_W\+\)\(\w\+\)/\3\2\1/<CR><C-o>/\w\+\_W\+<CR><C-l>:nohlsearch<CR>
 nnoremap <silent> gT "_yiw?\w\+\_W\+<CR><C-l>:nohlsearch<CR>:s/\(\%#\w\+\)\(\_W\+\)\(\w\+\)/\3\2\1/<CR><C-o>
 
+" M-u and M-r to undo/redo in insert mode
+inoremap <M-u> <C-o>u
+inoremap <M-r> <C-o><C-r>
+
 " Unmap Q and K
 nnoremap Q <nop>
 nnoremap K <nop>
