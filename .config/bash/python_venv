@@ -11,8 +11,22 @@ else
     alias py=python3
 fi
 
+toggle_python_debugger() {
+    mkdir -p "$XDG_STATE_HOME/python"
+    local state_file="$XDG_STATE_HOME/python/default_debugger"
+    if [ -s "$state_file" ]
+    then
+        echo -n > "$state_file"
+        unset PYTHONBREAKPOINT
+    else
+        echo pudb > "$state_file"
+        export PYTHONBREAKPOINT=pudb.set_trace
+    fi
+}
+
 # Default debugger
-if command -v pudb > /dev/null; then
+if command -v pudb > /dev/null && grep -qs "pudb" "$XDG_STATE_HOME/python/default_debugger"
+then
     export PYTHONBREAKPOINT=pudb.set_trace
 fi
 
