@@ -16,7 +16,7 @@ def setUpModule():
     files = [
         FUZZTEST_DIR/"Documents",
 
-        FUZZTEST_DIR/"Documents"/".hidden",
+        FUZZTEST_DIR/"Documents"/".hidden_dir",
         FUZZTEST_DIR/"Documents"/".conf.vim",
 
         FUZZTEST_DIR/"Documents"/"Misc",
@@ -45,10 +45,16 @@ def setUpModule():
         FUZZTEST_DIR/"Videos",
         FUZZTEST_DIR/"Videos"/"movie 1.mkv",
         FUZZTEST_DIR/"Videos"/"movie 2.mkv",
+
+        FUZZTEST_DIR/".config",
+        FUZZTEST_DIR/".config"/"program",
+        FUZZTEST_DIR/".config"/"program"/"init.cfg",
+        FUZZTEST_DIR/".config"/".local_program",
+        FUZZTEST_DIR/".config"/".local_program"/"init.cfg",
     ]
 
     for path in files:
-        if str(path).startswith(".") or not path.suffix:
+        if not path.suffix:
             path.mkdir(exist_ok=True, parents=True)
         else:
             path.touch()
@@ -98,12 +104,12 @@ if __name__ == "__main__":
     define_test(LsTest, "ls_multiple", ["do"], ["Documents", "Downloads"])
     define_test(LsTest, "ls_multiple_files", ["v/m"], ["Videos/movie 1.mkv", "Videos/movie 2.mkv"])
     define_test(LsTest, "ls_successive_joined", ["do/proj"], ["Documents/project"])
-    define_test(LsTest, "ls_hidden", ["do/hid"], ["Documents/.hidden"])
+    define_test(LsTest, "ls_hidden", ["do/hid"], ["Documents/.hidden_dir"])
     define_test(LsTest, "ls_hidden_file", [".cfv"], [".conf.vim"], workdir=FUZZTEST_DIR/"Documents")
     define_test(LsTest, "ls_match_chars", ["dmd"], ["Documents/Misc/dependency", "Documents/Misc/dir1_file.txt"])
 
     workdir = FUZZTEST_DIR/"Documents"/"Misc"/"dependency"
-    define_test(LsTest, "ls_home", ["~/FuzzTest/doc/.hid"], [str(FUZZTEST_DIR)+"/Documents/.hidden"], workdir=workdir)
+    define_test(LsTest, "ls_home", ["~/FuzzTest/doc/.hid"], [str(FUZZTEST_DIR)+"/Documents/.hidden_dir"], workdir=workdir)
     define_test(LsTest, "ls_home_multiple", ["~/FuzzTest/d/m/d"],
                 [
                     str(FUZZTEST_DIR)+"/Documents/Misc/dependency",
@@ -116,6 +122,8 @@ if __name__ == "__main__":
                     str(FUZZTEST_DIR)+"/Documents/Misc/dir1_file.txt",
                 ],
                 workdir=workdir)
+    define_test(LsTest, "ls_match_chars_with_home_ignore_hidden", ["~F.cpi"], [str(FUZZTEST_DIR)+"/.config/program/init.cfg"], workdir=workdir)
+    define_test(LsTest, "ls_match_chars_with_home_only_hidden", ["~F.c.pi"], [str(FUZZTEST_DIR)+"/.config/.local_program/init.cfg"], workdir=workdir)
     define_test(LsTest, "ls_match_chars_with_root", ["/vo"], ["/var/opt"], workdir=workdir)
 
     define_test(LsTest, "ls_previous", [".../pg"],
@@ -140,7 +148,7 @@ if __name__ == "__main__":
     define_test(LsTest, "ls_tr_multiple", ["do", "ignore"], ["Documents", "Downloads"])
     define_test(LsTest, "ls_tr_multiple_files", ["v/m", "ignore"], ["Videos/movie 1.mkv", "Videos/movie 2.mkv"])
     define_test(LsTest, "ls_tr_successive_joined", ["do/proj", "ignore"], ["Documents/project"])
-    define_test(LsTest, "ls_tr_hidden", ["do/hid", "ignore"], ["Documents/.hidden"])
+    define_test(LsTest, "ls_tr_hidden", ["do/hid", "ignore"], ["Documents/.hidden_dir"])
     define_test(LsTest, "ls_tr_match_chars", ["dmd", "ignore"], ["Documents/Misc/dependency", "Documents/Misc/dir1_file.txt"])
 
     LsDirTest = define_test_class("ls", only_dir=True)
@@ -149,7 +157,7 @@ if __name__ == "__main__":
     define_test(LsDirTest, "ls_dir_file", ["dw/b"], [""])
     define_test(LsDirTest, "ls_dir_multiple", ["do"], ["Documents", "Downloads"])
     define_test(LsDirTest, "ls_dir_successive_joined", ["do/proj"], ["Documents/project"])
-    define_test(LsDirTest, "ls_dir_hidden", ["do/hid"], ["Documents/.hidden"])
+    define_test(LsDirTest, "ls_dir_hidden", ["do/hid"], ["Documents/.hidden_dir"])
     define_test(LsDirTest, "ls_dir_match_chars", ["dmd"], ["Documents/Misc/dependency"])
 
     define_test(LsDirTest, "ls_dir_previous", [".../pg"], ["../../program"], workdir=workdir)
@@ -165,8 +173,8 @@ if __name__ == "__main__":
     define_test(CdTest, "cd_successive_joined", ["do/proj"], ["Documents/project/"])
     define_test(CdTest, "cd_successive_split", ["do", "proj"], ["project/"])
     define_test(CdTest, "cd_more_successive_split", ["do", "M", "sub"], ["subdir/"])
-    define_test(CdTest, "cd_hidden", ["do/hid"], ["Documents/.hidden/"])
-    define_test(CdTest, "cd_hidden_split", ["do", ".h"], [".hidden/"])
+    define_test(CdTest, "cd_hidden", ["do/hid"], ["Documents/.hidden_dir/"])
+    define_test(CdTest, "cd_hidden_split", ["do", ".h"], [".hidden_dir/"])
     define_test(CdTest, "cd_match_chars", ["dmd"], ["Documents/Misc/dependency/"])
 
     define_test(CdTest, "cd_match_chars_with_home", ["~fdmd"], [str(FUZZTEST_DIR)+"/Documents/Misc/dependency/"], workdir=workdir)
@@ -192,10 +200,10 @@ if __name__ == "__main__":
     define_test(CdTest, "cd_double_dot_space", ["doc", "mi", "dependency", "..", ""], [str(FUZZTEST_DIR)+"/Documents/Misc/dependency", str(FUZZTEST_DIR)+"/Documents/Misc/subdir"])
     define_test(CdTest, "cd_double_dot_space", ["..", ""], ["utils/"], workdir=FUZZTEST_DIR/"Documents"/"program"/"utils")
     define_test(CdTest, "cd_double_dot", ["doc", "mi", ".."], ["../"])
-    define_test(CdTest, "cd_double_dot_slash", ["doc", "mi", "../"], ["../.hidden", "../Misc", "../program", "../project"])
+    define_test(CdTest, "cd_double_dot_slash", ["doc", "mi", "../"], ["../.hidden_dir", "../Misc", "../program", "../project"])
     define_test(CdTest, "cd_multi_dot", ["....."], ["../../../../"], workdir=workdir)
-    define_test(CdTest, "cd_multi_dot_space", ["....", ""], [str(FUZZTEST_DIR)+"/Documents", str(FUZZTEST_DIR)+"/Downloads", str(FUZZTEST_DIR)+"/Videos"], workdir=workdir)
-    define_test(CdTest, "cd_multi_dot_slash", ["..../"], ["../../../Documents", "../../../Downloads", "../../../Videos"], workdir=workdir)
-    define_test(CdTest, "cd_multi_dot_split_slash", ["../../../"], ["../../../Documents", "../../../Downloads", "../../../Videos"], workdir=workdir)
+    define_test(CdTest, "cd_multi_dot_space", ["....", ""], [str(FUZZTEST_DIR) + "/" + d for d in (".config", "Documents", "Downloads", "Videos")], workdir=workdir)
+    define_test(CdTest, "cd_multi_dot_slash", ["..../"], ["../../../" + d for d in (".config", "Documents", "Downloads", "Videos")], workdir=workdir)
+    define_test(CdTest, "cd_multi_dot_split_slash", ["../../../"], ["../../../" + d for d in (".config", "Documents", "Downloads", "Videos")], workdir=workdir)
 
     unittest.main()

@@ -135,21 +135,33 @@ def matches_by_chars(base_dirs, path_pattern, *, include_files=False):
     of single letter path parts.
     """
     found_dirs = base_dirs
+    char_patterns = tuple(path_pattern)
 
-    i = 0
-    while path_pattern[i] == ".":
-        i += 1
-    for _ in range(i - 1):
-        found_dirs = [d.absolute().parent for d in found_dirs]
-    char_patterns = tuple(path_pattern[i:])
+    # Leading dots act as "../"
+    if path_pattern.startswith(".."):
+        i = 0
+        while path_pattern[i] == ".":
+            i += 1
+        for _ in range(i - 1):
+            found_dirs = [d.absolute().parent for d in found_dirs]
+        char_patterns = char_patterns[i:]
 
+    is_hidden = False
     for i, char in enumerate(char_patterns):
+        # A "." makes the following char look at hidden files only
+        if char == ".":
+            is_hidden = True
+            continue
+
         dir_pattern_index = {}
 
         for directory in found_dirs:
             paths = get_subdirs(directory)
             if include_files and i == len(char_patterns) - 1:
                 paths.extend(get_files(directory))
+
+            if is_hidden:
+                paths = [path for path in paths if path.name.startswith(".")]
 
             for path in paths:
                 name = path.name.lower() if char.islower() else path.name
@@ -159,6 +171,7 @@ def matches_by_chars(base_dirs, path_pattern, *, include_files=False):
         if not dir_pattern_index:
             return []
 
+        is_hidden = False
         found_dirs = dir_pattern_index[min(dir_pattern_index)]
 
     return found_dirs
@@ -234,7 +247,7 @@ def matches_for_path(base_dirs, path_arg, allow_by_char, expand_sep, *,
         # If no matching dir has been found for the first pattern and path
         # is only composed of one part, treat each character as a pattern
         if allow_by_char and is_first_word_path and not found_dirs:
-            if pattern.startswith("."):
+            if pattern.startswith(".."):
                 return_relative_paths = True
             found_dirs = matches_by_chars(base_dirs, pattern, include_files=include_files)
 
