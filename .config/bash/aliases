@@ -41,5 +41,5 @@ if command -v batcat > /dev/null; then
 fi
 
 NOTES_DIR="$HOME/Documents/Notes"
-alias td='[ -d "$NOTES_DIR" ] || mkdir -p "$NOTES_DIR" ; tmux rename-window "ToDo" && vim "$NOTES_DIR"/ToDo && tmux set-option automatic-rename on'
+alias td='[ -d "$NOTES_DIR" ] || mkdir -p "$NOTES_DIR" ; tmux rename-window "ToDo" 2> /dev/null; vim "$NOTES_DIR"/ToDo; tmux set-option automatic-rename on 2> /dev/null'
 
