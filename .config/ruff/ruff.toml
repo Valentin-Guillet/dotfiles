@@ -1,7 +1,7 @@
 
 cache-dir = "~/.cache/ruff"
 
-select = [
+lint.select = [
     "F",     # Pyflakes
     "E",     # Codestyle
     "W",
@@ -38,7 +38,7 @@ select = [
     "RUF",   # Ruff errors
 ]
 
-ignore = [
+lint.ignore = [
     "C90",   # McCabe complexity
     "D",     # Docstrings
     "ANN",   # Annotations
