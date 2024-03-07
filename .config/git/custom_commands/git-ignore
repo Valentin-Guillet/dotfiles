@@ -2,6 +2,7 @@
 
 usage() {
     echo "usage: git ignore [<options>]"
+    echo "    Without option, edit .gitignore file using \$EDITOR"
     echo ""
     echo "    -a, --add [<patterns>]   if no file is given, git add .gitignore"
     echo "                             else, append given patterns to .gitignore"
