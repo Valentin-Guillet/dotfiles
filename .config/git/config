@@ -1,35 +1,35 @@
 [user]
-	name = Val95240
-	email = guillet.valentin95240@gmail.com
+    name = Val95240
+    email = guillet.valentin95240@gmail.com
 [core]
     editor = vim
 [color]
-	diff = auto
-	branch = auto
-	status = auto
+    diff = auto
+    branch = auto
+    status = auto
 [init]
     defaultBranch = main
 [alias]
-	br = branch
-	cam = commit -am
-	cm = commit -m
-	l = log --oneline --graph --decorate --all --color --abbrev-commit -n 10
-	ll = log --oneline --graph --decorate --all --color --abbrev-commit
+    br = branch
+    cam = commit -am
+    cm = commit -m
+    l = log --oneline --graph --decorate --all --color --abbrev-commit -n 10
+    ll = log --oneline --graph --decorate --all --color --abbrev-commit
     la = log --graph --all --pretty=format:'%C(auto)%h %C(bold blue)<%an> %Cgreen(%ar)%C(auto)%d %C(reset) %s' --abbrev-commit --date-order
     ls = ls-files --exclude-standard
     msg = commit --amend
-	st = status -s
+    st = status -s
     sw = switch
 [pull]
-	rebase = true
+    rebase = true
 [push]
-	default = simple
+    default = simple
 [merge]
-	tool = vimdiff
-	conflictStyle = diff3
+    tool = vimdiff
+    conflictStyle = diff3
 [diff]
-	submodule = log
+    submodule = log
 [difftool]
-	prompt = false
+    prompt = false
 [difftool "vimdiff"]
-	cmd = vim -f -d -c \"wincmd l\" -c 'cd \"$GIT_PREFIX\"' \"$LOCAL\" \"$REMOTE\"
+    cmd = vim -f -d -c \"wincmd l\" -c 'cd \"$GIT_PREFIX\"' \"$LOCAL\" \"$REMOTE\"
