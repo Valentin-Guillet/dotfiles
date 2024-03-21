@@ -1,5 +1,17 @@
 " {{{1 XDG SUPPORT
 
+if has("nvim")
+    try
+        source $HOME/.config/nvim/init.lua
+    catch
+        echohl ErrorMsg
+        echom v:exception
+        echohl NONE
+    finally
+        finish
+    endtry
+endif
+
 set nocompatible
 
 if empty($MYVIMRC) | let $MYVIMRC = expand('<sfile>:p') | endif
