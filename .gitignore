@@ -25,6 +25,9 @@
 !.config/fuzzy_complete/
 !.config/fuzzy_complete/**
 
+!.config/gdb/
+!.config/gdb/**
+
 !.config/git/
 !.config/git/**
 

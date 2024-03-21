@@ -1,0 +1,14 @@
+
+set history save on
+
+tui new-layout custom {-horizontal asm 2 regs 1} 2 status 0 cmd 1
+
+set auto-load safe-path .
+
+define gef
+  source ~/.config/gdb/gef.py
+  gef config context.peek_calls False
+  set disassembly-flavor att
+  context
+end
+

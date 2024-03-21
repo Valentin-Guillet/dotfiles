@@ -22,6 +22,7 @@ export PARALLEL_HOME="$XDG_CACHE_HOME"/parallel
 export ICEAUTHORITY="$XDG_CACHE_HOME"/ICEauthority
 export XAUTHORITY="$XDG_CACHE_HOME"/Xauthority
 export LESSHISTFILE="$XDG_CACHE_HOME"/less/history
+export GDBHISTFILE="$XDG_CACHE_HOME"/gdb/history
 export CUDA_CACHE_PATH="$XDG_CACHE_HOME"/nv
 
 # Auto launch tmux
