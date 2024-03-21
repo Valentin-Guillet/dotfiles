@@ -22,6 +22,8 @@
     sw = switch
 [pull]
     rebase = true
+[rebase]
+    autoStash = true
 [push]
     default = simple
 [merge]
