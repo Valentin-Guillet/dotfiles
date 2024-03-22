@@ -10,6 +10,7 @@
 !.config/bash/functions
 !.config/bash/paths
 !.config/bash/python_venv
+!.config/bash/xdg_setup
 
 !.config/bat/
 !.config/bat/**
