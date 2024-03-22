@@ -476,6 +476,9 @@ nnoremap K <nop>
 " Y same as D or C
 nnoremap Y y$
 
+" Don't overwrite register when pasting over selection
+vnoremap p pgvy
+
 " Shift-Tab to dedent
 inoremap <S-Tab> <C-d>
 
