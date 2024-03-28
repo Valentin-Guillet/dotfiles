@@ -497,6 +497,10 @@ inoremap <C-l> <C-o><C-l>
 " Correct last misspelled word
 inoremap <silent> <C-k>k <C-G>u<Esc>:call <SID>FixLineSpellError()<CR>`]a<C-G>u
 
+" Delete line content instead of lines in visual mode
+" (i.e. apply VISUAL_BLOCK behavior for all visual modes)
+vnoremap D <C-v>D
+
 " Quit visual mode with q
 vnoremap q <C-c>
 
