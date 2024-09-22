@@ -35,7 +35,16 @@ return {
 
 	{ "folke/flash.nvim", enabled = false },
 
-  "folke/which-key.nvim",
+  {
+    "folke/which-key.nvim",
+    opts = {
+      spec = {
+        -- Cf. persistence plugin defined in util.lua
+        -- Must be defined here because the plugin is lazy-loaded
+        { "<leader>m", group = "sessions" },
+      },
+    },
+  },
 
 	{
 		"lewis6991/gitsigns.nvim",
