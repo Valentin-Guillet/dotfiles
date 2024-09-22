@@ -151,8 +151,9 @@ vim.cmd([[cabbrev <expr> Help ((getcmdtype() == ':' && getcmdpos() <= 5)? 'tab h
 vim.keymap.set({"i", "c"}, "<C-S-v>", "<C-R>+", { desc = "Paste from clipboard" })
 
 -- Mini.surround: S in visual mode (cf. `:help MiniSurround-vim-surround-config`)
-vim.keymap.del('x', 'ys')
-vim.keymap.set('x', 'S', [[:<C-u>lua MiniSurround.add('visual')<CR>]], { silent = true })
+vim.keymap.del("x", "ys")
+vim.keymap.set("x", "S", [[:<C-u>lua MiniSurround.add("visual")<CR>]], { silent = true })
+vim.keymap.set("n", "yss", "ys_", { remap = true })
 
 -- Neovide mappings
 vim.g.neovide_hide_mouse_when_typing = false

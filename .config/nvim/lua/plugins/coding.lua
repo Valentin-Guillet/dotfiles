@@ -20,7 +20,11 @@ return {
 			mappings = {
 				add = "ys",
 				delete = "ds",
-				replace = "cs",
+        find = "",
+        find_left = "",
+        highlight = "",
+        replace = "cs",
+        update_n_lines = "",
 			},
 		},
 	},
