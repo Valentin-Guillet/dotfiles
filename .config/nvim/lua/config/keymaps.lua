@@ -147,6 +147,9 @@ vim.cmd([[cabbrev <expr> help ((getcmdtype() == ':' && getcmdpos() <= 5)? 'vert 
 vim.cmd([[cabbrev <expr> H ((getcmdtype() == ':' && getcmdpos() <= 2)? 'tab h' : 'H')]])
 vim.cmd([[cabbrev <expr> Help ((getcmdtype() == ':' && getcmdpos() <= 5)? 'tab help' : 'Help')]])
 
+-- <C-V> to copy in insert mode and in command line
+vim.keymap.set({"i", "c"}, "<C-S-v>", "<C-R>+", { desc = "Paste from clipboard" })
+
 -- Mini.surround: S in visual mode (cf. `:help MiniSurround-vim-surround-config`)
 vim.keymap.del('x', 'ys')
 vim.keymap.set('x', 'S', [[:<C-u>lua MiniSurround.add('visual')<CR>]], { silent = true })
