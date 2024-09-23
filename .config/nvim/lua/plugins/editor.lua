@@ -58,7 +58,11 @@ return {
 
         local wk = require("which-key")
         wk.add({
-          { "<leader>h", group = "hunks" },
+          { "<leader>h",
+            group = "hunks",
+            icon = { icon = "󰊢", color = "orange" },
+            mode = {"n", "v"},
+          },
         })
 
         map("n", "]h", function() gs.nav_hunk("next") end, "Next Hunk")
