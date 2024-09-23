@@ -611,7 +611,7 @@ if !exists(":GetSynStack")
 endif
 
 " Command to write read-only file
-if !exists(":W")
+if has("unix") && !exists(":W")
     command W execute 'silent! write !sudo /usr/bin/tee "%" >/dev/null' <bar> edit!
 endif
 
@@ -671,23 +671,28 @@ if !exists('g:statusline_git_branch')
     let g:statusline_git_is_tracked = {}
 endif
 
-augroup setStatusline
-    autocmd!
+let s:dev_null = (has("win32") ? "NUL" : "/dev/null")
 
-    autocmd BufRead,BufEnter * call s:SetStatuslineGit()
-    autocmd BufDelete * silent! unlet g:statusline_git_branch[expand("<abuf>")] |
-                      \ silent! unlet g:statusline_git_is_tracked[expand("<abuf>")]
-augroup END
+let s:has_git = executable("git")
+if s:has_git
+    augroup setStatusline
+        autocmd!
 
-function s:SetStatuslineGit()
-    let l:branch_command = "git -C " . expand("%:h") . " rev-parse --abbrev-ref HEAD 2>/dev/null | tr -d '\n'"
-    let l:git_branch = system(l:branch_command)
-    let l:track_command = "git -C " . expand("%:h") . " ls-files " . expand("%:p:S") . " 2>/dev/null"
-    let l:git_tracked = system(l:track_command)
+        autocmd BufRead,BufEnter * call s:SetStatuslineGit()
+        autocmd BufDelete * silent! unlet g:statusline_git_branch[expand("<abuf>")] |
+                          \ silent! unlet g:statusline_git_is_tracked[expand("<abuf>")]
+    augroup END
 
-    let g:statusline_git_branch[bufnr()] = (!empty(l:git_branch) ? ' ' . l:git_branch . ' ' : '')
-    let g:statusline_git_is_tracked[bufnr()] = !empty(expand("%:p")) && !empty(l:git_tracked)
-endfunction
+    function s:SetStatuslineGit()
+        let l:branch_command = "git -C " . expand("%:h") . " rev-parse --abbrev-ref HEAD 2> " . s:dev_null
+        let l:git_branch = trim(system(l:branch_command), "", 2)
+        let l:track_command = "git -C " . expand("%:h") . " ls-files " . expand("%:p:S") . " 2> " . s:dev_null
+        let l:git_tracked = trim(system(l:track_command), "", 2)
+
+        let g:statusline_git_branch[bufnr()] = (!empty(l:git_branch) ? ' ' . l:git_branch . ' ' : '')
+        let g:statusline_git_is_tracked[bufnr()] = !empty(expand("%:p")) && !empty(l:git_tracked)
+    endfunction
+endif
 
 function MyStatusLine()
     let l:curr_bufnr = winbufnr(g:statusline_winid)
@@ -703,7 +708,7 @@ function MyStatusLine()
     endif
 
     " Git gutter
-    if g:gitgutter_enabled && !empty(l:git_branch) && l:is_tracked
+    if s:has_git && g:gitgutter_enabled && !empty(l:git_branch) && l:is_tracked
         let [a, m, r] = gitgutter#hunk#summary(l:curr_bufnr)
         let l:inactive = win_id2win(g:statusline_winid) != winnr() ? "NC" : ""
         let l:my_statusline .= ' ['
