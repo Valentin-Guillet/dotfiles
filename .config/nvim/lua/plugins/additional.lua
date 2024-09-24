@@ -14,15 +14,6 @@ return {
 
   "ecthelionvi/NeoSwap",
 
-	{
-		"williamboman/mason.nvim",
-		opts = {
-			ensure_installed = {
-				"ruff-lsp",
-			},
-		},
-	},
-
   {
     "johmsalas/text-case.nvim",
     lazy = false,
