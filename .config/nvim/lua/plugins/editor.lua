@@ -85,4 +85,21 @@ return {
 			end,
 		},
 	},
+
+  {
+    "echasnovski/mini.move",
+    opts = {
+      mappings = {
+        left = "|",
+        right = "\\",
+        down = "-",
+        up = "_",
+
+        line_left = "",
+        line_right = "",
+        line_down = "-",
+        line_up = "_",
+      }
+    }
+  },
 }

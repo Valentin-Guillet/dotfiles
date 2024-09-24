@@ -68,11 +68,11 @@ vim.keymap.set("n", "<M-J>", "<CMD>resize -2<cr>", { desc = "Decrease window hei
 vim.keymap.set("n", "<M-H>", "<CMD>vertical resize -2<cr>", { desc = "Decrease window width" })
 vim.keymap.set("n", "<M-L>", "<CMD>vertical resize +2<cr>", { desc = "Increase window width" })
 
----- Move Lines
-vim.keymap.set("n", "-", "<CMD>m .+1<cr>==", { desc = "Move down", silent = true })
-vim.keymap.set("n", "_", "<CMD>m .-2<cr>==", { desc = "Move up", silent = true })
-vim.keymap.set("v", "-", ":m '>+1<cr>gv=gv", { desc = "Move down", silent = true })
-vim.keymap.set("v", "_", ":m '<-2<cr>gv=gv", { desc = "Move up", silent = true })
+-- Move Lines
+-- vim.keymap.set("n", "-", "<CMD>m .+1<cr>==", { desc = "Move down", silent = true })
+-- vim.keymap.set("n", "_", "<CMD>m .-2<cr>==", { desc = "Move up", silent = true })
+-- vim.keymap.set("v", "-", ":m '>+1<cr>gv=gv", { desc = "Move down", silent = true })
+-- vim.keymap.set("v", "_", ":m '<-2<cr>gv=gv", { desc = "Move up", silent = true })
 
 -- buffers
 vim.keymap.set("n", "<C-l>", "<CMD>noh<cr>", { desc = "Clear hlsearch" })
