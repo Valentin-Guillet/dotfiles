@@ -547,9 +547,10 @@ function s:FixLineSpellError()
 endfunction
 
 function s:DiffToggle()
+    let l:curr_win_nr = winnr()
     if &diff
         windo diffoff
-        execute winnr() . 'wincmd w'
+        execute l:curr_win_nr . 'wincmd w'
         return
     endif
 
@@ -559,7 +560,7 @@ function s:DiffToggle()
     endif
 
     windo diffthis
-    execute winnr() . 'wincmd w'
+    execute l:curr_win_nr . 'wincmd w'
 endfunction
 
 " Command to diff if there are two splits on current window
@@ -757,4 +758,4 @@ function XTermPasteBegin()
     return ""
 endfunction
 
-" vim:fdm=marker
+" vim:fdm=marker:sw=4:ts=4
