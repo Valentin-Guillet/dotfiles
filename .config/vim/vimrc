@@ -525,7 +525,8 @@ augroup END
 function s:CloseWin()
     if get(t:, 'zoomed', 0) | call zoom#toggle() | endif
     quit
-    if &diff && tabpagewinnr('.', '$') == 1 | quit | endif
+    " tabpagewinnr first arg must be a number and 0 corresponds to curr tab
+    if &diff && tabpagewinnr(0, '$') == 1 | quit | endif
 endfunction
 
 " Function to open file in split if buffer not empty
@@ -552,7 +553,7 @@ function s:DiffToggle()
         return
     endif
 
-    if tabpagewinnr('.', '$') != 2
+    if tabpagewinnr(0, '$') != 2
         echohl ErrorMsg | echo "Can only diff two files" | echohl None
         return
     endif
