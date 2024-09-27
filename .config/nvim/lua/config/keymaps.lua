@@ -53,8 +53,17 @@ vim.keymap.set("i", "KJ", "<Esc>l")
 vim.keymap.set("i", "<M-u>", "<C-O>u")
 
 -- Scroll
-vim.keymap.set("n", "<C-j>", "<C-e>")
-vim.keymap.set("n", "<C-k>", "<C-y>")
+vim.keymap.set("n", "<C-j>", function()
+	if not require("noice.lsp").scroll(2) then
+		return "<C-e>"
+	end
+end, { silent = true, expr = true, desc = "Scroll down" })
+
+vim.keymap.set("n", "<C-k>", function()
+	if not require("noice.lsp").scroll(-2) then
+		return "<C-y>"
+	end
+end, { silent = true, expr = true, desc = "Scroll up" })
 
 -- Move to window using the <alt> hjkl keys
 vim.keymap.set("n", "<M-h>", "<C-w>h", { desc = "Go to left window" })
@@ -67,12 +76,6 @@ vim.keymap.set("n", "<M-K>", "<CMD>resize +2<cr>", { desc = "Increase window hei
 vim.keymap.set("n", "<M-J>", "<CMD>resize -2<cr>", { desc = "Decrease window height" })
 vim.keymap.set("n", "<M-H>", "<CMD>vertical resize -2<cr>", { desc = "Decrease window width" })
 vim.keymap.set("n", "<M-L>", "<CMD>vertical resize +2<cr>", { desc = "Increase window width" })
-
--- Move Lines
--- vim.keymap.set("n", "-", "<CMD>m .+1<cr>==", { desc = "Move down", silent = true })
--- vim.keymap.set("n", "_", "<CMD>m .-2<cr>==", { desc = "Move up", silent = true })
--- vim.keymap.set("v", "-", ":m '>+1<cr>gv=gv", { desc = "Move down", silent = true })
--- vim.keymap.set("v", "_", ":m '<-2<cr>gv=gv", { desc = "Move up", silent = true })
 
 -- buffers
 vim.keymap.set("n", "<C-l>", "<CMD>noh<cr>", { desc = "Clear hlsearch" })
@@ -102,10 +105,10 @@ vim.keymap.set("n", "<M-R>", "<CMD>tab split<CR>", { silent = true })
 vim.keymap.set("n", "<M-T>", "<CMD>tabnew<CR>", { silent = true })
 
 vim.keymap.set("n", "<M-P>", function()
-  vim.cmd("tabmove " .. ((vim.fn.tabpagenr("$") + vim.fn.tabpagenr() - 1) % (vim.fn.tabpagenr("$") + 1)))
+	vim.cmd("tabmove " .. ((vim.fn.tabpagenr("$") + vim.fn.tabpagenr() - 1) % (vim.fn.tabpagenr("$") + 1)))
 end)
 vim.keymap.set("n", "<M-N>", function()
-  vim.cmd("tabmove " .. ((vim.fn.tabpagenr() + 1) % (vim.fn.tabpagenr("$") + 1)))
+	vim.cmd("tabmove " .. ((vim.fn.tabpagenr() + 1) % (vim.fn.tabpagenr("$") + 1)))
 end)
 
 vim.keymap.set("n", "<M-<>", "<C-w>r")
@@ -148,7 +151,7 @@ vim.cmd([[cabbrev <expr> H ((getcmdtype() == ':' && getcmdpos() <= 2)? 'tab h' :
 vim.cmd([[cabbrev <expr> Help ((getcmdtype() == ':' && getcmdpos() <= 5)? 'tab help' : 'Help')]])
 
 -- <C-V> to copy in insert mode and in command line
-vim.keymap.set({"i", "c"}, "<C-S-v>", "<C-R>+", { desc = "Paste from clipboard" })
+vim.keymap.set({ "i", "c" }, "<C-S-v>", "<C-R>+", { desc = "Paste from clipboard" })
 
 -- Mini.surround: S in visual mode (cf. `:help MiniSurround-vim-surround-config`)
 vim.keymap.del("x", "ys")
