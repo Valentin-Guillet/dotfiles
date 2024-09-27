@@ -153,6 +153,9 @@ vim.cmd([[cabbrev <expr> Help ((getcmdtype() == ':' && getcmdpos() <= 5)? 'tab h
 -- <C-V> to copy in insert mode and in command line
 vim.keymap.set({ "i", "c" }, "<C-S-v>", "<C-R>+", { desc = "Paste from clipboard" })
 
+-- Open autocomplete on next subdirectory in command line
+vim.keymap.set("c", "<C-o>", "<Space><BS><C-z>", { desc = "Autocomplete in next subdirectory"})
+
 -- Mini.surround: S in visual mode (cf. `:help MiniSurround-vim-surround-config`)
 vim.keymap.del("x", "ys")
 vim.keymap.set("x", "S", [[:<C-u>lua MiniSurround.add("visual")<CR>]], { silent = true })
