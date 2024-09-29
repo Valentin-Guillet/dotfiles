@@ -1,11 +1,11 @@
 return {
-  {
-    "folke/noice.nvim",
-    keys = {
-      { "<c-f>", false, mode = "i" },
-      { "<c-b>", false, mode = "i" },
-    }
-  },
+	{
+		"folke/noice.nvim",
+		keys = {
+			{ "<c-f>", false, mode = "i" },
+			{ "<c-b>", false, mode = "i" },
+		},
+	},
 
-  { "akinsho/bufferline.nvim", enabled = false },
+	{ "akinsho/bufferline.nvim", enabled = false },
 }

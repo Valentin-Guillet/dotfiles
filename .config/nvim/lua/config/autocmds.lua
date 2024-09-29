@@ -3,6 +3,6 @@
 -- Add any additional autocmds here
 
 vim.api.nvim_create_autocmd("FileType", {
-  pattern = {"text", "markdown", "sh", "bib", "tex"},
-  callback = function() vim.opt_local.iskeyword:append('-') end,
+	pattern = { "text", "markdown", "sh", "bib", "tex" },
+	callback = function() vim.opt_local.iskeyword:append("-") end,
 })
