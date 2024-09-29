@@ -1,5 +1,24 @@
 return {
 	{
+		"nvim-telescope/telescope.nvim",
+		opts = {
+			defaults = {
+				mappings = {
+					i = {
+						["<M-j>"] = "results_scrolling_left",
+						["<M-f>"] = { "<S-Right>", type = "command" },
+						["<C-u>"] = false,
+					},
+					n = {
+						["<C-c>"] = "close",
+						["v"] = "select_vertical",
+					},
+				},
+			},
+		},
+	},
+
+	{
 		"nvim-neo-tree/neo-tree.nvim",
     keys = {
       {
