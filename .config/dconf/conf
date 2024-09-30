@@ -48,7 +48,7 @@ toggle-tiled-left=['<Super>Left', '<Super>h']
 toggle-tiled-right=['<Super>Right', '<Super>l']
 
 [org/gnome/settings-daemon/plugins/media-keys]
-custom-keybindings=['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/']
+custom-keybindings=['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2/']
 home=['<Primary><Alt>e']
 screensaver=['<Super>f']
 www=['<Primary><Alt>w']
@@ -62,6 +62,11 @@ name='Sublime Text'
 binding='<Primary><Shift><Alt>s'
 command='sh -c "PATH=$HOME/.local/venv/bin:$PATH subl -n"'
 name='Sublime Text (New Window)'
+
+[org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2]
+binding='<Control><Alt>n'
+command='sh -c "neovide"'
+name='Neovide'
 
 [org/gnome/shell]
 favorite-apps=['org.gnome.Terminal.desktop', 'brave-browser.desktop', 'thunderbird.desktop', 'firefox_firefox.desktop', 'org.gnome.Nautilus.desktop']
