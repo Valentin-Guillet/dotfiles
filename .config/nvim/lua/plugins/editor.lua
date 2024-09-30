@@ -1,3 +1,20 @@
+local function neotree_auto_close(cmd)
+	return function(state)
+		local node = state.tree:get_node()
+		state.commands[cmd](state)
+		if node.type == "file" then
+			require("neo-tree.command").execute({ action = "close" })
+		end
+	end
+end
+
+local function neotree_navigate(get_dest_func)
+	return function(state)
+		local renderer = require("neo-tree.ui.renderer")
+		renderer.focus_node(state, get_dest_func(state.tree))
+	end
+end
+
 return {
 	{
 		"nvim-telescope/telescope.nvim",
@@ -20,33 +37,60 @@ return {
 
 	{
 		"nvim-neo-tree/neo-tree.nvim",
-		keys = {
-			{
-				"<leader>fE",
-				function()
-					require("neo-tree.command").execute({ toggle = true, dir = LazyVim.root() })
-				end,
-				desc = "Explorer NeoTree (root dir)",
-			},
-			{
-				"<leader>fe",
-				function()
-					require("neo-tree.command").execute({ toggle = true, dir = vim.uv.cwd() })
-				end,
-				desc = "Explorer NeoTree (cwd)",
-			},
-			{ "<leader>E", "<leader>fE", desc = "Explorer NeoTree (root dir)", remap = true },
-			{ "<leader>e", "<leader>fe", desc = "Explorer NeoTree (cwd)", remap = true },
-		},
 		opts = {
+			close_if_last_window = true,
 			filesystem = {
 				filtered_items = {
 					hide_gitignored = false,
 				},
 			},
+
 			window = {
 				mappings = {
-					["Y"] = "none",
+					["s"] = false,
+
+					-- Open file but keep focus in Neotree
+					["l"] = {
+						function(state)
+							local node = state.tree:get_node()
+							state.commands["open"](state)
+							if node.type == "file" then
+								require("neo-tree.command").execute({ action = "focus" })
+							end
+						end,
+						desc = "Preview file",
+					},
+
+					-- Open file and close Neotree
+					["<CR>"] = { neotree_auto_close("open"), desc = "Open & autoclose" },
+					["\\"] = { neotree_auto_close("open_vsplit"), desc = "Open vsplit & autoclose" },
+					["-"] = { neotree_auto_close("open_split"), desc = "Open split & autoclose" },
+
+					["<C-v>"] = "open_vsplit",
+					["<C-x>"] = "open_split",
+
+					["]]"] = {
+						neotree_navigate(function(tree)
+							local siblings = tree:get_nodes(tree:get_node():get_parent_id())
+							return siblings[#siblings]:get_id()
+						end),
+						desc = "Goto last sibling",
+					},
+
+					["[["] = {
+						neotree_navigate(function(tree)
+							local siblings = tree:get_nodes(tree:get_node():get_parent_id())
+							return siblings[1]:get_id()
+						end),
+						desc = "Goto first sibling",
+					},
+
+					["]u"] = {
+						neotree_navigate(function(tree)
+							return tree:get_node():get_parent_id()
+						end),
+						desc = "Goto parent",
+					},
 				},
 			},
 		},
@@ -85,21 +129,37 @@ return {
 					},
 				})
 
-				map("n", "]h", function() gs.nav_hunk("next") end, "Next Hunk")
-				map("n", "[h", function() gs.nav_hunk("prev") end, "Prev Hunk")
-				map("n", "]H", function() gs.nav_hunk("last") end, "Last Hunk")
-				map("n", "[H", function() gs.nav_hunk("first") end, "First Hunk")
+				map("n", "]h", function()
+					gs.nav_hunk("next")
+				end, "Next Hunk")
+				map("n", "[h", function()
+					gs.nav_hunk("prev")
+				end, "Prev Hunk")
+				map("n", "]H", function()
+					gs.nav_hunk("last")
+				end, "Last Hunk")
+				map("n", "[H", function()
+					gs.nav_hunk("first")
+				end, "First Hunk")
 				map("n", "<leader>hs", gs.stage_hunk, "Stage hunk")
 				map("n", "<leader>hr", gs.reset_hunk, "Reset hunk")
-				map("v", "<leader>hs", function() gs.stage_hunk({ vim.fn.line("."), vim.fn.line("v") }) end, "Stage hunk")
-				map("v", "<leader>hr", function() gs.reset_hunk({ vim.fn.line("."), vim.fn.line("v") }) end, "Reset hunk")
+				map("v", "<leader>hs", function()
+					gs.stage_hunk({ vim.fn.line("."), vim.fn.line("v") })
+				end, "Stage hunk")
+				map("v", "<leader>hr", function()
+					gs.reset_hunk({ vim.fn.line("."), vim.fn.line("v") })
+				end, "Reset hunk")
 				map("n", "<leader>hS", gs.stage_buffer, "Stage Buffer")
 				map("n", "<leader>hu", gs.undo_stage_hunk, "Undo Stage Hunk")
 				map("n", "<leader>hR", gs.reset_buffer, "Reset Buffer")
 				map("n", "<leader>hp", gs.preview_hunk_inline, "Preview Hunk Inline")
-				map("n", "<leader>hb", function() gs.blame_line({ full = true }) end, "Blame Line")
+				map("n", "<leader>hb", function()
+					gs.blame_line({ full = true })
+				end, "Blame Line")
 				map("n", "<leader>hd", gs.diffthis, "Diff This")
-				map("n", "<leader>hD", function() gs.diffthis("~") end, "Diff This ~")
+				map("n", "<leader>hD", function()
+					gs.diffthis("~")
+				end, "Diff This ~")
 				map("n", "<leader>ht", gs.toggle_deleted)
 				map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", "GitSigns Select Hunk")
 			end,
