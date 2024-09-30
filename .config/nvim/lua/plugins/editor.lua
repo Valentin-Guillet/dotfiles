@@ -29,6 +29,8 @@ return {
 					n = {
 						["<C-c>"] = "close",
 						["v"] = "select_vertical",
+						["\\"] = "select_vertical",
+						["-"] = "select_horizontal",
 					},
 				},
 			},
