@@ -12,9 +12,9 @@ return {
 				["<C-J>"] = cmp.mapping.scroll_docs(4),
 				["<Tab>"] = cmp.mapping({
 					i = function(fallback)
-						if neocodeium.visible() then -- accept completion
+						if neocodeium.visible() then
 							neocodeium.accept()
-						elseif cmp.visible() and cmp.get_active_entry() then
+						elseif cmp.visible() then
 							cmp.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = false })
 						else -- send "<Tab>" through
 							fallback()
