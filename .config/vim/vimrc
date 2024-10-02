@@ -363,10 +363,10 @@ nnoremap <leader>E <CMD>tabnew $MYVIMRC<CR>
 nnoremap <leader>r <CMD>source $MYVIMRC \| redraw \| echo "Config reloaded !"<CR>
 
 " Set help by default in vertical split (with h[elp]) or new tab (with H[elp])
-cabbrev <expr> h ((getcmdtype() == ':' && getcmdpos() <= 2)? 'vert h' : 'h')
-cabbrev <expr> help ((getcmdtype() == ':' && getcmdpos() <= 5)? 'vert help' : 'help')
-cabbrev <expr> H ((getcmdtype() == ':' && getcmdpos() <= 2)? 'tab h' : 'H')
-cabbrev <expr> Help ((getcmdtype() == ':' && getcmdpos() <= 5)? 'tab help' : 'Help')
+cnoreabbrev <expr> h ((getcmdtype() == ':' && getcmdpos() <= 2)? 'vert h' : 'h')
+cnoreabbrev <expr> help ((getcmdtype() == ':' && getcmdpos() <= 5)? 'vert help' : 'help')
+cnoreabbrev <expr> H ((getcmdtype() == ':' && getcmdpos() <= 2)? 'tab h' : 'H')
+cnoreabbrev <expr> Help ((getcmdtype() == ':' && getcmdpos() <= 5)? 'tab help' : 'Help')
 
 " Write file with <leader>w
 nnoremap <leader>w <CMD>update<CR>

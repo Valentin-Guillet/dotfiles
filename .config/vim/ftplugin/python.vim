@@ -2,8 +2,8 @@
 set foldmethod=indent
 set foldlevel=999
 
-abbrev <buffer> brekapoint breakpoint
-abbrev <buffer> breakpoitn breakpoint
-abbrev <buffer> brekapoitn breakpoint
+inoreabbrev <buffer> brekapoint breakpoint
+inoreabbrev <buffer> breakpoitn breakpoint
+inoreabbrev <buffer> brekapoitn breakpoint
 
 set makeprg=ruff\ %
