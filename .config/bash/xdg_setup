@@ -4,7 +4,7 @@ export INPUTRC="$XDG_CONFIG_HOME"/readline/inputrc
 export NPM_CONFIG_USERCONFIG=$XDG_CONFIG_HOME/npm/npmrc
 export PYTHONSTARTUP="$XDG_CONFIG_HOME"/python/pythonrc.py
 export WGETRC="$XDG_CONFIG_HOME"/wget/wgetrc
-export VIRTUAL_ENV_DISABLE_PROMPT=yes
+export VIRTUAL_ENV_DISABLE_PROMPT=1
 
 # History / cache
 export CUDA_CACHE_PATH="$XDG_CACHE_HOME"/nv
