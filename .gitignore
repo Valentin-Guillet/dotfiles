@@ -35,12 +35,6 @@
 !.config/ideavim/
 !.config/ideavim/**
 
-!.config/keyboard/
-!.config/keyboard/**
-
-!.config/powershell/
-!.config/powershell/**
-
 !.config/ptpython
 !.config/ptpython/**
 
@@ -96,17 +90,8 @@
 !.config/vim/
 !.config/vim/**
 
-!.config/vimium/
-!.config/vimium/**
-
-!.config/vscode/
-!.config/vscode/**
-
 !.config/wget/
 !.config/wget/**
-
-!.config/windows_terminal/
-!.config/windows_terminal/**
 
 !.config/youtube-dl/
 !.config/youtube-dl/**
