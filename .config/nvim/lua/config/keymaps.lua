@@ -145,10 +145,10 @@ vim.keymap.set("t", "<M-k>", "<CMD>wincmd k<cr>", { desc = "Go to upper window" 
 vim.keymap.set("t", "<M-l>", "<CMD>wincmd l<cr>", { desc = "Go to right window" })
 
 -- Help abbreviations
-vim.cmd([[cabbrev <expr> h ((getcmdtype() == ':' && getcmdpos() <= 2)? 'vert h' : 'h')]])
-vim.cmd([[cabbrev <expr> help ((getcmdtype() == ':' && getcmdpos() <= 5)? 'vert help' : 'help')]])
-vim.cmd([[cabbrev <expr> H ((getcmdtype() == ':' && getcmdpos() <= 2)? 'tab h' : 'H')]])
-vim.cmd([[cabbrev <expr> Help ((getcmdtype() == ':' && getcmdpos() <= 5)? 'tab help' : 'Help')]])
+vim.cmd([[cnoreabbrev <expr> h ((getcmdtype() == ':' && getcmdpos() <= 2)? 'vert h' : 'h')]])
+vim.cmd([[cnoreabbrev <expr> help ((getcmdtype() == ':' && getcmdpos() <= 5)? 'vert help' : 'help')]])
+vim.cmd([[cnoreabbrev <expr> H ((getcmdtype() == ':' && getcmdpos() <= 2)? 'tab h' : 'H')]])
+vim.cmd([[cnoreabbrev <expr> Help ((getcmdtype() == ':' && getcmdpos() <= 5)? 'tab help' : 'Help')]])
 
 -- <C-V> to copy in insert mode and in command line
 vim.keymap.set({ "i", "c" }, "<C-S-v>", "<C-R>+", { desc = "Paste from clipboard" })
