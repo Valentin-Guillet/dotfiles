@@ -282,11 +282,12 @@ venv() {
         if [[ $REPLY =~ ^[Yy] ]]; then
             rm -r "$HOME/.local/venvs/$venv_name"
             echo "Venv '$venv_name' deleted"
+
+            # If we deleted curr venv, we deactivate it
+            [ "$venv_name" = "$(basename $VIRTUAL_ENV)" ] && venv_action=deactivate
         else
             echo "Aborted"
         fi
-
-        return 0
 
     # Clean path matched with unexisting venvs
     elif [[ $1 == --clean ]]; then
