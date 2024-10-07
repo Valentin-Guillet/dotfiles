@@ -40,9 +40,9 @@ run() {
 }
 
 ot() {
-    mkdir ~/Pytest 2> /dev/null
-    tmux new-window -n Pytest -c ~/Pytest
-    tmux split-window -c ~/Pytest
+    mkdir $HOME/Pytest 2> /dev/null
+    tmux new-window -n Pytest -c $HOME/Pytest
+    tmux split-window -c $HOME/Pytest
     tmux select-pane -U
     tmux unbind -n M-g
     tmux bind -n M-g selectp -t 1 \\\; send-keys Escape :w Enter \\\; selectp -t 2 \\\; send-keys "py test.py" Enter \\\; selectp -t 1
@@ -50,7 +50,7 @@ ot() {
 }
 
 ct() {
-    rm -r ~/Pytest 2> /dev/null
+    rm -r $HOME/Pytest 2> /dev/null
     tmux kill-window
     clear
 }
@@ -67,9 +67,9 @@ pip_update() {
     fi
 
     # Remove the packages in pip_exclude file
-    if [ ! "$1" = "-a" -a ! "$1" = '--all' ] && [ -s ~/.config/pip/pip_exclude ]
+    if [ ! "$1" = "-a" -a ! "$1" = '--all' ] && [ -s $HOME/.config/pip/pip_exclude ]
     then
-        grep -v -f <(sed -e "/^\s*#.*$/d" -e "/^\s*$/d" ~/.config/pip/pip_exclude) /tmp/pip_list > /tmp/pip_list.tmp
+        grep -v -f <(sed -e "/^\s*#.*$/d" -e "/^\s*$/d" $HOME/.config/pip/pip_exclude) /tmp/pip_list > /tmp/pip_list.tmp
         mv /tmp/pip_list.tmp /tmp/pip_list
     fi
 
@@ -144,3 +144,246 @@ ls_stack() {
     ls -flh --color=force ${files[@]}
 }
 
+venv() {
+    local venv_action=nothing
+    local venv_file="$HOME/.local/state/python/venv_list"
+
+    local help_msg
+    read -r -d '' help_msg <<- EOM
+        Tool to manage python virtual environments. Usage:
+		  - venv [VENV_NAME]      # Toggle
+		  - venv [--activate|-a] [VENV_NAME]
+		  - venv [--deactivate|-d]
+		  - venv [--create|-c] VENV_NAME
+		  - venv [--match|-m] VENV_NAME [PATH]
+		  - venv [--unmatch|-u] [PATH]
+		  - venv [--venvs|-v]
+		  - venv [--list|-l]
+		  - venv --delete VENV_NAME
+		  - venv --clean
+	EOM
+
+    if [[ $1 == --help || $1 == -h ]]; then
+        echo "$help_msg"
+        return 0
+    fi
+
+    # Create new venv and activate it
+    if [[ $1 == --create || $1 == -c ]]; then
+        local venv_name="$2"
+        if [ -z "$venv_name" ]; then
+            echo "Usage: venv --create VENV_NAME"
+            return 1
+        fi
+
+        local venv_path="$HOME/.local/venvs/$venv_name"
+        if [ -d "$venv_path" ]; then
+            echo "Venv '$venv_name' already exists"
+            return 1
+        fi
+
+        /usr/bin/python3 -m venv "$venv_path"
+        echo "New venv $venv_name created at $venv_path"
+
+        # Activate venv after creation
+        venv_action=activate
+        shift    # Put venv name in $1
+
+    # Match path vith venv
+    elif [[ $1 == --match || $1 == -m ]]; then
+        local venv_name="$2"
+        if [ -z "$venv_name" ]; then
+            if [ "$VIRTUAL_ENV" = "$HOME/.local/venvs/base" ]; then
+                echo "Usage: venv --match VENV_NAME [PATH]"
+                return 1
+            fi
+            venv_name=$(basename "$VIRTUAL_ENV")
+        fi
+
+        # Check that given path exists
+        local path="$(realpath "${3:-$(pwd)}" 2>/dev/null)"
+        if [ ! -d "$path" ]; then
+            echo "Invalid path: '$path'"
+            return 1
+        fi
+
+        # Check that venv exists
+        if [ ! -d "$HOME/.local/venvs/$venv_name" ]; then
+            echo "No venv named '$venv_name'"
+            return 1
+        fi
+
+        touch "$venv_file"
+
+        # Already matched
+        if grep -q "^$path	$venv_name\$" $venv_file; then
+            echo "Already matched"
+            return 0
+        fi
+
+        # Update match in venv_file
+        # The bash substitution replaces all '/' by '\/' to escape them for sed
+        sed -i "/^${path//\//\\/}\t/d" "$venv_file"
+        echo -e "$path\t$venv_name" >> "$venv_file"
+        echo "Matched path with venv '$venv_name'"
+
+        # Activate venv if we're in target path and put venv name in $1
+        [[ "$path" -ef "$(pwd)" ]] && venv_action=activate && shift
+
+    # Unmatch path with venv
+    elif [[ $1 == --unmatch || $1 == -u ]]; then
+        local path="$(realpath "${2:-$(pwd)}")"
+        if [ ! -d "$path" ]; then
+            echo "Invalid path: '$path'"
+            return 1
+        fi
+
+        local line=$(grep "^$path	" "$venv_file")
+        if [ -z "$line" ]; then
+            echo "Unmatched path"
+        else
+            local venv_name=$(cut -f2 <(echo "$line"))
+            echo "Path unmatched with venv '$venv_name'"
+            sed -i "/^${path//\//\\/}\t/d" "$venv_file"
+        fi
+
+    # List existing venvs
+    elif [[ $1 == --venvs || $1 == -v ]]; then
+        ls $HOME/.local/venvs/ --color=never
+
+    # Print all venv matchings
+    elif [[ $1 == --list || $1 == -l ]]; then
+        if [[ -z $(grep '[^[:space:]]' "$venv_file" 2>/dev/null) ]] ; then
+            echo "No venv matched"
+        else
+            cat $venv_file
+        fi
+
+    # Delete venv
+    elif [[ $1 == --delete ]]; then
+        if [ -z "$2" ]; then
+            echo "Usage: venv --delete VENV_NAME"
+            return 1
+        fi
+
+        local venv_name="$2"
+        if [ "$venv_name" = "base" ]; then
+            echo "Can't delete base venv"
+            return 1
+        fi
+
+        # Check that venv exists
+        if [ ! -d "$HOME/.local/venvs/$venv_name" ]; then
+            echo "No venv named '$venv_name'"
+            return 1
+        fi
+
+        read -p "Delete venv '$venv_name'? y/[N] " -r
+        if [[ $REPLY =~ ^[Yy] ]]; then
+            rm -r "$HOME/.local/venvs/$venv_name"
+            echo "Venv '$venv_name' deleted"
+        else
+            echo "Aborted"
+        fi
+
+        return 0
+
+    # Clean path matched with unexisting venvs
+    elif [[ $1 == --clean ]]; then
+        if [[ -z $(grep '[^[:space:]]' "$venv_file" 2>/dev/null) ]] ; then
+            echo "No venv matched"
+            return 0
+        fi
+
+        local filtered_file=$(mktemp)
+        while read line; do
+            local venv_name=$(echo "$line" | cut -f2)
+            if [ -d "$HOME/.local/venvs/$venv_name" ]; then
+                echo "$line" >> $filtered_file
+            else
+                echo "Unmatched $(echo "$line" | cut -f1) to venv '$venv_name'"
+            fi
+        done < $venv_file
+        mv $filtered_file $venv_file
+
+    # Deactivate curr venv
+    elif [[ $1 == --deactivate || $1 == -d ]]; then
+        venv_action=deactivate
+        shift    # Put venv name in $1
+
+    # Activate venv
+    elif [[ $1 == --activate || $1 == -a ]]; then
+        if [ "$2" = "base" ]; then
+            # Ignore if base is already activated
+            [ "$(basename $VIRTUAL_ENV)" = "base" ] && return 1
+
+            venv_action=deactivate
+        else
+            venv_action=activate
+        fi
+
+        [ "$2" = "base" ] && venv_action=deactivate || venv_action=activate
+        shift    # Put venv name in $1
+
+    # Mistype
+    elif [[ $1 == -* ]]; then
+        echo "venv: invalid option"
+        echo "$help_msg"
+        return 1
+
+    # Activating base is equivalent to deactivating curr venv
+    elif [[ $1 == base ]]; then
+        [ "$(basename $VIRTUAL_ENV)" = "base" ] && return 0
+        venv_action=deactivate
+
+    # Default: toggle venv
+    else
+        venv_action=toggle
+    fi
+
+    if [[ $venv_action == activate || $venv_action == toggle ]]; then
+        local venv_name="$1"
+
+        # No argument passed to cmd: get venv matched with curr path
+        if [ -z "$venv_name" ]; then
+            local path="$(realpath "$(pwd)")"
+            venv_name=$(cut -f2 <(grep "^$path	" "$venv_file" 2>/dev/null))
+        fi
+
+        # Current path does not match any venv
+        if [ -z "$venv_name" ]; then
+            echo "No venv matched to current path found"
+            return 1
+        fi
+
+        # Given venv does not exist
+        if [ ! -d "$HOME/.local/venvs/$venv_name" ]; then
+            echo "Venv '$venv_name' does not exist"
+            return 1
+        fi
+
+        # If given venv is already activated, deactivate it if in toggle mode
+        if [ "$venv_name" = "$(basename $VIRTUAL_ENV)" ]; then
+            [ "$venv_action" == "toggle" ] && venv_action=deactivate || echo "Already activated"
+        else
+            [ "$venv_name" != "base" ] && unset VIRTUAL_ENV_DISABLE_PROMPT
+            source $HOME/.local/venvs/$venv_name/bin/activate
+        fi
+    fi
+
+    if [[ $venv_action = deactivate ]]; then
+        if [ "$VIRTUAL_ENV" != "$HOME/.local/venvs/base" ]; then
+            deactivate
+            export VIRTUAL_ENV_DISABLE_PROMPT=1
+            source $HOME/.local/venvs/base/bin/activate
+        else
+            echo "No venv currently activated"
+        fi
+    fi
+
+    return 0
+}
+
+source "$HOME/.config/bash/_venv_completion"
+
+# vim: sw=4 ts=4

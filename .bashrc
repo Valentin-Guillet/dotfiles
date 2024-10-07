@@ -14,16 +14,7 @@ export XDG_CACHE_HOME=$HOME/.cache
 export XDG_DATA_HOME=$HOME/.local/share
 export XDG_STATE_HOME=$HOME/.local/state
 
-export INPUTRC="$XDG_CONFIG_HOME"/readline/inputrc
-export PYTHONSTARTUP="$XDG_CONFIG_HOME"/python/pythonrc.py
-export WGETRC="$XDG_CONFIG_HOME"/wget/wgetrc
-
-export PARALLEL_HOME="$XDG_CACHE_HOME"/parallel
-export ICEAUTHORITY="$XDG_CACHE_HOME"/ICEauthority
-export XAUTHORITY="$XDG_CACHE_HOME"/Xauthority
-export LESSHISTFILE="$XDG_CACHE_HOME"/less/history
-export GDBHISTFILE="$XDG_CACHE_HOME"/gdb/history
-export CUDA_CACHE_PATH="$XDG_CACHE_HOME"/nv
+[ -f "$XDG_CONFIG_HOME"/bash/xdg_setup ] && . "$XDG_CONFIG_HOME"/bash/xdg_setup
 
 # Auto launch tmux
 if [ -z $IGNORE_TMUX ] && command -v tmux > /dev/null

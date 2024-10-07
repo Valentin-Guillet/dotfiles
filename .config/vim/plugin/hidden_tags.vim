@@ -34,6 +34,11 @@ function s:GetTagsPath()
 endfunction
 
 function s:UpdateTagsFile()
+    if !executable("ctags")
+        echohl ErrorMsg | echo "'ctags' command not found" | echohl None
+        return 0
+    endif
+
     let l:tags_path = s:GetTagsPath()
 
     if empty(l:tags_path)

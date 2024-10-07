@@ -1,0 +1,52 @@
+#!/bin/bash
+
+_venv_complete() {
+
+    # Get the current word and previous word
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+    local prev="${COMP_WORDS[COMP_CWORD-1]}"
+
+    # Define possible options
+    local opts="--activate --deactivate --create --match --unmatch --venvs --list --delete --clean --help"
+
+    # Option completion
+    if [[ "$cur" == --* ]]; then
+        COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
+        return 0
+    fi
+
+    # Get list of available venvs from ~/.local/venvs/
+    local venvs=$(ls -1 $HOME/.local/venvs/ 2>/dev/null | grep -v "^base$")
+
+    # Unmatch: directory completion
+    if [[ "$prev" == "--unmatch" || "$prev" == "-u" ]]; then
+        # Use directory completion defined in /usr/share/bash-completion/bash_completion
+        _filedir -d
+        return 0
+    fi
+
+    # Match: venv name completion for first arg, path for second
+    if [[ "$prev" == "--match" || "$prev" == "-m" ]]; then
+        if [[ ${COMP_CWORD} -eq 2 ]]; then
+            COMPREPLY=( $(compgen -W "$venvs" -- "$cur") )
+        else
+            _filedir -d
+        fi
+        return 0
+    fi
+
+    # Activate and delete: venv name completion
+    if [[ "$prev" == "--activate" || "$prev" == "-a" || "$prev" == "--delete" ]]; then
+        COMPREPLY=( $(compgen -W "$venvs" -- "$cur") )
+        return 0
+    fi
+
+    # If toggling, return list of venv names
+    if [[ ${COMP_CWORD} -eq 1 ]]; then
+        COMPREPLY=( $(compgen -W "$venvs" -- "$cur") )
+    fi
+}
+
+complete -F _venv_complete venv
+
+# vim: sw=4 ts=4

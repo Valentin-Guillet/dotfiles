@@ -7,5 +7,5 @@ MaxPane
 MoreLayouts
 MultiEditUtils
 PackageResourceViewer
-ProjectManager (PackageManager -> Add Repository https://github.com/Val95240/ProjectManager
+ProjectManager (PackageManager -> Add Repository https://github.com/Valentin-Guillet/ProjectManager
                                -> Install ProjectManager)

@@ -1,0 +1,123 @@
+" .ideavimrc is a configuration file for IdeaVim plugin. It uses
+"   the same commands as the original .vimrc configuration.
+" You can find a list of commands here: https://jb.gg/h38q75
+" Find more examples here: https://jb.gg/share-ideavimrc
+
+
+" Tip: enable "IdeaVim: track action Ids" to see avaible <Action>()
+
+
+" --- Options
+
+set history=1000
+set hlsearch
+set ignorecase
+set incsearch
+set nrformats-=octal
+set scrolloff=2
+set showmode
+set smartcase
+set wrapscan
+set gdefault
+set clipboard=unnamedplus,unnamed,ideaput
+
+
+set ideajoin
+set ideamarks
+
+
+" --- Enable IdeaVim plugins https://jb.gg/ideavim-plugins
+
+packadd matchit
+
+Plug 'kana/vim-textobj-entire'
+Plug 'machakann/vim-highlightedyank'
+Plug 'tpope/vim-commentary'
+Plug 'tpope/vim-surround'
+Plug 'vim-scripts/argtextobj.vim'
+Plug 'dbakker/vim-paragraph-motion'
+Plug 'michaeljsmith/vim-indent-object'
+
+
+" --- Mappings
+
+let mapleader = " "
+
+nnoremap <leader>e :e ~/.config/ideavim/ideavimrc<CR>
+nnoremap <leader>r :source ~/.config/ideavim/ideavimrc<CR>
+
+" Save and quit
+nmap <leader>w <Action>(SaveAll)
+nmap <leader>q <Action>(CloseContent)
+
+" Scroll with C-[j|k]
+nnoremap <C-j> <C-e>
+vnoremap <C-j> <C-e>
+nnoremap <C-k> <C-y>
+vnoremap <C-k> <C-y>
+
+" Exit insert mode with kj
+inoremap kj <Esc>l
+inoremap Kj <Esc>l
+inoremap kJ <Esc>l
+inoremap KJ <Esc>l
+
+" Split
+nmap <leader>\ <Action>(SplitVertically)
+nmap <leader>- <Action>(SplitHorizontally)
+nnoremap <M-h> <C-w>h
+nnoremap <M-l> <C-w>l
+nnoremap <M-j> <C-w>j
+nnoremap <M-k> <C-w>k
+nmap <leader>J <Action>(MoveTabDown)
+nmap <leader>L <Action>(MoveTabRight)
+
+" Move line
+" /!\ Can't just use "map _" because it then overrides _ as an operator
+" and it messes up "gcc" in vim-commentary
+nmap - <Action>(MoveLineDown)
+vmap - <Action>(MoveLineDown)
+nmap _ <Action>(MoveLineUp)
+vmap _ <Action>(MoveLineUp)
+
+" Add a new line
+nnoremap <C-h> o<C-c>
+
+" M-u and M-r to undo/redo in insert mode
+inoremap <M-u> <C-o>u
+inoremap <M-r> <C-o><C-r>
+
+" Unmap Q and K
+nnoremap Q <nop>
+nnoremap K <nop>
+
+" Y same as D or C
+nnoremap Y y$
+
+" Quit visual mode with q
+vnoremap q <C-c>
+
+map <M-n> <Action>(NextTab)
+map <M-p> <Action>(PreviousTab)
+
+map <C-p> <Action>(SearchEverywhere)
+
+nnoremap <silent> <C-L> :nohlsearch<CR>
+
+
+" --- Actions
+
+nmap ]h <Action>(VcsShowNextChangeMarker)
+nmap [h <Action>(VcsShowPrevChangeMarker)
+
+nmap <leader>m <Action>(Run)
+
+nmap [[ <Action>(MethodUp)
+nmap ]] <Action>(MethodDown)
+
+nmap [w <Action>(GotoPreviousError)
+nmap ]w <Action>(GotoNextError)
+
+nmap <leader>cr <Action>(RenameElement)
+nmap <leader>f <Action>(ReformatCode)
+nmap <leader>v <Action>(ShowErrorDescription)

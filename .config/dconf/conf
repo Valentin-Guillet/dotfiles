@@ -55,12 +55,12 @@ www=['<Primary><Alt>w']
 
 [org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0]
 binding='<Primary><Alt>s'
-command='sh -c "PATH=$HOME/.local/venv/bin:$PATH subl"'
+command='sh -c "PATH=$HOME/.local/venvs/base/bin:$PATH subl"'
 name='Sublime Text'
 
 [org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1]
 binding='<Primary><Shift><Alt>s'
-command='sh -c "PATH=$HOME/.local/venv/bin:$PATH subl -n"'
+command='sh -c "PATH=$HOME/.local/venvs/base/bin:$PATH subl -n"'
 name='Sublime Text (New Window)'
 
 [org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2]

@@ -375,10 +375,10 @@ nnoremap <leader>E <CMD>tabnew $MYVIMRC<CR>
 nnoremap <leader>r <CMD>source $MYVIMRC \| redraw \| echo "Config reloaded !"<CR>
 
 " Set help by default in vertical split (with h[elp]) or new tab (with H[elp])
-cabbrev <expr> h ((getcmdtype() == ':' && getcmdpos() <= 2)? 'vert h' : 'h')
-cabbrev <expr> help ((getcmdtype() == ':' && getcmdpos() <= 5)? 'vert help' : 'help')
-cabbrev <expr> H ((getcmdtype() == ':' && getcmdpos() <= 2)? 'tab h' : 'H')
-cabbrev <expr> Help ((getcmdtype() == ':' && getcmdpos() <= 5)? 'tab help' : 'Help')
+cnoreabbrev <expr> h ((getcmdtype() == ':' && getcmdpos() <= 2)? 'vert h' : 'h')
+cnoreabbrev <expr> help ((getcmdtype() == ':' && getcmdpos() <= 5)? 'vert help' : 'help')
+cnoreabbrev <expr> H ((getcmdtype() == ':' && getcmdpos() <= 2)? 'tab h' : 'H')
+cnoreabbrev <expr> Help ((getcmdtype() == ':' && getcmdpos() <= 5)? 'tab help' : 'Help')
 
 " Write file with <leader>w
 nnoremap <leader>w <CMD>update<CR>
@@ -488,6 +488,9 @@ nnoremap K <nop>
 " Y same as D or C
 nnoremap Y y$
 
+" Don't overwrite register when pasting over selection
+vnoremap p pgvy
+
 " Shift-Tab to dedent
 inoremap <S-Tab> <C-d>
 
@@ -534,7 +537,8 @@ augroup END
 function s:CloseWin()
     if get(t:, 'zoomed', 0) | call zoom#toggle() | endif
     quit
-    if &diff && tabpagewinnr('.', '$') == 1 | quit | endif
+    " tabpagewinnr first arg must be a number and 0 corresponds to curr tab
+    if &diff && tabpagewinnr(0, '$') == 1 | quit | endif
 endfunction
 
 " Function to open file in split if buffer not empty
@@ -555,19 +559,20 @@ function s:FixLineSpellError()
 endfunction
 
 function s:DiffToggle()
+    let l:curr_win_nr = winnr()
     if &diff
         windo diffoff
-        execute winnr() . 'wincmd w'
+        execute l:curr_win_nr . 'wincmd w'
         return
     endif
 
-    if tabpagewinnr('.', '$') != 2
+    if tabpagewinnr(0, '$') != 2
         echohl ErrorMsg | echo "Can only diff two files" | echohl None
         return
     endif
 
     windo diffthis
-    execute winnr() . 'wincmd w'
+    execute l:curr_win_nr . 'wincmd w'
 endfunction
 
 " Command to diff if there are two splits on current window
@@ -620,7 +625,7 @@ if !exists(":GetSynStack")
 endif
 
 " Command to write read-only file
-if !exists(":W")
+if has("unix") && !exists(":W")
     command W execute 'silent! write !sudo /usr/bin/tee "%" >/dev/null' <bar> edit!
 endif
 
@@ -680,23 +685,28 @@ if !exists('g:statusline_git_branch')
     let g:statusline_git_is_tracked = {}
 endif
 
-augroup setStatusline
-    autocmd!
+let s:dev_null = (has("win32") ? "NUL" : "/dev/null")
 
-    autocmd BufRead,BufEnter * call s:SetStatuslineGit()
-    autocmd BufDelete * silent! unlet g:statusline_git_branch[expand("<abuf>")] |
-                      \ silent! unlet g:statusline_git_is_tracked[expand("<abuf>")]
-augroup END
+let s:has_git = executable("git")
+if s:has_git
+    augroup setStatusline
+        autocmd!
 
-function s:SetStatuslineGit()
-    let l:branch_command = "git -C " . expand("%:h") . " rev-parse --abbrev-ref HEAD 2>/dev/null | tr -d '\n'"
-    let l:git_branch = system(l:branch_command)
-    let l:track_command = "git -C " . expand("%:h") . " ls-files " . expand("%:p:S") . " 2>/dev/null"
-    let l:git_tracked = system(l:track_command)
+        autocmd BufRead,BufEnter * call s:SetStatuslineGit()
+        autocmd BufDelete * silent! unlet g:statusline_git_branch[expand("<abuf>")] |
+                          \ silent! unlet g:statusline_git_is_tracked[expand("<abuf>")]
+    augroup END
 
-    let g:statusline_git_branch[bufnr()] = (!empty(l:git_branch) ? ' ' . l:git_branch . ' ' : '')
-    let g:statusline_git_is_tracked[bufnr()] = !empty(expand("%:p")) && !empty(l:git_tracked)
-endfunction
+    function s:SetStatuslineGit()
+        let l:branch_command = "git -C " . expand("%:h") . " rev-parse --abbrev-ref HEAD 2> " . s:dev_null
+        let l:git_branch = trim(system(l:branch_command), "", 2)
+        let l:track_command = "git -C " . expand("%:h") . " ls-files " . expand("%:p:S") . " 2> " . s:dev_null
+        let l:git_tracked = trim(system(l:track_command), "", 2)
+
+        let g:statusline_git_branch[bufnr()] = (!empty(l:git_branch) ? ' ' . l:git_branch . ' ' : '')
+        let g:statusline_git_is_tracked[bufnr()] = !empty(expand("%:p")) && !empty(l:git_tracked)
+    endfunction
+endif
 
 function MyStatusLine()
     let l:curr_bufnr = winbufnr(g:statusline_winid)
@@ -712,7 +722,7 @@ function MyStatusLine()
     endif
 
     " Git gutter
-    if g:gitgutter_enabled && !empty(l:git_branch) && l:is_tracked
+    if s:has_git && g:gitgutter_enabled && !empty(l:git_branch) && l:is_tracked
         let [a, m, r] = gitgutter#hunk#summary(l:curr_bufnr)
         let l:inactive = win_id2win(g:statusline_winid) != winnr() ? "NC" : ""
         let l:my_statusline .= ' ['
@@ -760,4 +770,4 @@ function XTermPasteBegin()
     return ""
 endfunction
 
-" vim:fdm=marker
+" vim:fdm=marker:sw=4:ts=4
