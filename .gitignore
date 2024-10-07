@@ -11,6 +11,7 @@
 !.config/bash/paths
 !.config/bash/python_venv
 !.config/bash/xdg_setup
+!.config/bash/_venv_completion
 
 !.config/bat/
 !.config/bat/**

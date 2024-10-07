@@ -144,7 +144,6 @@ ls_stack() {
     ls -flh --color=force ${files[@]}
 }
 
-# TODO: auto-completion
 venv() {
     local venv_action=nothing
     local venv_file="$HOME/.local/state/python/venv_list"
@@ -384,5 +383,7 @@ venv() {
 
     return 0
 }
+
+source "$HOME/.config/bash/_venv_completion"
 
 # vim: sw=4 ts=4
