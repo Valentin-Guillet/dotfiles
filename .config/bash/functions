@@ -149,22 +149,31 @@ venv() {
     local venv_action=nothing
     local venv_file="$HOME/.local/state/python/venv_list"
 
-    if [[ $1 == "help" || $1 == "-h" ]]; then
-        echo "Tool to manage python virtual environments. Usage:"
-        echo "- venv OR venv [activate|-a]"
-        echo "- venv [deactivate|-d]"
-        echo "- venv [create|-c] VENV_NAME"
-        echo "- venv [match|-m] VENV_NAME [PATH]"
-        echo "- venv [unmatch|-u] [PATH]"
-        echo "- venv clear"
+    local help_msg
+    read -r -d '' help_msg <<- EOM
+        Tool to manage python virtual environments. Usage:
+		  - venv [VENV_NAME]      # Toggle
+		  - venv [--activate|-a] [VENV_NAME]
+		  - venv [--deactivate|-d]
+		  - venv [--create|-c] VENV_NAME
+		  - venv [--match|-m] VENV_NAME [PATH]
+		  - venv [--unmatch|-u] [PATH]
+		  - venv [--venvs|-v]
+		  - venv [--list|-l]
+		  - venv --delete VENV_NAME
+		  - venv --clean
+	EOM
+
+    if [[ $1 == --help || $1 == -h ]]; then
+        echo "$help_msg"
         return 0
     fi
 
     # Create new venv and activate it
-    if [[ $1 == "create" || $1 == "-c" ]]; then
+    if [[ $1 == --create || $1 == -c ]]; then
         local venv_name="$2"
         if [ -z "$venv_name" ]; then
-            echo "Usage: venv create VENV_NAME"
+            echo "Usage: venv --create VENV_NAME"
             return 1
         fi
 
@@ -182,11 +191,11 @@ venv() {
         shift    # Put venv name in $1
 
     # Match path vith venv
-    elif [[ $1 == "match" || $1 == "-m" ]]; then
+    elif [[ $1 == --match || $1 == -m ]]; then
         local venv_name="$2"
         if [ -z "$venv_name" ]; then
             if [ "$VIRTUAL_ENV" = "$HOME/.local/venvs/base" ]; then
-                echo "Usage: venv match VENV_NAME [PATH]"
+                echo "Usage: venv --match VENV_NAME [PATH]"
                 return 1
             fi
             venv_name=$(basename "$VIRTUAL_ENV")
@@ -223,7 +232,7 @@ venv() {
         [[ "$path" -ef "$(pwd)" ]] && venv_action=activate && shift
 
     # Unmatch path with venv
-    elif [[ $1 == unmat* || $1 == "-u" ]]; then
+    elif [[ $1 == --unmatch || $1 == -u ]]; then
         local path="$(realpath "${2:-$(pwd)}")"
         if [ ! -d "$path" ]; then
             echo "Invalid path: '$path'"
@@ -239,28 +248,92 @@ venv() {
             sed -i "/^${path//\//\\/}\t/d" "$venv_file"
         fi
 
+    # List existing venvs
+    elif [[ $1 == --venvs || $1 == -v ]]; then
+        ls $HOME/.local/venvs/ --color=never
+
+    # Print all venv matchings
+    elif [[ $1 == --list || $1 == -l ]]; then
+        if [[ -z $(grep '[^[:space:]]' "$venv_file" 2>/dev/null) ]] ; then
+            echo "No venv matched"
+        else
+            cat $venv_file
+        fi
+
+    # Delete venv
+    elif [[ $1 == --delete ]]; then
+        if [ -z "$2" ]; then
+            echo "Usage: venv --delete VENV_NAME"
+            return 1
+        fi
+
+        local venv_name="$2"
+        if [ "$venv_name" = "base" ]; then
+            echo "Can't delete base venv"
+            return 1
+        fi
+
+        # Check that venv exists
+        if [ ! -d "$HOME/.local/venvs/$venv_name" ]; then
+            echo "No venv named '$venv_name'"
+            return 1
+        fi
+
+        read -p "Delete venv '$venv_name'? y/[N] " -r
+        if [[ $REPLY =~ ^[Yy] ]]; then
+            rm -r "$HOME/.local/venvs/$venv_name"
+            echo "Venv '$venv_name' deleted"
+        else
+            echo "Aborted"
+        fi
+
+        return 0
+
     # Clean path matched with unexisting venvs
-    elif [[ $1 == "clean" ]]; then
-        local filtered_file="$venv_file.filter_clean.tmp"
-        touch $filtered_file
+    elif [[ $1 == --clean ]]; then
+        if [[ -z $(grep '[^[:space:]]' "$venv_file" 2>/dev/null) ]] ; then
+            echo "No venv matched"
+            return 0
+        fi
+
+        local filtered_file=$(mktemp)
         while read line; do
             local venv_name=$(echo "$line" | cut -f2)
-            [ -d "$HOME/.local/venvs/$venv_name" ] && echo "$line" >> $filtered_file
+            if [ -d "$HOME/.local/venvs/$venv_name" ]; then
+                echo "$line" >> $filtered_file
+            else
+                echo "Unmatched $(echo "$line" | cut -f1) to venv '$venv_name'"
+            fi
         done < $venv_file
         mv $filtered_file $venv_file
 
     # Deactivate curr venv
-    elif [[ $1 == deac* || $1 == "-d" ]]; then
+    elif [[ $1 == --deactivate || $1 == -d ]]; then
         venv_action=deactivate
         shift    # Put venv name in $1
 
     # Activate venv
-    elif [[ $1 == act* || $1 == "-a" ]]; then
+    elif [[ $1 == --activate || $1 == -a ]]; then
+        if [ "$2" = "base" ]; then
+            # Ignore if base is already activated
+            [ "$(basename $VIRTUAL_ENV)" = "base" ] && return 1
+
+            venv_action=deactivate
+        else
+            venv_action=activate
+        fi
+
         [ "$2" = "base" ] && venv_action=deactivate || venv_action=activate
         shift    # Put venv name in $1
 
+    # Mistype
+    elif [[ $1 == -* ]]; then
+        echo "venv: invalid option"
+        echo "$help_msg"
+        return 1
+
     # Activating base is equivalent to deactivating curr venv
-    elif [[ $1 == "base" ]]; then
+    elif [[ $1 == base ]]; then
         [ "$(basename $VIRTUAL_ENV)" = "base" ] && return 0
         venv_action=deactivate
 
@@ -269,13 +342,13 @@ venv() {
         venv_action=toggle
     fi
 
-    if [ "$venv_action" == "activate" -o "$venv_action" == "toggle" ]; then
+    if [[ $venv_action == activate || $venv_action == toggle ]]; then
         local venv_name="$1"
 
         # No argument passed to cmd: get venv matched with curr path
         if [ -z "$venv_name" ]; then
             local path="$(realpath "$(pwd)")"
-            venv_name=$(cut -f2 <(grep "^$path	" "$venv_file"))
+            venv_name=$(cut -f2 <(grep "^$path	" "$venv_file" 2>/dev/null))
         fi
 
         # Current path does not match any venv
@@ -299,7 +372,7 @@ venv() {
         fi
     fi
 
-    if [ "$venv_action" = "deactivate" ]; then
+    if [[ $venv_action = deactivate ]]; then
         if [ "$VIRTUAL_ENV" != "$HOME/.local/venvs/base" ]; then
             deactivate
             export VIRTUAL_ENV_DISABLE_PROMPT=1
