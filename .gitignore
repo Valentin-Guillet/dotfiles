@@ -33,6 +33,12 @@
 !.config/git/
 !.config/git/**
 
+!.config/ideavim/
+!.config/ideavim/**
+
+!.config/misc/
+!.config/misc/**
+
 !.config/neovide/
 !.config/neovide/**
 
