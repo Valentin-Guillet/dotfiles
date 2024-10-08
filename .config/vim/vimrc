@@ -699,9 +699,9 @@ if s:has_git
 
     function s:SetStatuslineGit()
         let l:branch_command = "git -C " . expand("%:h") . " rev-parse --abbrev-ref HEAD 2> " . s:dev_null
-        let l:git_branch = trim(system(l:branch_command), "", 2)
+        let l:git_branch = trim(system(l:branch_command))
         let l:track_command = "git -C " . expand("%:h") . " ls-files " . expand("%:p:S") . " 2> " . s:dev_null
-        let l:git_tracked = trim(system(l:track_command), "", 2)
+        let l:git_tracked = trim(system(l:track_command))
 
         let g:statusline_git_branch[bufnr()] = (!empty(l:git_branch) ? ' ' . l:git_branch . ' ' : '')
         let g:statusline_git_is_tracked[bufnr()] = !empty(expand("%:p")) && !empty(l:git_tracked)
