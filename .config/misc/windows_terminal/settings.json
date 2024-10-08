@@ -207,17 +207,11 @@
             "keys": "alt+shift+d"
         },
         {
-            "command":
-            {
-                "action": "newTab"
-            },
+            "command": "newTab",
             "keys": "alt+shift+t"
         },
         {
-            "command":
-            {
-                "action": "duplicateTab"
-            },
+            "command": "duplicateTab",
             "keys": "alt+shift+r"
         },
         {
@@ -254,17 +248,11 @@
             "keys": "alt+shift+,"
         },
         {
-            "command":
-            {
-                "action": "nextTab"
-            },
+            "command": "nextTab",
             "keys": "alt+n"
         },
         {
-            "command":
-            {
-                "action": "prevTab"
-            },
+            "command": "prevTab",
             "keys": "alt+p"
         },
         {
@@ -363,6 +351,14 @@
         {
             "command": "toggleBroadcastInput",
             "keys": "alt+y"
-        }
+        },
+        {
+            "command":
+            {
+                "action": "newTab",
+                "commandline": "bash.exe -c '$HOME/.config/misc/windows_terminal/toggle_keybindings.sh'"
+            },
+            "keys": "f12"
+        },
     ]
 }
