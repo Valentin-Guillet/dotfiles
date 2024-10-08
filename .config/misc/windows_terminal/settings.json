@@ -359,6 +359,10 @@
         {
             "command": "togglePaneZoom",
             "keys": "alt+z"
+        },
+        {
+            "command": "toggleBroadcastInput",
+            "keys": "alt+y"
         }
     ]
 }
