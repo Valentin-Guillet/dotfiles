@@ -6,4 +6,4 @@ inoreabbrev <buffer> brekapoint breakpoint
 inoreabbrev <buffer> breakpoitn breakpoint
 inoreabbrev <buffer> brekapoitn breakpoint
 
-set makeprg=ruff\ %
+set makeprg=ruff\ check\ %
