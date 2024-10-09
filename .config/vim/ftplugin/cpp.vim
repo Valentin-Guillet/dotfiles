@@ -1,7 +1,4 @@
 
-set shiftwidth=2
-set tabstop=2
-
 nnoremap <buffer> [[ ?{<CR>w99[{
 nnoremap <buffer> ][ /}<CR>b99]}
 nnoremap <buffer> ]] j0?{<CR>w99[{%/{<CR>

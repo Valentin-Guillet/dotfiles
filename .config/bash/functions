@@ -388,4 +388,3 @@ venv() {
 
 source "$HOME/.config/bash/_venv_completion"
 
-# vim: sw=4 ts=4 fdm=indent

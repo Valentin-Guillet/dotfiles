@@ -120,8 +120,8 @@ set splitbelow          " ... and below
 set expandtab
 set smarttab
 
-set shiftwidth=2
-set tabstop=2
+set shiftwidth=4
+set tabstop=4
 set shiftround
 
 set autoindent
@@ -153,7 +153,8 @@ set completeopt+=longest        " Only insert longest common text in autocomplet
 
 set commentstring=#\ %s     " Set default comment type in files without syntax
 
-let g:is_bash = 1       " Set bash syntax instead of sh
+let g:is_bash = 1               " Set bash syntax instead of sh...
+let g:sh_fold_enabled = 4       " ...and enable folding
 let g:vimsyn_folding = 'afP'
 
 if has("autocmd")
@@ -771,4 +772,4 @@ function XTermPasteBegin()
     return ""
 endfunction
 
-" vim:fdm=marker:sw=4:ts=4
+" vim:fdm=marker
