@@ -17,7 +17,7 @@ export XDG_STATE_HOME=$HOME/.local/state
 [ -f "$XDG_CONFIG_HOME"/bash/xdg_setup ] && . "$XDG_CONFIG_HOME"/bash/xdg_setup
 
 # Auto launch tmux
-if [ -z $IGNORE_TMUX ] && command -v tmux > /dev/null
+if [ -z $IGNORE_TMUX ] && command -v tmux > /dev/null && [ -z $WT_SESSION ]
 then
     if tmux ls 2>/dev/null | grep -v "(attached)" && [ -z "$SSH_CONNECTION" ]
     then
