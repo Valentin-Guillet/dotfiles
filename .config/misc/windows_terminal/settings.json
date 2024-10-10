@@ -251,7 +251,7 @@
                 "split": "down",
                 "splitMode": "duplicate"
             },
-            "keys": "alt+-",
+            "keys": "alt+minus",
             "toggle": true
         },
         {
@@ -260,7 +260,7 @@
                 "action": "splitPane",
                 "split": "down"
             },
-            "keys": "alt+_",
+            "keys": "alt+shift+minus",
             "toggle": true
         },
         {
@@ -365,7 +365,7 @@
                 "action": "swapPane",
                 "direction": "nextInOrder"
             },
-            "keys": "alt+>",
+            "keys": "alt+shift+period",
             "toggle": true
         },
         {
@@ -374,7 +374,7 @@
                 "action": "swapPane",
                 "direction": "previousInOrder"
             },
-            "keys": "alt+<",
+            "keys": "alt+shift+comma",
             "toggle": true
         },
         {
