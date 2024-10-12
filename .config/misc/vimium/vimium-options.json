@@ -1,46 +1,55 @@
 {
-  "settingsVersion": "1.66",
+  "keyMappings": "unmap i\nunmap ^\nunmap <c-e>\nunmap <c-y>\nunmap W\n\nmap U scrollFullPageUp\nmap D scrollFullPageDown\n\nmap < moveTabLeft\nmap > moveTabRight\n\nmap <A-<> moveTabLeft count=99\nmap <A->> moveTabRight count=99\n\nmap R reload hard\n\nmap @ moveTabToNewWindow\n\nmap s Vomnibar.activate keyword=g\nmap S Vomnibar.activateInNewTab keyword=g",
+  "searchEngines": "# Google\ng: https://www.google.com/search?q=%s Google\n\n# Image\ni: https://www.google.com/search?q=%s&ie=utf-8&oe=utf-8&tbm=isch Google Image\n\n# Maps\nm: https://maps.google.com/maps?q=%s&um=1&ie=UTF-8 Google Maps\n\n# Translate\nt: https://translate.google.com/?source=osdd#auto|auto|%s Google Translate\ntf: https://translate.google.com/?source=osdd#auto|fr|%s Google Translate\n\n# Wikipedia\nw: https://en.wikipedia.org/wiki/Special:Search?search=%s Wikipedia (en)\nwf: https://fr.wikipedia.org/wiki/Special:Search?search=%s Wikipedia (fr)\n\n# Youtube\ny: https://www.youtube.com/results?search_query=%s&page={startPage?}&utm_source=opensearch Youtube",
+  "settingsVersion": "2.1.2",
   "exclusionRules": [
     {
-      "pattern": "https?://mail.google.com/*",
-      "passKeys": ""
+      "passKeys": "jk/V",
+      "pattern": "https?://www.google.com/*"
     },
     {
-      "pattern": "https?://www.youtube.com/watch*",
-      "passKeys": "fjklmNPc<>,.;"
+      "passKeys": "",
+      "pattern": "https?://accounts.google.com/*"
     },
     {
-      "pattern": "https?://trimps.github.io/*",
-      "passKeys": ""
+      "passKeys": "",
+      "pattern": "https?://mail.google.com/*"
     },
     {
-      "pattern": "https?://calendar.google.com/*",
-      "passKeys": ""
+      "passKeys": "",
+      "pattern": "https?://calendar.google.com/*"
     },
     {
-      "pattern": "https?://www.google.com/*",
-      "passKeys": "jk/"
+      "passKeys": "fjklmNPv<>,.;?",
+      "pattern": "https?://www.youtube.com/watch*"
     },
     {
-      "pattern": "https?://www.twitch.tv/*",
-      "passKeys": ""
+      "passKeys": "AaSsWwDd",
+      "pattern": "https?://www.youtube.com/shorts/*"
+    },
+    {
+      "passKeys": "",
+      "pattern": "https?://music.youtube.com/*"
+    },
+    {
+      "passKeys": "./?",
+      "pattern": "https?://github.com/*"
+    },
+    {
+      "passKeys": "fm",
+      "pattern": "https?://www.twitch.tv/*"
+    },
+    {
+      "passKeys": "fm",
+      "pattern": "https?://www.netflix.com/*"
+    },
+    {
+      "passKeys": "fm",
+      "pattern": "https?://www.france.tv/*"
+    },
+    {
+      "passKeys": "fm",
+      "pattern": "https?://www.6play.fr/*"
     }
-  ],
-  "filterLinkHints": false,
-  "waitForEnterForFilteredHints": true,
-  "hideHud": false,
-  "keyMappings": "unmap i\nunmap ^\nunmap <c-e>\nunmap <c-y>\n\nmap U scrollFullPageUp\nmap D scrollFullPageDown\n\nmap < moveTabLeft\nmap > moveTabRight\n\nmap <A-<> moveTabLeft count=99\nmap <A->> moveTabRight count=99\n\nmap R reload hard\n\nmap s Vomnibar.activate keyword=g\nmap S Vomnibar.activateInNewTab keyword=g",
-  "linkHintCharacters": "sadfjklewcmpgh",
-  "linkHintNumbers": "0123456789",
-  "newTabUrl": "about:newtab",
-  "nextPatterns": "next,more,newer,>,›,→,»,≫,>>",
-  "previousPatterns": "prev,previous,back,older,<,‹,←,«,≪,<<",
-  "regexFindMode": false,
-  "ignoreKeyboardLayout": false,
-  "scrollStepSize": 60,
-  "smoothScroll": true,
-  "grabBackFocus": false,
-  "searchEngines": "# Google\ng: https://www.google.com/search?q=%s Google\n\n# Image\ni: https://www.google.com/search?q=%s&ie=utf-8&oe=utf-8&tbm=isch Google Image\n\n# Maps\nm: https://maps.google.com/maps?q=%s&um=1&ie=UTF-8 Google Maps\n\n# Translate\nt: https://translate.google.com/?source=osdd#auto|auto|%s Google Translate\ntf: https://translate.google.com/?source=osdd#auto|fr|%s Google Translate\n\n# Wikipedia\nw: https://en.wikipedia.org/wiki/Special:Search?search=%s Wikipedia (en)\nwf: https://fr.wikipedia.org/wiki/Special:Search?search=%s Wikipedia (fr)\n\n# Youtube\ny: https://www.youtube.com/results?search_query=%s&page={startPage?}&utm_source=opensearch Youtube",
-  "searchUrl": "https://www.google.com/search?q=",
-  "userDefinedLinkHintCss": "div > .vimiumHintMarker {\n/* linkhint boxes */\nbackground: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#FFF785),\n  color-stop(100%,#FFC542));\nborder: 1px solid #E3BE23;\n}\n\ndiv > .vimiumHintMarker span {\n/* linkhint text */\ncolor: black;\nfont-weight: bold;\nfont-size: 12px;\n}\n\ndiv > .vimiumHintMarker > .matchingCharacter {\n}"
+  ]
 }
