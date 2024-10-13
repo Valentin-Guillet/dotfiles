@@ -184,4 +184,6 @@ return {
 			},
 		},
 	},
+
+	"tpope/vim-sleuth",
 }
