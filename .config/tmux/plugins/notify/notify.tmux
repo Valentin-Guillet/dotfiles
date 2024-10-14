@@ -16,6 +16,7 @@ main() {
     # Cancel if already running -- check the pane fg option
     if [[ $(tmux show-options -t $pane_id -p window-active-style) ]]
     then
+        mkdir -p $HOME/.cache/tmux/
         touch $HOME/.cache/tmux/notify_$pane_id
         return
     fi
@@ -26,20 +27,21 @@ main() {
     while [[ "$bash_state" != *+ ]]
     do
         sleep 0.2
-        if [ -f $HOME/.cache/tmux/notify_$pane_id ]
-        then
-            rm $HOME/.cache/tmux/notify_$pane_id
-            tmux set-option -t $pane_id -p -u window-active-style
-            tmux set-option -t $pane_id -p -u window-style
-            tmux display-message 'Tracking cancelled'
-            return
-        fi
-        local bash_state=$(ps -t "$curr_tty" -o stat= | head -n 1)
+
+        # Check if user canceled tracking by creating the "flag" file
+        [ -f $HOME/.cache/tmux/notify_$pane_id ] && break
+        bash_state=$(ps -t "$curr_tty" -o stat= | head -n 1)
     done
 
     tmux set-option -t $pane_id -p -u window-active-style
     tmux set-option -t $pane_id -p -u window-style
-    notify-send "Process finished" "$notif_msg"
+
+    if [ -f $HOME/.cache/tmux/notify_$pane_id ]; then
+        rm $HOME/.cache/tmux/notify_$pane_id
+        tmux display-message 'Tracking cancelled'
+    else
+        notify-send "Process finished" "$notif_msg"
+    fi
 }
 
 main
