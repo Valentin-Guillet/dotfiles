@@ -524,6 +524,20 @@ vnoremap D <C-v>D
 " Quit visual mode with q
 vnoremap q <C-c>
 
+function! CommentAndDuplicate(type)
+    let l:start_line = getpos("'[")[1]
+    let l:end_pos = getpos("']")
+    let l:end_line = l:end_pos[1]
+
+    let l:lines = getline(l:start_line, l:end_line)
+    execute l:start_line . "," . l:end_line . "Commentary"
+    call append(l:end_line, l:lines)
+
+    let l:end_pos[1] += 1
+    call setpos('.', l:end_pos)
+endfunction
+call operator#user#define("CommentDuplicate", "CommentAndDuplicate")
+nmap gs <Plug>(operator-CommentDuplicate)
 
 " Display word frequency for text-oriented files
 augroup freqCount
