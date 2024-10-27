@@ -298,15 +298,19 @@ venv() {
         fi
 
         local filtered_file=$(mktemp)
+        local has_clean=0
         while read line; do
             local venv_name=$(echo "$line" | cut -f2)
             if [ -d "$HOME/.local/venvs/$venv_name" ]; then
                 echo "$line" >> $filtered_file
             else
-                echo "Unmatched $(echo "$line" | cut -f1) to venv '$venv_name'"
+                echo "Unmatched $(echo "$line" | cut -f1) to nonexistent venv '$venv_name'"
+                has_clean=1
             fi
         done < $venv_file
         mv $filtered_file $venv_file
+
+        [ $has_clean = 0 ] && echo "No venv to clean!"
 
     # Deactivate curr venv
     elif [[ $1 == --deactivate || $1 == -d ]]; then
