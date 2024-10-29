@@ -1,0 +1,15 @@
+
+#command
+a forw-search \^\\s+-
+
+#line-edit
+^P up
+^N down
+^A home
+^E end
+^F right
+^B left
+\ef word-right
+^D delete
+\ed word-delete
+^W word-backspace

@@ -36,6 +36,8 @@
 !.config/ideavim/
 !.config/ideavim/**
 
+!.config/lesskey
+
 !.config/misc/
 !.config/misc/**
 
