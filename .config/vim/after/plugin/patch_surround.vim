@@ -7,25 +7,23 @@ if empty(s:script_info)
 endif
 
 let s:script_id = string(s:script_info[0]["sid"])
-let s:function_name = "<SNR>" . s:script_id . "_inputtarget"
-
-function s:patched_inputtarget()
-  let l:Getchar_fun = function("<SNR>" . s:script_id . "_getchar")
-  let c = l:Getchar_fun()
+let s:replace_cmd_list =<< eval END
+function! <SNR>{s:script_id}_inputtarget()
+  let c = <SNR>{s:script_id}_getchar()
   while c =~ '^\d\+$'
-    let c .= l:Getchar_fun()
+    let c .= <SNR>{s:script_id}_getchar()
   endwhile
   if c == " "
-    let c .= l:Getchar_fun()
+    let c .= <SNR>{s:script_id}_getchar()
   endif
   if c =~ "\<Esc>\|\<C-C>\|\0"
     return ""
+  elseif c == "s"
+    return matchstr(getline('.'), '\%' . col('.') . 'c.')
   else
-    if c == "s"
-      let c = matchstr(getline('.'), '\%' . col('.') . 'c.')
-    endif
     return c
   endif
 endfunction
+END
 
-execute "function! " . s:function_name . "() \n return s:patched_inputtarget() \n endfunction"
+execute join(s:replace_cmd_list, "\n")
