@@ -156,10 +156,6 @@ vim.keymap.set({ "i", "c" }, "<C-S-v>", "<C-R>+", { desc = "Paste from clipboard
 -- Open autocomplete on next subdirectory in command line
 vim.keymap.set("c", "<C-o>", "<Space><BS><C-z>", { desc = "Autocomplete in next subdirectory" })
 
--- Mini.surround: S in visual mode (cf. `:help MiniSurround-vim-surround-config`)
-vim.keymap.del("x", "ys")
-vim.keymap.set("x", "S", [[:<C-u>lua MiniSurround.add("visual")<CR>]], { silent = true })
-vim.keymap.set("n", "yss", "ys_", { remap = true })
 
 -- Neovide mappings
 vim.g.neovide_hide_mouse_when_typing = false
