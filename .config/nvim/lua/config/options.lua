@@ -7,6 +7,4 @@ vim.opt.sidescrolloff = 5
 
 vim.opt.gdefault = true
 
-vim.opt.hidden = false
-
 vim.g.autoformat = false
