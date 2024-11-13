@@ -6,7 +6,6 @@
 -- * override the configuration of LazyVim plugins
 return {
 
-	"mbbill/undotree",
 
 	"ryvnf/readline.vim",
 

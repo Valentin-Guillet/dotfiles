@@ -22,7 +22,10 @@ return {
 			defaults = {
 				mappings = {
 					i = {
-						["<M-j>"] = "results_scrolling_left",
+						["<M-j>"] = "preview_scrolling_left",
+						["<M-k>"] = "preview_scrolling_right",
+						["<C-j>"] = "results_scrolling_left",
+						["<C-k>"] = "results_scrolling_right",
 						["<M-f>"] = { "<S-Right>", type = "command" },
 						["<C-u>"] = false,
 					},
@@ -187,9 +190,10 @@ return {
 
 	{
 		"debugloop/telescope-undo.nvim",
+		event = "VeryLazy",
 		dependencies = { "nvim-telescope/telescope.nvim" },
 		keys = {
-			{ "<leader>su", "<cmd>Telescope undo<cr>", desc = "Undo history", },
+			{ "<leader>su", "<cmd>Telescope undo<cr>", desc = "Undo history" },
 		},
 		config = function(_, opts)
 			require("telescope").setup(opts)
