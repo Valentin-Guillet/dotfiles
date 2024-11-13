@@ -201,5 +201,5 @@ return {
 		end,
 	},
 
-	"tpope/vim-sleuth",
+	{ "tpope/vim-sleuth", event = "VeryLazy" },
 }

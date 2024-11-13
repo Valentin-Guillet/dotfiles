@@ -1,4 +1,5 @@
 local M = {
+	event = "InsertEnter",
 	dir = vim.fn.stdpath("config") .. "/lua/plugins/insert_rsi.lua",
 	name = "insert_rsi",
 	dev = true,
