@@ -538,6 +538,7 @@ function! CommentAndDuplicate(type)
 endfunction
 call operator#user#define("CommentDuplicate", "CommentAndDuplicate")
 nmap gs <Plug>(operator-CommentDuplicate)
+nmap gss gsl
 
 " Display word frequency for text-oriented files
 augroup freqCount
