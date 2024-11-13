@@ -6,7 +6,7 @@ return {
 				pyright = {
 					settings = {
 						python = {
-							pythonPath = vim.env.HOME .. "/.local/venv/bin/python",
+							pythonPath = vim.env.HOME .. "/.local/venvs/base/bin/python",
 						},
 					},
 				},
