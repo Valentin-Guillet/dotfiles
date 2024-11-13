@@ -475,9 +475,9 @@ vnoremap <silent> _ :m '<-2<CR>gv=gv
 " Add a new line
 nnoremap <C-h> o<C-c>
 
-" Swap words
-nnoremap <silent> gt "_yiw:s/\(\%#\w\+\)\(\_W\+\)\(\w\+\)/\3\2\1/<CR><C-o>/\w\+\_W\+<CR><C-l>:nohlsearch<CR>
-nnoremap <silent> gT "_yiw?\w\+\_W\+<CR><C-l>:nohlsearch<CR>:s/\(\%#\w\+\)\(\_W\+\)\(\w\+\)/\3\2\1/<CR><C-o>
+" Swap words (use search() instead of normal to avoid adding pattern to search history)
+nnoremap <silent> gt "_yiw:keeppattern s/\(\%#\w\+\)\(\_W\+\)\(\w\+\)/\3\2\1/<CR><C-o>:call search("\\w\\+\\_W\\+")<CR><C-l>:nohlsearch<CR>
+nnoremap <silent> gT "_yiw:call search("\\w\\+\\_W\\+", "b")<CR><C-l>:nohlsearch<CR>:keeppatterns s/\(\%#\w\+\)\(\_W\+\)\(\w\+\)/\3\2\1/<CR><C-o>
 
 " M-u and M-r to undo/redo in insert mode
 inoremap <M-u> <C-o>u
