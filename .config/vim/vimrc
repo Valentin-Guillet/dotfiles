@@ -259,7 +259,7 @@ let g:gitgutter_highlight_lines = 1
 let g:gitgutter_preview_win_floating = 1
 
 nnoremap <silent> <leader>g :GitGutterToggle \| echo "GitGutter " . (g:gitgutter_enabled ? "enabled" : "disabled")<CR>
-nnoremap <silent><expr> zg (g:gitgutter_enabled ? ":GitGutterFold<CR>" : "")
+nnoremap <silent><expr> zg (g:gitgutter_enabled ? ":GitGutterFold<CR>" : "zg")
 nmap [h <Plug>(GitGutterPrevHunk)
 nmap ]h <Plug>(GitGutterNextHunk)
 
