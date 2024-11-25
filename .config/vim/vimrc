@@ -476,8 +476,16 @@ vnoremap <silent> _ :m '<-2<CR>gv=gv
 nnoremap <C-h> o<C-c>
 
 " Swap words (use search() instead of normal to avoid adding pattern to search history)
-nnoremap <silent> gt "_yiw:keeppattern s/\(\%#\w\+\)\(\_W\+\)\(\w\+\)/\3\2\1/<CR><C-o>:call search("\\w\\+\\_W\\+")<CR><C-l>:nohlsearch<CR>
-nnoremap <silent> gT "_yiw:call search("\\w\\+\\_W\\+", "b")<CR><C-l>:nohlsearch<CR>:keeppatterns s/\(\%#\w\+\)\(\_W\+\)\(\w\+\)/\3\2\1/<CR><C-o>
+nnoremap <Plug>(swap-words-fwd) "_yiw
+            \<CMD>keeppattern s/\v(%#\w+)(\_W+)(\w+)/\3\2\1/<CR><C-o>
+            \<CMD>call search('\w\+\_W\+') \|
+            \ silent! call repeat#set("\<lt>Plug>(swap-words-fwd)")<CR>
+nnoremap <Plug>(swap-words-bwd) "_yiw
+            \<CMD>call search('\w\+\_W\+', "b") \|
+            \ keeppatterns s/\v(%#\w+)(\_W+)(\w+)/\3\2\1/ \|
+            \ silent! call repeat#set("\<lt>Plug>(swap-words-bwd)")<CR><C-o>
+nmap <silent> gt <Plug>(swap-words-fwd)
+nmap <silent> gT <Plug>(swap-words-bwd)
 
 " M-u and M-r to undo/redo in insert mode
 inoremap <M-u> <C-o>u
