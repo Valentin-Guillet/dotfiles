@@ -68,14 +68,12 @@ vim.keymap.set("n", "<M-k>", "<C-w>k", { desc = "Go to upper window" })
 vim.keymap.set("n", "<M-l>", "<C-w>l", { desc = "Go to right window" })
 
 -- Resize window using <alt> HJKL
-vim.keymap.set("n", "<M-K>", "<CMD>resize +2<cr>", { desc = "Increase window height" })
-vim.keymap.set("n", "<M-J>", "<CMD>resize -2<cr>", { desc = "Decrease window height" })
-vim.keymap.set("n", "<M-H>", "<CMD>vertical resize -2<cr>", { desc = "Decrease window width" })
-vim.keymap.set("n", "<M-L>", "<CMD>vertical resize +2<cr>", { desc = "Increase window width" })
+vim.keymap.set("n", "<M-K>", "<CMD>resize +2<CR>", { desc = "Increase window height" })
+vim.keymap.set("n", "<M-J>", "<CMD>resize -2<CR>", { desc = "Decrease window height" })
+vim.keymap.set("n", "<M-H>", "<CMD>vertical resize -2<CR>", { desc = "Decrease window width" })
+vim.keymap.set("n", "<M-L>", "<CMD>vertical resize +2<CR>", { desc = "Increase window width" })
 
 -- buffers
-vim.keymap.set("n", "<C-l>", "<CMD>noh<cr>", { desc = "Clear hlsearch" })
-
 vim.keymap.set("n", "<leader>w", "<CMD>update<CR>", { desc = "Update" })
 vim.keymap.set("n", "<leader>q", "<CMD>quit<CR>", { desc = "Quit" })
 
@@ -135,10 +133,10 @@ vim.keymap.set("c", "<C-S-p>", "<Up>")
 vim.keymap.set("c", "<C-S-n>", "<Down>")
 
 -- Terminal movements
-vim.keymap.set("t", "<M-h>", "<CMD>wincmd h<cr>", { desc = "Go to left window" })
-vim.keymap.set("t", "<M-j>", "<CMD>wincmd j<cr>", { desc = "Go to lower window" })
-vim.keymap.set("t", "<M-k>", "<CMD>wincmd k<cr>", { desc = "Go to upper window" })
-vim.keymap.set("t", "<M-l>", "<CMD>wincmd l<cr>", { desc = "Go to right window" })
+vim.keymap.set("t", "<M-h>", "<CMD>wincmd h<CR>", { desc = "Go to left window" })
+vim.keymap.set("t", "<M-j>", "<CMD>wincmd j<CR>", { desc = "Go to lower window" })
+vim.keymap.set("t", "<M-k>", "<CMD>wincmd k<CR>", { desc = "Go to upper window" })
+vim.keymap.set("t", "<M-l>", "<CMD>wincmd l<CR>", { desc = "Go to right window" })
 
 -- Help abbreviations
 vim.cmd([[cnoreabbrev <expr> h ((getcmdtype() == ':' && getcmdpos() <= 2)? 'vert h' : 'h')]])
