@@ -58,8 +58,37 @@ return {
 				ignore_blank_line = true,
 			},
 		},
+		config = function(_, opts)
+			require("mini.comment").setup(opts)
+
+			function CommentAndDuplicate(mode)
+				local start_line, end_line
+				local curr_pos
+
+				if mode == "v" or mode == "V" then
+					curr_pos = vim.fn.getpos("'<")
+					start_line = curr_pos[2]
+					end_line = vim.fn.getpos("'>")[2]
+				else
+					start_line = vim.fn.getpos("'[")[2]
+					end_line = vim.fn.getpos("']")[2]
+					curr_pos = vim.b.CAD_pos
+					vim.b.CAD_pos = nil
+				end
+				local lines = vim.fn.getline(start_line, end_line)
+
+				require("mini.comment").toggle_lines(start_line, end_line)
+				vim.fn.append(end_line, lines)
+				vim.fn.setpos('.', { 0, end_line + 1 + curr_pos[2] - start_line, curr_pos[3], 0 })
+			end
+
+			vim.keymap.set('x', 'gs', ':<C-u>lua CommentAndDuplicate(vim.fn.visualmode())<CR>', { silent = true })
+			vim.keymap.set('n', 'gs', '<CMD>let b:CAD_pos = getpos(".") | set operatorfunc=v:lua.CommentAndDuplicate<CR>g@', { silent = true })
+			vim.keymap.set('n', 'gss', 'gsl', { remap = true, silent = true })
+		end
 	},
 
+	-- Use nvim-autopairs because it works with abbreviations and allow for fast wrap
 	{ "echasnovski/mini.pairs", enabled = false, },
 	{
 		"windwp/nvim-autopairs",

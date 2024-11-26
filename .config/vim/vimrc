@@ -535,17 +535,17 @@ vnoremap q <C-c>
 
 function! CommentAndDuplicate(type)
     let l:start_line = getpos("'[")[1]
-    let l:end_pos = getpos("']")
-    let l:end_line = l:end_pos[1]
+    let l:end_line = getpos("']")[1]
 
     let l:lines = getline(l:start_line, l:end_line)
     execute l:start_line . "," . l:end_line . "Commentary"
     call append(l:end_line, l:lines)
 
-    let l:end_pos[1] += 1
-    call setpos('.', l:end_pos)
+    call setpos('.', [b:CAS_pos[0], l:end_line + 1 + b:CAS_pos[1] - l:start_line, b:CAS_pos[2], 0])
+    unlet! b:CAS_pos
 endfunction
-call operator#user#define("CommentDuplicate", "CommentAndDuplicate")
+call operator#user#define("CommentDuplicate", "CommentAndDuplicate", "let b:CAS_pos = getpos('.')")
+vmap gs <Plug>(operator-CommentDuplicate)
 nmap gs <Plug>(operator-CommentDuplicate)
 nmap gss gsl
 
