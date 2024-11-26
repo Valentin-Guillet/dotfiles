@@ -26,4 +26,10 @@ return {
 			{ "ga.", "<cmd>TextCaseOpenTelescope<CR>", mode = { "n", "x" }, desc = "List case options" },
 		},
 	},
+
+	{
+		"chentoast/marks.nvim",
+		event = "VeryLazy",
+		opts = {},
+	}
 }

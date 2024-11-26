@@ -121,9 +121,6 @@ vim.keymap.set("v", "q", "<C-c>")
 
 vim.keymap.set("n", "<C-h>", "o<C-c>")
 
--- Delete mark
-vim.keymap.set("n", "dm", "<CMD>execute 'delmarks ' . nr2char(getchar())<CR>", { desc = "Delete mark" })
-
 -- Swap words
 vim.keymap.set("n", "gt", "<CMD>NeoSwapNext<CR>", { desc = "Swap next word", silent = true })
 vim.keymap.set("n", "gT", "<CMD>NeoSwapPrev<CR>", { desc = "Swap prev word", silent = true })
