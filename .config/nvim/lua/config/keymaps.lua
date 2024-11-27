@@ -122,8 +122,16 @@ vim.keymap.set("v", "q", "<C-c>")
 vim.keymap.set("n", "<C-h>", "o<C-c>")
 
 -- Swap words
-vim.keymap.set("n", "gt", "<CMD>NeoSwapNext<CR>", { desc = "Swap next word", silent = true })
-vim.keymap.set("n", "gT", "<CMD>NeoSwapPrev<CR>", { desc = "Swap prev word", silent = true })
+vim.keymap.set("n", "gt", function()
+	vim.cmd('normal "_yiw')
+	vim.cmd([[keeppattern s/\v(%#\w+)(\_W+)(\w+)/\3\2\1/ | normal! ``]])
+	vim.fn.search([[\w\+\_W\+]])
+end, { desc = "Swap next word", silent = true })
+vim.keymap.set("n", "gT", function()
+	vim.cmd('normal "_yiw')
+	vim.fn.search([[\w\+\_W\+]], "b")
+	vim.cmd([[keeppattern s/\v(%#\w+)(\_W+)(\w+)/\3\2\1/ | normal! ``]])
+end, { desc = "Swap next word", silent = true })
 
 -- In command line, <C-P> and <C-N> act as <Up> and <Down> (i.e. search in history)
 vim.keymap.set("c", "<C-S-p>", "<Up>")

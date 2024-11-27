@@ -8,9 +8,6 @@ return {
 
 	{ "ryvnf/readline.vim", event = "VeryLazy", },
 
-
-
-	"ecthelionvi/NeoSwap",
 	{ "vim-utils/vim-all", event = "VeryLazy", },
 
 	{
