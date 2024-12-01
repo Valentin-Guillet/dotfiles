@@ -92,8 +92,8 @@ vim.keymap.set("n", "<leader>=", "<C-w>=", { desc = "which_key_ignore", silent =
 vim.keymap.set("n", "<leader>t", "<CMD>tab split<CR>", { desc = "which_key_ignore", silent = true })
 vim.keymap.set("n", "<leader>T", "<CMD>tabnew<CR>", { desc = "which_key_ignore", silent = true })
 
-vim.keymap.set("n", "<M-p>", "gT")
-vim.keymap.set("n", "<M-n>", "gt")
+vim.keymap.set("n", "[<Tab>", "gT")
+vim.keymap.set("n", "]<Tab>", "gt")
 
 vim.keymap.set("n", "<M-R>", "<CMD>tab split<CR>", { silent = true })
 vim.keymap.set("n", "<M-T>", "<CMD>tabnew<CR>", { silent = true })
