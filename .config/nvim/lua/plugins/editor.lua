@@ -17,30 +17,6 @@ end
 
 return {
 	{
-		"nvim-telescope/telescope.nvim",
-		opts = {
-			defaults = {
-				mappings = {
-					i = {
-						["<M-j>"] = "preview_scrolling_left",
-						["<M-k>"] = "preview_scrolling_right",
-						["<C-j>"] = "results_scrolling_left",
-						["<C-k>"] = "results_scrolling_right",
-						["<M-f>"] = { "<S-Right>", type = "command" },
-						["<C-u>"] = false,
-					},
-					n = {
-						["<C-c>"] = "close",
-						["v"] = "select_vertical",
-						["\\"] = "select_vertical",
-						["-"] = "select_horizontal",
-					},
-				},
-			},
-		},
-	},
-
-	{
 		"nvim-neo-tree/neo-tree.nvim",
 		opts = {
 			close_if_last_window = true,
@@ -186,19 +162,6 @@ return {
 				line_up = "_",
 			},
 		},
-	},
-
-	{
-		"debugloop/telescope-undo.nvim",
-		event = "VeryLazy",
-		dependencies = { "nvim-telescope/telescope.nvim" },
-		keys = {
-			{ "<leader>su", "<cmd>Telescope undo<cr>", desc = "Undo history" },
-		},
-		config = function(_, opts)
-			require("telescope").setup(opts)
-			require("telescope").load_extension("undo")
-		end,
 	},
 
 	{ "tpope/vim-sleuth", event = "VeryLazy" },

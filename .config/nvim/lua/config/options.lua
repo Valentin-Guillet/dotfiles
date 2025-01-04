@@ -8,3 +8,5 @@ vim.opt.sidescrolloff = 5
 vim.opt.gdefault = true
 
 vim.g.autoformat = false
+
+vim.g.snacks_animate = false

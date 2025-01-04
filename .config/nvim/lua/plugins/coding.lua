@@ -1,27 +1,29 @@
 return {
 	{
-		"hrsh7th/nvim-cmp",
-		opts = function(_, opts)
-			local cmp = require("cmp")
-			local neocodeium = require("neocodeium")
-			opts.mapping = vim.tbl_extend("force", opts.mapping, {
-				["<C-B>"] = cmp.config.disable,
-				["<C-F>"] = cmp.config.disable,
-				["<C-K>"] = cmp.mapping.scroll_docs(-4),
-				["<C-J>"] = cmp.mapping.scroll_docs(4),
-				["<Tab>"] = cmp.mapping({
-					i = function(fallback)
-						if neocodeium.visible() then
-							neocodeium.accept()
-						elseif cmp.visible() then
-							cmp.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = false })
-						else -- send "<Tab>" through
-							fallback()
+		"saghen/blink.cmp",
+		opts = {
+			keymap = {
+				["<C-b>"] = { "fallback" },
+				["<C-f>"] = { "fallback" },
+				["<C-j>"] = { "scroll_documentation_down", "fallback" },
+				["<C-k>"] = { "scroll_documentation_up", "fallback" },
+
+				["<Tab>"] = {
+					function(cmp)
+						if require("neocodeium").visible() then
+							require("neocodeium").accept()
+							return true
+						elseif cmp.snippet_active() then
+							return cmp.accept()
+						else
+							return cmp.select_and_accept()
 						end
 					end,
-				}),
-			})
-		end,
+					"snippet_forward",
+					"fallback",
+				},
+			},
+		},
 	},
 
 	{
@@ -31,17 +33,21 @@ return {
 			local neocodeium = require("neocodeium")
 			neocodeium.setup({ manual = true })
 
-			-- create an autocommand which closes cmp when ai completions are displayed
+			-- create an autocommand which closes blink when ai completions are displayed
 			vim.api.nvim_create_autocmd("User", {
 				pattern = "NeoCodeiumCompletionDisplayed",
 				callback = function()
-					require("cmp").abort()
+					require("blink-cmp").cancel()
 				end,
 			})
 
 			vim.keymap.set("i", "<M-Space>", neocodeium.accept)
-			vim.keymap.set("i", "<M-]>", function() neocodeium.cycle_or_complete(1) end)
-			vim.keymap.set("i", "<M-[>", function() neocodeium.cycle_or_complete(-1) end)
+			vim.keymap.set("i", "<M-]>", function()
+				neocodeium.cycle_or_complete(1)
+			end)
+			vim.keymap.set("i", "<M-[>", function()
+				neocodeium.cycle_or_complete(-1)
+			end)
 		end,
 	},
 
@@ -79,17 +85,17 @@ return {
 
 				require("mini.comment").toggle_lines(start_line, end_line)
 				vim.fn.append(end_line, lines)
-				vim.fn.setpos('.', { 0, end_line + 1 + curr_pos[2] - start_line, curr_pos[3], 0 })
+				vim.fn.setpos(".", { 0, end_line + 1 + curr_pos[2] - start_line, curr_pos[3], 0 })
 			end
 
-			vim.keymap.set('x', 'gs', ':<C-u>lua CommentAndDuplicate(vim.fn.visualmode())<CR>', { silent = true })
-			vim.keymap.set('n', 'gs', '<CMD>let b:CAD_pos = getpos(".") | set operatorfunc=v:lua.CommentAndDuplicate<CR>g@', { silent = true })
-			vim.keymap.set('n', 'gss', 'gsl', { remap = true, silent = true })
-		end
+			vim.keymap.set("x", "gs", ":<C-u>lua CommentAndDuplicate(vim.fn.visualmode())<CR>", { silent = true })
+			vim.keymap.set("n", "gs", '<CMD>let b:CAD_pos = getpos(".") | set operatorfunc=v:lua.CommentAndDuplicate<CR>g@', { silent = true })
+			vim.keymap.set("n", "gss", "gsl", { remap = true, silent = true })
+		end,
 	},
 
 	-- Use nvim-autopairs because it works with abbreviations and allow for fast wrap
-	{ "echasnovski/mini.pairs", enabled = false, },
+	{ "echasnovski/mini.pairs", enabled = false },
 	{
 		"windwp/nvim-autopairs",
 		event = "InsertEnter",
