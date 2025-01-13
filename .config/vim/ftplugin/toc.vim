@@ -103,7 +103,7 @@ endfunction
 setlocal statusline=%{StatuslineAutoclose()}
 setlocal statusline+=%{b:toc_filename}
 
-set shiftwidth=2
+setlocal shiftwidth=2
 
 " Modeline {{{1
 " vim: foldmethod=marker

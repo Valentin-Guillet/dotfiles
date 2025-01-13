@@ -34,8 +34,10 @@ run() {
         make && [ -e "main" ] && ./main ${@:1}
     elif [ -e "main" ]; then
         ./main ${@:1}
+    elif [ -e "Cargo.toml" ]; then
+        cargo run -- ${@:1}
     else
-        echo "No main.py or Makefile to execute !"
+        echo "No target to build or execute!"
     fi
 }
 

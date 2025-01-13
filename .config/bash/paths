@@ -18,3 +18,6 @@ export VIMINIT="source $XDG_CONFIG_HOME/vim/vimrc"
 [ -f "$XDG_CONFIG_HOME"/fuzzy_complete/fuzzy_complete.sh ] && source "$XDG_CONFIG_HOME"/fuzzy_complete/fuzzy_complete.sh
 
 pathadd "$XDG_CONFIG_HOME"/git/custom_commands
+
+# Rust
+source "$CARGO_HOME"/env

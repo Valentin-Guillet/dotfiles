@@ -17,3 +17,12 @@ function format_diff#FormatPython(file_path) abort
     silent execute "!ruff check --silent --fix " . a:file_path
     return 1
 endfunction
+
+function format_diff#FormatRust(file_path) abort
+    " No fixes to apply
+    silent execute "!rustfmt --check " . a:file_path
+    if v:shell_error == 0 | return 0 | endif
+
+    silent execute "!rustfmt --quiet " . a:file_path
+    return 1
+endfunction
