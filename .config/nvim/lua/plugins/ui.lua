@@ -14,7 +14,6 @@ return {
 							"^:%s*verti?c?a?l? he?l?p?%s+",
 							"^:%s*tab he?l?p?%s+",
 						},
-						icon = "",
 					},
 				},
 			},
