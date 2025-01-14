@@ -74,7 +74,7 @@ vim.keymap.set("n", "<M-H>", "<CMD>vertical resize -2<CR>", { desc = "Decrease w
 vim.keymap.set("n", "<M-L>", "<CMD>vertical resize +2<CR>", { desc = "Increase window width" })
 
 -- buffers
-vim.keymap.set("n", "<leader>w", "<CMD>update<CR>", { desc = "Update" })
+vim.keymap.set("n", "<leader>ww", "<CMD>update<CR>", { desc = "Update" })
 vim.keymap.set("n", "<leader>q", "<CMD>quit<CR>", { desc = "Quit" })
 
 vim.keymap.set("n", "<M-\\>", "<CMD>vsplit<CR>", { silent = true })
