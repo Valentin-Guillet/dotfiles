@@ -165,4 +165,14 @@ return {
 	},
 
 	{ "tpope/vim-sleuth", event = "VeryLazy" },
+
+	{
+		"alexghergh/nvim-tmux-navigation",
+		keys = {
+			{ mode = {"n", "i", "v" }, "<M-h>", function() require("nvim-tmux-navigation").NvimTmuxNavigateLeft() end },
+			{ mode = {"n", "i", "v" }, "<M-j>", function() require("nvim-tmux-navigation").NvimTmuxNavigateDown() end },
+			{ mode = {"n", "i", "v" }, "<M-k>", function() require("nvim-tmux-navigation").NvimTmuxNavigateUp() end },
+			{ mode = {"n", "i", "v" }, "<M-l>", function() require("nvim-tmux-navigation").NvimTmuxNavigateRight() end },
+		},
+	},
 }

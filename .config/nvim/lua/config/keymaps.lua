@@ -14,9 +14,6 @@ vim.keymap.del("n", "<C-Down>")
 vim.keymap.del("n", "<C-Left>")
 vim.keymap.del("n", "<C-Right>")
 
-vim.keymap.del({ "n", "i", "v" }, "<M-j>")
-vim.keymap.del({ "n", "i", "v" }, "<M-k>")
-
 vim.keymap.del("n", "<S-h>")
 vim.keymap.del("n", "<S-l>")
 vim.keymap.del("n", "<leader>bb")
@@ -60,18 +57,6 @@ vim.keymap.set("n", "<C-k>", function()
 		return "<C-y>"
 	end
 end, { silent = true, expr = true, desc = "Scroll up" })
-
--- Move to window using the <alt> hjkl keys
-vim.keymap.set("n", "<M-h>", "<C-w>h", { desc = "Go to left window" })
-vim.keymap.set("n", "<M-j>", "<C-w>j", { desc = "Go to lower window" })
-vim.keymap.set("n", "<M-k>", "<C-w>k", { desc = "Go to upper window" })
-vim.keymap.set("n", "<M-l>", "<C-w>l", { desc = "Go to right window" })
-
--- Resize window using <alt> HJKL
-vim.keymap.set("n", "<M-K>", "<CMD>resize +2<CR>", { desc = "Increase window height" })
-vim.keymap.set("n", "<M-J>", "<CMD>resize -2<CR>", { desc = "Decrease window height" })
-vim.keymap.set("n", "<M-H>", "<CMD>vertical resize -2<CR>", { desc = "Decrease window width" })
-vim.keymap.set("n", "<M-L>", "<CMD>vertical resize +2<CR>", { desc = "Increase window width" })
 
 -- buffers
 vim.keymap.set("n", "<leader>ww", "<CMD>update<CR>", { desc = "Update" })
