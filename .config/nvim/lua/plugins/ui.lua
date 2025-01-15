@@ -2,8 +2,8 @@ return {
 	{
 		"folke/noice.nvim",
 		keys = {
-			{ "<c-f>", false, mode = "i" },
-			{ "<c-b>", false, mode = "i" },
+			{ "<C-f>", false, mode = "i" },
+			{ "<C-b>", false, mode = "i" },
 		},
 		opts = {
 			cmdline = {

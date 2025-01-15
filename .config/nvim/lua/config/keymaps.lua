@@ -46,13 +46,13 @@ vim.keymap.set("i", "KJ", "<Esc>l")
 vim.keymap.set("i", "<M-u>", "<C-O>u")
 
 -- Scroll
-vim.keymap.set("n", "<C-j>", function()
+vim.keymap.set({ "n", "i" }, "<C-j>", function()
 	if not require("noice.lsp").scroll(2) then
 		return "<C-e>"
 	end
 end, { silent = true, expr = true, desc = "Scroll down" })
 
-vim.keymap.set("n", "<C-k>", function()
+vim.keymap.set({ "n", "i" }, "<C-k>", function()
 	if not require("noice.lsp").scroll(-2) then
 		return "<C-y>"
 	end

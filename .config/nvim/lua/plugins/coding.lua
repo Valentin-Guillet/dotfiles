@@ -3,10 +3,9 @@ return {
 		"saghen/blink.cmp",
 		opts = {
 			keymap = {
+				-- Documentation scrolling is managed by `noice`
 				["<C-b>"] = { "fallback" },
 				["<C-f>"] = { "fallback" },
-				["<C-j>"] = { "scroll_documentation_down", "fallback" },
-				["<C-k>"] = { "scroll_documentation_up", "fallback" },
 
 				["<Tab>"] = {
 					function(cmp)
