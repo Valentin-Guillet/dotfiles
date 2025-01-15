@@ -101,7 +101,14 @@ return {
 		config = true,
 		opts = {
 			enable_abbr = true,
-			fast_wrap = {},
+			fast_wrap = {
+				map = false,  -- remap fastwrap manually below to hide Noice overlay
+			},
 		},
+		keys = {
+			{
+				"<M-e>", "<CMD>execute 'Noice dismiss' | lua require('nvim-autopairs.fastwrap').show()<CR>", mode = "i"
+			},
+		}
 	},
 }
