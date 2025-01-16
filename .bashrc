@@ -98,7 +98,7 @@ export EDITOR="$VISUAL"
 
 # Additional setup, start by path (needed for some aliases)
 [ -f "$XDG_CONFIG_HOME"/bash/paths ] && . "$XDG_CONFIG_HOME"/bash/paths
-[ -f "$XDG_CONFIG_HOME"/bash/local_path ] && . "$XDG_CONFIG_HOME"/bash/local_path
+[ -f "$XDG_CONFIG_HOME"/bash/local_paths ] && . "$XDG_CONFIG_HOME"/bash/local_paths
 
 [ -f "$XDG_CONFIG_HOME"/bash/aliases ] && . "$XDG_CONFIG_HOME"/bash/aliases
 [ -f "$XDG_CONFIG_HOME"/bash/local_aliases ] && . "$XDG_CONFIG_HOME"/bash/local_aliases
