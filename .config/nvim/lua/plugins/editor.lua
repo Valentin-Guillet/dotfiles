@@ -167,12 +167,17 @@ return {
 	{ "tpope/vim-sleuth", event = "VeryLazy" },
 
 	{
-		"alexghergh/nvim-tmux-navigation",
+		"mrjones2014/smart-splits.nvim",
 		keys = {
-			{ mode = {"n", "i", "v" }, "<M-h>", function() require("nvim-tmux-navigation").NvimTmuxNavigateLeft() end },
-			{ mode = {"n", "i", "v" }, "<M-j>", function() require("nvim-tmux-navigation").NvimTmuxNavigateDown() end },
-			{ mode = {"n", "i", "v" }, "<M-k>", function() require("nvim-tmux-navigation").NvimTmuxNavigateUp() end },
-			{ mode = {"n", "i", "v" }, "<M-l>", function() require("nvim-tmux-navigation").NvimTmuxNavigateRight() end },
+			{ "<M-h>", function() require("smart-splits").move_cursor_left() end },
+			{ "<M-j>", function() require("smart-splits").move_cursor_down() end },
+			{ "<M-k>", function() require("smart-splits").move_cursor_up() end },
+			{ "<M-l>", function() require("smart-splits").move_cursor_right() end },
+
+			{ "<M-H>", function() require("smart-splits").resize_left() end },
+			{ "<M-J>", function() require("smart-splits").resize_down() end },
+			{ "<M-K>", function() require("smart-splits").resize_up() end },
+			{ "<M-L>", function() require("smart-splits").resize_right() end },
 		},
 	},
 }
