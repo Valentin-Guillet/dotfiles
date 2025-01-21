@@ -413,6 +413,8 @@ function s:TabSwitch(count)
 endfunction
 nnoremap <silent> <leader>n <Cmd>call <SID>TabSwitch(v:count1)<CR>
 nnoremap <silent> <leader>p <Cmd>call <SID>TabSwitch(tabpagenr('$')-v:count1)<CR>
+nnoremap <silent> ]<Tab> <Cmd>call <SID>TabSwitch(v:count1)<CR>
+nnoremap <silent> [<Tab> <Cmd>call <SID>TabSwitch(tabpagenr('$')-v:count1)<CR>
 
 nnoremap <silent> <leader>0 <Cmd>$tabnext<CR>
 for s:i in range(1, 9)
