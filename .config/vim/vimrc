@@ -341,15 +341,36 @@ augroup END
 " Vim/Tmux navigator
 let g:tmux_navigator_no_mappings = 1
 let g:tmux_navigator_disable_when_zoomed = 1
-nnoremap <silent> <M-h> :TmuxNavigateLeft<CR>
-nnoremap <silent> <M-j> :TmuxNavigateDown<CR>
-nnoremap <silent> <M-k> :TmuxNavigateUp<CR>
-nnoremap <silent> <M-l> :TmuxNavigateRight<CR>
+let g:tmux_navigator_resize_step = 2
+noremap <silent> <M-h> <Cmd>TmuxNavigateLeft<CR>
+noremap <silent> <M-j> <Cmd>TmuxNavigateDown<CR>
+noremap <silent> <M-k> <Cmd>TmuxNavigateUp<CR>
+noremap <silent> <M-l> <Cmd>TmuxNavigateRight<CR>
 
-inoremap <silent> <M-h> <Esc>:TmuxNavigateLeft<CR>
-inoremap <silent> <M-j> <Esc>:TmuxNavigateDown<CR>
-inoremap <silent> <M-k> <Esc>:TmuxNavigateUp<CR>
-inoremap <silent> <M-l> <Esc>:TmuxNavigateRight<CR>
+lnoremap <silent> <M-h> <Cmd>TmuxNavigateLeft<CR>
+lnoremap <silent> <M-j> <Cmd>TmuxNavigateDown<CR>
+lnoremap <silent> <M-k> <Cmd>TmuxNavigateUp<CR>
+lnoremap <silent> <M-l> <Cmd>TmuxNavigateRight<CR>
+
+tnoremap <silent> <M-h> <Cmd>TmuxNavigateLeft<CR>
+tnoremap <silent> <M-j> <Cmd>TmuxNavigateDown<CR>
+tnoremap <silent> <M-k> <Cmd>TmuxNavigateUp<CR>
+tnoremap <silent> <M-l> <Cmd>TmuxNavigateRight<CR>
+
+noremap <silent> <M-H> <Cmd>TmuxResizeLeft<CR>
+noremap <silent> <M-J> <Cmd>TmuxResizeDown<CR>
+noremap <silent> <M-K> <Cmd>TmuxResizeUp<CR>
+noremap <silent> <M-L> <Cmd>TmuxResizeRight<CR>
+
+lnoremap <silent> <M-H> <Cmd>TmuxResizeLeft<CR>
+lnoremap <silent> <M-J> <Cmd>TmuxResizeDown<CR>
+lnoremap <silent> <M-K> <Cmd>TmuxResizeUp<CR>
+lnoremap <silent> <M-L> <Cmd>TmuxResizeRight<CR>
+
+tnoremap <silent> <M-H> <Cmd>TmuxResizeLeft<CR>
+tnoremap <silent> <M-J> <Cmd>TmuxResizeDown<CR>
+tnoremap <silent> <M-K> <Cmd>TmuxResizeUp<CR>
+tnoremap <silent> <M-L> <Cmd>TmuxResizeRight<CR>
 
 
 " Vimtex
@@ -778,6 +799,12 @@ noremap! [1;5C <C-Right>
 " Fix Alt shortcuts <M-key>
 let s:c = 'a'
 while s:c <= 'z'
+    exec "set <M-" . s:c . ">=\e" . s:c
+    exec "imap \e" . s:c . " <M-" . s:c . ">"
+    let s:c = nr2char(1+char2nr(s:c))
+endwhile
+let s:c = 'A'
+while s:c < 'Z'
     exec "set <M-" . s:c . ">=\e" . s:c
     exec "imap \e" . s:c . " <M-" . s:c . ">"
     let s:c = nr2char(1+char2nr(s:c))
