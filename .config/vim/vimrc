@@ -12,8 +12,6 @@ if has("nvim")
     endtry
 endif
 
-set nocompatible
-
 if empty($MYVIMRC) | let $MYVIMRC = expand('<sfile>:p') | endif
 
 if empty($XDG_CACHE_HOME)  | let $XDG_CACHE_HOME  = $HOME . "/.cache"       | endif
