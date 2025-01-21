@@ -23,19 +23,19 @@ if !exists('g:better_search_line_limit')
 endif
 
 " Plug mappings
-nnoremap <silent> <Plug>BetterSearch_/ <cmd>call better_search#search('/')<CR>
-nnoremap <silent> <Plug>BetterSearch_? <cmd>call better_search#search('?')<CR>
+nnoremap <silent> <Plug>BetterSearch_/ <Cmd>call better_search#search('/')<CR>
+nnoremap <silent> <Plug>BetterSearch_? <Cmd>call better_search#search('?')<CR>
 
-nnoremap <silent> <Plug>BetterSearch_n n<cmd>call better_search#search_next_end()<CR>
-nnoremap <silent> <Plug>BetterSearch_N N<cmd>call better_search#search_next_end()<CR>
+nnoremap <silent> <Plug>BetterSearch_n n<Cmd>call better_search#search_next_end()<CR>
+nnoremap <silent> <Plug>BetterSearch_N N<Cmd>call better_search#search_next_end()<CR>
 
-nnoremap <silent> <Plug>BetterSearch_*  <cmd>call better_search#search_star()<CR>*<cmd>call better_search#search_star_end()<CR>
-nnoremap <silent> <Plug>BetterSearch_#  <cmd>call better_search#search_star()<CR>#<cmd>call better_search#search_star_end()<CR>
-nnoremap <silent> <Plug>BetterSearch_g* <cmd>call better_search#search_star()<CR>g*<cmd>call better_search#search_star_end()<CR>
-nnoremap <silent> <Plug>BetterSearch_g# <cmd>call better_search#search_star()<CR>g#<cmd>call better_search#search_star_end()<CR>
-nnoremap <silent> <Plug>BetterSearch_gd <cmd>call better_search#search_star()<CR>gd<cmd>call better_search#search_star_end()<CR>
-nnoremap <silent> <Plug>BetterSearch_gD <cmd>call better_search#search_star()<CR>gD<cmd>call better_search#search_star_end()<CR>
-nnoremap <silent> <Plug>BetterSearch_g/ <cmd>call better_search#search_next_end()<CR>
+nnoremap <silent> <Plug>BetterSearch_*  <Cmd>call better_search#search_star()<CR>*<Cmd>call better_search#search_star_end()<CR>
+nnoremap <silent> <Plug>BetterSearch_#  <Cmd>call better_search#search_star()<CR>#<Cmd>call better_search#search_star_end()<CR>
+nnoremap <silent> <Plug>BetterSearch_g* <Cmd>call better_search#search_star()<CR>g*<Cmd>call better_search#search_star_end()<CR>
+nnoremap <silent> <Plug>BetterSearch_g# <Cmd>call better_search#search_star()<CR>g#<Cmd>call better_search#search_star_end()<CR>
+nnoremap <silent> <Plug>BetterSearch_gd <Cmd>call better_search#search_star()<CR>gd<Cmd>call better_search#search_star_end()<CR>
+nnoremap <silent> <Plug>BetterSearch_gD <Cmd>call better_search#search_star()<CR>gD<Cmd>call better_search#search_star_end()<CR>
+nnoremap <silent> <Plug>BetterSearch_g/ <Cmd>call better_search#search_next_end()<CR>
 
 xnoremap <silent> <Plug>BetterSearch_* <Esc>:<C-U>call better_search#search_visual_star('/')<CR>
 xnoremap <silent> <Plug>BetterSearch_# <Esc>:<C-U>call better_search#search_visual_star('?')<CR

@@ -59,29 +59,29 @@ vim.keymap.set({ "n", "i" }, "<C-k>", function()
 end, { silent = true, expr = true, desc = "Scroll up" })
 
 -- buffers
-vim.keymap.set("n", "<leader>ww", "<CMD>update<CR>", { desc = "Update" })
-vim.keymap.set("n", "<leader>q", "<CMD>quit<CR>", { desc = "Quit" })
+vim.keymap.set("n", "<leader>ww", "<Cmd>update<CR>", { desc = "Update" })
+vim.keymap.set("n", "<leader>q", "<Cmd>quit<CR>", { desc = "Quit" })
 
-vim.keymap.set("n", "<M-\\>", "<CMD>vsplit<CR>", { silent = true })
-vim.keymap.set("n", "<M-|>", "<CMD>vsplit | enew<CR>", { silent = true })
-vim.keymap.set("n", "<M-->", "<CMD>split<CR>", { silent = true })
-vim.keymap.set("n", "<M-_>", "<CMD>split | enew<CR>", { silent = true })
+vim.keymap.set("n", "<M-\\>", "<Cmd>vsplit<CR>", { silent = true })
+vim.keymap.set("n", "<M-|>", "<Cmd>vsplit | enew<CR>", { silent = true })
+vim.keymap.set("n", "<M-->", "<Cmd>split<CR>", { silent = true })
+vim.keymap.set("n", "<M-_>", "<Cmd>split | enew<CR>", { silent = true })
 vim.keymap.set("n", "<M-=>", "<C-w>=", { silent = true })
 
-vim.keymap.set("n", "<leader>\\", "<CMD>vsplit<CR>", { desc = "which_key_ignore", silent = true })
-vim.keymap.set("n", "<leader>|", "<CMD>vsplit | enew<CR>", { desc = "which_key_ignore", silent = true })
-vim.keymap.set("n", "<leader>-", "<CMD>split<CR>", { desc = "which_key_ignore", silent = true })
-vim.keymap.set("n", "<leader>_", "<CMD>split | enew<CR>", { desc = "which_key_ignore", silent = true })
+vim.keymap.set("n", "<leader>\\", "<Cmd>vsplit<CR>", { desc = "which_key_ignore", silent = true })
+vim.keymap.set("n", "<leader>|", "<Cmd>vsplit | enew<CR>", { desc = "which_key_ignore", silent = true })
+vim.keymap.set("n", "<leader>-", "<Cmd>split<CR>", { desc = "which_key_ignore", silent = true })
+vim.keymap.set("n", "<leader>_", "<Cmd>split | enew<CR>", { desc = "which_key_ignore", silent = true })
 vim.keymap.set("n", "<leader>=", "<C-w>=", { desc = "which_key_ignore", silent = true })
 
-vim.keymap.set("n", "<leader>t", "<CMD>tab split<CR>", { desc = "which_key_ignore", silent = true })
-vim.keymap.set("n", "<leader>T", "<CMD>tabnew<CR>", { desc = "which_key_ignore", silent = true })
+vim.keymap.set("n", "<leader>t", "<Cmd>tab split<CR>", { desc = "which_key_ignore", silent = true })
+vim.keymap.set("n", "<leader>T", "<Cmd>tabnew<CR>", { desc = "which_key_ignore", silent = true })
 
 vim.keymap.set("n", "[<Tab>", "gT")
 vim.keymap.set("n", "]<Tab>", "gt")
 
-vim.keymap.set("n", "<M-R>", "<CMD>tab split<CR>", { silent = true })
-vim.keymap.set("n", "<M-T>", "<CMD>tabnew<CR>", { silent = true })
+vim.keymap.set("n", "<M-R>", "<Cmd>tab split<CR>", { silent = true })
+vim.keymap.set("n", "<M-T>", "<Cmd>tabnew<CR>", { silent = true })
 
 vim.keymap.set("n", "<M-P>", function()
 	vim.cmd("tabmove " .. ((vim.fn.tabpagenr("$") + vim.fn.tabpagenr() - 1) % (vim.fn.tabpagenr("$") + 1)))
@@ -94,7 +94,7 @@ vim.keymap.set("n", "<M-<>", "<C-w>r")
 vim.keymap.set("n", "<M->>", "<C-w>R")
 
 vim.keymap.set("n", "<M-w>", "<C-w>c")
-vim.keymap.set("n", "<M-W>", "<CMD>tabclose<CR>")
+vim.keymap.set("n", "<M-W>", "<Cmd>tabclose<CR>")
 vim.keymap.set("n", "<leader>!", "<C-w>T", { desc = "Send to new tab" })
 
 vim.keymap.set("n", "<leader>H", "<C-w>H", { desc = "which_key_ignore" })
@@ -123,10 +123,10 @@ vim.keymap.set("c", "<C-S-p>", "<Up>")
 vim.keymap.set("c", "<C-S-n>", "<Down>")
 
 -- Terminal movements
-vim.keymap.set("t", "<M-h>", "<CMD>wincmd h<CR>", { desc = "Go to left window" })
-vim.keymap.set("t", "<M-j>", "<CMD>wincmd j<CR>", { desc = "Go to lower window" })
-vim.keymap.set("t", "<M-k>", "<CMD>wincmd k<CR>", { desc = "Go to upper window" })
-vim.keymap.set("t", "<M-l>", "<CMD>wincmd l<CR>", { desc = "Go to right window" })
+vim.keymap.set("t", "<M-h>", "<Cmd>wincmd h<CR>", { desc = "Go to left window" })
+vim.keymap.set("t", "<M-j>", "<Cmd>wincmd j<CR>", { desc = "Go to lower window" })
+vim.keymap.set("t", "<M-k>", "<Cmd>wincmd k<CR>", { desc = "Go to upper window" })
+vim.keymap.set("t", "<M-l>", "<Cmd>wincmd l<CR>", { desc = "Go to right window" })
 
 -- Help abbreviations
 vim.cmd([[cnoreabbrev <expr> h ((getcmdtype() == ':' && getcmdpos() <= 2)? 'vert h' : 'h')]])

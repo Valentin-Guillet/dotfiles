@@ -248,8 +248,8 @@ let g:AutoPairsShortcutToggleMultilineClose = ''
 
 
 " Better Whitespace
-nnoremap ]w :NextTrailingWhitespace<CR>
-nnoremap [w :PrevTrailingWhitespace<CR>
+nnoremap ]w <Cmd>NextTrailingWhitespace<CR>
+nnoremap [w <Cmd>PrevTrailingWhitespace<CR>
 
 
 " GitGutter
@@ -258,13 +258,13 @@ let g:gitgutter_enabled = 0
 let g:gitgutter_highlight_lines = 1
 let g:gitgutter_preview_win_floating = 1
 
-nnoremap <silent> <leader>g :GitGutterToggle \| echo "GitGutter " . (g:gitgutter_enabled ? "enabled" : "disabled")<CR>
+nnoremap <silent> <leader>g <Cmd>GitGutterToggle \| echo "GitGutter " . (g:gitgutter_enabled ? "enabled" : "disabled")<CR>
 nnoremap <silent><expr> zg (g:gitgutter_enabled ? ":GitGutterFold<CR>" : "zg")
 nmap [h <Plug>(GitGutterPrevHunk)
 nmap ]h <Plug>(GitGutterNextHunk)
 
-xnoremap <Plug>(GitGutterStageNextHunk) :execute "normal \<Plug>(GitGutterStageHunk)\<Plug>(GitGutterNextHunk)" \| silent! call repeat#set("\<lt>Plug>(GitGutterStageNextHunk)")<CR>
-nnoremap <Plug>(GitGutterStageNextHunk) :execute "normal \<Plug>(GitGutterStageHunk)\<Plug>(GitGutterNextHunk)" \| silent! call repeat#set("\<lt>Plug>(GitGutterStageNextHunk)")<CR>
+xnoremap <Plug>(GitGutterStageNextHunk) <Cmd>execute "normal \<Plug>(GitGutterStageHunk)\<Plug>(GitGutterNextHunk)" \| silent! call repeat#set("\<lt>Plug>(GitGutterStageNextHunk)")<CR>
+nnoremap <Plug>(GitGutterStageNextHunk) <Cmd>execute "normal \<Plug>(GitGutterStageHunk)\<Plug>(GitGutterNextHunk)" \| silent! call repeat#set("\<lt>Plug>(GitGutterStageNextHunk)")<CR>
 xmap <leader>hs <Plug>(GitGutterStageNextHunk)
 nmap <leader>hs <Plug>(GitGutterStageNextHunk)
 xmap <leader>hS <Plug>(GitGutterStageHunk)
@@ -336,7 +336,7 @@ let g:tagbar_jump_offset = 100
 augroup tagbarMap
     autocmd!
 
-    autocmd BufEnter * if &ft != "markdown" | nnoremap <buffer> <leader>c :TagbarOpen j<CR> | endif
+    autocmd BufEnter * if &ft != "markdown" | nnoremap <buffer> <leader>c <Cmd>TagbarOpen j<CR> | endif
 augroup END
 
 
@@ -373,9 +373,9 @@ nmap <leader>z <Plug>(zoom-toggle)
 " {{{1 USER MAPPINGS
 
 " Edit and reload vim config
-nnoremap <leader>e <CMD>call <SID>OpenInSplitIfNotEmpty($MYVIMRC)<CR>
-nnoremap <leader>E <CMD>tabnew $MYVIMRC<CR>
-nnoremap <leader>r <CMD>source $MYVIMRC \| redraw \| echo "Config reloaded !"<CR>
+nnoremap <leader>e <Cmd>call <SID>OpenInSplitIfNotEmpty($MYVIMRC)<CR>
+nnoremap <leader>E <Cmd>tabnew $MYVIMRC<CR>
+nnoremap <leader>r <Cmd>source $MYVIMRC \| redraw \| echo "Config reloaded !"<CR>
 
 " Set help by default in vertical split (with h[elp]) or new tab (with H[elp])
 cnoreabbrev <expr> h ((getcmdtype() == ':' && getcmdpos() <= 2)? 'vert h' : 'h')
@@ -384,18 +384,18 @@ cnoreabbrev <expr> H ((getcmdtype() == ':' && getcmdpos() <= 2)? 'tab h' : 'H')
 cnoreabbrev <expr> Help ((getcmdtype() == ':' && getcmdpos() <= 5)? 'tab help' : 'Help')
 
 " Write file with <leader>w
-nnoremap <leader>w <CMD>update<CR>
+nnoremap <leader>w <Cmd>update<CR>
 
 " Make with <leader>m
-nnoremap <leader>m <CMD>execute 'silent !clear' \| silent make \| redraw! \| cwindow<CR>
+nnoremap <leader>m <Cmd>execute 'silent !clear' \| silent make \| redraw! \| cwindow<CR>
 
 " Split
-nnoremap <silent> <leader>\ <CMD>vsplit<CR>
-nnoremap <silent> <leader><bar> <CMD>vsplit \| enew<CR>
-nnoremap <silent> <leader>- <CMD>split<CR>
-nnoremap <silent> <leader>_ <CMD>split \| enew<CR>
+nnoremap <silent> <leader>\ <Cmd>vsplit<CR>
+nnoremap <silent> <leader><bar> <Cmd>vsplit \| enew<CR>
+nnoremap <silent> <leader>- <Cmd>split<CR>
+nnoremap <silent> <leader>_ <Cmd>split \| enew<CR>
 nnoremap <silent> <leader>= <C-w>=
-nnoremap <silent> <leader>q <CMD>call <SID>CloseWin()<CR>
+nnoremap <silent> <leader>q <Cmd>call <SID>CloseWin()<CR>
 
 " Move splits around
 nnoremap <leader>H <C-w>H
@@ -404,17 +404,17 @@ nnoremap <leader>K <C-w>K
 nnoremap <leader>L <C-w>L
 
 " Tabs
-nnoremap <silent> <leader>t <CMD>tab split<CR>
-nnoremap <silent> <leader>T <CMD>tabnew<CR>
+nnoremap <silent> <leader>t <Cmd>tab split<CR>
+nnoremap <silent> <leader>T <Cmd>tabnew<CR>
 
 function s:TabSwitch(count)
     let l:target_tab = (tabpagenr() + a:count - 1) % tabpagenr('$') + 1
     execute "tabnext " . l:target_tab
 endfunction
-nnoremap <silent> <leader>n <CMD>call <SID>TabSwitch(v:count1)<CR>
-nnoremap <silent> <leader>p <CMD>call <SID>TabSwitch(tabpagenr('$')-v:count1)<CR>
+nnoremap <silent> <leader>n <Cmd>call <SID>TabSwitch(v:count1)<CR>
+nnoremap <silent> <leader>p <Cmd>call <SID>TabSwitch(tabpagenr('$')-v:count1)<CR>
 
-nnoremap <silent> <leader>0 <CMD>$tabnext<CR>
+nnoremap <silent> <leader>0 <Cmd>$tabnext<CR>
 for s:i in range(1, 9)
     execute "nnoremap <silent> <leader>" . s:i . " :" . s:i . "tabnext<CR>"
 endfor
@@ -423,8 +423,8 @@ function s:TabMove(count)
     let l:target_count = (tabpagenr() + a:count) % (tabpagenr('$') + 1)
     execute "tabmove " . l:target_count
 endfunction
-nnoremap <silent> <leader>N <CMD>call <SID>TabMove(v:count1)<CR>
-nnoremap <silent> <leader>P <CMD>call <SID>TabMove(tabpagenr('$')-v:count1)<CR>
+nnoremap <silent> <leader>N <Cmd>call <SID>TabMove(v:count1)<CR>
+nnoremap <silent> <leader>P <Cmd>call <SID>TabMove(tabpagenr('$')-v:count1)<CR>
 
 function s:JoinWindow()
     let l:str_src_tab = input("Join window from : ")
@@ -447,7 +447,7 @@ function s:JoinWindow()
     let l:win_id = win_getid(l:src_win, l:src_tab)
     call win_execute(l:win_id, "close")
 endfunction
-nnoremap <silent> <leader>u <CMD>call <SID>JoinWindow()<CR>
+nnoremap <silent> <leader>u <Cmd>call <SID>JoinWindow()<CR>
 
 nnoremap <leader>< <C-W>R
 nnoremap <leader>> <C-W>r
@@ -470,19 +470,19 @@ inoremap KJ <Esc>l
 " Move line
 nnoremap <silent> - ddp==
 nnoremap <silent><expr> _ line('.') == line('$') \|\| line('.') == 1 ? "ddP==" : "ddkP=="
-vnoremap <silent> - :m '>+1<CR>gv=gv
-vnoremap <silent> _ :m '<-2<CR>gv=gv
+vnoremap <silent> - <Cmd>m '>+1<CR>gv=gv
+vnoremap <silent> _ <Cmd>m '<-2<CR>gv=gv
 
 " Add a new line
 nnoremap <C-h> o<C-c>
 
 " Swap words (use search() instead of normal to avoid adding pattern to search history)
 nnoremap <Plug>(swap-words-fwd) "_yiw
-            \<CMD>keeppattern s/\v(%#\w+)(\_W+)(\w+)/\3\2\1/<CR><C-o>
-            \<CMD>call search('\w\+\_W\+') \|
+            \<Cmd>keeppattern s/\v(%#\w+)(\_W+)(\w+)/\3\2\1/<CR><C-o>
+            \<Cmd>call search('\w\+\_W\+') \|
             \ silent! call repeat#set("\<lt>Plug>(swap-words-fwd)")<CR>
 nnoremap <Plug>(swap-words-bwd) "_yiw
-            \<CMD>call search('\w\+\_W\+', "b") \|
+            \<Cmd>call search('\w\+\_W\+', "b") \|
             \ keeppatterns s/\v(%#\w+)(\_W+)(\w+)/\3\2\1/ \|
             \ silent! call repeat#set("\<lt>Plug>(swap-words-bwd)")<CR><C-o>
 nmap <silent> gt <Plug>(swap-words-fwd)
@@ -509,7 +509,7 @@ inoremap <S-Tab> <C-d>
 nnoremap <silent> z/ zc:echo foldtextresult(foldclosed('.'))[:&columns-13] \| normal zo<CR>
 
 " Close all top level folds and reopen on current line
-nnoremap z0 <CMD>%foldclose<CR>zv
+nnoremap z0 <Cmd>%foldclose<CR>zv
 
 " Cancel autocomplete but reprint longest match
 cmap <C-x> <C-l><C-n><C-p><C-u><C-y><C-z>
@@ -518,7 +518,7 @@ cmap <C-x> <C-l><C-n><C-p><C-u><C-y><C-z>
 cnoremap <C-o> <Space><BS><C-z>
 
 " Kill all windows except current
-nnoremap <silent> <leader>o <CMD>only<CR>
+nnoremap <silent> <leader>o <Cmd>only<CR>
 
 " Redraw screen in insert mode
 inoremap <C-l> <C-o><C-l>
@@ -553,7 +553,7 @@ nmap gss gsl
 augroup freqCount
     autocmd!
 
-    autocmd FileType text,markdown,bib,tex nnoremap <buffer><silent> <leader>f <CMD>Freq<CR>
+    autocmd FileType text,markdown,bib,tex nnoremap <buffer><silent> <leader>f <Cmd>Freq<CR>
 augroup END
 
 

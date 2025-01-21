@@ -88,7 +88,7 @@ return {
 			end
 
 			vim.keymap.set("x", "gs", ":<C-u>lua CommentAndDuplicate(vim.fn.visualmode())<CR>", { silent = true })
-			vim.keymap.set("n", "gs", '<CMD>let b:CAD_pos = getpos(".") | set operatorfunc=v:lua.CommentAndDuplicate<CR>g@', { silent = true })
+			vim.keymap.set("n", "gs", '<Cmd>let b:CAD_pos = getpos(".") | set operatorfunc=v:lua.CommentAndDuplicate<CR>g@', { silent = true })
 			vim.keymap.set("n", "gss", "gsl", { remap = true, silent = true })
 		end,
 	},
@@ -107,7 +107,7 @@ return {
 		},
 		keys = {
 			{
-				"<M-e>", "<CMD>execute 'Noice dismiss' | lua require('nvim-autopairs.fastwrap').show()<CR>", mode = "i"
+				"<M-e>", "<Cmd>execute 'Noice dismiss' | lua require('nvim-autopairs.fastwrap').show()<CR>", mode = "i"
 			},
 		}
 	},

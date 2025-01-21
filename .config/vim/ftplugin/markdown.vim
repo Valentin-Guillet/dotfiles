@@ -982,17 +982,17 @@ endfunction
 
 function! s:SetCommonMappings()
     noremap <buffer><silent> <leader>c :<C-U>Toc<CR>
-    noremap <buffer><silent>  <CR> <cmd>call <SID>TodoList_ToggleItem()<CR>
-    noremap <buffer><silent> g<CR> <cmd>call <SID>TodoList_SetInProgItem()<CR>
+    noremap <buffer><silent>  <CR> <Cmd>call <SID>TodoList_ToggleItem()<CR>
+    noremap <buffer><silent> g<CR> <Cmd>call <SID>TodoList_SetInProgItem()<CR>
 
-    nnoremap <buffer><silent> J <cmd>call <SID>TodoList_JoinLine()<CR>
+    nnoremap <buffer><silent> J <Cmd>call <SID>TodoList_JoinLine()<CR>
 
-    nnoremap <buffer><silent> gx <cmd>call <SID>OpenUrlUnderCursor()<CR>
-    nnoremap <buffer><silent> ge <cmd>call <SID>EditUrlUnderCursor()<CR>
+    nnoremap <buffer><silent> gx <Cmd>call <SID>OpenUrlUnderCursor()<CR>
+    nnoremap <buffer><silent> ge <Cmd>call <SID>EditUrlUnderCursor()<CR>
 
     " Indentation mappings
-    nnoremap <buffer><silent> <Plug>Markdown_Indent <cmd>call <SID>Markdown_Indent()<CR>
-    nnoremap <buffer><silent> <Plug>Markdown_Dedent <cmd>call <SID>Markdown_Dedent()<CR>
+    nnoremap <buffer><silent> <Plug>Markdown_Indent <Cmd>call <SID>Markdown_Indent()<CR>
+    nnoremap <buffer><silent> <Plug>Markdown_Dedent <Cmd>call <SID>Markdown_Dedent()<CR>
     nmap <buffer><silent> >> <Plug>Markdown_Indent
     nmap <buffer><silent> << <Plug>Markdown_Dedent
 
@@ -1078,16 +1078,16 @@ function! s:SetTodoMode()
     silent! unmap <buffer> ]y
     silent! iunmap <buffer> <CR>
 
-    nnoremap <buffer><silent> o <cmd>call <SID>TodoList_CreateNewItemBelow()<CR>
-    nnoremap <buffer><silent> O <cmd>call <SID>TodoList_CreateNewItemAbove()<CR>
+    nnoremap <buffer><silent> o <Cmd>call <SID>TodoList_CreateNewItemBelow()<CR>
+    nnoremap <buffer><silent> O <Cmd>call <SID>TodoList_CreateNewItemAbove()<CR>
     nnoremap <buffer><silent> j :<C-U>call <SID>TodoList_GoToNextItem(v:count1)<CR>
     nnoremap <buffer><silent> k :<C-U>call <SID>TodoList_GoToPreviousItem(v:count1)<CR>
 
-    nnoremap <buffer><silent> dd        <cmd>call <SID>TodoList_DeleteItem(line('.'), 1) \| call repeat#set("dd", -1)<CR>
-    nnoremap <buffer><silent> <leader>d <cmd>call <SID>TodoList_CleanItemsDone()<CR>
+    nnoremap <buffer><silent> dd        <Cmd>call <SID>TodoList_DeleteItem(line('.'), 1) \| call repeat#set("dd", -1)<CR>
+    nnoremap <buffer><silent> <leader>d <Cmd>call <SID>TodoList_CleanItemsDone()<CR>
 
-    nnoremap <buffer><silent> - <cmd>m .+1 \| call <SID>TodoList_UpdateParents(-1, 1, -2)<CR>
-    nnoremap <buffer><silent> _ <cmd>m .-2 \| call <SID>TodoList_UpdateParents(-1, 1, 2)<CR>
+    nnoremap <buffer><silent> - <Cmd>m .+1 \| call <SID>TodoList_UpdateParents(-1, 1, -2)<CR>
+    nnoremap <buffer><silent> _ <Cmd>m .-2 \| call <SID>TodoList_UpdateParents(-1, 1, 2)<CR>
 
     inoremap <buffer><silent><expr> <BS> <SID>TodoList_ShouldBS() ? "<C-\><C-O>:call <SID>TodoList_BackSpace()<CR><BS>" : "<C-R>=autopairs#AutoPairsDelete()<CR>"
     inoremap <buffer><silent> <CR> <C-O>:call <SID>TodoList_MakeHeader()<CR><CR><C-O>:call <SID>TodoList_CreateNewItem(line('.')-1)<CR>

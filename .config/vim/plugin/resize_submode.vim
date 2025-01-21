@@ -23,8 +23,8 @@ function! resize_submode#reset_split()
 endfunction
 
 
-let s:set_split = '<cmd>call resize_submode#set_split()<CR>'
-let s:reset_split = '<cmd>call resize_submode#reset_split()<CR>' . s:set_split
+let s:set_split = '<Cmd>call resize_submode#set_split()<CR>'
+let s:reset_split = '<Cmd>call resize_submode#reset_split()<CR>' . s:set_split
 call submode#enter_with('resize', 'n', '', '<leader>j', s:set_split . '<C-w>k5<C-w>+')
 call submode#enter_with('resize', 'n', '', '<leader>k', s:set_split . '<C-w>k5<C-w>-')
 call submode#enter_with('resize', 'n', '', '<leader>h', s:set_split . '<C-w>h5<C-w><')
