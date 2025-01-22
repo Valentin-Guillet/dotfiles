@@ -88,6 +88,19 @@ return {
 				{ "<leader>m", group = "quit/session" },
 			},
 		},
+		config = function(_, opts)
+			require("which-key").setup(opts)
+
+			-- Overwrite getchar function so that <C-c> acts as <Esc> and cancel
+			-- which-key as well as current action (e.g. using c- or d- operator)
+			require("which-key.state").getchar = function()
+				local status, char = pcall(vim.fn.getcharstr)
+				if not status and char == "Keyboard interrupt" then
+					return true, ""
+				end
+				return status, char
+			end
+		end,
 	},
 
 	{
