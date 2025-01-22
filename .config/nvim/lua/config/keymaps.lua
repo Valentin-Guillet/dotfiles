@@ -42,6 +42,9 @@ vim.keymap.set("i", "Kj", "<Esc>l")
 vim.keymap.set("i", "kJ", "<Esc>l")
 vim.keymap.set("i", "KJ", "<Esc>l")
 
+-- Redefine default mapping because it can't be pressed fast otherwise for some reason
+vim.keymap.set("n", "<leader>wd", function() vim.diagnostic.open_float() end, { desc = "Update" })
+
 -- Alt-u to undo in insert mode
 vim.keymap.set("i", "<M-u>", "<C-O>u")
 
