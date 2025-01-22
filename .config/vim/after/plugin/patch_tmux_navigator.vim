@@ -2,40 +2,6 @@
 " panes. These modifications are taken from martin-louazel-engineering's fork
 " (https://github.com/martin-louazel-engineering/vim-tmux-navigator)
 
-" Get script ID
-let s:script_info = getscriptinfo({"name": "vim-tmux-navigator/plugin/tmux_navigator.vim"})
-
-if empty(s:script_info)
-  finish
-endif
-
-let s:script_id = string(s:script_info[0]["sid"])
-
-" Redefine functions from the original plugin that need to be called from our
-" modifications
-function! s:GetPluginFn(fn_name)
-  execute "let s:" . a:fn_name . " = function(\"<SNR>" . s:script_id . "_" . a:fn_name . "\")"
-endfunction
-
-call s:GetPluginFn("TmuxCommand")
-call s:GetPluginFn("TmuxVimPaneIsZoomed")
-call s:GetPluginFn("NeedsVitalityRedraw")
-
-
-if !exists("g:tmux_navigator_resize_step")
-  let g:tmux_navigator_resize_step = 1
-endif
-
-function! s:VimResize(direction)
-  let sep_direction = tr(a:direction, 'hjkl', 'ljjl')
-  let plus_minus = tr(a:direction, 'hjkl', '-+-+')
-  if !s:VimHasNeighbour(sep_direction)
-    let plus_minus = plus_minus == '+' ? '-' : '+'
-  end
-  let vertical = tr(a:direction, 'hjkl', '1001')
-  let vimCmd = (vertical ? 'vertical ' : '') . 'resize' . plus_minus . g:tmux_navigator_resize_step
-  exec vimCmd
-endfunction
 
 " equivalent to 'winnr() == winnr(direction)' for vim < 8.1
 function! s:VimHasNeighbour(direction)
@@ -57,6 +23,47 @@ function! s:VimHasNeighbour(direction)
     endif
   endwhile
 endfunction
+
+function! s:VimResize(direction)
+  let sep_direction = tr(a:direction, 'hjkl', 'ljjl')
+  let plus_minus = tr(a:direction, 'hjkl', '-+-+')
+  if !s:VimHasNeighbour(sep_direction)
+    let plus_minus = plus_minus == '+' ? '-' : '+'
+  end
+  let vertical = tr(a:direction, 'hjkl', '1001')
+  let vimCmd = (vertical ? 'vertical ' : '') . 'resize' . plus_minus . g:tmux_navigator_resize_step
+  exec vimCmd
+endfunction
+
+" If not in Tmux, resize vim panes as usual
+if empty($TMUX)
+  command! TmuxResizeLeft call s:VimResize('h')
+  command! TmuxResizeDown call s:VimResize('j')
+  command! TmuxResizeUp call s:VimResize('k')
+  command! TmuxResizeRight call s:VimResize('l')
+  finish
+endif
+
+
+" Get script ID
+let s:script_info = getscriptinfo({"name": "vim-tmux-navigator/plugin/tmux_navigator.vim"})
+if empty(s:script_info) | finish | endif
+let s:script_id = string(s:script_info[0]["sid"])
+
+" Redefine functions from the original plugin that need to be called from our
+" modifications
+function! s:GetPluginFn(fn_name)
+  execute "let s:" . a:fn_name . " = function(\"<SNR>" . s:script_id . "_" . a:fn_name . "\")"
+endfunction
+
+call s:GetPluginFn("TmuxCommand")
+call s:GetPluginFn("TmuxVimPaneIsZoomed")
+call s:GetPluginFn("NeedsVitalityRedraw")
+
+
+if !exists("g:tmux_navigator_resize_step")
+  let g:tmux_navigator_resize_step = 1
+endif
 
 function! s:TmuxHasNeighbour(direction)
   let tmux_direction = get({'h':'left', 'j':'bottom', 'k':'up', 'l':'right'}, a:direction)
@@ -123,14 +130,6 @@ function! s:TmuxAwareResize(direction)
   endif
 endfunction
 
-
-if empty($TMUX)
-  command! TmuxResizeLeft call s:VimResize('h')
-  command! TmuxResizeDown call s:VimResize('j')
-  command! TmuxResizeUp call s:VimResize('k')
-  command! TmuxResizeRight call s:VimResize('l')
-  finish
-endif
 
 command! TmuxResizeLeft call s:TmuxAwareResize('h')
 command! TmuxResizeDown call s:TmuxAwareResize('j')
