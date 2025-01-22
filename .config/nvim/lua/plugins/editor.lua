@@ -85,7 +85,7 @@ return {
 			spec = {
 				-- Cf. persistence plugin defined in util.lua
 				-- Must be defined here because the plugin is lazy-loaded
-				{ "<leader>m", group = "sessions" },
+				{ "<leader>m", group = "quit/session" },
 			},
 		},
 	},
@@ -169,15 +169,15 @@ return {
 	{
 		"mrjones2014/smart-splits.nvim",
 		keys = {
-			{ "<M-h>", function() require("smart-splits").move_cursor_left() end },
-			{ "<M-j>", function() require("smart-splits").move_cursor_down() end },
-			{ "<M-k>", function() require("smart-splits").move_cursor_up() end },
-			{ "<M-l>", function() require("smart-splits").move_cursor_right() end },
+			{ "<M-h>", function() require("smart-splits").move_cursor_left() end, },
+			{ "<M-j>", function() require("smart-splits").move_cursor_down() end, },
+			{ "<M-k>", function() require("smart-splits").move_cursor_up() end, },
+			{ "<M-l>", function() require("smart-splits").move_cursor_right() end, },
 
-			{ "<M-H>", function() require("smart-splits").resize_left() end },
-			{ "<M-J>", function() require("smart-splits").resize_down() end },
-			{ "<M-K>", function() require("smart-splits").resize_up() end },
-			{ "<M-L>", function() require("smart-splits").resize_right() end },
+			{ "<M-H>", function() require("smart-splits").resize_left() end, },
+			{ "<M-J>", function() require("smart-splits").resize_down() end, },
+			{ "<M-K>", function() require("smart-splits").resize_up() end, },
+			{ "<M-L>", function() require("smart-splits").resize_right() end, },
 		},
 	},
 }
