@@ -45,7 +45,6 @@ if empty($TMUX)
 endif
 
 
-" Get script ID
 let s:script_info = getscriptinfo({"name": "vim-tmux-navigator/plugin/tmux_navigator.vim"})
 if empty(s:script_info) | finish | endif
 let s:script_id = string(s:script_info[0]["sid"])

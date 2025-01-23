@@ -1,12 +1,12 @@
+" Patch `surround` plugin to add the `s` shortcut that corresponds to any symbol
+" under the cursor
+" E.g. `css` = change surrounding under the cursor,
+" so on a `(`, it is exactly equivalent to typing `cs(`
 
-" Get script ID
 let s:script_info = getscriptinfo({"name": "vim-surround/plugin/surround.vim"})
-
-if empty(s:script_info)
-  finish
-endif
-
+if empty(s:script_info) | finish | endif
 let s:script_id = string(s:script_info[0]["sid"])
+
 let s:replace_cmd_list =<< eval END
 function! <SNR>{s:script_id}_inputtarget()
   let c = <SNR>{s:script_id}_getchar()
