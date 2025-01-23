@@ -27,7 +27,11 @@ return {
 
 	{
 		"monkoose/neocodeium",
-		event = "VeryLazy",
+		keys = {
+			{ "<M-Space>", function() require("neocodeium").accept() end, mode = "i" },
+			{ "<M-]>", function() require("neocodeium").cycle_or_complete(1) end, mode = "i" },
+			{ "<M-[>", function() require("neocodeium").cycle_or_complete(-1) end, mode = "i" },
+		},
 		config = function()
 			local neocodeium = require("neocodeium")
 			neocodeium.setup({ manual = true })
@@ -39,14 +43,6 @@ return {
 					require("blink-cmp").cancel()
 				end,
 			})
-
-			vim.keymap.set("i", "<M-Space>", neocodeium.accept)
-			vim.keymap.set("i", "<M-]>", function()
-				neocodeium.cycle_or_complete(1)
-			end)
-			vim.keymap.set("i", "<M-[>", function()
-				neocodeium.cycle_or_complete(-1)
-			end)
 		end,
 	},
 
