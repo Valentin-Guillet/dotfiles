@@ -221,6 +221,7 @@ Plug 'tpope/vim-unimpaired'
 Plug 'vim-python/python-syntax'
 Plug 'vim-utils/vim-all'
 Plug 'wellle/targets.vim'
+Plug 'zhimsel/vim-stay'
 
 call plug#end()
 
