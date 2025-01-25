@@ -182,15 +182,15 @@ return {
 	{
 		"mrjones2014/smart-splits.nvim",
 		keys = {
-			{ "<M-h>", function() require("smart-splits").move_cursor_left() end, },
-			{ "<M-j>", function() require("smart-splits").move_cursor_down() end, },
-			{ "<M-k>", function() require("smart-splits").move_cursor_up() end, },
-			{ "<M-l>", function() require("smart-splits").move_cursor_right() end, },
+			{ "<M-h>", function() require("smart-splits").move_cursor_left() end, mode = { "n", "i", "v", "o", "t" }, },
+			{ "<M-j>", function() require("smart-splits").move_cursor_down() end, mode = { "n", "i", "v", "o", "t" }, },
+			{ "<M-k>", function() require("smart-splits").move_cursor_up() end, mode = { "n", "i", "v", "o", "t" }, },
+			{ "<M-l>", function() require("smart-splits").move_cursor_right() end, mode = { "n", "i", "v", "o", "t" }, },
 
-			{ "<M-H>", function() require("smart-splits").resize_left() end, },
-			{ "<M-J>", function() require("smart-splits").resize_down() end, },
-			{ "<M-K>", function() require("smart-splits").resize_up() end, },
-			{ "<M-L>", function() require("smart-splits").resize_right() end, },
+			{ "<M-H>", function() require("smart-splits").resize_left() end, mode = { "n", "i", "v", "o", "t" }, },
+			{ "<M-J>", function() require("smart-splits").resize_down() end, mode = { "n", "i", "v", "o", "t" }, },
+			{ "<M-K>", function() require("smart-splits").resize_up() end, mode = { "n", "i", "v", "o", "t" }, },
+			{ "<M-L>", function() require("smart-splits").resize_right() end, mode = { "n", "i", "v", "o", "t" }, },
 		},
 	},
 }
