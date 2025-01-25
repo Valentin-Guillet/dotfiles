@@ -8,9 +8,9 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 vim.api.nvim_create_autocmd('CursorMoved', {
-	callback = function ()
+	callback = function()
 		if vim.v.hlsearch == 1 and vim.fn.searchcount().exact_match == 0 then
-			vim.schedule(function() vim.cmd.nohlsearch() end)
+			vim.schedule(vim.cmd.nohlsearch)
 		end
 	end
 })

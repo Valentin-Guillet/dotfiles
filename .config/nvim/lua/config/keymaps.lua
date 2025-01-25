@@ -49,17 +49,10 @@ vim.keymap.set("n", "<leader>wd", function() vim.diagnostic.open_float() end, { 
 vim.keymap.set("i", "<M-u>", "<C-O>u")
 
 -- Scroll
-vim.keymap.set({ "n", "i" }, "<C-j>", function()
-	if not require("noice.lsp").scroll(2) then
-		return "<C-e>"
-	end
-end, { silent = true, expr = true, desc = "Scroll down" })
-
-vim.keymap.set({ "n", "i" }, "<C-k>", function()
-	if not require("noice.lsp").scroll(-2) then
-		return "<C-y>"
-	end
-end, { silent = true, expr = true, desc = "Scroll up" })
+vim.keymap.set({ "n", "v" }, "<C-j>", function() if not require("noice.lsp").scroll(2) then return "<C-e>" end end, { silent = true, expr = true, desc = "Scroll down" })
+vim.keymap.set({ "n", "v" }, "<C-k>", function() if not require("noice.lsp").scroll(-2) then return "<C-y>" end end, { silent = true, expr = true, desc = "Scroll up" })
+vim.keymap.set("i", "<C-j>", function() if not require("noice.lsp").scroll(2) then return "<C-O><C-e>" end end, { silent = true, expr = true, desc = "Scroll down" })
+vim.keymap.set("i", "<C-k>", function() if not require("noice.lsp").scroll(-2) then return "<C-o><C-y>" end end, { silent = true, expr = true, desc = "Scroll up" })
 
 -- buffers
 vim.keymap.set("n", "<leader>ww", "<Cmd>update<CR>", { desc = "Update" })
