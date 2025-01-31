@@ -24,7 +24,7 @@ alias po="popd"
 
 alias configg="vim ~/.bashrc; source ~/.bashrc"
 alias configgp="vim $XDG_CONFIG_HOME/bash/paths; source ~/.bashrc"
-alias configp="vim $XDG_CONFIG_HOME/bash/local_path; source ~/.bashrc"
+alias configp="vim $XDG_CONFIG_HOME/bash/local_paths; source ~/.bashrc"
 
 alias configga="vim $XDG_CONFIG_HOME/bash/aliases; source ~/.bashrc"
 alias configa="vim $XDG_CONFIG_HOME/bash/local_aliases; source ~/.bashrc"
