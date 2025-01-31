@@ -20,4 +20,4 @@ export VIMINIT="source $XDG_CONFIG_HOME/vim/vimrc"
 pathadd "$XDG_CONFIG_HOME"/git/custom_commands
 
 # Rust
-source "$CARGO_HOME"/env
+[ -f "$CARGO_HOME"/env ] && source "$CARGO_HOME"/env
