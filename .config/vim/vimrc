@@ -496,7 +496,7 @@ vnoremap <silent> - <Cmd>m '>+1<CR>gv=gv
 vnoremap <silent> _ <Cmd>m '<-2<CR>gv=gv
 
 " Add a new line
-nnoremap <C-h> o<C-c>
+nnoremap <C-h> <Cmd>put=''<CR>
 
 " Swap words (use search() instead of normal to avoid adding pattern to search history)
 nnoremap <Plug>(swap-words-fwd) "_yiw

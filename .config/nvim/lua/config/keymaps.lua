@@ -100,7 +100,7 @@ vim.keymap.set("n", "<leader>L", "<C-w>L", { desc = "which_key_ignore" })
 
 vim.keymap.set("v", "q", "<C-c>")
 
-vim.keymap.set("n", "<C-h>", "o<C-c>")
+vim.keymap.set("n", "<C-h>", "<Cmd>put=''<CR>")
 
 -- Swap words
 vim.keymap.set("n", "gt", function()
