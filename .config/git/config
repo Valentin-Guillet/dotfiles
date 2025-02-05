@@ -30,6 +30,7 @@
     tool = vimdiff
     conflictStyle = diff3
 [diff]
+    algorithm = histogram
     submodule = log
 [difftool]
     prompt = false
