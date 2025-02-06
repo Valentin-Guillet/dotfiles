@@ -58,6 +58,9 @@
 !.config/readline
 !.config/readline/**
 
+!.config/ripgrep
+!.config/ripgrep/**
+
 !.config/ruff/
 !.config/ruff/**
 

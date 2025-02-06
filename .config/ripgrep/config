@@ -1,0 +1,11 @@
+--max-columns=150
+--max-columns-preview
+
+--no-ignore
+--hidden
+
+--glob=!.git/
+
+--smart-case
+
+--auto-hybrid-regex
