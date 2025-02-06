@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export VIRTUAL_ENV_DISABLE_PROMPT=1
+
 if [ -d "${PYTHON_VENV_PATH-$HOME/.local/venvs/base}" ]; then
     source "${PYTHON_VENV_PATH-$HOME/.local/venvs/base}"/bin/activate
 fi

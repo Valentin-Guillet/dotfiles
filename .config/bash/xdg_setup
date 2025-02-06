@@ -3,9 +3,10 @@
 export INPUTRC="$XDG_CONFIG_HOME"/readline/inputrc
 export NPM_CONFIG_USERCONFIG="$XDG_CONFIG_HOME"/npm/npmrc
 export PYTHONSTARTUP="$XDG_CONFIG_HOME"/python/pythonrc.py
-export WGETRC="$XDG_CONFIG_HOME"/wget/wgetrc
-export VIRTUAL_ENV_DISABLE_PROMPT=1
 export RIPGREP_CONFIG_PATH="$XDG_CONFIG_HOME"/ripgrep/config
+export VIMINIT="source $XDG_CONFIG_HOME/vim/vimrc"
+export WGETRC="$XDG_CONFIG_HOME"/wget/wgetrc
+
 
 # History / cache
 export CUDA_CACHE_PATH="$XDG_CACHE_HOME"/nv
