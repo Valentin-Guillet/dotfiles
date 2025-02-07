@@ -209,6 +209,8 @@ Plug 'christoomey/vim-tmux-navigator'
 Plug 'dhruvasagar/vim-zoom'
 Plug 'ekalinin/Dockerfile.vim'
 Plug 'jeetsukumaran/vim-pythonsense'
+Plug 'junegunn/fzf'
+Plug 'junegunn/fzf.vim'
 Plug 'kana/vim-operator-user'
 Plug 'lervag/vimtex'
 Plug 'markonm/traces.vim'
@@ -254,6 +256,19 @@ let g:AutoPairsShortcutToggleMultilineClose = ''
 " Better Whitespace
 nnoremap ]w <Cmd>NextTrailingWhitespace<CR>
 nnoremap [w <Cmd>PrevTrailingWhitespace<CR>
+
+
+" FZF
+let g:fzf_vim = {'buffers_jump': 1}
+let g:fzf_history_dir = $XDG_DATA_HOME . '/fzf-history'
+nnoremap <Space><Space> <Cmd>Files<CR>
+nnoremap <Space>, <Cmd>Buffers<CR>
+nnoremap <Space>/ <Cmd>Rg<CR>
+" Add ignore to Rg command (override global config file)
+command! -bang -nargs=* Rg
+            \ call fzf#vim#grep(
+            \    "rg --line-number --no-heading --color=always --smart-case --ignore -- ".fzf#shellescape(<q-args>),
+            \    fzf#vim#with_preview({'options': '--delimiter : --nth 3.. ''--bind'' ''ctrl-q:select-all'''}), <bang>0)
 
 
 " GitGutter
