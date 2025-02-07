@@ -41,6 +41,8 @@ vim.keymap.set("i", "kj", "<Esc>l")
 vim.keymap.set("i", "Kj", "<Esc>l")
 vim.keymap.set("i", "kJ", "<Esc>l")
 vim.keymap.set("i", "KJ", "<Esc>l")
+-- <C-c> doesn't trigger InsertLeave by default, and we need it to toggle diagnostics in insert mode
+vim.keymap.set("i", "<C-c>", "<Esc>")
 
 -- Redefine default mapping because it can't be pressed fast otherwise for some reason
 vim.keymap.set("n", "<leader>wd", function() vim.diagnostic.open_float() end, { desc = "Update" })
