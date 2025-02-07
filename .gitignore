@@ -24,6 +24,9 @@
 !.config/fuzzy_complete/
 !.config/fuzzy_complete/**
 
+!.config/fzf/
+!.config/fzf/**
+
 !.config/gdb/
 !.config/gdb/**
 

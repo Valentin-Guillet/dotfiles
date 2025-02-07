@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# Fd instead of find
+if command -v fd > /dev/null; then
+    export FZF_DEFAULT_COMMAND="command fd --type file --no-ignore --hidden --follow --exclude .git"
+    export FZF_CTRL_T_COMMAND="command fd --type file --no-ignore --hidden --follow --exclude .git"
+    export FZF_ALT_C_COMMAND="command fd --type directory --no-ignore --hidden --follow --exclude .git"
+
+    _fzf_compgen_path() {
+        command fd --no-ignore --hidden --follow --exclude .git . "$1"
+    }
+    _fzf_compgen_dir() {
+        command fd --type directory --no-ignore --hidden --follow --exclude .git . "$1"
+    }
+fi
+
+export FZF_DEFAULT_OPTS="
+    --ansi
+    --tmux 75%
+    --bind='?:toggle-preview'
+    --preview-window 'right:60%:hidden:wrap'
+    --preview '(batcat --wrap=never --color=always {} || cat {} || tree -C {}) 2> /dev/null'"
+
+
+# Set up keybindings and completion, but with <M-g> instead of <C-t>
+bind -x '"\eg": fzf-file-widget'
+FZF_CTRL_T_COMMAND= eval "$(fzf --bash)"
+
+rzf() {
+    rg --color=always --line-number --no-heading --smart-case "${*:-}" |
+    fzf --ansi \
+        --color "hl:-1:underline,hl+:-1:underline:reverse" \
+        --delimiter : \
+        --preview 'batcat --color=always {1} --highlight-line {2}' \
+        --preview-window 'right:60%:hidden:wrap,+{2}-6' \
+        --bind 'enter:become(vim {1} +{2})'
+}

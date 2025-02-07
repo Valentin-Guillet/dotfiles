@@ -10,6 +10,8 @@ pathadd() {
 # Spawn panes in same directory in Windows Terminal (cf. https://learn.microsoft.com/en-us/windows/terminal/tutorials/new-tab-same-directory)
 [ -n "$WT_SESSION" ] && PROMPT_COMMAND='printf "\e]9;9;%s\e\\" "$(wslpath -w "$PWD")";'"$PROMPT_COMMAND"
 
+# Fzf
+command -v fzf > /dev/null && source "$XDG_CONFIG_HOME"/fzf/config
 
 # Fuzzy complete
 [ -f "$XDG_CONFIG_HOME"/fuzzy_complete/fuzzycd_wrapper.sh ] && source "$XDG_CONFIG_HOME"/fuzzy_complete/fuzzycd_wrapper.sh
