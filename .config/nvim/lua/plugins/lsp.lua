@@ -25,6 +25,6 @@ return {
 			local keys = require("lazyvim.plugins.lsp.keymaps").get()
 			-- Remove to let <C-k> scroll documentation in Noice
 			keys[#keys + 1] = { "<C-k>", false, mode = "i" }
-		end
+		end,
 	},
 }
