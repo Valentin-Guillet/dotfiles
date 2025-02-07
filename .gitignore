@@ -5,13 +5,10 @@
 !.profile
 
 !.config/
+
 !.config/bash/
-!.config/bash/aliases
-!.config/bash/functions
-!.config/bash/paths
-!.config/bash/python_venv
-!.config/bash/xdg_setup
-!.config/bash/_venv_completion
+!.config/bash/**
+.config/bash/local_*
 
 !.config/bat/
 !.config/bat/**
