@@ -2,12 +2,20 @@
 
 
 lsf() {
-    if [ "$1" = "-i" ]
-    then
-        shift
-        find "${2:-.}" -iname "*$1*" 2>/dev/null | grep -i "$1"
+    if command -v fd > /dev/null; then
+        if [ "$1" = "-i" ]; then
+            shift
+            fd --ignore-case "$1" "${2:-.}" 2>/dev/null | grep -i "$1"
+        else
+            fd --case-sensitive "$1" "${2:-.}" 2>/dev/null | grep "$1"
+        fi
     else
-        find "${2:-.}" -name "*$1*" 2>/dev/null | grep "$1"
+        if [ "$1" = "-i" ]; then
+            shift
+            find "${2:-.}" -iname "*$1*" 2>/dev/null | grep -i "$1"
+        else
+            find "${2:-.}" -name "*$1*" 2>/dev/null | grep "$1"
+        fi
     fi
 }
 

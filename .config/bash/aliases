@@ -42,6 +42,8 @@ if command -v batcat > /dev/null; then
     export MANROFFOPT="-c"
 fi
 
+command -v fd > /dev/null && alias fd='fd --color=auto --no-ignore --hidden --follow --exclude .git'
+
 NOTES_DIR="$HOME/Documents/Notes"
 alias td='[ -d "$NOTES_DIR" ] || mkdir -p "$NOTES_DIR" ; tmux rename-window "ToDo" 2> /dev/null; vim "$NOTES_DIR"/ToDo; tmux set-option automatic-rename on 2> /dev/null'
 
