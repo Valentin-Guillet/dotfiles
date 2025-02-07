@@ -12,12 +12,6 @@
 :Toch	vim-markdown.txt	/*:Toch*
 :Toct	vim-markdown.txt	/*:Toct*
 :Tocv	vim-markdown.txt	/*:Tocv*
-BufStayLoadPost	vim-stay.txt	/*BufStayLoadPost*
-BufStayLoadPre	vim-stay.txt	/*BufStayLoadPre*
-BufStaySavePost	vim-stay.txt	/*BufStaySavePost*
-BufStaySavePre	vim-stay.txt	/*BufStaySavePre*
-b:stay_atpos	vim-stay.txt	/*b:stay_atpos*
-b:stay_ignore	vim-stay.txt	/*b:stay_ignore*
 g:fzf_install	plug.txt	/*g:fzf_install*
 g:plug_pwindow	plug.txt	/*g:plug_pwindow*
 g:plug_retries	plug.txt	/*g:plug_retries*
@@ -26,7 +20,6 @@ g:plug_threads	plug.txt	/*g:plug_threads*
 g:plug_timeout	plug.txt	/*g:plug_timeout*
 g:plug_url_format	plug.txt	/*g:plug_url_format*
 g:plug_window	plug.txt	/*g:plug_window*
-g:stay_verbosity	vim-stay.txt	/*g:stay_verbosity*
 g:submode_always_show_submode	submode.txt	/*g:submode_always_show_submode*
 g:submode_keep_leaving_key	submode.txt	/*g:submode_keep_leaving_key*
 g:submode_keyseqs_to_leave	submode.txt	/*g:submode_keyseqs_to_leave*
@@ -55,7 +48,6 @@ g:vim_markdown_override_foldtext	vim-markdown.txt	/*g:vim_markdown_override_fold
 g:vim_markdown_strikethrough	vim-markdown.txt	/*g:vim_markdown_strikethrough*
 g:vim_markdown_toc_autofit	vim-markdown.txt	/*g:vim_markdown_toc_autofit*
 g:vim_markdown_toml_frontmatter	vim-markdown.txt	/*g:vim_markdown_toml_frontmatter*
-g:volatile_ftypes	vim-stay.txt	/*g:volatile_ftypes*
 plug	plug.txt	/*plug*
 plug#begin	plug.txt	/*plug#begin*
 plug#end	plug.txt	/*plug#end*
@@ -151,15 +143,3 @@ vim-markdown-zc	vim-markdown.txt	/*vim-markdown-zc*
 vim-markdown-zm	vim-markdown.txt	/*vim-markdown-zm*
 vim-markdown-zr	vim-markdown.txt	/*vim-markdown-zr*
 vim-plug	plug.txt	/*vim-plug*
-vim-stay	vim-stay.txt	/*vim-stay*
-vim-stay-autocommands	vim-stay.txt	/*vim-stay-autocommands*
-vim-stay-commands	vim-stay.txt	/*vim-stay-commands*
-vim-stay-configuration	vim-stay.txt	/*vim-stay-configuration*
-vim-stay-credits-license	vim-stay.txt	/*vim-stay-credits-license*
-vim-stay-integration	vim-stay.txt	/*vim-stay-integration*
-vim-stay-introduction	vim-stay.txt	/*vim-stay-introduction*
-vim-stay-plugin-api	vim-stay.txt	/*vim-stay-plugin-api*
-vim-stay-troubleshooting	vim-stay.txt	/*vim-stay-troubleshooting*
-vim-stay-variables	vim-stay.txt	/*vim-stay-variables*
-vim-stay-viewoptions	vim-stay.txt	/*vim-stay-viewoptions*
-vim-stay.txt	vim-stay.txt	/*vim-stay.txt*
