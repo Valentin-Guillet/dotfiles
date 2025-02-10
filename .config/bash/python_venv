@@ -7,11 +7,13 @@ if [ -d "${PYTHON_VENV_PATH-$HOME/.local/venvs/base}" ]; then
 fi
 
 # Default REPL
-if command -v ptpython > /dev/null; then
-    alias py=ptpython
-else
-    alias py=python3
-fi
+py() {
+    if command -v ptpython > /dev/null; then
+        ptpython "$@"
+    else
+        python3 "$@"
+    fi
+}
 
 toggle_python_debugger() {
     mkdir -p "$XDG_STATE_HOME/python"
