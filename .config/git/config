@@ -76,10 +76,6 @@
     plus-style = brightgreen
     whitespace-error-style = green bold
 
-    # Commit hash
-    commit-decoration-style = normal box
-    commit-style = "#ffffff" bold
-
     # Blame
     blame-code-style = syntax
     blame-format = "{author:<18} {commit:<6} {timestamp:^15}"
