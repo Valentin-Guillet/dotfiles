@@ -86,6 +86,8 @@ return {
 			vim.keymap.set("x", "gs", ":<C-u>lua CommentAndDuplicate(vim.fn.visualmode())<CR>", { silent = true })
 			vim.keymap.set("n", "gs", '<Cmd>let b:CAD_pos = getpos(".") | set operatorfunc=v:lua.CommentAndDuplicate<CR>g@', { silent = true })
 			vim.keymap.set("n", "gss", "gsl", { remap = true, silent = true })
+
+			vim.keymap.set("n", "gcu", "gcgc", { remap = true, silent = true })
 		end,
 	},
 
