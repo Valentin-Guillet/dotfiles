@@ -16,22 +16,22 @@ export XDG_STATE_HOME=$HOME/.local/state
 
 [ -f "$XDG_CONFIG_HOME"/bash/xdg_setup ] && . "$XDG_CONFIG_HOME"/bash/xdg_setup
 
-# Auto launch tmux
-if [ -z $IGNORE_TMUX ] && command -v tmux > /dev/null && [ -z $WT_SESSION ]
-then
-    if tmux ls 2>/dev/null | grep -v "(attached)" && [ -z "$SSH_CONNECTION" ]
-    then
-        n_session=$(tmux ls | grep -v "(attached)" | head -n 1 | cut -d : -f 1)
-        [[ ! $TERM =~ screen || $SSH_CLIENT ]] && [ -z "$TMUX" ] && exec tmux attach -t "$n_session"
-    else
-        if [[ ! $TERM =~ screen || $SSH_CLIENT ]] && [ -z "$TMUX" ]
-        then
-            trap 'exec env IGNORE_TMUX=1 bash -l' USR1
-            tmux new-session \; set-environment TMUX_PPID $$
-            exit
-        fi
-    fi
+# Auto run tmux
+if [ -x "$(command -v tmux)" ]; then
     source "$XDG_CONFIG_HOME"/tmux/tmux_completion.sh
+
+    if [ "$TMUX" = ignore ]; then
+        unset TMUX
+    elif [ -z "$TMUX" -a -z "$WT_SESSION" ]; then
+        detached_session=$(tmux list-sessions -F '#S' -f '#{?session_attached,0,1}' 2> /dev/null | head -n 1)
+        trap 'exec env TMUX=ignore bash -l' USR1
+        if [ -n "$detached_session" ]; then
+            tmux attach-session -t "$detached_session" \; set-environment TMUX_PPID $$
+        else
+            tmux new-session \; set-environment TMUX_PPID $$
+        fi
+        exit
+    fi
 fi
 
 # Set up history
