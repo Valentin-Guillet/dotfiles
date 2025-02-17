@@ -223,16 +223,6 @@
             "keys": "alt+8",
             "toggle": true
         },
-        {
-            "command":
-            {
-                "action": "switchToTab",
-                "index": 8,
-                "toggle": true
-            },
-            "keys": "alt+9",
-            "toggle": true
-        },
 
         {
             "command":
