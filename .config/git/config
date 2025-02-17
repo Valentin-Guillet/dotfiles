@@ -3,7 +3,7 @@
     email = guillet.valentin95240@gmail.com
 [core]
     editor = vim
-    pager = "command -v delta > /dev/null && delta || pager"
+    pager = "[ -x \"$(command -v delta)\" ] && delta || pager"
 [color]
     diff = auto
     branch = auto
@@ -39,7 +39,7 @@
     cmd = vim -f -d -c \"wincmd l\" -c 'cd \"$GIT_PREFIX\"' \"$LOCAL\" \"$REMOTE\"
 
 [interactive]
-    diffFilter = delta --color-only
+    diffFilter = "[ -x \"$(command -v delta)\" ] && delta --color-only || cat"
 [delta]
     navigate = true    # use n and N to move between diff sections
 
