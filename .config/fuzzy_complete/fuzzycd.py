@@ -35,7 +35,7 @@ class TtyRaw:
 
         tty.setraw(self.stdin_fd)
 
-    def __exit__(self, exc_type, exc_value, exc_tb):
+    def __exit__(self, *_):
         termios.tcsetattr(self.stdin_fd, termios.TCSADRAIN, self.old_settings)
 
 
@@ -115,10 +115,7 @@ def passthrough(cd_args):
     if cd_path.endswith("/"):
         return True
 
-    if Path(cd_path).is_dir():
-        return True
-
-    return False
+    return Path(cd_path).is_dir()
 
 
 def main():

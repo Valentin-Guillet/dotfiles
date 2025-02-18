@@ -3,7 +3,7 @@
 # Overwrite file and directory completion function from /usr/share/bash-completion/bash_completion
 
 
-# Copy the code of _filedir function to _original_function
+# Copy the code of _filedir function to _original_filedir
 if [[ $(type -t _original_filedir) != function ]]
 then
     eval "$(type _filedir | tail +2 | sed -e 's/^_filedir/_original_filedir/')"
