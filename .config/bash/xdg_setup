@@ -15,7 +15,6 @@ export ICEAUTHORITY="$XDG_CACHE_HOME"/ICEauthority
 export LESSHISTFILE="$XDG_CACHE_HOME"/less/history
 export NODE_REPL_HISTORY="$XDG_CACHE_HOME"/node_repl_history
 export PARALLEL_HOME="$XDG_CACHE_HOME"/parallel
-export XAUTHORITY="$XDG_CACHE_HOME"/Xauthority
 export PSQL_HISTORY="$XDG_CACHE_HOME"/psql_history
 
 # Data
