@@ -46,6 +46,9 @@
 .config/nvim/lazy-lock.json
 .config/nvim/lazyvim.json
 
+!.config/pudb/
+!.config/pudb/pudb.cfg
+
 !.config/ptpython
 !.config/ptpython/**
 
