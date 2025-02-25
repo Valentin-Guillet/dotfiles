@@ -3,7 +3,7 @@
     email = guillet.valentin95240@gmail.com
 [core]
     editor = vim
-    pager = "[ -x \"$(command -v delta)\" ] && delta || pager"
+    pager = "[ -x \"$(command -v delta)\" ] && delta || less"
 [color]
     diff = auto
     branch = auto
