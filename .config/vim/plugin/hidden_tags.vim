@@ -10,10 +10,6 @@ if !exists('g:tags_dir')
     let g:tags_dir = $XDG_CACHE_HOME . "/vim/tags/"
 endif
 
-if !isdirectory(g:tags_dir)
-    call mkdir(g:tags_dir, 'p')
-endif
-
 let s:tab_before_jump = -1
 let s:tab_after_jump = -1
 
@@ -52,6 +48,10 @@ function s:UpdateTagsFile()
         let l:raw_tags_file = l:tags_path[strridx(l:tags_path, '/')+1:]
         let l:project_path = substitute(l:raw_tags_file, '%', '/', 'g')
         let l:tags_file = substitute(l:raw_tags_file, '%', '\\%', 'g')
+    endif
+
+    if !isdirectory(g:tags_dir)
+        call mkdir(g:tags_dir, 'p')
     endif
 
     " Create the tag file in advance so that GetTagsPath() finds it, even if
