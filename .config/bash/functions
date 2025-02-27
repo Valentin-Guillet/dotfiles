@@ -338,7 +338,6 @@ venv() {
             venv_action=activate
         fi
 
-        [ "$2" = "base" ] && venv_action=deactivate || venv_action=activate
         shift    # Put venv name in $1
 
     # Mistype
