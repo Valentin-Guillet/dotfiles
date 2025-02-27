@@ -152,7 +152,7 @@ set completeopt+=longest        " Only insert longest common text in autocomplet
 set commentstring=#\ %s     " Set default comment type in files without syntax
 
 let g:is_bash = 1               " Set bash syntax instead of sh...
-let g:sh_fold_enabled = 4       " ...and enable folding
+let g:sh_fold_enabled = 7       " ...and enable folding
 let g:vimsyn_folding = 'afP'
 
 if has("autocmd")
