@@ -193,6 +193,11 @@ venv() {
             return 1
         fi
 
+        if [ ! -x "$(command -v uv)" ]; then
+            echo "uv is not installed, please install by running"
+            echo "curl -LsSf https://astral.sh/uv/install.sh | env INSTALLER_NO_MODIFY_PATH=1 sh"
+            return 1
+        fi
         uv venv "$venv_path"
         echo "New venv $venv_name created at $venv_path"
 
