@@ -169,6 +169,7 @@ venv() {
 		  - venv [--unmatch|-u] [PATH]
 		  - venv [--venvs|-v]
 		  - venv [--list|-l]
+		  - venv [--init|-i]
 		  - venv --delete VENV_NAME
 		  - venv --clean
 	EOM
@@ -269,6 +270,10 @@ venv() {
         else
             cat $venv_file
         fi
+
+    # Init venv by installing useful dev tools
+    elif [[ $1 == --init || $1 == -i ]]; then
+        uv pip install pdbpp pdir2 ptpython pudb
 
     # Delete venv
     elif [[ $1 == --delete ]]; then
