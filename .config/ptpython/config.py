@@ -57,7 +57,6 @@ def configure(repl):
     repl.confirm_exit = False
     repl.enable_auto_suggest = False      # Line completion from history
     repl.enable_input_validation = True
-    repl.enable_mouse_support = True
     repl.enable_open_in_editor = True     # 'C-x C-e' (emacs) or 'v' (vim)
     repl.enable_syntax_highlighting = True
     repl.enable_system_bindings = True    # Enables Ctrl-Z
