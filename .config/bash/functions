@@ -66,7 +66,7 @@ ct() {
 }
 
 pip_update() {
-    pip3 list -o | cut -d ' ' -f 1 | tail -n +3 > /tmp/pip_list
+    uv pip list --outdated | cut -d ' ' -f 1 | tail -n +3 > /tmp/pip_list
     [[ $? == 1 ]] && return 1
 
     # If a pip update is available, start with it
@@ -87,7 +87,7 @@ pip_update() {
     if [ -s /tmp/pip_list ]
     then
         vim /tmp/pip_list
-        cat /tmp/pip_list | xargs -n 1 pip3 install -U
+        cat /tmp/pip_list | xargs uv pip install -U
         exit_code=$?
     fi
     rm /tmp/pip_list
@@ -192,7 +192,7 @@ venv() {
             return 1
         fi
 
-        /usr/bin/python3 -m venv "$venv_path"
+        uv venv "$venv_path"
         echo "New venv $venv_name created at $venv_path"
 
         # Activate venv after creation
