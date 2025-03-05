@@ -565,13 +565,29 @@ function! CommentAndDuplicate(type)
     execute l:start_line . "," . l:end_line . "Commentary"
     call append(l:end_line, l:lines)
 
-    call setpos('.', [b:CAS_pos[0], l:end_line + 1 + b:CAS_pos[1] - l:start_line, b:CAS_pos[2], 0])
-    unlet! b:CAS_pos
+    call setpos('.', [b:CAD_pos[0], l:end_line + 1 + b:CAD_pos[1] - l:start_line, b:CAD_pos[2], 0])
+    unlet! b:CAD_pos
 endfunction
-call operator#user#define("CommentDuplicate", "CommentAndDuplicate", "let b:CAS_pos = getpos('.')")
+call operator#user#define("CommentDuplicate", "CommentAndDuplicate", "let b:CAD_pos = getpos('.')")
 vmap gs <Plug>(operator-CommentDuplicate)
 nmap gs <Plug>(operator-CommentDuplicate)
 nmap gss gsl
+
+function! DuplicateAndComment(type)
+    let l:start_line = getpos("'[")[1]
+    let l:end_line = getpos("']")[1]
+
+    let l:lines = getline(l:start_line, l:end_line)
+    execute l:start_line . "," . l:end_line . "Commentary"
+    call append(l:start_line - 1, l:lines)
+
+    call setpos('.', b:DAC_pos)
+    unlet! b:DAC_pos
+endfunction
+call operator#user#define("DuplicateComment", "DuplicateAndComment", "let b:DAC_pos = getpos('.')")
+vmap gS <Plug>(operator-DuplicateComment)
+nmap gS <Plug>(operator-DuplicateComment)
+nmap gsS gSl
 
 " Display word frequency for text-oriented files
 augroup freqCount
