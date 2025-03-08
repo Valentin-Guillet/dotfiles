@@ -516,9 +516,8 @@ nmap <silent> gT <Plug>(swap-words-bwd)
 inoremap <M-u> <C-o>u
 inoremap <M-r> <C-o><C-r>
 
-" Unmap Q and K
+" Unmap Q
 nnoremap Q <nop>
-nnoremap K <nop>
 
 " Y same as D or C
 nnoremap Y y$
