@@ -49,22 +49,6 @@ run() {
     fi
 }
 
-ot() {
-    mkdir $HOME/Pytest 2> /dev/null
-    tmux new-window -n Pytest -c $HOME/Pytest
-    tmux split-window -c $HOME/Pytest
-    tmux select-pane -U
-    tmux unbind -n M-g
-    tmux bind -n M-g selectp -t 1 \\\; send-keys Escape :w Enter \\\; selectp -t 2 \\\; send-keys "py test.py" Enter \\\; selectp -t 1
-    tmux send-keys "vim test.py" Enter
-}
-
-ct() {
-    rm -r $HOME/Pytest 2> /dev/null
-    tmux kill-window
-    clear
-}
-
 pip_update() {
     uv pip list --outdated | cut -d ' ' -f 1 | tail -n +3 > /tmp/pip_list
     [[ $? == 1 ]] && return 1
