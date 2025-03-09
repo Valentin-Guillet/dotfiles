@@ -727,6 +727,10 @@ endfunction
 command! -nargs=1 -complete=command -bar -range Redir silent call Redir(<q-args>, <range>, <line1>, <line2>)
 command! -nargs=1 -complete=command -range Redir silent call Redir(<q-args>, <range>, <line1>, <line2>)
 
+" Command to display man page with custom completion
+let g:ft_man_open_mode = 'vert'
+command! -nargs=* -bar -complete=customlist,man#complete Man call dist#man#GetPage(<q-mods>, <f-args>)
+
 " Command to write read-only file
 if has("unix") && !exists(":W")
     command W execute 'silent! write !sudo /usr/bin/tee "%" >/dev/null' <bar> edit!
@@ -744,7 +748,7 @@ endfunction
 augroup fullscreenHelp
     autocmd!
 
-    autocmd FileType help call <SID>FullscreenHelpIfEmpty()
+    autocmd FileType help,man call <SID>FullscreenHelpIfEmpty()
 augroup END
 
 

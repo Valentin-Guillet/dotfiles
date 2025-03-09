@@ -92,6 +92,8 @@ fi
 
 export VISUAL=$(which vim)
 export EDITOR="$VISUAL"
+export MANPAGER="vim +MANPAGER --not-a-term -"
+export MANROFFOPT="-c"
 
 # Additional setup, start by path (needed for some aliases)
 [ -f "$XDG_CONFIG_HOME"/bash/paths ] && . "$XDG_CONFIG_HOME"/bash/paths

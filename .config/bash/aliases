@@ -36,12 +36,7 @@ alias configgv="vim $XDG_CONFIG_HOME/bash/python_venv; source ~/.bashrc"
 
 alias configgx="vim $XDG_CONFIG_HOME/bash/xdg_setup; source ~/.bashrc"
 
-if [ -x "$(command -v batcat)" ]; then
-    alias cat='batcat'
-    export MANPAGER="sh -c 'col -bx | batcat -l man --style=plain --paging=always'"
-    export MANROFFOPT="-c"
-fi
-
+[ -x "$(command -v batcat)" ] && alias cat='batcat'
 [ -x "$(command -v fd)" ] && alias fd='fd --color=auto --no-ignore --hidden --follow --exclude .git'
 
 NOTES_DIR="$HOME/Documents/Notes"
