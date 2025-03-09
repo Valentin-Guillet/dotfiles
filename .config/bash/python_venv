@@ -8,7 +8,7 @@ fi
 
 # Default REPL
 py() {
-    if command -v ptpython > /dev/null; then
+    if [ -x "$(command -v ptpython)" ]; then
         ptpython "$@"
     else
         python3 "$@"
@@ -29,7 +29,7 @@ toggle_python_debugger() {
 }
 
 # Default debugger
-if command -v pudb > /dev/null && grep -qs "pudb" "$XDG_STATE_HOME/python/default_debugger"
+if [ -x "$(command -v pudb)" ] && grep -qs "pudb" "$XDG_STATE_HOME/python/default_debugger"
 then
     export PYTHONBREAKPOINT=pudb.set_trace
 fi

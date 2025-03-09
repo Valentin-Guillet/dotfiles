@@ -2,7 +2,7 @@
 
 
 lsf() {
-    if command -v fd > /dev/null; then
+    if [ -x "$(command -v fd)" ]; then
         if [ "$1" = "-i" ]; then
             shift
             fd --ignore-case "$1" "${2:-.}" 2>/dev/null | grep -i "$1"

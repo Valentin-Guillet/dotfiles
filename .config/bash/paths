@@ -11,7 +11,7 @@ pathadd() {
 [ -n "$WT_SESSION" ] && PROMPT_COMMAND='printf "\e]9;9;%s\e\\" "$(wslpath -w "$PWD")";'"$PROMPT_COMMAND"
 
 # Fzf
-command -v fzf > /dev/null && source "$XDG_CONFIG_HOME"/fzf/config
+[ -x "$(command -v fzf)" ] && source "$XDG_CONFIG_HOME"/fzf/config
 
 # Fuzzy complete
 [ -f "$XDG_CONFIG_HOME"/fuzzy_complete/fuzzycd_wrapper.sh ] && source "$XDG_CONFIG_HOME"/fuzzy_complete/fuzzycd_wrapper.sh
