@@ -37,7 +37,7 @@ fi
 # Set up history
 mkdir -p $XDG_CACHE_HOME/bash
 HISTCONTROL=ignoreboth   # Don't put duplicate lines or lines starting with space
-HISTSIZE=1000            # Set up length
+HISTSIZE=20000           # Set up length
 HISTFILE="$XDG_CACHE_HOME"/bash/history
 HISTFILESIZE=20000
 shopt -s histappend      # Append to the history file, don't overwrite it
