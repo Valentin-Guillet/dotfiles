@@ -26,7 +26,7 @@ noremap <silent> <buffer> <nowait> ] <Cmd>call man#goto_section('', 'n', v:count
 noremap <silent> <buffer> <nowait> < <Cmd>call search('\<\(\f\<bar>:\)\+(\([nlpo]\<bar>\d[a-z]*\)\?)\(\W\<bar>$\)', 'b')<CR>
 noremap <silent> <buffer> <nowait> > <Cmd>call search('\<\(\f\<bar>:\)\+(\([nlpo]\<bar>\d[a-z]*\)\?)\(\W\<bar>$\)')<CR>
 
-map <silent> <buffer> x <Plug>NetrwBrowseX
+map <silent> <buffer> x gx
 noremap <silent> <buffer> o gf
 
 augroup manResize
