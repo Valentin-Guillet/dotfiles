@@ -20,5 +20,14 @@ return {
 		},
 	},
 
+	{
+		"nvim-lualine/lualine.nvim",
+		opts = {
+			sections = {
+				lualine_y = { "%3l/%L %3c|" },
+			},
+		},
+	},
+
 	{ "akinsho/bufferline.nvim", enabled = false },
 }
