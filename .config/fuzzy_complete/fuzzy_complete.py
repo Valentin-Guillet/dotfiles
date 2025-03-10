@@ -6,32 +6,10 @@ from pathlib import Path
 from fuzzy_lib import find_matching_dirs
 
 
-def filter_first_chars(pattern, found_dirs):
-    if not found_dirs:
-        return []
-
-    best_matches = []
-    max_match = 0
-    for directory in found_dirs:
-        name = directory.name
-        if pattern.islower():
-            name = name.lower()
-        i = 0
-        while i < len(name) and i < len(pattern) and name[i] == pattern[i]:
-            i += 1
-        if i > max_match:
-            max_match = i
-            best_matches = [directory]
-        elif i == max_match:
-            best_matches.append(directory)
-
-    return best_matches
-
-
 def main():
-    only_dir = (sys.argv[1] == "1")
+    only_dir = sys.argv[1] == "1"
     cword = int(sys.argv[2])
-    cmd_is_cd = (sys.argv[3] in ("cd", "pushd", "pu"))
+    cmd_is_cd = sys.argv[3] in ("cd", "pushd", "pu")
     args = [arg.replace("\\ ", " ") for arg in sys.argv[4:]]
 
     # Only apply completion in arguments > 2 for `cd`
@@ -40,9 +18,7 @@ def main():
     if not cmd_is_cd:
         args = [args[cword - 1]]
 
-    found_dirs, nb_parts_last_arg = find_matching_dirs(args,
-                                                       only_dir=only_dir,
-                                                       filter_fn=filter_first_chars)
+    found_dirs, nb_parts_last_arg = find_matching_dirs(args, only_dir=only_dir)
 
     if not found_dirs:
         return
@@ -78,4 +54,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

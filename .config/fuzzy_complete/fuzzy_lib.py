@@ -20,21 +20,19 @@ from pathlib import Path
 
 
 def get_subdirs(directory):
-    """ Return the sorted list of all subdirs of a given directory that are readable"""
+    """Return the sorted list of all subdirs of a given directory that are readable"""
     if not os.access(directory, os.R_OK):
         return []
 
-    return sorted([subdir for subdir in directory.iterdir()
-                   if os.access(subdir, os.R_OK) and subdir.is_dir()])
+    return sorted([subdir for subdir in directory.iterdir() if os.access(subdir, os.R_OK) and subdir.is_dir()])
 
 
 def get_files(directory):
-    """ Return the sorted list of all files of a given directory that are readable"""
+    """Return the sorted list of all files of a given directory that are readable"""
     if not os.access(directory, os.R_OK):
         return []
 
-    return sorted([file for file in directory.iterdir()
-                   if os.access(file, os.R_OK) and file.is_file()])
+    return sorted([file for file in directory.iterdir() if os.access(file, os.R_OK) and file.is_file()])
 
 
 def get_subdirs_and_files(directories, include_files):
@@ -52,7 +50,7 @@ def get_subdirs_and_files(directories, include_files):
 
 
 def turn_into_relpath(paths, base_path):
-    """ Transform absolute path list `paths` in relative paths from `base_path`.
+    """Transform absolute path list `paths` in relative paths from `base_path`.
 
     The relative paths are forced to go through the common path to avoid the following case:
     turn_into_relpath(["/tmp/ex_1", "/tmp/ex_2", "/tmp/ex_3"], "/tmp/ex_2") = ["../ex_1", "./", "../ex_3"]
@@ -77,7 +75,7 @@ def turn_into_relpath(paths, base_path):
 
 
 def name_match(pattern, name):
-    """ Check if a name matches a pattern, with potentially missing characters.
+    """Check if a name matches a pattern, with potentially missing characters.
     For instance, `dcm` match `documents` and `decimal`, but not `dmc` nor 'declaration'.
     If the pattern doesn't have any uppercase, the check is case insensitive.
     """
@@ -99,10 +97,11 @@ def name_match(pattern, name):
 
 
 def filter_matches(pattern, found_dirs):
-    """ Apply an arbitrary filter on directories matching a pattern.
+    """Apply an arbitrary filter on directories matching a pattern.
     1. If the pattern does not start with a dot, remove hidden directories
        (except if there is no non-hidden matching directories)
-    2. If several directories match, only return the ones with the earliest
+    2. If several directories match, only keep those who contains the exact pattern
+    3. From these directories, return the ones with the earliest
        occurence of the pattern's first character
     """
     if not found_dirs:
@@ -114,12 +113,19 @@ def filter_matches(pattern, found_dirs):
         if not_hidden_dirs:
             found_dirs = not_hidden_dirs
 
+    ignore_case = pattern.islower()
     min_index = 1000
+    found_exact_match = False
     closest_dirs = []
     for directory in found_dirs:
-        name = directory.name
-        if pattern.islower():
-            name = name.lower()
+        name = directory.name.lower() if ignore_case else directory.name
+        if found_exact_match and pattern not in name:
+            continue
+
+        if pattern in name and not found_exact_match:
+            found_exact_match = True
+            min_index = 1000
+
         ind = name.index(pattern[0])
         if ind < min_index:
             min_index = ind
@@ -131,7 +137,7 @@ def filter_matches(pattern, found_dirs):
 
 
 def matches_by_chars(base_dirs, path_pattern, *, include_files=False):
-    """ Return an array of all matches from a list of base directories for a given pattern
+    """Return an array of all matches from a list of base directories for a given pattern
     of single letter path parts.
     """
     found_dirs = base_dirs
@@ -177,9 +183,17 @@ def matches_by_chars(base_dirs, path_pattern, *, include_files=False):
     return found_dirs
 
 
-def matches_for_path(base_dirs, path_arg, allow_by_char, expand_sep, *,
-                     is_last=False, include_files=False, filter_fn=filter_matches):
-    """ Return an array of all matches from a list of base directories for a given path pattern,
+def matches_for_path(
+    base_dirs,
+    path_arg,
+    allow_by_char,
+    expand_sep,
+    *,
+    is_last=False,
+    include_files=False,
+    filter_fn=filter_matches,
+):
+    """Return an array of all matches from a list of base directories for a given path pattern,
     possibly filtered by a given function (by default, `filter_matches()`).
     Each part of the path is a globed (fuzzy) match. For example:
       `p` matches `places/` and `suspects/`
@@ -232,14 +246,12 @@ def matches_for_path(base_dirs, path_arg, allow_by_char, expand_sep, *,
 
         new_found_dirs = []
         for directory in found_dirs:
-            new_found_dirs.extend([subdir for subdir in get_subdirs(directory)
-                                   if name_match(pattern, subdir.name)])
+            new_found_dirs.extend([subdir for subdir in get_subdirs(directory) if name_match(pattern, subdir.name)])
 
         # When considering the last pattern, add files if include_files is True
         if include_files and i == len(path_patterns) - 1:
             for directory in found_dirs:
-                found_files.extend([file for file in get_files(directory)
-                                    if name_match(pattern, file.name)])
+                found_files.extend([file for file in get_files(directory) if name_match(pattern, file.name)])
             found_files = filter_fn(pattern, found_files)
 
         found_dirs = filter_fn(pattern, new_found_dirs)
@@ -272,14 +284,16 @@ def find_matching_dirs(args, *, only_dir, filter_fn=filter_matches, expand_last_
     nb_parts_prev_arg = 0
 
     for i, arg in enumerate(args):
-        is_last = (i == len(args) - 1)
+        is_last = i == len(args) - 1
 
         found_dirs = matches_for_path(
-                found_dirs, arg, allow_by_char,
-                expand_sep=(expand_last_sep and is_last),
-                is_last=is_last,
-                include_files=(not only_dir),
-                filter_fn=filter_fn,
+            found_dirs,
+            arg,
+            allow_by_char,
+            expand_sep=(expand_last_sep and is_last),
+            is_last=is_last,
+            include_files=(not only_dir),
+            filter_fn=filter_fn,
         )
 
         if found_dirs:
@@ -291,4 +305,3 @@ def find_matching_dirs(args, *, only_dir, filter_fn=filter_matches, expand_last_
             allow_by_char = False
 
     return found_dirs, max(nb_parts_last_arg, 0)
-

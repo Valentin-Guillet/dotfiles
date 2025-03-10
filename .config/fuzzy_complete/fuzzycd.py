@@ -25,7 +25,7 @@ from fuzzy_lib import find_matching_dirs
 
 
 class TtyRaw:
-    """ ContextManager to put the terminal in raw mode and reset it to previous config.
+    """ContextManager to put the terminal in raw mode and reset it to previous config.
     This is so that we can capture one keypress at a time instead of waiting for enter.
     """
 
@@ -40,12 +40,12 @@ class TtyRaw:
 
 
 def colorize_blue(text):
-    """ Insert bash color escape codes to render the given text in blue. """
+    """Insert bash color escape codes to render the given text in blue."""
     return "\033[01;34m" + text + "\033[0m"
 
 
 def menu_with_options(options):
-    """ Return a string representing a color-coded menu which presents a series of options.
+    """Return a string representing a color-coded menu which presents a series of options.
     This uses flexible width columns, because fixed-width columns turned out to not look good.
     Example output:
         1. notes.git    2. projects.git
@@ -56,7 +56,7 @@ def menu_with_options(options):
     current_line = ""
     for i, option in enumerate(options):
         option = option.replace(str(Path.home()), "~")
-        option_text = f"{i+1}. {colorize_blue(option)}"
+        option_text = f"{i + 1}. {colorize_blue(option)}"
         if len(current_line) + len(option) + len(str(i)) >= columns - 1:
             output.append(current_line)
             current_line = option_text
@@ -70,7 +70,7 @@ def menu_with_options(options):
 
 
 def present_menu_with_options(options):
-    """ Present all of the given options in a menu and collects input over STDIN.
+    """Present all of the given options in a menu and collects input over STDIN.
     Return the chosen option, or None if the user's input was invalid or they hit CTRL+C.
     """
 
