@@ -262,6 +262,8 @@ def matches_for_path(
             if pattern.startswith(".."):
                 return_relative_paths = True
             found_dirs = matches_by_chars(base_dirs, pattern, include_files=include_files)
+            # Filter out files already found above
+            found_dirs = [d for d in found_dirs if d not in found_files]
 
         is_first_word_path = False
 
