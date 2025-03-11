@@ -31,6 +31,7 @@ noremap <buffer> <silent> o gf
 
 nnoremap <buffer> <silent> <C-]> <Cmd>call man#goto_link(v:count)<CR>
 
+let b:prev_win_width = winwidth(0)
 augroup manResize
   autocmd!
 

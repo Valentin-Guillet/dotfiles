@@ -20,6 +20,12 @@ function! man#goto_section(direction, mode, count)
 endfunction
 
 function! man#resize_win()
+    let l:win_width = winwidth(0)
+    if l:win_width == b:prev_win_width
+        return
+    endif
+    let b:prev_win_width = l:win_width
+
     let l:prev_line = line('.')
     let l:prev_nb_lines = line('$')
 
