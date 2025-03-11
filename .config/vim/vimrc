@@ -181,7 +181,6 @@ filetype detect
 " Correct colors in WindowsTerminal
 if has("win32") || (has("unix") && readfile("/proc/version", "", 1)[0] =~ '\cMicrosoft')
     set termguicolors
-    highlight Normal guibg=NONE
 endif
 
 
