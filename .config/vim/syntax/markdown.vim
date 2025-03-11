@@ -6,16 +6,12 @@
 " TODO:   Handle stuff contained within stuff (e.g. headings within blockquotes)
 
 
-" Read the HTML syntax to start with
-runtime! syntax/html.vim
-
-if exists('b:current_syntax')
-  unlet b:current_syntax
-endif
-
 if exists("b:current_syntax")
   finish
 endif
+
+" Read the HTML syntax to start with
+runtime! syntax/html.vim
 
 syn spell toplevel
 syn case ignore

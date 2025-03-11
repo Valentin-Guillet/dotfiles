@@ -13,13 +13,13 @@ syntax region manFiles     start='^FILES'hs=s+5 end='^\u[A-Z ]*$'me=e-30 keepend
 syntax match manEnvVar     display '\s\zs\(\u\|_\)\{3,}' contained
 syntax region manFiles     start='^ENVIRONMENT'hs=s+11 end='^\u[A-Z ]*$'me=e-30 keepend contains=manReference,manSectionHeading,manHeaderFile,manURL,manEmail,manEnvVar
 
-highlight def link manHeaderFile      String
-highlight def link manURL             Underlined
-highlight def link manEmail           Underlined
-highlight def link manHighlight       Statement
-highlight def link manFile            String
-highlight def link manEnvVarFile      String
-highlight def link manEnvVar          String
+highlight link manHeaderFile      String
+highlight link manURL             Underlined
+highlight link manEmail           Underlined
+highlight link manHighlight       Statement
+highlight link manFile            String
+highlight link manEnvVarFile      String
+highlight link manEnvVar          String
 
 
 " Syntax elements valid for manpages 2 & 3 only
@@ -30,8 +30,8 @@ if getline(1) =~ '^\(\f\|:\)\+([23][px]\?)'
   syntax region manErrors   start='^ERRORS'hs=s+6 end='^\u[A-Z ]*$'me=e-30 keepend contains=manSignal,manReference,manSectionHeading,manHeaderFile,manCError
 endif
 
-highlight def link manCError          Identifier
-highlight def link manSignal          Identifier
+highlight link manCError          Identifier
+highlight link manSignal          Identifier
 
 
 " Other modifications
@@ -48,7 +48,7 @@ syntax match manHeaderTitle '\t[^\t]\+\t' contained
 syntax match manHistory	"^[a-z].*last change.*$"
 
 
-highlight def link manSymbols Statement
+highlight link manSymbols Statement
 
 highlight manHeaderTitle ctermfg=166
 highlight manHeaderCmd ctermfg=135

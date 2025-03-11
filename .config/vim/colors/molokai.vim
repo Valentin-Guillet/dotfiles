@@ -114,7 +114,7 @@ if &t_Co > 255
     hi Boolean         ctermfg=135
     hi Character       ctermfg=144
     hi Number          ctermfg=135
-    hi String          ctermfg=144
+    hi String          ctermfg=228
     hi Conditional     ctermfg=161               cterm=bold
     hi Constant        ctermfg=135               cterm=bold
     hi Cursor          ctermfg=16  ctermbg=253
@@ -156,7 +156,7 @@ if &t_Co > 255
     hi PmenuThumb      ctermfg=81
 
     hi PreCondit       ctermfg=118               cterm=bold
-    hi PreProc         ctermfg=118
+    hi PreProc         ctermfg=161               cterm=bold
     hi Question        ctermfg=81
     hi Repeat          ctermfg=161               cterm=bold
     hi Search          ctermfg=0   ctermbg=222   cterm=NONE

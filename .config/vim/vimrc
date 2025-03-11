@@ -175,7 +175,7 @@ set viminfo+='1000
 
 set dictionary+=/usr/share/dict/words
 
-colorscheme molokai_custom
+colorscheme molokai
 filetype detect
 
 " Correct colors in WindowsTerminal
