@@ -11,23 +11,25 @@ setlocal foldlevel=1
 " tabs in man pages are 8 spaces
 setlocal tabstop=8
 
-nnoremap <silent> <buffer> q :q<CR>
-nnoremap <silent> <buffer> s /^\s*\zs-
+nnoremap <buffer> <silent> q :q<CR>
+nnoremap <buffer> <silent> s /^\s*\zs-
 
-noremap <silent> <buffer> <nowait> g gg
-noremap <silent> <buffer> <nowait> d <C-d>
-noremap <silent> <buffer> <nowait> D <C-f>
-noremap <silent> <buffer> <nowait> u <C-u>
-noremap <silent> <buffer> <nowait> U <C-b>
+noremap <buffer> <silent> <nowait> g gg
+noremap <buffer> <silent> <nowait> d <C-d>
+noremap <buffer> <silent> <nowait> D <C-f>
+noremap <buffer> <silent> <nowait> u <C-u>
+noremap <buffer> <silent> <nowait> U <C-b>
 
-noremap <silent> <buffer> <nowait> [ <Cmd>call man#goto_section('b', 'n', v:count1)<CR>
-noremap <silent> <buffer> <nowait> ] <Cmd>call man#goto_section('', 'n', v:count1)<CR>
+noremap <buffer> <silent> <nowait> [ <Cmd>call man#goto_section('b', 'n', v:count1)<CR>
+noremap <buffer> <silent> <nowait> ] <Cmd>call man#goto_section('', 'n', v:count1)<CR>
 
-noremap <silent> <buffer> <nowait> < <Cmd>call search('\<\(\f\<bar>:\)\+(\([nlpo]\<bar>\d[a-z]*\)\?)\(\W\<bar>$\)', 'b')<CR>
-noremap <silent> <buffer> <nowait> > <Cmd>call search('\<\(\f\<bar>:\)\+(\([nlpo]\<bar>\d[a-z]*\)\?)\(\W\<bar>$\)')<CR>
+noremap <buffer> <silent> <nowait> < <Cmd>call search('\<\(\f\<bar>:\)\+(\([nlpo]\<bar>\d[a-z]*\)\?)\(\W\<bar>$\)', 'b')<CR>
+noremap <buffer> <silent> <nowait> > <Cmd>call search('\<\(\f\<bar>:\)\+(\([nlpo]\<bar>\d[a-z]*\)\?)\(\W\<bar>$\)')<CR>
 
-map <silent> <buffer> x gx
-noremap <silent> <buffer> o gf
+map <buffer> <silent> x gx
+noremap <buffer> <silent> o gf
+
+nnoremap <buffer> <silent> <C-]> <Cmd>call man#goto_link(v:count)<CR>
 
 augroup manResize
   autocmd!
