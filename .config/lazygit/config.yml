@@ -1,0 +1,46 @@
+git:
+  branchLogCmd: git log --oneline --graph --decorate --all --color --abbrev-commit {{branchName}} --
+  paging:
+    colorArg: always
+    pager: delta --dark --paging=never --hyperlinks --hyperlinks-file-link-format="lazygit-edit://{path}:{line}"
+
+keybinding:
+  universal:
+    quit: <esc>
+    return: q
+
+quitOnTopLevelReturn: true
+notARepository: 'skip'
+
+gui:
+  scrollHeight: 5
+  theme:
+    activeBorderColor:
+      - "#a6e22e"
+      - bold
+    inactiveBorderColor:
+      - "#75715e"
+    selectedLineBgColor:
+      - "#49483e"
+    selectedRangeBgColor:
+      - "#3e3d32"
+    cherryPickedCommitBgColor:
+      - "#3e3d32"
+    cherryPickedCommitFgColor:
+      - "#a6e22e"
+    unstagedChangesColor:
+      - "#f92672"
+    defaultFgColor:
+      - "#f8f8f2"
+    searchingActiveBorderColor:
+      - "#ae81ff"
+    diffAdditionColor:
+      - "#a6e22e"
+    diffRemovalColor:
+      - "#f92672"
+    diffContextColor:
+      - "#f8f8f2"
+    diffHighlightColor:
+      - "#49483e"
+    optionsTextColor:
+      - "#fd971f"
