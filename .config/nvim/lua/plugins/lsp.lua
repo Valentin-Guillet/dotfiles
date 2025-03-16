@@ -13,6 +13,24 @@ return {
 	},
 
 	{
+		"mrcjkb/rustaceanvim",
+		opts = {
+			server = {
+				settings = {
+					["rust-analyzer"] = {
+						procMacro = {
+							ignored = {
+								["napi-derive"] = { "napi" },
+								["async-recursion"] = { "async_recursion" },
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+
+	{
 		"neovim/nvim-lspconfig",
 		opts = function()
 			local keys = require("lazyvim.plugins.lsp.keymaps").get()
