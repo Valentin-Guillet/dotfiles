@@ -58,6 +58,8 @@ set sidescrolloff=5
 set incsearch               " do incremental searching
 set nrformats-=octal        " do not recognize octal numbers for Ctrl-A and Ctrl-X
 
+set confirm
+
 " CTRL-U only deletes entered character and not always the whole line: fix that
 " Use CTRL-G u to first break undo, so that you can undo CTRL-U after inserting a line break
 inoremap <C-U> <C-G>u<C-\><C-O>d0
