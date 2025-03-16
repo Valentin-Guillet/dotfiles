@@ -5,5 +5,8 @@
 --no-mtime
 
 # Output file name
--o ~/Videos/%(title)s.%(ext)s
+-o ~/Videos/Youtube/%(title)s.%(ext)s
+
+-f "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4] / bv*+ba/b"
+
 
