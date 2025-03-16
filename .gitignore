@@ -36,6 +36,9 @@
 !.config/ideavim/
 !.config/ideavim/**
 
+!.config/lazygit
+!.config/lazygit/**
+
 !.config/lesskey
 
 !.config/misc/
