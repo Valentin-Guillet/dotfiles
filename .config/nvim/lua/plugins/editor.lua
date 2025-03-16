@@ -128,4 +128,15 @@ return {
 			{ "<M-L>", function() require("smart-splits").resize_right() end, mode = { "n", "i", "v", "o", "t" }, },
 		},
 	},
+
+	{
+		"ThePrimeagen/harpoon",
+		keys = {
+			{ "<leader>ha", function() require("harpoon"):list():add() end, desc = "Harpoon File" },
+			{ "<leader>H", function()
+          local harpoon = require("harpoon")
+          harpoon.ui:toggle_quick_menu(harpoon:list())
+			end, desc = "Harpoon Quick Menu" },
+		},
+	},
 }
