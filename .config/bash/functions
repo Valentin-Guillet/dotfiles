@@ -358,8 +358,14 @@ venv() {
 
         # No argument passed to cmd: get venv matched with curr path
         if [ -z "$venv_name" ]; then
-            local path="$(realpath "$(pwd)")"
-            venv_name=$(cut -f2 <(grep "^$path	" "$venv_file" 2>/dev/null))
+            local curr_path="$(realpath "$(pwd)")"
+            local vpath vname longest_match
+            while read vpath vname; do
+                [[ "$curr_path/" != "$vpath/"* ]] && continue
+                [[ ${#vpath} -lt ${#longest_match} ]] && continue
+                longest_match="$vpath"
+                venv_name="$vname"
+            done < $venv_file
         fi
 
         # Current path does not match any venv
