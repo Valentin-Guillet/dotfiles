@@ -82,7 +82,7 @@ ls_stack() {
     [[ $# != 1 ]] && echo "Usage: ls_stack {cmd}" && return 1
 
     local arg=""
-    if [ "$(type -t "$1")" == "alias" ]
+    if [ "$(type -t "$1")" = "alias" ]
     then
         arg=$(alias "$1")
         arg="${arg#*\'}"
@@ -90,7 +90,7 @@ ls_stack() {
         local first_cmd="${arg%% *}"
 
         # If sudo as first cmd, ignore it and take second cmd
-        if [ "$first_cmd" == "sudo" ] && [ "$arg" != "sudo" ]
+        if [ "$first_cmd" = "sudo" ] && [ "$arg" != "sudo" ]
         then
             first_cmd="${arg#sudo }"
             first_cmd="${first_cmd%% *}"
@@ -303,13 +303,16 @@ venv() {
 
         local filtered_file=$(mktemp)
         local has_clean=0
-        while read line; do
-            local venv_name=$(echo "$line" | cut -f2)
-            if [ -d "$HOME/.local/venvs/$venv_name" ]; then
-                echo "$line" >> $filtered_file
-            else
-                echo "Unmatched $(echo "$line" | cut -f1) to nonexistent venv '$venv_name'"
+        local venv_path venv_name
+        while read venv_path venv_name; do
+            if [ ! -d "$HOME/.local/venvs/$venv_name" ]; then
+                echo "Unmatched '$venv_path' to nonexistent venv '$venv_name'"
                 has_clean=1
+            elif [ ! -d "$venv_path" ]; then
+                echo "Directory '$venv_path' does not exist anymore (matched to '$venv_name')"
+                has_clean=1
+            else
+                echo "$line" >> $filtered_file
             fi
         done < $venv_file
         mv $filtered_file $venv_file
@@ -372,8 +375,8 @@ venv() {
         fi
 
         # If given venv is already activated, deactivate it if in toggle mode
-        if [ "$venv_name" = "$(basename $VIRTUAL_ENV)" ]; then
-            [ "$venv_action" == "toggle" ] && venv_action=deactivate || echo "Already activated"
+        if [ "$venv_name" = "$(basename ${VIRTUAL_ENV:-''})" ]; then
+            [ "$venv_action" = "toggle" ] && venv_action=deactivate || echo "Already activated"
         else
             [ "$venv_name" != "base" ] && unset VIRTUAL_ENV_DISABLE_PROMPT
             source $HOME/.local/venvs/$venv_name/bin/activate
