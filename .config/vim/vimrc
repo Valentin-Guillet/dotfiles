@@ -565,13 +565,13 @@ vmap gS <Plug>(operator-DuplicateComment)
 nmap gS <Plug>(operator-DuplicateComment)
 nmap gsS gSl
 
-" Display word frequency for text-oriented files
-augroup freqCount
-    autocmd!
-
-    autocmd FileType text,markdown,bib,tex nnoremap <buffer><silent> <leader>f <Cmd>Freq<CR>
-augroup END
-
+" Digraph: `\` instead of `!` to do a grave accent
+digraph a\ 224
+digraph e\ 232
+digraph u\ 249
+digraph A\ 192
+digraph E\ 200
+digraph U\ 217
 
 " {{{1 UTILITY FUNCTIONS / COMMANDS
 
