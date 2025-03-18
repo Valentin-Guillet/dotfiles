@@ -39,6 +39,10 @@ alias configgx="vim $XDG_CONFIG_HOME/bash/xdg_setup; source ~/.bashrc"
 [ -x "$(command -v bat)" ] && alias cat='bat'
 [ -x "$(command -v fd)" ] && alias fd='fd --color=auto --no-ignore --hidden --follow --exclude .git'
 
+if [ -f $HOME/.config/tokens/github ]; then
+    alias gitpwd='[ -n "$TMUX" ] && tmux set-buffer "$(cat $HOME/.config/tokens/github)" || cat $HOME/.config/tokens/github | clip'
+fi
+
 NOTES_DIR="$HOME/Documents/Notes"
 alias td='[ -d "$NOTES_DIR" ] || mkdir -p "$NOTES_DIR" ; tmux rename-window "ToDo" 2> /dev/null; vim "$NOTES_DIR"/ToDo; tmux set-option automatic-rename on 2> /dev/null'
 
