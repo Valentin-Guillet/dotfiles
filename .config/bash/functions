@@ -348,6 +348,10 @@ venv() {
         [ "$(basename $VIRTUAL_ENV)" = "base" ] && return 0
         venv_action=deactivate
 
+    # If a venv (!= base) is activated and venv is called without arg, deactivate
+    elif [[ -z $1 && $VIRTUAL_ENV != $HOME/.local/venvs/base ]]; then
+        venv_action=deactivate
+
     # Default: toggle venv
     else
         venv_action=toggle
@@ -389,7 +393,7 @@ venv() {
         fi
     fi
 
-    if [[ $venv_action = deactivate ]]; then
+    if [[ $venv_action == deactivate ]]; then
         if [ "$VIRTUAL_ENV" != "$HOME/.local/venvs/base" ]; then
             deactivate
             export VIRTUAL_ENV_DISABLE_PROMPT=1
