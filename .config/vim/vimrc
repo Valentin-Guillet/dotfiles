@@ -493,8 +493,9 @@ inoremap KJ <Esc>l
 " Move line
 nnoremap <silent> - ddp==
 nnoremap <silent><expr> _ line('.') == line('$') \|\| line('.') == 1 ? "ddP==" : "ddkP=="
-vnoremap <silent> - <Cmd>m '>+1<CR>gv=gv
-vnoremap <silent> _ <Cmd>m '<-2<CR>gv=gv
+" Don't use <Cmd> in visual mode!
+vnoremap <silent> - :m '>+1<CR>gv=gv
+vnoremap <silent> _ :m '<-2<CR>gv=gv
 
 " Add a new line
 nnoremap <C-h> <Cmd>put=''<CR>
