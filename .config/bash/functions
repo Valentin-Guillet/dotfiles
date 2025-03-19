@@ -312,7 +312,7 @@ venv() {
                 echo "Directory '$venv_path' does not exist anymore (matched to '$venv_name')"
                 has_clean=1
             else
-                echo "$line" >> $filtered_file
+                echo -e "$venv_path\t$venv_name" >> $filtered_file
             fi
         done < $venv_file
         mv $filtered_file $venv_file
