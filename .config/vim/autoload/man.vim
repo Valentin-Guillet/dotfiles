@@ -30,6 +30,7 @@ function! man#resize_win()
     let l:prev_nb_lines = line('$')
 
     call cursor(1, 1)
+    call dist#man#PopPage()
     call dist#man#PreGetPage(0)
 
     let l:nb_lines = line('$')
