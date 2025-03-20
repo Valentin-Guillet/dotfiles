@@ -33,6 +33,9 @@
 !.config/git/
 !.config/git/**
 
+!.config/hypr/
+!.config/hypr/**
+
 !.config/ideavim/
 !.config/ideavim/**
 
