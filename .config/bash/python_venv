@@ -4,6 +4,8 @@ export VIRTUAL_ENV_DISABLE_PROMPT=1
 if [ -d "$PYTHON_VENV_PATH" ]; then
     venv_path="$PYTHON_VENV_PATH"
 else
+    mkdir -p "$HOME/.local/state/python/"
+    touch "$HOME/.local/state/python/venv_list"
     curr_path="$(realpath "$(pwd)")"
     while read vpath vname; do
         [[ "$curr_path/" != "$vpath/"* ]] && continue
@@ -15,7 +17,11 @@ else
     venv_path="$HOME/.local/venvs/${venv_name:-base}"
 fi
 
-source "$venv_path/bin/activate"
+if [ -f "$venv_path/bin/activate" ]; then
+    source "$venv_path/bin/activate"
+else
+    echo "No default virtual env created!"
+fi
 unset venv_path venv_name vpath vname longest_match curr_path
 
 # Default REPL
