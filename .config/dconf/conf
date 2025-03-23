@@ -48,25 +48,16 @@ toggle-tiled-left=['<Super>Left', '<Super>h']
 toggle-tiled-right=['<Super>Right', '<Super>l']
 
 [org/gnome/settings-daemon/plugins/media-keys]
-custom-keybindings=['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2/']
+custom-keybindings=['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/']
 home=['<Primary><Alt>e']
 screensaver=['<Super>f']
+terminal=['<Primary><Alt>t']
 www=['<Primary><Alt>w']
 
 [org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0]
-binding='<Primary><Alt>s'
-command='sh -c "PATH=$HOME/.local/venvs/base/bin:$PATH subl"'
-name='Sublime Text'
-
-[org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1]
-binding='<Primary><Shift><Alt>s'
-command='sh -c "PATH=$HOME/.local/venvs/base/bin:$PATH subl -n"'
-name='Sublime Text (New Window)'
-
-[org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2]
-binding='<Control><Alt>n'
-command='sh -c "neovide"'
-name='Neovide'
+binding='<Control><Alt>t'
+command='gnome-terminal --window --maximize'
+name='Terminal'
 
 [org/gnome/shell]
 favorite-apps=['org.gnome.Terminal.desktop', 'brave-browser.desktop', 'thunderbird.desktop', 'firefox_firefox.desktop', 'org.gnome.Nautilus.desktop']
