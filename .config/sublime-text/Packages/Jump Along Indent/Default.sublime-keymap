@@ -1,4 +1,0 @@
-[
-  { "keys": ["alt+up"], "command": "jump_prev_indent" },
-  { "keys": ["alt+down"], "command": "jump_next_indent" },
-]
