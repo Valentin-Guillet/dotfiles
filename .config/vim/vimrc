@@ -282,6 +282,7 @@ nnoremap <silent> <leader>g <Cmd>GitGutterToggle \| echo "GitGutter " . (g:gitgu
 nnoremap <silent><expr> zg (g:gitgutter_enabled ? ":GitGutterFold<CR>" : "zg")
 nmap [h <Plug>(GitGutterPrevHunk)
 nmap ]h <Plug>(GitGutterNextHunk)
+nmap <leader>hr <Plug>(GitGutterUndoHunk)
 
 xnoremap <Plug>(GitGutterStageNextHunk) <Cmd>execute "normal \<Plug>(GitGutterStageHunk)\<Plug>(GitGutterNextHunk)" \| silent! call repeat#set("\<lt>Plug>(GitGutterStageNextHunk)")<CR>
 nnoremap <Plug>(GitGutterStageNextHunk) <Cmd>execute "normal \<Plug>(GitGutterStageHunk)\<Plug>(GitGutterNextHunk)" \| silent! call repeat#set("\<lt>Plug>(GitGutterStageNextHunk)")<CR>
