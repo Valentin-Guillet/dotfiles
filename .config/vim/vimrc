@@ -558,7 +558,7 @@ vnoremap D <C-v>D
 " Quit visual mode with q
 vnoremap q <C-c>
 
-if exists("*operator#user#define")
+try
     call operator#user#define("CommentDuplicate", "comdup#CommentDuplicate", "let b:ComDup_pos = getpos('.')")
     vmap gs <Plug>(operator-CommentDuplicate)
     nmap gs <Plug>(operator-CommentDuplicate)
@@ -568,7 +568,8 @@ if exists("*operator#user#define")
     vmap gS <Plug>(operator-DuplicateComment)
     nmap gS <Plug>(operator-DuplicateComment)
     nmap gsS gSl
-endif
+catch
+endtry
 
 " Digraph: `\` instead of `!` to do a grave accent
 digraph a\ 224
