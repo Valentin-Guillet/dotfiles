@@ -1,6 +1,6 @@
 
 select-pane -t 1
-send-keys "sudo apt update" Enter
+if-shell '[ -x "$(which apt)" ]' 'send-keys "sudo apt update" Enter' 'send-keys "sudo pacman -Syu" Enter'
 
 split-window -v
 send-keys "pip_update && exit" Enter
