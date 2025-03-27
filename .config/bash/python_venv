@@ -26,7 +26,8 @@ unset venv_path venv_name vpath vname longest_match curr_path
 
 # Default REPL
 py() {
-    if [ -x "$(command -v ptpython)" ]; then
+    # Ptpython if it's available, in REPL or in interactive mode
+    if [ -x "$(command -v ptpython)" ] && [[ $# == 0 || $# == 2 && $1 == -i ]]; then
         ptpython "$@"
     else
         python3 "$@"
