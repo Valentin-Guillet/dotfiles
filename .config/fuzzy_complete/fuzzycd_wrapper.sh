@@ -4,11 +4,11 @@
 # a normal binary, but rather a Bash builtin.
 
 # The "cd" command may have already been redefined by another script (RVM does this, for example):
-if [ x`type -t cd` == "xfunction" ] && ! type cd | grep fuzzycd &> /dev/null
+if [[ $(type -t cd) == function ]] && ! type cd | grep fuzzycd &> /dev/null
 then
     # In this case, we define a new "original_cd" function with the same body as the previously defined "cd"
     # function.
-    eval "$(type cd | grep -v 'cd is a function' | sed 's/^cd/original_cd/' | sed 's/^}/;}/' )"
+    eval "$(type cd | tail +2 | sed 's/^cd/original_cd/')"
 else
     # Otherwise, we just define "original_cd" to directly call the builtin.
     eval "original_cd() { builtin cd \"\$@\"; }"
