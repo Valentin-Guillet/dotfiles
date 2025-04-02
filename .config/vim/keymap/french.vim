@@ -1,36 +1,12 @@
 " French keymap for utf-8
 
 " short keymap name for statusline
-let b:keymap_name = "Fr"
+let b:keymap_name = "fr"
 
 scriptencoding latin1
 
 loadkeymap
 
-q a
-a q
-w z
-z w
-; m
-Q A
-A Q
-W Z
-Z W
-: M
-m ,
-M ?
-, ;
-< .
-. :
-> /
-/ !
-[q â
-[e ê
-[i î
-[o ô
-[u û
-\' ù
-\" $
 1 &
 2 é
 3 "
@@ -42,7 +18,7 @@ M ?
 9 ç
 0 à
 - )
-_ °
+
 ! 1
 @ 2
 # 3
@@ -53,6 +29,44 @@ $ 4
 * 8
 ( 9
 ) 0
+_ °
+
+q a
+a q
+w z
+z w
+Q A
+A Q
+W Z
+Z W
+
+; m
+: M
+m ,
+M ?
+
+, ;
+< .
+. :
+> /
+/ !
+
+[q â
+[e ê
+[i î
+[o ô
+[u û
+
+{q ä
+{e ë
+{i ï
+{o ö
+{u ü
+{y ÿ
+
+\' ù
+\" $
+
 | *
 ³ #
 ¤ @
