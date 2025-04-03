@@ -30,20 +30,30 @@ bind -x '"\eg": fzf-file-widget'
 #    To keep the revert keymap, we replace all these `\er` calls to `\ez` as it is not used
 # 2) fzf replace all bash completions to detect the trigger (`**` by default)
 #    For each command, it saves the default completion function, and calls it if the trigger is not present.
-#    For some reason, if this function is just the default compgen function `_comp_complete_minimal`,
-#    it is skipped instead.
+#    For some reason, if this function is just the default compgen function `_minimal` (bash-completion <2.12) or
+#    `_comp_complete_minimal` (>= 2.12), it is skipped instead.
 #    However, we want to call it in every case, because we add `_fuzzy_complete` to all completion functions.
 #    For instance, `vim` by default use `_comp_complete_filedir_xspec` and thus fzf don't overwrite its completions,
 #    whereas `nvim` use `_comp_complete_minimal` by default and the fzf script overwrites it, disabling fuzzy completion.
-#    Indeed, the fzf file writes:
-#       ```bash
-#       # _comp_load was added in bash-completion 2.12 to replace _completion_loader.
-#       # We use it without -D option so that it does not use _comp_complete_minimal as the fallback.
-#       _fzf_completion_loader=_comp_load
-#
-#       ```
-#   To fix this, we thus modify the call to _fzf_completion_loader to use the -D option
-FZF_CTRL_T_COMMAND= eval "$(fzf --bash | sed -e 's/\\er/\\ez/' -e 's/$_fzf_completion_loader "$@"/$_fzf_completion_loader -D "$@"/')"
+#    Indeed, the fzf file contains:
+#        ```bash
+#        if type _comp_load > /dev/null 2>&1; then
+#            # _comp_load was added in bash-completion 2.12 to replace _completion_loader.
+#            # We use it without -D option so that it does not use _comp_complete_minimal as the fallback.
+#            _fzf_completion_loader=_comp_load
+#        elif type __load_completion > /dev/null 2>&1; then
+#            # In bash-completion 2.11, _completion_loader internally calls __load_completion
+#            # and if it returns a non-zero status, it sets the default 'minimal' completion.
+#            _fzf_completion_loader=__load_completion
+#        elif type _completion_loader > /dev/null 2>&1; then
+#            _fzf_completion_loader=_completion_loader
+#        fi
+#        ```
+#   To fix this, we thus add the -D option to _comp_load (to fix >=2.12) and use _completion_loader instead of __load_completion (to fix ==2.11)
+FZF_CTRL_T_COMMAND= eval "$(fzf --bash | \
+    sed -e 's/\\er/\\ez/' \
+        -e "s/_fzf_completion_loader=_comp_load/_fzf_completion_loader='_comp_load -D'/" \
+        -e '/^elif type __load_completion/,+4c else')"
 
 rzf() {
     rg --color=always --line-number --no-heading --smart-case "${*:-}" |

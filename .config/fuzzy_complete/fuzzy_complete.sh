@@ -28,8 +28,8 @@ done
 # to use the default bash completion as it allows for wildcards completion (cf. issue
 # https://github.com/scop/bash-completion/issues/444)
 # In our case, we don't care about default bash completion so we overwrite this minimal
-# completion function to call _comp_compgen_filedir again, which allows for calling our fuzzy
-# complete function again by default
+# completion function to call _comp_compgen_filedir again, which allows for calling our
+# fuzzy complete function
 if [[ $(type -t _comp_complete_minimal) == function ]]; then
     _comp_complete_minimal() {
         local cur prev words cword comp_args
