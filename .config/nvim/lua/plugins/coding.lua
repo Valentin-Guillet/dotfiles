@@ -29,8 +29,8 @@ return {
 		"monkoose/neocodeium",
 		keys = {
 			{ "<M-Space>", function() require("neocodeium").accept() end, mode = "i" },
-			{ "<M-]>", function() require("neocodeium").cycle_or_complete(1) end, mode = "i" },
-			{ "<M-[>", function() require("neocodeium").cycle_or_complete(-1) end, mode = "i" },
+			{ "<M-}>", function() require("neocodeium").cycle_or_complete(1) end, mode = "i" },
+			{ "<M-{>", function() require("neocodeium").cycle_or_complete(-1) end, mode = "i" },
 		},
 		config = function()
 			local neocodeium = require("neocodeium")
