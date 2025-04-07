@@ -352,10 +352,10 @@ noremap <silent> <M-j> <Cmd>TmuxNavigateDown<CR>
 noremap <silent> <M-k> <Cmd>TmuxNavigateUp<CR>
 noremap <silent> <M-l> <Cmd>TmuxNavigateRight<CR>
 
-lnoremap <silent> <M-h> <Cmd>TmuxNavigateLeft<CR>
-lnoremap <silent> <M-j> <Cmd>TmuxNavigateDown<CR>
-lnoremap <silent> <M-k> <Cmd>TmuxNavigateUp<CR>
-lnoremap <silent> <M-l> <Cmd>TmuxNavigateRight<CR>
+noremap! <silent> <M-h> <Cmd>TmuxNavigateLeft<CR>
+noremap! <silent> <M-j> <Cmd>TmuxNavigateDown<CR>
+noremap! <silent> <M-k> <Cmd>TmuxNavigateUp<CR>
+noremap! <silent> <M-l> <Cmd>TmuxNavigateRight<CR>
 
 tnoremap <silent> <M-h> <Cmd>TmuxNavigateLeft<CR>
 tnoremap <silent> <M-j> <Cmd>TmuxNavigateDown<CR>
@@ -367,10 +367,10 @@ noremap <silent> <M-J> <Cmd>TmuxResizeDown<CR>
 noremap <silent> <M-K> <Cmd>TmuxResizeUp<CR>
 noremap <silent> <M-L> <Cmd>TmuxResizeRight<CR>
 
-lnoremap <silent> <M-H> <Cmd>TmuxResizeLeft<CR>
-lnoremap <silent> <M-J> <Cmd>TmuxResizeDown<CR>
-lnoremap <silent> <M-K> <Cmd>TmuxResizeUp<CR>
-lnoremap <silent> <M-L> <Cmd>TmuxResizeRight<CR>
+noremap! <silent> <M-H> <Cmd>TmuxResizeLeft<CR>
+noremap! <silent> <M-J> <Cmd>TmuxResizeDown<CR>
+noremap! <silent> <M-K> <Cmd>TmuxResizeUp<CR>
+noremap! <silent> <M-L> <Cmd>TmuxResizeRight<CR>
 
 tnoremap <silent> <M-H> <Cmd>TmuxResizeLeft<CR>
 tnoremap <silent> <M-J> <Cmd>TmuxResizeDown<CR>
