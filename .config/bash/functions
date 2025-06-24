@@ -250,7 +250,9 @@ venv() {
 
     # List existing venvs
     elif [[ $1 == --venvs || $1 == -v ]]; then
-        ls $HOME/.local/venvs/ --color=never
+        venv_name=$(basename "$VIRTUAL_ENV")
+        ls $HOME/.local/venvs/ --color=never | tr '\n' ' ' | sed "s/$venv_name/$(printf "\\e[33m[$venv_name]\\e[00m")/"
+        echo
 
     # Print all venv matchings
     elif [[ $1 == --list || $1 == -l ]]; then
