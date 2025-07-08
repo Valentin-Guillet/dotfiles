@@ -44,16 +44,16 @@ def main():
         old_settings = json.load(file)
 
     new_settings = old_settings.copy()
-    new_settings["actions"] = [obj for obj in new_settings["actions"] if not obj.get("toggle", False)]
+    new_settings["keybindings"] = [obj for obj in new_settings["keybindings"] if not obj.get("toggle", False)]
 
     # If we want to deactivate but no "toggle" has been found, this means that the
     # settings file has been overwritten by WindowsTerminal, so we get all
     # keybindings from `settings.json` again
-    if len(new_settings["actions"]) == len(old_settings["actions"]):
+    if len(new_settings["keybindings"]) == len(old_settings["keybindings"]):
         custom_settings = get_custom_settings()
 
-        old_settings["actions"] = custom_settings["actions"]
-        new_settings["actions"] = [obj for obj in custom_settings["actions"] if not obj.get("toggle", False)]
+        old_settings["keybindings"] = custom_settings["keybindings"]
+        new_settings["keybindings"] = [obj for obj in custom_settings["keybindings"] if not obj.get("toggle", False)]
 
     # Save old settings in backup file to reactivate later
     with settings_file_bak.open("w") as file:
