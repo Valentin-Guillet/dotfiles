@@ -1,3 +1,17 @@
+local function get_venv_name()
+	local venv = vim.fn.getenv("VIRTUAL_ENV")
+	if venv == vim.NIL then
+		return ""
+	end
+
+	venv = string.gsub(venv, "(.*/)(.*)", "%2")
+	if venv == "base" then
+		return ""
+	end
+
+	return venv
+end
+
 return {
 	{
 		"folke/noice.nvim",
@@ -24,6 +38,17 @@ return {
 		"nvim-lualine/lualine.nvim",
 		opts = {
 			sections = {
+				lualine_b = {
+					{
+						get_venv_name,
+						cond = function()
+							return vim.bo.filetype == "python"
+						end,
+						icon = "󰌠",
+						color = { fg = "#FFD43B" },
+					},
+					"branch",
+				},
 				lualine_c = {
 					LazyVim.lualine.root_dir(),
 					{
