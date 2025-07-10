@@ -153,6 +153,7 @@ venv() {
 		  - venv [--unmatch|-u] [PATH]
 		  - venv [--venvs|-v]
 		  - venv [--list|-l]
+		  - venv [--edit|-e]
 		  - venv [--init|-i]
 		  - venv --delete VENV_NAME
 		  - venv --clean
@@ -251,7 +252,7 @@ venv() {
     # List existing venvs
     elif [[ $1 == --venvs || $1 == -v ]]; then
         venv_name=$(basename "$VIRTUAL_ENV")
-        ls $HOME/.local/venvs/ --color=never | tr '\n' ' ' | sed "s/$venv_name/$(printf "\\e[33m[$venv_name]\\e[00m")/"
+        ls $HOME/.local/venvs/ --color=never | tr '\n' ' ' | sed "s/$venv_name/$(printf "\\e[33m[$venv_name]\\e[00m")/" | sed "s/ /  /g"
         echo
 
     # Print all venv matchings
@@ -261,6 +262,10 @@ venv() {
         else
             cat $venv_file
         fi
+
+    # Open matching file in editor
+    elif [[ $1 == --edit || $1 == -e ]]; then
+        $EDITOR $venv_file
 
     # Init venv by installing useful dev tools
     elif [[ $1 == --init || $1 == -i ]]; then
