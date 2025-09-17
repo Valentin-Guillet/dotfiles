@@ -7,7 +7,7 @@ _venv_complete() {
     local prev="${COMP_WORDS[COMP_CWORD-1]}"
 
     # Define possible options
-    local opts="--activate --deactivate --create --match --unmatch --venvs --list --delete --clean --help"
+    local opts="--activate --deactivate --create --match --unmatch --venvs --list --edit --init --delete --clean --help"
 
     # Option completion
     if [[ "$cur" == --* ]]; then

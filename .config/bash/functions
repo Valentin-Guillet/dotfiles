@@ -141,6 +141,7 @@ ls_stack() {
 venv() {
     local venv_action=nothing
     local venv_file="$HOME/.local/state/python/venv_list"
+    local venv_base_dir="$HOME/.local/venvs"
 
     local help_msg
     read -r -d '' help_msg <<- EOM
@@ -172,7 +173,7 @@ venv() {
             return 1
         fi
 
-        local venv_path="$HOME/.local/venvs/$venv_name"
+        local venv_path="$venv_base_dir/$venv_name"
         if [ -d "$venv_path" ]; then
             echo "Venv '$venv_name' already exists"
             return 1
@@ -194,7 +195,7 @@ venv() {
     elif [[ $1 == --match || $1 == -m ]]; then
         local venv_name="$2"
         if [ -z "$venv_name" ]; then
-            if [ "$VIRTUAL_ENV" = "$HOME/.local/venvs/base" ]; then
+            if [ "$VIRTUAL_ENV" = "$venv_base_dir/base" ]; then
                 echo "Usage: venv --match VENV_NAME [PATH]"
                 return 1
             fi
@@ -209,7 +210,7 @@ venv() {
         fi
 
         # Check that venv exists
-        if [ ! -d "$HOME/.local/venvs/$venv_name" ]; then
+        if [ ! -d "$venv_base_dir/$venv_name" ]; then
             echo "No venv named '$venv_name'"
             return 1
         fi
@@ -250,13 +251,13 @@ venv() {
         fi
 
     # List existing venvs
-    elif [[ $1 == --venvs || $1 == -v ]]; then
+    elif [[ $1 == --list || $1 == -l ]]; then
         venv_name=$(basename "$VIRTUAL_ENV")
-        ls $HOME/.local/venvs/ --color=never | tr '\n' ' ' | sed "s/$venv_name/$(printf "\\e[33m[$venv_name]\\e[00m")/" | sed "s/ /  /g"
+        ls $venv_base_dir --color=never | tr '\n' ' ' | sed "s/$venv_name/$(printf "\\e[33m[$venv_name]\\e[00m")/" | sed "s/ /  /g"
         echo
 
     # Print all venv matchings
-    elif [[ $1 == --list || $1 == -l ]]; then
+    elif [[ $1 == --venvs || $1 == -v ]]; then
         if [[ -z $(grep '[^[:space:]]' "$venv_file" 2>/dev/null) ]] ; then
             echo "No venv matched"
         else
@@ -285,14 +286,14 @@ venv() {
         fi
 
         # Check that venv exists
-        if [ ! -d "$HOME/.local/venvs/$venv_name" ]; then
+        if [ ! -d "$venv_base_dir/$venv_name" ]; then
             echo "No venv named '$venv_name'"
             return 1
         fi
 
         read -p "Delete venv '$venv_name'? y/[N] " -r
         if [[ $REPLY =~ ^[Yy] ]]; then
-            rm -r "$HOME/.local/venvs/$venv_name"
+            rm -r "$venv_base_dir/$venv_name"
             echo "Venv '$venv_name' deleted"
 
             # If we deleted curr venv, we deactivate it
@@ -312,7 +313,7 @@ venv() {
         local has_clean=0
         local venv_path venv_name
         while read venv_path venv_name; do
-            if [ ! -d "$HOME/.local/venvs/$venv_name" ]; then
+            if [ ! -d "$venv_base_dir/$venv_name" ]; then
                 echo "Unmatched '$venv_path' to nonexistent venv '$venv_name'"
                 has_clean=1
             elif [ ! -d "$venv_path" ]; then
@@ -356,7 +357,7 @@ venv() {
         venv_action=deactivate
 
     # If a venv (!= base) is activated and venv is called without arg, deactivate
-    elif [[ -z $1 && $VIRTUAL_ENV != $HOME/.local/venvs/base ]]; then
+    elif [[ -z $1 && $VIRTUAL_ENV != $venv_base_dir/base ]]; then
         venv_action=deactivate
 
     # Default: toggle venv
@@ -386,7 +387,7 @@ venv() {
         fi
 
         # Given venv does not exist
-        if [ ! -d "$HOME/.local/venvs/$venv_name" ]; then
+        if [ ! -d "$venv_base_dir/$venv_name" ]; then
             echo "Venv '$venv_name' does not exist"
             return 1
         fi
@@ -396,15 +397,15 @@ venv() {
             [ "$venv_action" = "toggle" ] && venv_action=deactivate || echo "Already activated"
         else
             [ "$venv_name" != "base" ] && unset VIRTUAL_ENV_DISABLE_PROMPT
-            source $HOME/.local/venvs/$venv_name/bin/activate
+            source $venv_base_dir/$venv_name/bin/activate
         fi
     fi
 
     if [[ $venv_action == deactivate ]]; then
-        if [ "$VIRTUAL_ENV" != "$HOME/.local/venvs/base" ]; then
+        if [ "$VIRTUAL_ENV" != "$venv_base_dir/base" ]; then
             deactivate
             export VIRTUAL_ENV_DISABLE_PROMPT=1
-            source $HOME/.local/venvs/base/bin/activate
+            source $venv_base_dir/base/bin/activate
         else
             echo "No venv currently activated"
         fi
