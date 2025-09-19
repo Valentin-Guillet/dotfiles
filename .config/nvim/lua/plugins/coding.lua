@@ -53,7 +53,7 @@ return {
 	},
 
 	{
-		"echasnovski/mini.comment",
+		"nvim-mini/mini.comment",
 		opts = {
 			options = {
 				ignore_blank_line = true,
@@ -115,7 +115,7 @@ return {
 	},
 
 	-- Use nvim-autopairs because it works with abbreviations and allow for fast wrap
-	{ "echasnovski/mini.pairs", enabled = false },
+	{ "nvim-mini/mini.pairs", enabled = false },
 	{
 		"windwp/nvim-autopairs",
 		event = "InsertEnter",
