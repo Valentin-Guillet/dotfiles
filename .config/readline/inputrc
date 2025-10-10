@@ -28,7 +28,7 @@ $if Bash
     "\eO": "\C-aless \C-e"
 
     # Replace (/add) vim as first word
-    "\ev": "\C-a\C-]\ \C-wvim\C-e"
+    "\ev": "\C-a\C-]\ \C-k\C-a$([ \C-e = vim ] && echo -n n; echo vim)\e\C-e\C-y\C-e"
     "\eV": "\C-avim \C-e"
 
     # Replace (/add) xdg-open as first word
