@@ -728,7 +728,7 @@ function! s:TodoList_GoToNextItem(count)
     let l:saved_shortmess = &shortmess
     set shortmess+=s
     normal! $
-    silent! exec '/^\s*\%([-+*.|]\|\d\+\.\) \[.\]'
+    silent! exec '/^\s*\%([-+*.|]\|\d\+\.\) \[.\]\|' . s:headersRegexp
     for i in range(a:count-1)
         keepjumps normal! nw
     endfor
@@ -743,7 +743,7 @@ function! s:TodoList_GoToPreviousItem(count)
     let l:saved_shortmess = &shortmess
     set shortmess+=s
     normal! 0
-    silent! exec '?^\s*\%([-+*.|]\|\d\+\.\) \[.\]'
+    silent! exec '?^\s*\%([-+*.|]\|\d\+\.\) \[.\]\|' . s:headersRegexp
     for i in range(a:count-1)
         keepjumps normal! 0nw
     endfor
