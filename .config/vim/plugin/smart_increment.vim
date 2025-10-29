@@ -33,7 +33,8 @@ function! s:SmartIncrement(dir)
     if empty(found_pattern)
         execute "normal! " . (a:dir == 1 ? "\<C-a>" : "\<C-x>")
     else
-        call search('\C\<' . found_pattern . '\>')
+        call cursor(0, min_pos)
+        call search('\C\<' . found_pattern . '\>', 'c')
         execute "normal! ciw" . replacement
     endif
 
