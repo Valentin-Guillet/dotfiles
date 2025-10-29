@@ -3,6 +3,8 @@ vim.opt.sidescrolloff = 5
 
 vim.opt.gdefault = true
 
+vim.opt.clipboard = ""
+
 vim.opt.diffopt = "internal,filler,closeoff,algorithm:histogram,indent-heuristic,linematch:60"
 
 vim.g.autoformat = false
