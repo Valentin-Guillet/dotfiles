@@ -27,14 +27,14 @@ return {
 
 	{
 		"monkoose/neocodeium",
-		keys = {
-			{ "<M-Space>", function() require("neocodeium").accept() end, mode = "i" },
-			{ "<M-}>", function() require("neocodeium").cycle_or_complete(1) end, mode = "i" },
-			{ "<M-{>", function() require("neocodeium").cycle_or_complete(-1) end, mode = "i" },
-		},
+		event = "VeryLazy",
 		config = function()
 			local neocodeium = require("neocodeium")
 			neocodeium.setup({ manual = true })
+
+			vim.keymap.set("i", "<M-Space>", function() neocodeium.accept() end, { silent = true })
+			vim.keymap.set("i", "<M-}>", function() neocodeium.cycle_or_complete(1) end, { silent = true })
+			vim.keymap.set("i", "<M-{>", function() neocodeium.cycle_or_complete(-1) end, { silent = true })
 
 			-- create an autocommand which closes blink when ai completions are displayed
 			vim.api.nvim_create_autocmd("User", {
