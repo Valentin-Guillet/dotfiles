@@ -565,6 +565,15 @@ Tool to manage python virtual environments. Usage:
 
 . $PSScriptRoot\venv_completion.ps1  # Setup autocompletion
 
+$baseActivateScriptPath = Join-Path $HOME ".local\venvs\base\Scripts\Activate.ps1"
+if (Test-Path $baseActivateScriptPath -PathType Leaf) {
+    $env:VIRTUAL_ENV_DISABLE_PROMPT = 1
+    . $baseActivateScriptPath
+} else {
+    Write-Host "No default virtual env created!"
+}
+Remove-Variable baseActivateScriptPath
+
 # Helper functions
 
 function _display_size($name, $size) {
