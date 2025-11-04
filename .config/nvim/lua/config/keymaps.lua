@@ -100,18 +100,6 @@ vim.keymap.set("v", "q", "<C-c>")
 
 vim.keymap.set("n", "<C-h>", "<Cmd>put=''<CR>")
 
--- Swap words
-vim.keymap.set("n", "gt", function()
-	vim.cmd('normal "_yiw')
-	vim.cmd([[keeppattern s/\v(%#\w+)(\_W+)(\w+)/\3\2\1/ | normal! ``]])
-	vim.fn.search([[\w\+\_W\+]])
-end, { desc = "Swap next word", silent = true })
-vim.keymap.set("n", "gT", function()
-	vim.cmd('normal "_yiw')
-	vim.fn.search([[\w\+\_W\+]], "b")
-	vim.cmd([[keeppattern s/\v(%#\w+)(\_W+)(\w+)/\3\2\1/ | normal! ``]])
-end, { desc = "Swap next word", silent = true })
-
 -- In command line, <C-P> and <C-N> act as <Up> and <Down> (i.e. search in history)
 vim.keymap.set("c", "<C-S-p>", "<Up>")
 vim.keymap.set("c", "<C-S-n>", "<Down>")
@@ -134,5 +122,34 @@ vim.keymap.set({ "i", "c" }, "<C-S-v>", "<C-R>+", { desc = "Paste from clipboard
 -- Open autocomplete on next subdirectory in command line
 vim.keymap.set("c", "<C-o>", "<Space><BS><C-z>", { desc = "Autocomplete in next subdirectory" })
 
+-- Swap text objects using treesitter and regex
+vim.keymap.set("n", "g>w", function()
+	vim.cmd('normal "_yiw')
+	vim.cmd([[keeppattern s/\v(%#\w+)(\_W+)(\w+)/\3\2\1/ | normal! ``]])
+	vim.fn.search([[\w\+\_W\+]])
+end, { desc = "Swap next Word", silent = true })
+vim.keymap.set("n", "g<w", function()
+	vim.cmd('normal "_yiw')
+	vim.fn.search([[\w\+\_W\+]], "b")
+	vim.cmd([[keeppattern s/\v(%#\w+)(\_W+)(\w+)/\3\2\1/ | normal! ``]])
+end, { desc = "Swap next Word", silent = true })
 
+vim.keymap.set("n", "g>p", function() vim.cmd('normal! "ydap}"yp') end, { desc = "Swap next Paragraph", silent = true })
+vim.keymap.set("n", "g<p", function() vim.cmd('normal! "ydap{{"yp') end, { desc = "Swap prev Paragraph", silent = true })
 
+local keys = {
+	["f"] = "@function.outer",
+	["c"] = "@class.outer",
+	["a"] = "@parameter.inner",
+}
+
+for key, query in pairs(keys) do
+	local operand = query:gsub("@", ""):gsub("%..*", "")
+	operand = operand:sub(1, 1):upper() .. operand:sub(2)
+	vim.keymap.set({ "n", "x", "o" }, "g>" .. key, function()
+		require("nvim-treesitter-textobjects.swap").swap_next(query)
+	end, { desc = "Swap next " .. operand, silent = true })
+	vim.keymap.set({ "n", "x", "o" }, "g<" .. key, function()
+		require("nvim-treesitter-textobjects.swap").swap_previous(query)
+	end, { desc = "Swap prev " .. operand, silent = true })
+end
