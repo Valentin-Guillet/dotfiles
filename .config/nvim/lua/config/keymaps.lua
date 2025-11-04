@@ -135,15 +135,4 @@ vim.keymap.set({ "i", "c" }, "<C-S-v>", "<C-R>+", { desc = "Paste from clipboard
 vim.keymap.set("c", "<C-o>", "<Space><BS><C-z>", { desc = "Autocomplete in next subdirectory" })
 
 
--- Neovide mappings
-vim.g.neovide_hide_mouse_when_typing = false
 
-vim.g.neovide_scale_factor = 1.0
-vim.keymap.set("n", "<C-+>", function()
-	vim.g.neovide_scale_factor = vim.g.neovide_scale_factor * 1.08
-	vim.cmd("redraw!")
-end, { desc = "Zoom in" })
-vim.keymap.set("n", "<C-->", function()
-	vim.g.neovide_scale_factor = vim.g.neovide_scale_factor / 1.08
-	vim.cmd("redraw!")
-end, { desc = "Zoom out" })
