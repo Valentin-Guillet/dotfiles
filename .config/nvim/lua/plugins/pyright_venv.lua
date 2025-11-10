@@ -27,18 +27,18 @@ local function uv_get_editable_pkgs()
 end
 
 return {
-  "neovim/nvim-lspconfig",
-  opts = {
-    servers = {
-      pyright = {
-        settings = {
-          python = {
-            analysis = {
-              extraPaths = uv_get_editable_pkgs(),
-            },
-          },
-        },
-      },
-    },
-  },
+	"neovim/nvim-lspconfig",
+	opts = {
+		servers = {
+			basedpyright = {
+				settings = {
+					basedpyright = {
+						analysis = {
+							extraPaths = uv_get_editable_pkgs(),
+						},
+					},
+				},
+			},
+		},
+	},
 }
