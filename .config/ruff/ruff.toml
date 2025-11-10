@@ -53,5 +53,5 @@ lint.ignore = [
     "ARG002",   # Named unused argument
 ]
 
-line-length = 120
+line-length = 89
 
