@@ -39,6 +39,7 @@ alias configgx="vim $XDG_CONFIG_HOME/bash/xdg_setup; source ~/.bashrc"
 [ -x "$(command -v bat)" ] && alias cat='bat'
 [ -x "$(command -v fd)" ] && alias fd='fd --color=auto --no-ignore --hidden --follow --exclude .git'
 [ -x "$(command -v lazygit)" ] && alias lg='lazygit'
+[ -x "$(command -v rg)" ] && alias rgi='rg --no-ignore'
 
 if [ -f $HOME/.config/tokens/github ]; then
     alias gitpwd='[ -n "$TMUX" ] && tmux set-buffer "$(cat $HOME/.config/tokens/github)" || cat $HOME/.config/tokens/github | clip'
