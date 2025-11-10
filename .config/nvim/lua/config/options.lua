@@ -13,6 +13,8 @@ vim.g.snacks_animate = false
 
 vim.lsp.on_type_formatting.enable()
 
+vim.g.lazyvim_python_lsp = "basedpyright"
+
 -- Control whether to use Copilot suggestions in completion window or as ghost text
 vim.g.ai_cmp = false
 
