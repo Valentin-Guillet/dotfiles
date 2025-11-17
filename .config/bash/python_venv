@@ -1,26 +1,28 @@
 #!/bin/bash
 
-export VIRTUAL_ENV_DISABLE_PROMPT=1
-if [ -d "$PYTHON_VENV_PATH" ]; then
-    venv_path="$PYTHON_VENV_PATH"
-else
-    mkdir -p "$HOME/.local/state/python/"
-    touch "$HOME/.local/state/python/venv_list"
-    curr_path="$(realpath "$(pwd)")"
-    while read vpath vname; do
-        [[ "$curr_path/" != "$vpath/"* ]] && continue
-        [[ ${#vpath} -lt ${#longest_match} ]] && continue
-        longest_match="$vpath"
-        venv_name="$vname"
-    done < "$HOME/.local/state/python/venv_list"
-    [ -n "$venv_name" ] && unset VIRTUAL_ENV_DISABLE_PROMPT
-    venv_path="$HOME/.local/venvs/${venv_name:-base}"
-fi
+mkdir -p "$HOME/.local/state/python/"
+touch "$HOME/.local/state/python/venv_list"
+curr_path="$(realpath "$(pwd)")"
+while read vpath vname; do
+    [[ "$curr_path/" != "$vpath/"* ]] && continue
+    [[ ${#vpath} -lt ${#longest_match} ]] && continue
+    longest_match="$vpath"
+    venv_name="$vname"
+done < "$HOME/.local/state/python/venv_list"
 
-if [ -f "$venv_path/bin/activate" ]; then
-    source "$venv_path/bin/activate"
-else
-    echo "No default virtual env created!"
+if [ -n "$venv_name" ]; then  # Venv found in venv_list
+    source "$HOME/.local/venvs/$venv_name/bin/activate"
+elif [ -d ".venv" ]; then  # Local venv found
+    source ".venv/bin/activate"
+    export PS1="(local) ${_OLD_VIRTUAL_PS1}"
+else  # No venv found: activate base
+    export VIRTUAL_ENV_DISABLE_PROMPT=1
+    venv_path="$HOME/.local/venvs/base"
+    if [ -d "$venv_path" ]; then
+        source "$venv_path/bin/activate"
+    else
+        echo "No default virtual env created!"
+    fi
 fi
 unset venv_path venv_name vpath vname longest_match curr_path
 

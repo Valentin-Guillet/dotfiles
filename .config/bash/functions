@@ -380,6 +380,14 @@ venv() {
             done < $venv_file
         fi
 
+        # Search for `.venv` directory (uv base path)
+        if [ -z "$venv_name" -a -d ".venv" ]; then
+            unset VIRTUAL_ENV_DISABLE_PROMPT
+            source .venv/bin/activate
+            export PS1="(local) ${_OLD_VIRTUAL_PS1}"
+            return 0
+        fi
+
         # Current path does not match any venv
         if [ -z "$venv_name" ]; then
             echo "No venv matched to current path found"
