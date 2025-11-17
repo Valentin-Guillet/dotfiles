@@ -10,20 +10,20 @@ main() {
     local list_sessions=( $(tmux list-sessions -F "#{session_name}" | sort | if [ "$DIRECTION" = "reverse" ]; then cat; else tac; fi) )
 
     # If only one session, can't move pane
-    if [ ${#list_sessions[@]} -le 1 ]; then
-        tmux display-message "No other sessions to move the window !"
+    if [ ${#list_sessions[@]} -eq 1 ]; then
+        tmux display-message "No other session to move the window to!"
         return 0
-    else
-        for ((i=0; i<${#list_sessions[@]}; ++i)); do
-            if [ "${list_sessions[$i]}" = "$CURRENT_SESSION_NAME" ]; then
-                local prev_session="${list_sessions[$i-1]}"
-                break
-            fi
-        done
-
-        tmux switch-client -t "$prev_session"
-        tmux move-window -s "$CURRENT_WINDOW_ID"
     fi
+
+    for ((i=0; i<${#list_sessions[@]}; ++i)); do
+        if [ "${list_sessions[$i]}" = "$CURRENT_SESSION_NAME" ]; then
+            local prev_session="${list_sessions[$i-1]}"
+            break
+        fi
+    done
+
+    tmux switch-client -t "$prev_session"
+    tmux move-window -s "$CURRENT_WINDOW_ID"
 }
 
 main
