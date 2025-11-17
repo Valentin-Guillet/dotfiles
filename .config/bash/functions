@@ -155,7 +155,7 @@ venv() {
 		  - venv [--venvs|-v]
 		  - venv [--list|-l]
 		  - venv [--edit|-e]
-		  - venv [--init|-i]
+		  - venv [--install|-i]
 		  - venv --delete VENV_NAME
 		  - venv --clean
 	EOM
@@ -268,8 +268,8 @@ venv() {
     elif [[ $1 == --edit || $1 == -e ]]; then
         $EDITOR $venv_file
 
-    # Init venv by installing useful dev tools
-    elif [[ $1 == --init || $1 == -i ]]; then
+    # Install useful dev tools
+    elif [[ $1 == --install || $1 == -i ]]; then
         uv pip install pdbpp pdir2 ptpython pudb
 
     # Delete venv
