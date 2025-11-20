@@ -107,6 +107,7 @@ if __name__ == "__main__":
     define_test(LsTest, "ls_hidden", ["do/hid"], ["Documents/.hidden_dir"])
     define_test(LsTest, "ls_hidden_file", [".cfv"], [".conf.vim"], workdir=FUZZTEST_DIR/"Documents")
     define_test(LsTest, "ls_match_chars", ["dmd"], ["Documents/Misc/dependency", "Documents/Misc/dir1_file.txt"])
+    define_test(LsTest, "ls_char_double", ["h"], ["prog.hpp"], workdir=FUZZTEST_DIR/"Documents"/"program")
 
     workdir = FUZZTEST_DIR/"Documents"/"Misc"/"dependency"
     define_test(LsTest, "ls_home", ["~/FuzzTest/doc/.hid"], [str(FUZZTEST_DIR)+"/Documents/.hidden_dir"], workdir=workdir)
@@ -134,7 +135,6 @@ if __name__ == "__main__":
                 workdir=workdir)
     define_test(LsTest, "ls_previous_mult", [".../p/p"],
                 [
-                    "../../project/__pycache__",
                     "../../program/prog.cpp",
                     "../../program/prog.hpp",
                     "../../project/package.py",
