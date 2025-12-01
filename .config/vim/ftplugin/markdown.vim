@@ -1,5 +1,6 @@
-" Script Variables {{{1
+scriptencoding utf-8
 
+" Script Variables {{{1
 " For each level, contains the regexp that matches at that level only.
 "
 let s:levelRegexpDict = {
@@ -11,7 +12,7 @@ let s:levelRegexpDict = {
     \ 6: '\v^######[^#]@='
 \ }
 
-" Maches any header level of any type.
+" Matches any header level of any type.
 "
 " This could be deduced from `s:levelRegexpDict`, but it is more
 " efficient to have a single regexp for this.
@@ -65,7 +66,7 @@ endfunction
 function! s:Markdown_GoToCurrHeader(mode)
     if a:mode ==# 'v' | execute "normal! gv" | endif
     let l:lineNum = s:GetHeaderLineNum()
-    if l:lineNum != 0
+    if l:lineNum !=# 0
         call cursor(l:lineNum, 1)
     else
         echo 'Outside any header'
@@ -102,6 +103,7 @@ function! s:Markdown_GoToParentHeader(mode)
     if a:mode ==# 'v' | execute "normal! gv" | endif
     let l:linenum = s:GetParentHeaderLineNumber()
     if l:linenum != 0
+        call setpos("''", getpos('.'))
         call cursor(l:linenum, 1)
     else
         echo 'No parent header'
@@ -234,6 +236,8 @@ function! s:Toc(...)
         else
             execute 'vertical resize ' . (&columns/2)
         endif
+    elseif l:window_type ==# 'tab'
+        tab lopen
     else
         lopen
     endif
@@ -273,7 +277,9 @@ endfunction
 function! s:SetexToAtx(line1, line2)
     let l:originalNumLines = line('$')
     execute 'silent! ' . a:line1 . ',' . a:line2 . 'substitute/\v(.*\S.*)\n\=+$/# \1/'
-    execute 'silent! ' . a:line1 . ',' . a:line2 . 'substitute/\v(.*\S.*)\n-+$/## \1/'
+
+    let l:changed = l:originalNumLines - line('$')
+    execute 'silent! ' . a:line1 . ',' . (a:line2 - l:changed) . 'substitute/\v(.*\S.*)\n-+$/## \1'
     return l:originalNumLines - line('$')
 endfunction
 
@@ -384,8 +390,13 @@ endfunction
 " Front end for GetUrlForPosition.
 function! s:OpenUrlUnderCursor()
     let l:url = s:Markdown_GetUrlForPosition(line('.'), col('.'))
-    if l:url != ''
-        call netrw#BrowseX(l:url, 0)
+    if l:url !=# ''
+      if l:url =~? 'http[s]\?:\/\/[[:alnum:]%\/_#.-]*'
+        "Do nothing
+      else
+        let l:url = expand(expand('%:h').'/'.l:url)
+      endif
+        call netrw#BrowseX(l:url)
     else
         echomsg 'The cursor is not on a link.'
     endif
@@ -395,8 +406,24 @@ endfunction
 " script while this function is running. We must not replace it.
 if !exists('*s:EditUrlUnderCursor')
     function s:EditUrlUnderCursor()
+        let l:editmethod = ''
+        " determine how to open the linked file (split, tab, etc)
+        if exists('g:vim_markdown_edit_url_in')
+          if g:vim_markdown_edit_url_in ==# 'tab'
+            let l:editmethod = 'tabnew'
+          elseif g:vim_markdown_edit_url_in ==# 'vsplit'
+            let l:editmethod = 'vsp'
+          elseif g:vim_markdown_edit_url_in ==# 'hsplit'
+            let l:editmethod = 'sp'
+          else
+            let l:editmethod = 'edit'
+          endif
+        else
+          " default to current buffer
+          let l:editmethod = 'edit'
+        endif
         let l:url = s:Markdown_GetUrlForPosition(line('.'), col('.'))
-        if l:url != ''
+        if l:url !=# ''
             if get(g:, 'vim_markdown_autowrite', 0)
                 write
             endif
@@ -406,14 +433,14 @@ if !exists('*s:EditUrlUnderCursor')
                 if len(l:parts) == 2
                     let [l:url, l:anchor] = parts
                     let l:anchorexpr = get(g:, 'vim_markdown_anchorexpr', '')
-                    if l:anchorexpr != ''
+                    if l:anchorexpr !=# ''
                         let l:anchor = eval(substitute(
                             \ l:anchorexpr, 'v:anchor',
                             \ escape('"'.l:anchor.'"', '"'), ''))
                     endif
                 endif
             endif
-            if l:url != ''
+            if l:url !=# ''
                 let l:ext = ''
                 if get(g:, 'vim_markdown_no_extensions_in_markdown', 0)
                     " use another file extension if preferred
@@ -424,29 +451,13 @@ if !exists('*s:EditUrlUnderCursor')
                     endif
                 endif
                 let l:url = fnameescape(fnamemodify(expand('%:h').'/'.l:url.l:ext, ':.'))
-                let l:editmethod = ''
-                " determine how to open the linked file (split, tab, etc)
-                if exists('g:vim_markdown_edit_url_in')
-                  if g:vim_markdown_edit_url_in == 'tab'
-                    let l:editmethod = 'tabnew'
-                  elseif g:vim_markdown_edit_url_in == 'vsplit'
-                    let l:editmethod = 'vsp'
-                  elseif g:vim_markdown_edit_url_in == 'hsplit'
-                    let l:editmethod = 'sp'
-                  else
-                    let l:editmethod = 'edit'
-                  endif
-                else
-                  " default to current buffer
-                  let l:editmethod = 'edit'
-                endif
                 execute l:editmethod l:url
             endif
-            if l:anchor != ''
-                silent! execute '/'.l:anchor
+            if l:anchor !=# ''
+                call search(l:anchor, 's')
             endif
         else
-            echomsg 'The cursor is not on a link.'
+            execute l:editmethod . ' <cfile>'
         endif
     endfunction
 endif
