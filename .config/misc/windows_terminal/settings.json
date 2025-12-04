@@ -4,8 +4,8 @@
         {
             "command":
             {
-                "action": "newTab",
-                "commandline": "bash.exe -c '$HOME/.config/misc/windows_terminal/toggle_keybindings.py'"
+                "action": "Terminal.SplitPaneDown",
+                "commandline": "bash.exe --noprofile --norc -c '$HOME/.config/misc/windows_terminal/toggle_keybindings.py'"
             },
             "id": "User.ToggleKeybindings"
         }
