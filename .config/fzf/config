@@ -2,15 +2,15 @@
 
 # Fd instead of find
 if command -v fd > /dev/null; then
-    export FZF_DEFAULT_COMMAND="command fd --type file --no-ignore --hidden --follow --exclude .git"
-    export FZF_CTRL_T_COMMAND="command fd --type file --no-ignore --hidden --follow --exclude .git"
-    export FZF_ALT_C_COMMAND="command fd --type directory --no-ignore --hidden --follow --exclude .git"
+    export FZF_DEFAULT_COMMAND="command fd --type file --no-ignore --hidden --follow --ignore-file $HOME/.config/fzf/fd_ignore"
+    export FZF_CTRL_T_COMMAND="command fd --type file --no-ignore --hidden --follow --ignore-file $HOME/.config/fzf/fd_ignore"
+    export FZF_ALT_C_COMMAND="command fd --type directory --no-ignore --hidden --follow --ignore-file $HOME/.config/fzf/fd_ignore"
 
     _fzf_compgen_path() {
-        command fd --no-ignore --hidden --follow --exclude .git . "$1"
+        command fd --no-ignore --hidden --follow --ignore-file "$HOME/.config/fzf/fd_ignore" . "$1"
     }
     _fzf_compgen_dir() {
-        command fd --type directory --no-ignore --hidden --follow --exclude .git . "$1"
+        command fd --type directory --no-ignore --hidden --follow --ignore-file "$HOME/.config/fzf/fd_ignore" . "$1"
     }
 fi
 
@@ -19,7 +19,7 @@ export FZF_DEFAULT_OPTS="
     --tmux 75%
     --bind='?:toggle-preview'
     --preview-window 'right:60%:hidden:wrap'
-    --preview '(batcat --wrap=never --color=always {} || cat {} || tree -C {}) 2> /dev/null'"
+    --preview '(bat --wrap=never --color=always {} || batcat --wrap=never --color=always {} || cat {} || tree -C {}) 2> /dev/null'"
 
 
 # Set up keybindings and completion, but with <M-g> instead of <C-t>
