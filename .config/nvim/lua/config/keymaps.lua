@@ -120,7 +120,7 @@ vim.cmd([[cnoreabbrev <expr> Help ((getcmdtype() == ':' && getcmdpos() <= 5)? 't
 vim.keymap.set({ "i", "c" }, "<C-S-v>", "<C-R>+", { desc = "Paste from clipboard" })
 
 -- Open autocomplete on next subdirectory in command line
-vim.keymap.set("c", "<C-o>", "<Space><BS><C-z>", { desc = "Autocomplete in next subdirectory" })
+vim.keymap.set("c", "<C-o>", "<Space><BS>", { desc = "Autocomplete in next subdirectory" })
 
 -- Swap text objects using treesitter and regex
 vim.keymap.set("n", "g>w", function()
