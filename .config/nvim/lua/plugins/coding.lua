@@ -6,6 +6,13 @@ return {
 				-- Documentation scrolling is managed by `noice`
 				["<C-b>"] = { "fallback" },
 				["<C-f>"] = { "fallback" },
+				["<C-e>"] = { -- Prevent Blink from intercepting <C-e> from local plugin `insert_rsi`
+					function(cmp)
+						cmp.accept()
+						return false
+					end,
+					"fallback",
+				},
 
 				["<Tab>"] = {
 					function(cmp)
@@ -123,13 +130,13 @@ return {
 		opts = {
 			enable_abbr = true,
 			fast_wrap = {
-				map = false,  -- remap fastwrap manually below to hide Noice overlay
+				map = false, -- remap fastwrap manually below to hide Noice overlay
 			},
 		},
 		keys = {
 			{
 				"<M-e>", "<Cmd>execute 'Noice dismiss' | lua require('nvim-autopairs.fastwrap').show()<CR>", mode = "i"
 			},
-		}
+		},
 	},
 }
