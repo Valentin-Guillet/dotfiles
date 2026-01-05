@@ -5,5 +5,9 @@
 --no-mtime
 
 # Output file name
--o ~/Videos/%(title)s.%(ext)s
+-o ~/Videos/Youtube/%(title)s.%(ext)s
+
+# Get video <= 720p
+-f "bestvideo[height<=720]+bestaudio/best[height<=720]"
+
 
