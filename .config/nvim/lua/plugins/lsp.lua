@@ -40,4 +40,22 @@ return {
 			},
 		},
 	},
+
+	{
+		"mrcjkb/rustaceanvim",
+		opts = {
+			server = {
+				settings = {
+					["rust-analyzer"] = {
+						procMacro = {
+							ignored = {
+								["napi-derive"] = { "napi" },
+								["async-recursion"] = { "async_recursion" },
+							},
+						},
+					},
+				},
+			},
+		},
+	},
 }
