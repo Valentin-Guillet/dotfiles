@@ -13,44 +13,21 @@ return {
 					end,
 					"fallback",
 				},
-
-				["<Tab>"] = {
-					function(cmp)
-						if require("neocodeium").visible() then
-							require("neocodeium").accept()
-							return true
-						elseif cmp.snippet_active() then
-							return cmp.accept()
-						else
-							return cmp.select_and_accept()
-						end
-					end,
-					"snippet_forward",
-					"fallback",
-				},
 			},
 		},
 	},
 
 	{
-		"monkoose/neocodeium",
-		event = "VeryLazy",
-		config = function()
-			local neocodeium = require("neocodeium")
-			neocodeium.setup({ manual = true })
-
-			vim.keymap.set("i", "<M-Space>", function() neocodeium.accept() end, { silent = true })
-			vim.keymap.set("i", "<M-}>", function() neocodeium.cycle_or_complete(1) end, { silent = true })
-			vim.keymap.set("i", "<M-{>", function() neocodeium.cycle_or_complete(-1) end, { silent = true })
-
-			-- create an autocommand which closes blink when ai completions are displayed
-			vim.api.nvim_create_autocmd("User", {
-				pattern = "NeoCodeiumCompletionDisplayed",
-				callback = function()
-					require("blink-cmp").cancel()
-				end,
-			})
-		end,
+		"zbirenbaum/copilot.lua",
+		opts = {
+			suggestion = {
+				auto_trigger = false,
+				keymap = {
+					next = "<M-}>",
+					prev = "<M-{>",
+				},
+			},
+		},
 	},
 
 	{
