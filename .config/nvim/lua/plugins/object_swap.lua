@@ -1,204 +1,188 @@
--- TODO: add count before `g` or between `g` and `>`/`<` to swap multiple times
--- TODO: remove line below
+_G._dynamic_move_state = { count = 1, dir = 1, obj = "", jump = { fwd = "", bwd = "" } }
 
-vim = vim
+local motion_map = {
+	["w"] = { fwd = "w", bwd = "b", default = "i" },
+	["W"] = { fwd = "W", bwd = "B", default = "i" },
+	["p"] = { fwd = "}}k", bwd = "{{j", default = "i" },
+	["s"] = { fwd = ")", bwd = "(", default = "i" },
+	["f"] = { fwd = "]f", bwd = "[f", default = "a" },
+	["a"] = { fwd = "]a", bwd = "[a", default = "a" },
+	["c"] = { fwd = "]c", bwd = "[c", default = "a" },
+}
 
-_G._swap_info = { count = 1, direction = 1 }
+local function get_obj_range(obj)
+	local old_pos = vim.api.nvim_win_get_cursor(0)
+	vim.cmd("normal v" .. obj .. "\27")
+	vim.api.nvim_win_set_cursor(0, old_pos)
 
-_G._swap_word = function()
-	local count = vim.v.count > 0 and vim.v.count or _G._swap_info.count
-	local dir = _G._swap_info.direction
-	_G._swap_info.count = count
+	local start_pos = vim.fn.getpos("'<") -- [buf, line, col, off]
+	local end_pos = vim.fn.getpos("'>")
 
-	local start_col = vim.api.nvim_win_get_cursor(0)[2]
-	vim.cmd("normal! eb")
-	local delta_col = start_col - vim.api.nvim_win_get_cursor(0)[2]
-
-	-- If backward, jump the cursor back N words first
-	if dir == -1 then
-		vim.fn.search([[\v%(\w+\_W+){]] .. count .. [[}%#]], "cb")
+	if end_pos[3] == 1 and vim.fn.getline(end_pos[2]) == "" then -- Empty line
+		end_pos[3] = 0
+	elseif end_pos[3] == 2147483647 then -- End of line if col is max int
+		end_pos[3] = vim.fn.col({ end_pos[2], "$" }) - 1
 	end
 
-	local gap = [[\_W+%(\w+\_W+){]] .. (count - 1) .. [[}]]
-	local regex = [[\v(%#\w+)(]] .. gap .. [[)(\w+)]]
-	local cmd = [[keeppattern s/]] .. regex .. [[/\3\2\1/ | normal! ``]]
+	-- API uses 0-indexed lines and columns.
+	-- end_pos column needs to be +1 because nvim_buf_get_text is end-exclusive.
+	return {
+		s_row = start_pos[2] - 1,
+		s_col = start_pos[3] - 1,
+		e_row = end_pos[2] - 1,
+		e_col = end_pos[3],
+	}
+end
 
-	local status, _ = pcall(vim.cmd, cmd)
-	if dir == 1 and status then
-		vim.fn.search([[\v%#%(\w+\_W+){]] .. count .. [[}\w]], "ce")
-	end
-
-	if delta_col > 0 then
-		vim.cmd("normal! " .. delta_col .. "l")
+local function get_end_pos(s_row, s_col, text_table)
+	local rows = #text_table
+	if rows == 1 then
+		return s_row, s_col + #text_table[1]
+	else
+		return s_row + rows - 1, #text_table[rows]
 	end
 end
 
-_G._swap_Word = function()
-	local count = vim.v.count > 0 and vim.v.count or _G._swap_info.count
-	local dir = _G._swap_info.direction
-	_G._swap_info.count = count
-
-	local start_col = vim.api.nvim_win_get_cursor(0)[2]
-	vim.cmd("normal! EB")
-	local delta_col = start_col - vim.api.nvim_win_get_cursor(0)[2]
-
-	-- If backward, jump the cursor back N words first
-	if dir == -1 then
-		vim.fn.search([[\v%(\S+\_W+){]] .. count .. [[}%#]])
+local function prompt_dynamic_move()
+	local dir = _G._dynamic_move_state.dir
+	local count = vim.v.count1
+	local succ, obj = pcall(vim.fn.getcharstr)
+	if not succ or not obj or obj == "\27" then
+		return false
 	end
 
-	local gap = [[\_W+%(\S+\_W+){]] .. (count - 1) .. [[}]]
-	local regex = [[\v(%#\S+)(]] .. gap .. [[)(\S+)]]
-	local cmd = [[keeppattern s/]] .. regex .. [[/\3\2\1/ | normal! ``]]
+	local mod = ""
+	local jump
+	if obj == "i" or obj == "a" then -- explicit modifier
+		mod = obj
+		succ, obj = pcall(vim.fn.getcharstr) -- get object
+		if not succ or not obj or obj == "\27" then
+			return false
+		end
 
-	local status, _ = pcall(vim.cmd, cmd)
-	if dir == 1 and status then
-		vim.fn.search([[\v%#%(\S+\_W+){]] .. count .. [[}\S]], "ce")
+		jump = motion_map[mod .. obj]
+		if not jump then -- modifier + object combo not defined, try without modifier
+			jump = motion_map[obj]
+			if not jump then -- object alone not defined either, give up
+				print("No jump defined in motion_map for text object: " .. mod .. obj)
+				return false
+			end
+		end
+	else -- no explicit modifier, check if object alone is defined in motion_map
+		jump = motion_map[obj]
+		if not jump then
+			print("No jump defined in motion_map for text object: " .. obj)
+			return false
+		end
+		mod = jump.default -- get default modifier
 	end
+	obj = mod .. obj
 
-	if delta_col > 0 then
-		vim.cmd("normal! " .. delta_col .. "l")
-	end
+	_G._dynamic_move_state = { count = count, dir = dir, obj = obj, jump = jump }
+	return true
 end
 
-_G._swap_paragraph = function()
-	local count = vim.v.count > 0 and vim.v.count or _G._swap_info.count
-	local dir = _G._swap_info.direction
-	_G._swap_info.count = count
+local manual_trigger = false -- track if mapping has been triggered directly or by '.' (repeat)
 
-	local reginfo = vim.fn.getreginfo("y")
-	local start_pos = vim.api.nvim_win_get_cursor(0)
-	vim.cmd('normal! "_yap')
-	local ppos = vim.api.nvim_win_get_cursor(0)
+_G._execute_dynamic_swap = function()
+	local state
+	if manual_trigger then
+		manual_trigger = false
+		if not prompt_dynamic_move() then -- aborted
+			return
+		end
+	end
+	state = _G._dynamic_move_state
+
+	local buf = 0
+
+	local cur_pos = vim.api.nvim_win_get_cursor(0)
+	local first = get_obj_range(state.obj)
 
 	local move_cmd
-	if dir == 1 then
-		move_cmd = "}"
+	if state.dir == 1 then
+		move_cmd = state.jump.fwd
 	else
-		move_cmd = "{{"
+		local a_obj = "a" .. state.obj:sub(2)
+		vim.cmd('normal "_y' .. a_obj) -- go to start of object
+		move_cmd = state.jump.bwd
 	end
-	vim.cmd('normal! "ydap')
-	vim.cmd("undojoin")
-	vim.cmd("normal! " .. count .. move_cmd .. '"yp0')
 
-	local cur_pos = vim.api.nvim_win_get_cursor(0)
-	vim.api.nvim_win_set_cursor(0, { cur_pos[1] + start_pos[1] - ppos[1], cur_pos[2] + start_pos[2] - ppos[2] })
-
-	vim.fn.setreg("y", reginfo)
-end
-
-_G._swap_next_paragraph = function()
-	local reginfo = vim.fn.getreginfo("y")
-	local start_pos = vim.api.nvim_win_get_cursor(0)
-	vim.cmd('normal! "_yap')
-	local ppos = vim.api.nvim_win_get_cursor(0)
-
-	vim.cmd('normal! "ydap')
-	vim.cmd("undojoin")
-	vim.cmd('normal! }"yp0')
-
-	local cur_pos = vim.api.nvim_win_get_cursor(0)
-	vim.api.nvim_win_set_cursor(0, { cur_pos[1] + start_pos[1] - ppos[1], cur_pos[2] + start_pos[2] - ppos[2] })
-
-	vim.fn.setreg("y", reginfo)
-end
-
-_G._swap_prev_paragraph = function()
-	local reginfo = vim.fn.getreginfo("y")
-	local start_pos = vim.api.nvim_win_get_cursor(0)
-	vim.cmd('normal! "_yap')
-	local ppos = vim.api.nvim_win_get_cursor(0)
-
-	vim.cmd('normal! "ydap')
-	vim.cmd("undojoin")
-	vim.cmd('normal! {{"yp0')
-
-	local cur_pos = vim.api.nvim_win_get_cursor(0)
-	vim.api.nvim_win_set_cursor(0, { cur_pos[1] + start_pos[1] - ppos[1], cur_pos[2] + start_pos[2] - ppos[2] })
-
-	vim.fn.setreg("y", reginfo)
-end
-
-local function set_swap_mappings()
-	vim.keymap.set("n", "g>w", function()
-		_G._swap_info.direction = 1
-		_G._swap_info.count = vim.v.count1
-		vim.go.operatorfunc = "v:lua._swap_word"
-		return "g@l"
-	end, { expr = true, desc = "Swap next word", silent = true })
-
-	vim.keymap.set("n", "g<w", function()
-		_G._swap_info.direction = -1
-		_G._swap_info.count = vim.v.count1
-		vim.go.operatorfunc = "v:lua._swap_word"
-		return "g@l"
-	end, { expr = true, desc = "Swap prev word", silent = true })
-
-	vim.keymap.set("n", "g>W", function()
-		_G._swap_info.direction = 1
-		_G._swap_info.count = vim.v.count1
-		vim.go.operatorfunc = "v:lua._swap_Word"
-		return "g@l"
-	end, { expr = true, desc = "Swap next Word", silent = true })
-
-	vim.keymap.set("n", "g<W", function()
-		_G._swap_info.direction = -1
-		_G._swap_info.count = vim.v.count1
-		vim.go.operatorfunc = "v:lua._swap_Word"
-		return "g@l"
-	end, { expr = true, desc = "Swap prev Word", silent = true })
-
-	-- -- Swap paragraphs using regex
-	-- vim.keymap.set("n", "g>p", function()
-	-- 	vim.go.operatorfunc = "v:lua._swap_next_paragraph"
-	-- 	return "g@l"
-	-- end, { expr = true, desc = "Swap next Paragraph", silent = true })
-
-	-- vim.keymap.set("n", "g<p", function()
-	-- 	vim.go.operatorfunc = "v:lua._swap_prev_paragraph"
-	-- 	return "g@l"
-	-- end, { expr = true, desc = "Swap prev Paragraph", silent = true })
-
-	-- Swap paragraphs using regex
-	vim.keymap.set("n", "g>p", function()
-		_G._swap_info.direction = 1
-		_G._swap_info.count = vim.v.count1
-		vim.go.operatorfunc = "v:lua._swap_paragraph"
-		return "g@l"
-	end, { expr = true, desc = "Swap next Paragraph", silent = true })
-
-	vim.keymap.set("n", "g<p", function()
-		_G._swap_info.direction = -1
-		_G._swap_info.count = vim.v.count1
-		vim.go.operatorfunc = "v:lua._swap_paragraph"
-		return "g@l"
-	end, { expr = true, desc = "Swap prev Paragraph", silent = true })
-
-	-- Swap treesitter text objects
-	local ts_swap = require("nvim-treesitter-textobjects.swap")
-	local keys = {
-		["f"] = "@function.outer",
-		["c"] = "@class.outer",
-		["a"] = "@parameter.inner",
-	}
-	for key, query in pairs(keys) do
-		local operand = query:gsub("@", ""):gsub("%..*", "")
-		operand = operand:sub(1, 1):upper() .. operand:sub(2)
-		vim.keymap.set({ "n", "x", "o" }, "g>" .. key, function()
-			ts_swap.swap_next(query)
-		end, { desc = "Swap next " .. operand, silent = true })
-		vim.keymap.set({ "n", "x", "o" }, "g<" .. key, function()
-			ts_swap.swap_previous(query)
-		end, { desc = "Swap prev " .. operand, silent = true })
+	if state.obj == "iw" then -- special case for word motions to ensure we jump to the correct place when swapping
+		if state.dir == 1 then
+			vim.fn.search([[\v%#%(\w+\_W+){]] .. state.count .. [[}\w]], "ce")
+		else
+			vim.fn.search([[\v%(\w+\_W*){]] .. state.count .. [[}%#]], "cb")
+		end
+	else
+		vim.cmd("normal " .. state.count .. move_cmd)
 	end
+	local second = get_obj_range(state.obj)
+
+	local off_row = cur_pos[1] - 1 - first.s_row
+	local off_col = (off_row == 0) and (cur_pos[2] - 1 - first.s_col) or cur_pos[2] - 1
+	if state.dir < 0 then
+		first, second = second, first
+	end
+
+	if second.s_row < first.e_row or (second.s_row == first.e_row and second.s_col < first.e_col) then
+		if first.e_col == vim.fn.col({ first.e_row, "$" }) then
+			second.s_row = first.e_row + 1
+			second.s_col = 0
+		else
+			second.s_row = first.e_row
+			second.s_col = first.e_col
+		end
+	end
+
+	local text1 = vim.api.nvim_buf_get_text(buf, first.s_row, first.s_col, first.e_row, first.e_col, {})
+	local gap = vim.api.nvim_buf_get_text(buf, first.e_row, first.e_col, second.s_row, second.s_col, {})
+	local text2 = vim.api.nvim_buf_get_text(buf, second.s_row, second.s_col, second.e_row, second.e_col, {})
+
+	local new_content = table.concat(text2, "\n") .. table.concat(gap, "\n") .. table.concat(text1, "\n")
+	local final_lines = vim.split(new_content, "\n", { plain = true })
+	vim.api.nvim_buf_set_text(buf, first.s_row, first.s_col, second.e_row, second.e_col, final_lines)
+
+	local new_s_row, new_s_col
+	if state.dir == 1 then
+		local mid_row, mid_col = get_end_pos(first.s_row, first.s_col, text2)
+		new_s_row, new_s_col = get_end_pos(mid_row, mid_col, gap)
+	else
+		new_s_row, new_s_col = first.s_row, first.s_col
+	end
+
+	local final_row = new_s_row + off_row
+	local final_col = (off_row == 0) and (new_s_col + off_col) or off_col
+
+	vim.api.nvim_win_set_cursor(0, { final_row + 1, final_col + 1 })
 end
 
-local M = {
-	event = "BufReadPost",
+return {
 	dir = vim.fn.stdpath("config") .. "/lua/plugins",
 	name = "object_swap",
 	dev = true,
-	config = set_swap_mappings,
+	keys = {
+		{
+			"g>",
+			function()
+				manual_trigger = true
+				_G._dynamic_move_state.dir = 1
+				vim.go.operatorfunc = "v:lua._execute_dynamic_swap"
+				return "g@l"
+			end,
+			expr = true,
+			desc = "Move text object forward",
+		},
+		{
+			"g<",
+			function()
+				manual_trigger = true
+				_G._dynamic_move_state.dir = -1
+				vim.go.operatorfunc = "v:lua._execute_dynamic_swap"
+				return "g@l"
+			end,
+			expr = true,
+			desc = "Move text object backward",
+		},
+	},
 }
-
-return M
