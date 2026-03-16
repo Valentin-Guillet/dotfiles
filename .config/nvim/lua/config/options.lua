@@ -15,6 +15,9 @@ vim.lsp.on_type_formatting.enable()
 
 vim.g.lazyvim_python_lsp = "basedpyright"
 
+-- Control whether to use Copilot suggestions in completion window or as ghost text
+vim.g.ai_cmp = false
+
 -- By default, when searching for the root directory, LazyVim finds "$HOME/.git", but most of
 -- the time we don't want to take it into account so we ignore it here
 ---@param patterns string[]|string
