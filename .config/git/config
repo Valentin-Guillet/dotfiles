@@ -40,6 +40,8 @@
     prompt = false
 [difftool "vimdiff"]
     cmd = vim -f -d -c \"wincmd l\" -c 'cd \"$GIT_PREFIX\"' \"$LOCAL\" \"$REMOTE\"
+[rerere]
+    enabled = true
 
 [include]
     path = delta_config
