@@ -7,6 +7,9 @@
     diff = auto
     branch = auto
     status = auto
+[color "diff"]
+    oldMoved = black dim brightred
+    newMoved = black dim brightgreen
 [init]
     defaultBranch = main
 [alias]
@@ -32,6 +35,7 @@
 [diff]
     algorithm = histogram
     submodule = log
+    colorMoved = default
 [difftool]
     prompt = false
 [difftool "vimdiff"]

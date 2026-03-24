@@ -56,3 +56,5 @@
     merge-conflict-ours-diff-header-decoration-style = ''
     merge-conflict-theirs-diff-header-decoration-style = ''
     zero-style = syntax
+
+# vim: set ft=gitconfig
