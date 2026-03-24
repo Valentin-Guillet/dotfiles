@@ -56,7 +56,7 @@ FZF_CTRL_T_COMMAND= eval "$(fzf --bash | \
         -e '/^elif type __load_completion/,+4c else')"
 
 rzf() {
-    rg --color=always --line-number --no-heading --smart-case "${*:-}" |
+    command rg --color=always --line-number --no-heading --smart-case "${*:-}" |
     fzf --ansi \
         --color "hl:-1:underline,hl+:-1:underline:reverse" \
         --delimiter : \

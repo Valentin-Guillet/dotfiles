@@ -268,7 +268,7 @@ nnoremap <Space>/ <Cmd>Rg<CR>
 " Add ignore to Rg command (override global config file)
 command! -bang -nargs=* Rg
             \ call fzf#vim#grep(
-            \    "rg --line-number --no-heading --color=always --smart-case --ignore -- ".fzf#shellescape(<q-args>),
+            \    "command rg --line-number --no-heading --color=always --smart-case --ignore -- ".fzf#shellescape(<q-args>),
             \    fzf#vim#with_preview({'options': '--delimiter : --nth 3.. ''--bind'' ''ctrl-q:select-all'''}), <bang>0)
 
 

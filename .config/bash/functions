@@ -138,4 +138,10 @@ ls_stack() {
     ls -flh --color=force ${files[@]}
 }
 
+if [ -x "$(command -v rg)" ] && [ -x "$(command -v delta)" ]; then
+    rg() {
+        command rg --json "$@" | delta --no-gitconfig --paging never
+    }
+fi
+
 source "$HOME/.config/bash/venv_fn"
