@@ -32,6 +32,9 @@
     autoSetupRemote = true
 [merge]
     tool = vimdiff
+[mergetool]
+    keepBackup = false
+    writeToTemp = true
 [diff]
     algorithm = histogram
     submodule = log
