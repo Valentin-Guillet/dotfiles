@@ -8,7 +8,8 @@
     conflictStyle = zdiff3
 
 [delta]
-    navigate = true    # use n and N to move between diff sections
+    pager = less -S  # don't wrap
+    navigate = true  # use n and N to move between diff sections
 
     # General appearance
     dark = true
