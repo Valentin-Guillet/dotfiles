@@ -1,6 +1,8 @@
 
 #command
 a forw-search \^\\s+-
+l right-scroll
+h left-scroll
 
 #line-edit
 ^P up
