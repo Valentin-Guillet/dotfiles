@@ -415,9 +415,9 @@ nnoremap <leader>m <Cmd>execute 'silent !clear' \| silent make \| redraw! \| cwi
 
 " Split
 nnoremap <silent> <leader>\ <Cmd>vsplit<CR>
-nnoremap <silent> <leader><bar> <Cmd>vsplit \| enew<CR>
+nnoremap <silent> <leader><bar> <Cmd>vnew<CR>
 nnoremap <silent> <leader>- <Cmd>split<CR>
-nnoremap <silent> <leader>_ <Cmd>split \| enew<CR>
+nnoremap <silent> <leader>_ <Cmd>new<CR>
 nnoremap <silent> <leader>= <C-w>=
 nnoremap <silent> <leader>q <Cmd>call <SID>CloseWin()<CR>
 
