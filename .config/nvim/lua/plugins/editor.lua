@@ -129,4 +129,10 @@ return {
 			{ "<leader>h", nil },
 		},
 	},
+
+	{
+		"Valentin-Guillet/conflict.nvim",
+		event = { "BufRead", "BufWritePost" },
+		opts = {},
+	},
 }
