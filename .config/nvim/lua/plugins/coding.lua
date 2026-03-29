@@ -56,7 +56,19 @@ return {
 	{
 		"kylechui/nvim-surround",
 		event = "VeryLazy",
-		opts = {},
+		init = function()
+			-- Prevent definition of `S` and `gS` in visual mode
+			-- We use `gS` in comment_duplicate local plugin, and we redefine `S` below
+			vim.g.nvim_surround_no_visual_mappings = true
+		end,
+		keys = {
+			{
+				"S",
+				"<Plug>(nvim-surround-visual)",
+				mode = "x",
+				desc = "Add a surrounding pair around a visual selection",
+			},
+		},
 	},
 
 	{
@@ -66,59 +78,9 @@ return {
 				ignore_blank_line = true,
 			},
 		},
-		config = function(_, opts)
-			require("mini.comment").setup(opts)
-
-			function CommentAndDuplicate(mode)
-				local start_line, end_line
-				local curr_pos
-
-				if mode == "v" or mode == "V" then
-					curr_pos = vim.fn.getpos("'<")
-					start_line = curr_pos[2]
-					end_line = vim.fn.getpos("'>")[2]
-				else
-					start_line = vim.fn.getpos("'[")[2]
-					end_line = vim.fn.getpos("']")[2]
-					curr_pos = vim.b.CAD_pos
-					vim.b.CAD_pos = nil
-				end
-				local lines = vim.fn.getline(start_line, end_line)
-
-				require("mini.comment").toggle_lines(start_line, end_line)
-				vim.fn.append(end_line, lines)
-				vim.fn.setpos(".", { 0, end_line + 1 + curr_pos[2] - start_line, curr_pos[3], 0 })
-			end
-			vim.keymap.set("x", "gs", ":<C-u>lua CommentAndDuplicate(vim.fn.visualmode())<CR>", { silent = true })
-			vim.keymap.set("n", "gs", '<Cmd>let b:CAD_pos = getpos(".") | set operatorfunc=v:lua.CommentAndDuplicate<CR>g@', { silent = true })
-			vim.keymap.set("n", "gss", "gsl", { remap = true, silent = true })
-
-			function DuplicateAndComment(mode)
-				local start_line, end_line
-				local curr_pos
-
-				if mode == "v" or mode == "V" then
-					curr_pos = vim.fn.getpos("'<")
-					start_line = curr_pos[2]
-					end_line = vim.fn.getpos("'>")[2]
-				else
-					start_line = vim.fn.getpos("'[")[2]
-					end_line = vim.fn.getpos("']")[2]
-					curr_pos = vim.b.DAC_pos
-					vim.b.DAC_pos = nil
-				end
-				local lines = vim.fn.getline(start_line, end_line)
-
-				require("mini.comment").toggle_lines(start_line, end_line)
-				vim.fn.append(start_line - 1, lines)
-				vim.fn.setpos(".", { 0, curr_pos[2], curr_pos[3], 0 })
-			end
-			vim.keymap.set("x", "gS", ":<C-u>lua DuplicateAndComment(vim.fn.visualmode())<CR>", { silent = true })
-			vim.keymap.set("n", "gS", '<Cmd>let b:DAC_pos = getpos(".") | set operatorfunc=v:lua.DuplicateAndComment<CR>g@', { silent = true })
-			vim.keymap.set("n", "gsS", "gSl", { remap = true, silent = true })
-
-			vim.keymap.set("n", "gcu", "gcgc", { remap = true, silent = true })
-		end,
+		keys = {
+			{ "gcu", "gcgc", remap = true, desc = "Uncomment line" },
+		},
 	},
 
 	-- Use nvim-autopairs because it works with abbreviations and allow for fast wrap
