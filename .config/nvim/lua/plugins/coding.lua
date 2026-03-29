@@ -73,6 +73,13 @@ return {
 
 	{
 		"nvim-mini/mini.comment",
+		-- The "mini.comment" Lazy extra defines event as "VeryLazy"
+		-- We overwrite it so that it is instead loaded on "keys"
+		-- cf. https://www.lazyvim.org/configuration/plugins#%EF%B8%8F-customizing-plugin-specs
+		event = function(_, _)
+			return {}
+		end,
+
 		opts = {
 			options = {
 				ignore_blank_line = true,
@@ -97,7 +104,9 @@ return {
 		},
 		keys = {
 			{
-				"<M-e>", "<Cmd>execute 'Noice dismiss' | lua require('nvim-autopairs.fastwrap').show()<CR>", mode = "i"
+				"<M-e>",
+				"<Cmd>execute 'Noice dismiss' | lua require('nvim-autopairs.fastwrap').show()<CR>",
+				mode = "i",
 			},
 		},
 	},
