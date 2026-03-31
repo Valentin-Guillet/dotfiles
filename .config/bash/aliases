@@ -1,17 +1,18 @@
 #!/bin/bash
 
 # Color aliases
-BLACK=$(tput setaf 0)
-RED=$(tput setaf 1)
-GREEN=$(tput setaf 2)
-YELLOW=$(tput setaf 3)
-BLUE=$(tput setaf 4)
-MAGENTA=$(tput setaf 5)
-CYAN=$(tput setaf 6)
-WHITE=$(tput setaf 7)
-BOLD=$(tput smso)
-UNBOLD=$(tput rmso)
-RESET=$(tput sgr0)
+export BLACK RED GREEN YELLOW BLUE MAGENTA CYAN WHITE BOLD UNBOLD RESET
+BLACK="$(tput setaf 0)"
+RED="$(tput setaf 1)"
+GREEN="$(tput setaf 2)"
+YELLOW="$(tput setaf 3)"
+BLUE="$(tput setaf 4)"
+MAGENTA="$(tput setaf 5)"
+CYAN="$(tput setaf 6)"
+WHITE="$(tput setaf 7)"
+BOLD="$(tput smso)"
+UNBOLD="$(tput rmso)"
+RESET="$(tput sgr0)"
 
 # User general aliases
 alias ll='ls -ahlF'
@@ -21,30 +22,28 @@ alias l='ls -CF'
 alias pu="pushd"
 alias po="popd"
 
-
 alias configg="vim ~/.bashrc; source ~/.bashrc"
-alias configgp="vim $XDG_CONFIG_HOME/bash/paths; source ~/.bashrc"
-alias configp="vim $XDG_CONFIG_HOME/bash/local_paths; source ~/.bashrc"
+alias configgp='vim $XDG_CONFIG_HOME/bash/paths; source ~/.bashrc'
+alias configp='vim $XDG_CONFIG_HOME/bash/local_paths; source ~/.bashrc'
 
-alias configga="vim $XDG_CONFIG_HOME/bash/aliases; source ~/.bashrc"
-alias configa="vim $XDG_CONFIG_HOME/bash/local_aliases; source ~/.bashrc"
+alias configga='vim $XDG_CONFIG_HOME/bash/aliases; source ~/.bashrc'
+alias configa='vim $XDG_CONFIG_HOME/bash/local_aliases; source ~/.bashrc'
 
-alias configgf="vim $XDG_CONFIG_HOME/bash/functions; source ~/.bashrc"
-alias configf="vim $XDG_CONFIG_HOME/bash/local_functions; source ~/.bashrc"
+alias configgf='vim $XDG_CONFIG_HOME/bash/functions; source ~/.bashrc'
+alias configf='vim $XDG_CONFIG_HOME/bash/local_functions; source ~/.bashrc'
 
-alias configgv="vim $XDG_CONFIG_HOME/bash/python_venv; source ~/.bashrc"
+alias configgv='vim $XDG_CONFIG_HOME/bash/python_venv; source ~/.bashrc'
 
-alias configgx="vim $XDG_CONFIG_HOME/bash/xdg_setup; source ~/.bashrc"
+alias configgx='vim $XDG_CONFIG_HOME/bash/xdg_setup; source ~/.bashrc'
 
-[ -x "$(command -v bat)" ] && alias cat='bat'
-[ -x "$(command -v fd)" ] && alias fd='fd --color=auto --no-ignore --hidden --follow --exclude .git'
-[ -x "$(command -v lazygit)" ] && alias lg='lazygit'
-[ -x "$(command -v rg)" ] && alias rgi='rg --no-ignore'
+command -v bat &>/dev/null && alias cat='bat'
+command -v fd &>/dev/null && alias fd='fd --color=auto --no-ignore --hidden --follow --exclude .git'
+command -v lazygit &>/dev/null && alias lg='lazygit'
+command -v rg &>/dev/null && alias rgi='rg --no-ignore'
 
-if [ -f $HOME/.config/tokens/github ]; then
-    alias gitpwd='[ -n "$TMUX" ] && tmux set-buffer "$(cat $HOME/.config/tokens/github)" || cat $HOME/.config/tokens/github | clip'
+if [ -f "$HOME"/.config/tokens/github ]; then
+  alias gitpwd='[[ -n "$TMUX" ]] && tmux set-buffer "$(cat "$HOME"/.config/tokens/github)" || cat "$HOME"/.config/tokens/github | clip'
 fi
 
 NOTES_DIR="$HOME/Documents/Notes"
-alias td='[ -d "$NOTES_DIR" ] || mkdir -p "$NOTES_DIR" ; tmux rename-window "ToDo" 2> /dev/null; vim "$NOTES_DIR"/ToDo; tmux set-option automatic-rename on 2> /dev/null'
-
+alias td='[[ -d "$NOTES_DIR" ]] || mkdir -p "$NOTES_DIR" ; tmux rename-window "ToDo" 2> /dev/null; vim "$NOTES_DIR"/ToDo; tmux set-option automatic-rename on 2> /dev/null'

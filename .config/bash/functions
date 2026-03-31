@@ -1,16 +1,15 @@
 #!/bin/bash
 
-
 lsf() {
-    if [ -x "$(command -v fd)" ]; then
-        if [ "$1" = "-i" ]; then
+    if command -v fd &>/dev/null; then
+        if [[ "$1" = "-i" ]]; then
             shift
             fd --ignore-case "$1" "${2:-.}" 2>/dev/null | grep -i "$1"
         else
             fd --case-sensitive "$1" "${2:-.}" 2>/dev/null | grep "$1"
         fi
     else
-        if [ "$1" = "-i" ]; then
+        if [[ "$1" = "-i" ]]; then
             shift
             find "${2:-.}" -iname "*$1*" 2>/dev/null | grep -i "$1"
         else
@@ -19,12 +18,8 @@ lsf() {
     fi
 }
 
-psg() {
-    ps aux | grep "$(echo $1 | sed 's/./[\0]/')"
-}
-
 ds() {
-    echo "$(du -had 1 -t 1M "${1:-.}" 2>/dev/null | sort -h)"
+    du -had 1 -t 1M "${1:-.}" 2>/dev/null | sort -h
 }
 
 gi() {
@@ -36,40 +31,37 @@ pane_id() {
 }
 
 run() {
-    if [ -e "main.py" ]; then
-        python main.py ${@:1}
-    elif [ -e "Makefile" ]; then
-        make && [ -e "main" ] && ./main ${@:1}
-    elif [ -e "main" ]; then
-        ./main ${@:1}
-    elif [ -e "Cargo.toml" ]; then
-        cargo run -- ${@:1}
+    if [[ -e "main.py" ]]; then
+        python main.py "${@:1}"
+    elif [[ -e "Makefile" ]]; then
+        make && [[ -e "main" ]] && ./main "${@:1}"
+    elif [[ -e "main" ]]; then
+        ./main "${@:1}"
+    elif [[ -e "Cargo.toml" ]]; then
+        cargo run -- "${@:1}"
     else
         echo "No target to build or execute!"
     fi
 }
 
 pip_update() {
-    uv pip list --outdated | cut -d ' ' -f 1 | tail -n +3 > /tmp/pip_list
+    uv pip list --outdated | cut -d ' ' -f 1 | tail -n +3 >/tmp/pip_list
     [[ $? == 1 ]] && return 1
 
     # If a pip update is available, start with it
-    if grep -q "^pip$" /tmp/pip_list
-    then
-        cat <(echo pip) <(sed "/^pip$/d" /tmp/pip_list) > /tmp/pip_list.tmp
+    if grep -q "^pip$" /tmp/pip_list; then
+        cat <(echo pip) <(sed "/^pip$/d" /tmp/pip_list) >/tmp/pip_list.tmp
         mv /tmp/pip_list.tmp /tmp/pip_list
     fi
 
     # Remove the packages in pip_exclude file
-    if [ ! "$1" = "-a" -a ! "$1" = '--all' ] && [ -s $HOME/.config/pip/pip_exclude ]
-    then
-        grep -v -f <(sed -e "/^\s*#.*$/d" -e "/^\s*$/d" $HOME/.config/pip/pip_exclude) /tmp/pip_list > /tmp/pip_list.tmp
+    if [[ ! "$1" == "-a" && ! "$1" == '--all' && -s "$HOME"/.config/pip/pip_exclude ]]; then
+        grep -v -f <(sed -e "/^\s*#.*$/d" -e "/^\s*$/d" "$HOME"/.config/pip/pip_exclude) /tmp/pip_list >/tmp/pip_list.tmp
         mv /tmp/pip_list.tmp /tmp/pip_list
     fi
 
     local exit_code=0
-    if [ -s /tmp/pip_list ]
-    then
+    if [[ -s /tmp/pip_list ]]; then
         vim /tmp/pip_list
         cat /tmp/pip_list | xargs uv pip install -U
         exit_code=$?
@@ -82,66 +74,64 @@ ls_stack() {
     [[ $# != 1 ]] && echo "Usage: ls_stack {cmd}" && return 1
 
     local arg=""
-    if [ "$(type -t "$1")" = "alias" ]
-    then
-        arg=$(alias "$1")
+    if [[ "$(type -t "$1")" = "alias" ]]; then
+        local first_cmd
+        arg="$(alias "$1")"
         arg="${arg#*\'}"
         arg="${arg::-1}"
-        local first_cmd="${arg%% *}"
+        first_cmd="${arg%% *}"
 
         # If sudo as first cmd, ignore it and take second cmd
-        if [ "$first_cmd" = "sudo" ] && [ "$arg" != "sudo" ]
-        then
+        if [[ "$first_cmd" = "sudo" && "$arg" != "sudo" ]]; then
             first_cmd="${arg#sudo }"
             first_cmd="${first_cmd%% *}"
         fi
 
         echo -ne "\e[38;5;9malias${RESET} $1 = '$arg'"
-        [ -n "$(which $first_cmd)" ] && echo -ne " -> \e[1;32m$(which $first_cmd)${RESET}"
+        [[ -n "$(which "$first_cmd")" ]] && echo -ne " -> \e[1;32m$(which "$first_cmd")${RESET}"
         echo
         arg="$first_cmd"
     else
         arg="$1"
     fi
 
-    if [ -e "$arg" ]
-    then
+    if [[ -e "$arg" ]]; then
         local file="$arg"
-    elif which "$arg" &>/dev/null
-    then
-        local file=$(which "$arg")
+    elif which "$arg" &>/dev/null; then
+        local file
+        file="$(which "$arg")"
     else
-        if command -v "$arg" > /dev/null
-        then
-            echo "$(type $arg)"
+        if command -v "$arg" >/dev/null; then
+            type "$arg"
         else
             echo "Arg '$arg' is not an alias nor an executable"
         fi
         return 1
     fi
-    local base_dir="$(dirname "$file")"
+    local base_dir
+    base_dir="$(dirname "$file")"
 
-    local files=( "$file" )
-    local line=$(ls -lh "$file")
-    while [[ $line == *"->"* ]]
-    do
-        file=$(echo "$line" | rev | cut -d' ' -f1 | rev)
+    local line
+    local files=("$file")
+    line="$(ls -lh "$file")"
+    while [[ $line == *"->"* ]]; do
+        file="$(echo "$line" | rev | cut -d' ' -f1 | rev)"
         [[ $file == /* ]] || file="$(realpath -s "$base_dir/$file")"
 
-        files+=( "$file" )
-        [ ! -h "$file" ] && break
+        files+=("$file")
+        [[ ! -L "$file" ]] && break
 
         base_dir="$(dirname "$file")"
-        line=$(ls -lh "$file")
+        line="$(ls -lh "$file")"
     done
 
-    ls -flh --color=force ${files[@]}
+    ls -flh --color=force "${files[@]}"
 }
 
-if [ -x "$(command -v rg)" ] && [ -x "$(command -v delta)" ]; then
+if command -v rg &>/dev/null && command -v delta &>/dev/null; then
     rg() {
         command rg --json "$@" | delta --no-gitconfig --paging never
     }
 fi
 
-source "$HOME/.config/bash/venv_fn"
+source "$HOME"/.config/bash/venv_fn

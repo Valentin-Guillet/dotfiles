@@ -32,6 +32,7 @@ done
 # fuzzy complete function
 if [[ $(type -t _comp_complete_minimal) == function ]]; then
     _comp_complete_minimal() {
+        # shellcheck disable=SC2034
         local cur prev words cword comp_args
         _comp_initialize -- "$@" || return
         _comp_compgen_filedir
@@ -57,10 +58,10 @@ _fuzzy_complete() {
     fi
 
     # If no candidates, call fuzzy completion
-    if [ ${#COMPREPLY[@]} == 0 ] || [ $is_cd_cmd == 1 -a ${#COMP_WORDS[@]} -gt 2 ]
+  if [[ ${#COMPREPLY[@]} == 0 || ($is_cd_cmd == 1 && ${#COMP_WORDS[@]} -gt 2) ]]
     then
         local IFS=$'\n'
-        COMPREPLY=( $(/usr/bin/env python3 -B $HOME/.config/fuzzy_complete/fuzzy_complete.py $only_dir $COMP_CWORD "${COMP_WORDS[@]}") )
+        mapfile -t COMPREPLY < <(/usr/bin/env python3 -B "$HOME"/.config/fuzzy_complete/fuzzy_complete.py $only_dir "$COMP_CWORD" "${COMP_WORDS[@]}")
         compopt -o filenames
     fi
 }

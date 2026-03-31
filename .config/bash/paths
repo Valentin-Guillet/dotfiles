@@ -1,23 +1,22 @@
 #!/bin/bash
 
 pathadd() {
-    if [ -d "$1" ] && [[ ":$PATH:" != *":$1:"* ]]; then
-        PATH="$1${PATH:+":$PATH"}"
-    fi
+  if [[ -d "$1" && ":$PATH:" != *":$1:"* ]]; then
+    PATH="$1${PATH:+":$PATH"}"
+  fi
 }
 
-
 # Spawn panes in same directory in Windows Terminal (cf. https://learn.microsoft.com/en-us/windows/terminal/tutorials/new-tab-same-directory)
-[ -n "$WT_SESSION" ] && PROMPT_COMMAND='printf "\e]9;9;%s\e\\" "$(wslpath -w "$PWD")";'"$PROMPT_COMMAND"
+[[ -n "$WT_SESSION" ]] && PROMPT_COMMAND='printf "\e]9;9;%s\e\\" "$(wslpath -w "$PWD")";'"$PROMPT_COMMAND"
 
 # Fzf
-[ -x "$(command -v fzf)" ] && source "$XDG_CONFIG_HOME"/fzf/config
+command -v fzf &>/dev/null && source "$XDG_CONFIG_HOME"/fzf/config
 
 # Fuzzy complete
-[ -f "$XDG_CONFIG_HOME"/fuzzy_complete/fuzzycd_wrapper.sh ] && source "$XDG_CONFIG_HOME"/fuzzy_complete/fuzzycd_wrapper.sh
-[ -f "$XDG_CONFIG_HOME"/fuzzy_complete/fuzzy_complete.sh ] && source "$XDG_CONFIG_HOME"/fuzzy_complete/fuzzy_complete.sh
+[[ -f "$XDG_CONFIG_HOME"/fuzzy_complete/fuzzycd_wrapper.sh ]] && source "$XDG_CONFIG_HOME"/fuzzy_complete/fuzzycd_wrapper.sh
+[[ -f "$XDG_CONFIG_HOME"/fuzzy_complete/fuzzy_complete.sh ]] && source "$XDG_CONFIG_HOME"/fuzzy_complete/fuzzy_complete.sh
 
 pathadd "$XDG_CONFIG_HOME"/git/custom_commands
 
 # Rust
-[ -f "$CARGO_HOME"/env ] && source "$CARGO_HOME"/env
+[[ -f "$CARGO_HOME"/env ]] && source "$CARGO_HOME"/env
