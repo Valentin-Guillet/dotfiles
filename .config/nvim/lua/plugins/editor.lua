@@ -6,6 +6,13 @@ return {
 				sources = {
 					explorer = {
 						auto_close = true,
+						win = {
+							list = {
+								keys = {
+									["<C-t>"] = "edit_tab",
+								},
+							},
+						},
 					},
 				},
 			},
