@@ -1,8 +1,34 @@
+local function hscroll(picker, count, left)
+	if picker.preview.win:valid() then
+		vim.api.nvim_win_call(picker.preview.win.win, function ()
+			vim.cmd(("normal! %s%s"):format(count, left and "zh" or "zl"))
+		end)
+	end
+end
+
 return {
 	{
 		"folke/snacks.nvim",
 		opts = {
 			picker = {
+				win = {
+					input = {
+						keys = {
+							["<C-h>"] = { "preview_scroll_left", mode = { "i", "n" } },
+							["<C-l>"] = { "preview_scroll_right", mode = { "i", "n" } },
+							["<C-w>"] = { "focus_preview", mode = { "i", "n" } },
+						},
+					},
+					preview = {
+						keys = {
+							["<C-w>"] = "focus_input",
+						},
+					},
+				},
+				actions = {
+					preview_scroll_left = function(p) hscroll(p, 15, true) end,
+					preview_scroll_right = function(p) hscroll(p, 15, false) end,
+				},
 				sources = {
 					explorer = {
 						auto_close = true,
