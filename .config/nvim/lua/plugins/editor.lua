@@ -135,4 +135,6 @@ return {
 		event = { "BufRead", "BufWritePost" },
 		opts = {},
 	},
+
+	'andymass/vim-matchup',
 }
