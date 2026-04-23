@@ -16,6 +16,7 @@
     br = branch
     cam = commit -am
     cm = commit -m
+    cp = cherry-pick
     l = log --oneline --graph --decorate --all --color --abbrev-commit -n 10
     ll = log --oneline --graph --decorate --all --color --abbrev-commit
     la = log --graph --all --pretty=format:'%C(auto)%h %C(bold blue)<%an> %Cgreen(%ar)%C(auto)%d %C(reset) %s' --abbrev-commit --date-order
