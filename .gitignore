@@ -32,6 +32,13 @@
 
 !.config/git/
 !.config/git/**
+.config/git/custom_commands/git-abort
+.config/git/custom_commands/git-alias
+.config/git/custom_commands/git-continue
+.config/git/custom_commands/git-count
+.config/git/custom_commands/git-obliterate
+.config/git/custom_commands/git-root
+.config/git/custom_commands/git-summary
 
 !.config/ideavim/
 !.config/ideavim/**

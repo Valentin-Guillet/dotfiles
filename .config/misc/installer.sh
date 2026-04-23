@@ -211,6 +211,24 @@ _update_neovim() {
   _success "nvim $(nvim --version | head -n 1 | cut -d' ' -f2) installed."
 }
 
+_update_git-extras() {
+  _confirm "Install git-extras?" || return 0
+
+  local extra_list=(abort alias count obliterate root summary)
+  local extra_name
+  _info "Updating binaries..."
+  for extra_name in "${extra_list[@]}"; do
+    wget -q "https://raw.githubusercontent.com/tj/git-extras/refs/heads/main/bin/git-$extra_name" -O "$HOME/.config/git/custom_commands/git-$extra_name"
+    chmod +x "$HOME/.config/git/custom_commands/git-$extra_name"
+  done
+  # Remote `git-continue` definition is wrong (doesn't work with script "$0"), we create it manually
+  ln -sf "$HOME"/.config/git/custom_commands/git-abort "$HOME"/.config/git/custom_commands/git-continue
+  _info "Updating man pages..."
+  for extra_name in "${extra_list[@]}"; do
+    sudo wget -q "https://raw.githubusercontent.com/tj/git-extras/refs/heads/main/man/git-$extra_name.1" -O /usr/local/share/man/man1/"git-$extra_name.1"
+  done
+}
+
 _github_deb() {
   local gh_repo="$1"
   local name="${gh_repo##*/}"
@@ -286,7 +304,7 @@ _update_fzf() {
   rm fzf.tar.gz
   mv fzf "$HOME"/.local/bin/
   _info "Downloading man pages..."
-  sudo wget -q https://raw.githubusercontent.com/junegunn/fzf/refs/heads/master/man/man1/fzf{,-tmux}.1 -P /usr/local/share/man/man1/
+  sudo wget -q https://raw.githubusercontent.com/junegunn/fzf/refs/heads/master/man/man1/fzf.1 -O /usr/local/share/man/man1/fzf.1
   _success "fzf ${latest_version#v} installed."
 }
 
@@ -323,7 +341,7 @@ main() {
   mkdir -p "$HOME"/.local/share/bash-completion/completions/
 
   local all_install_tools=(dotfiles git uv nerdfont dconf misc)
-  local all_update_tools=(vim tmux neovim bat delta fd fzf lazygit ripgrep)
+  local all_update_tools=(vim tmux neovim bat delta fd fzf lazygit ripgrep git-extras)
 
   local tools=()
   local do_install=0
