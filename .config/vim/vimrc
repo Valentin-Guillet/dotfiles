@@ -219,6 +219,7 @@ Plug 'michaeljsmith/vim-indent-object'
 Plug 'ntpeters/vim-better-whitespace'
 Plug 'powerman/vim-plugin-AnsiEsc'
 Plug 'preservim/tagbar'
+Plug 'preservim/vim-markdown'
 Plug 'rhysd/vim-clang-format'
 Plug 'ryvnf/readline.vim'
 Plug 'tpope/vim-commentary'
@@ -307,6 +308,7 @@ let g:linediff_indent = 1
 
 
 " Markdown
+let g:vim_markdown_no_default_key_mappings = 1  " managed by local patch
 let g:vim_markdown_toc_autofit = 1
 let g:vim_markdown_follow_anchor = 1
 let g:vim_markdown_strikethrough = 1

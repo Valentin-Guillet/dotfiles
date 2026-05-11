@@ -1,5 +1,3 @@
+scriptencoding utf-8
 
-" Markdown filetype file
-au BufRead,BufNewFile *.{md,mdown,mkd,mkdn,markdown,mdwn} setfiletype markdown
-au BufRead,BufNewFile ToDo,*.todo setfiletype markdown
-
+autocmd BufRead,BufNewFile ToDo,*.todo setfiletype markdown
