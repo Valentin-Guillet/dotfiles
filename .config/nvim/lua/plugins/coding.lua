@@ -6,13 +6,7 @@ return {
 				-- Documentation scrolling is managed by `noice`
 				["<C-b>"] = { "fallback" },
 				["<C-f>"] = { "fallback" },
-				["<C-e>"] = { -- Prevent Blink from intercepting <C-e> from local plugin `insert_rsi`
-					function(cmp)
-						cmp.accept()
-						return false
-					end,
-					"fallback",
-				},
+				["<C-e>"] = { "fallback" },
 			},
 		},
 	},
