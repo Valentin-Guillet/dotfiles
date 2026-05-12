@@ -50,14 +50,11 @@ syntax match manHistory	"^[a-z].*last change.*$"
 
 highlight link manSymbols Statement
 
-highlight manHeaderTitle ctermfg=166
-highlight manHeaderCmd ctermfg=135
-highlight manHeaderPage ctermfg=226
-
-highlight manSectionHeading ctermfg=208
-
-highlight manOptionDesc ctermfg=149
-highlight manLongOptionDesc ctermfg=149
-
-highlight manFunctionName ctermfg=149
-highlight manFunctionArgs ctermfg=135
+highlight manHeaderTitle    guifg=#d75f00 ctermfg=166
+highlight manHeaderCmd      guifg=#af5fff ctermfg=135
+highlight manHeaderPage     guifg=#ffff00 ctermfg=226
+highlight manSectionHeading guifg=#ff8700 ctermfg=208
+highlight manOptionDesc     guifg=#afd75f ctermfg=149
+highlight manLongOptionDesc guifg=#afd75f ctermfg=149
+highlight manFunctionName   guifg=#afd75f ctermfg=149
+highlight manFunctionArgs   guifg=#af5fff ctermfg=135

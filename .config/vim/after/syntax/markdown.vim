@@ -74,8 +74,8 @@ highlight default link mkdH5Acronyms    htmlH5
 highlight default link mkdH6Acronyms    htmlH6
 
 " Explicit header colours
-hi htmlH1 term=bold ctermfg=124
-hi htmlH2 term=bold ctermfg=166
-hi htmlH3 term=bold ctermfg=125
+hi htmlH1 term=bold guifg=#af0000 ctermfg=124
+hi htmlH2 term=bold guifg=#d75f00 ctermfg=166
+hi htmlH3 term=bold guifg=#af005f ctermfg=125
 
 " vim: ts=2:sw=2:tw=0

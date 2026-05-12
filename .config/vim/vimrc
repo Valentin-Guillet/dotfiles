@@ -292,13 +292,13 @@ nmap <leader>hs <Plug>(GitGutterStageNextHunk)
 xmap <leader>hS <Plug>(GitGutterStageHunk)
 nmap <leader>hS <Plug>(GitGutterStageHunk)
 
-highlight GitGutterStatuslineAdd    ctermfg=2 ctermbg=238
-highlight GitGutterStatuslineChange ctermfg=3 ctermbg=238
-highlight GitGutterStatuslineDelete ctermfg=1 ctermbg=238
+highlight GitGutterStatuslineAdd    guifg=#008000 guibg=#444444 ctermfg=2 ctermbg=238
+highlight GitGutterStatuslineChange guifg=#808000 guibg=#444444 ctermfg=3 ctermbg=238
+highlight GitGutterStatuslineDelete guifg=#800000 guibg=#444444 ctermfg=1 ctermbg=238
 
-highlight GitGutterStatuslineAddNC    cterm=bold ctermfg=2 ctermbg=244
-highlight GitGutterStatuslineChangeNC cterm=bold ctermfg=3 ctermbg=244
-highlight GitGutterStatuslineDeleteNC cterm=bold ctermfg=1 ctermbg=244
+highlight GitGutterStatuslineAddNC    gui=bold guifg=#008000 guibg=#444444 cterm=bold ctermfg=2 ctermbg=244
+highlight GitGutterStatuslineChangeNC gui=bold guifg=#008000 guibg=#444444 cterm=bold ctermfg=3 ctermbg=244
+highlight GitGutterStatuslineDeleteNC gui=bold guifg=#008000 guibg=#444444 cterm=bold ctermfg=1 ctermbg=244
 
 let g:fastfold_minlines = 10
 
@@ -767,11 +767,11 @@ function TabLine()
     return l:s
 endfunction
 
-highlight TabLine cterm=underline ctermfg=15 ctermbg=242
-highlight TabLineSel cterm=bold
-highlight TabLineNbSel cterm=bold ctermfg=Brown
-highlight TabLineNb cterm=underline ctermfg=Brown ctermbg=242
-highlight TabLineFill ctermfg=Grey
+highlight TabLine gui=underline guifg=#ffffff guibg=#6c6c6c cterm=underline ctermfg=15 ctermbg=242
+highlight TabLineSel gui=bold cterm=bold
+highlight TabLineNbSel gui=bold guifg=#af5f00 cterm=bold ctermfg=Brown
+highlight TabLineNb gui=underline guifg=#af5f00 cterm=underline ctermfg=Brown ctermbg=242
+highlight TabLineFill guifg=#a8a8a8 ctermfg=Grey
 
 set tabline=%!TabLine()
 
