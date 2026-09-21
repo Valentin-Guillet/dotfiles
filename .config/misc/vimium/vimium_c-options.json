@@ -1,0 +1,93 @@
+{
+	"name": "Vimium C",
+	"@time": "9/21/2026, 3:01:44 PM",
+	"time": 1789995704042,
+	"environment": {
+		"extension": "2.12.3",
+		"platform": "linux",
+		"firefox": 152
+	},
+	"exclusionRules": [
+		{
+			"passKeys": "",
+			"pattern": ":https://calendar.google.com/"
+		},
+		{
+			"passKeys": "/ V j k ",
+			"pattern": ":https://www.google.com/"
+		},
+		{
+			"passKeys": "fm",
+			"pattern": ":https://www.netflix.com/"
+		},
+		{
+			"passKeys": "A D S W a d s w ",
+			"pattern": ":https://www.youtube.com/shorts/"
+		},
+		{
+			"passKeys": ", . ; < > ? N P f j k l m v ",
+			"pattern": ":https://www.youtube.com/watch.*"
+		},
+		{
+			"passKeys": "fm",
+			"pattern": ":https://www.6play.fr/"
+		},
+		{
+			"passKeys": "fm",
+			"pattern": ":https://www.france.tv/"
+		},
+		{
+			"passKeys": "fm",
+			"pattern": ":https://www.twitch.tv/"
+		}
+	],
+	"keyLayout": 2,
+	"keyMappings": [
+		"#!no-check",
+		"unmap i",
+		"unmap ^",
+		"unmap <c-e>",
+		"unmap <c-y>",
+		"unmap W",
+		"",
+		"map U scrollFullPageUp",
+		"map D scrollFullPageDown",
+		"",
+		"map < moveTabLeft",
+		"map > moveTabRight",
+		"",
+		"map <a-<> moveTabLeft count=99",
+		"map <a->> moveTabRight count=99",
+		"",
+		"map R reload hard",
+		"",
+		"map @ moveTabToNewWindow",
+		"",
+		"map s Vomnibar.activate keyword=\"g\"",
+		"map S Vomnibar.activateInNewTab keyword=\"g\"",
+		""
+	],
+	"searchEngines": [
+		"# Google",
+		"g: https://www.google.com/search?q=%s Google",
+		"",
+		"# Image",
+		"i: https://www.google.com/search?q=%s&ie=utf-8&oe=utf-8&tbm=isch Google Image",
+		"",
+		"# Maps",
+		"m: https://maps.google.com/maps?q=%s&um=1&ie=UTF-8 Google Maps",
+		"",
+		"# Translate",
+		"t: https://translate.google.com/?source=osdd#auto|auto|%s Google Translate",
+		"tf: https://translate.google.com/?source=osdd#auto|fr|%s Google Translate",
+		"",
+		"# Wikipedia",
+		"w: https://en.wikipedia.org/wiki/Special:Search?search=%s Wikipedia (en)",
+		"wf: https://fr.wikipedia.org/wiki/Special:Search?search=%s Wikipedia (fr)",
+		"",
+		"# Youtube",
+		"y: https://www.youtube.com/results?search_query=%s&page={startPage?}&utm_source=opensearch Youtube",
+		""
+	],
+	"vimSync": true
+}
