@@ -1,8 +1,8 @@
 git:
   branchLogCmd: git log --oneline --graph --decorate --all --color --abbrev-commit {{branchName}} --
-  pagers:
+  diffRenderers:
     - colorArg: always
-      pager: delta --dark --paging=never --hyperlinks --hyperlinks-file-link-format="lazygit-edit://{path}:{line}"
+      command: delta --dark --paging=never --hyperlinks --hyperlinks-file-link-format="lazygit-edit://{path}:{line}"
 keybinding:
   universal:
     quit: <esc>
