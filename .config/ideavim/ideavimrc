@@ -4,7 +4,7 @@
 " Find more examples here: https://jb.gg/share-ideavimrc
 
 
-" Tip: enable "IdeaVim: track action Ids" to see avaible <Action>()
+" Tip: enable "IdeaVim: track action Ids" to see available <Action>()
 
 
 " --- Options
@@ -47,7 +47,7 @@ nnoremap <leader>e :e ~/.config/ideavim/ideavimrc<CR>
 nnoremap <leader>r :source ~/.config/ideavim/ideavimrc<CR>
 
 " Save and quit
-nmap <leader>w <Action>(SaveAll)
+nmap <leader>ww <Action>(SaveAll)
 nmap <leader>q <Action>(CloseContent)
 
 " Scroll with C-[j|k]
@@ -100,7 +100,10 @@ vnoremap q <C-c>
 map <M-n> <Action>(NextTab)
 map <M-p> <Action>(PreviousTab)
 
+map <M-z> <Action>(HideAllWindows)
+
 map <C-p> <Action>(SearchEverywhere)
+map <leader><leader> <Action>(GotoFile)
 
 nnoremap <silent> <C-L> :nohlsearch<CR>
 
@@ -119,5 +122,5 @@ nmap [w <Action>(GotoPreviousError)
 nmap ]w <Action>(GotoNextError)
 
 nmap <leader>cr <Action>(RenameElement)
-nmap <leader>f <Action>(ReformatCode)
+nmap <leader>cf <Action>(ReformatCode)
 nmap <leader>v <Action>(ShowErrorDescription)
