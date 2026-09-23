@@ -1,5 +1,6 @@
 
 Set-PSReadLineOption -EditMode Emacs
+$env:EDITOR = "vim"
 
 $LOCAL_PROFILE = "$(Split-Path -Parent $PROFILE)\Microsoft.PowerShell_local_profile.ps1"
 
@@ -95,6 +96,16 @@ function td {
     vim ~\.cache\ToDo
 }
 
+
+# UV autocompletion
+
+if (Get-Command uv -errorAction SilentlyContinue)
+{
+    (& uv generate-shell-completion powershell) | Out-String | Invoke-Expression
+    (& uvx --generate-shell-completion powershell) | Out-String | Invoke-Expression
+}
+
+
 # Venv management
 
 function venv {
@@ -113,7 +124,7 @@ Tool to manage python virtual environments. Usage:
     - venv [--venvs|-v]        # List all existing virtual environments
     - venv [--list|-l]         # List all path-to-venv mappings
     - venv [--edit|-e]         # Edit venv matching file
-    - venv [--install|-i]         # Install common development tools into the current venv
+    - venv [--init|-i]         # Install common development tools into the current venv
     - venv --delete VENV_NAME  # Delete a specified virtual environment
     - venv --clean             # Clean up path-to-venv mappings for non-existent venvs or paths
 "@
@@ -286,8 +297,8 @@ Tool to manage python virtual environments. Usage:
         vim $venv_file
     }
 
-    # Handle the '--install' or '-i' command: Install common development tools.
-    elseif ($args[0] -eq "--install" -or $args[0] -eq "-i") {
+    # Handle the '--init' or '-i' command: Install common development tools.
+    elseif ($args[0] -eq "--init" -or $args[0] -eq "-i") {
         if (-not (Get-Command uv -ErrorAction SilentlyContinue)) {
             Write-Host "uv is not installed. Please refer to the official uv installation guide for Windows."
             return
