@@ -4,7 +4,8 @@
         {
             "command":
             {
-                "action": "Terminal.SplitPaneDown",
+                "action": "splitPane",
+                "split": "down",
                 "commandline": "bash.exe --noprofile --norc -c '$HOME/.config/misc/windows_terminal/toggle_keybindings.py'"
             },
             "id": "User.ToggleKeybindings"
@@ -266,6 +267,11 @@
         {
             "id": "Terminal.ToggleBroadcastInput",
             "keys": "alt+y",
+            "toggle": true
+        },
+        {
+            "id": "Terminal.ToggleSplitOrientation",
+            "keys": "ctrl+space",
             "toggle": true
         },
 
