@@ -1,7 +1,7 @@
 [org/gnome/desktop/input-sources]
-mru-sources=[('xkb', 'custom'), ('xkb', 'fr+oss'), ('xkb', 'es')]
+mru-sources=[('xkb', 'my_en'), ('xkb', 'fr+oss'), ('xkb', 'es')]
 per-window=false
-sources=[('xkb', 'custom'), ('xkb', 'fr+oss'), ('xkb', 'es')]
+sources=[('xkb', 'my_en'), ('xkb', 'fr+oss'), ('xkb', 'es')]
 xkb-options=@as []
 
 [org/gnome/desktop/peripherals/keyboard]
@@ -64,7 +64,7 @@ command='gnome-terminal --window --maximize'
 name='Terminal'
 
 [org/gnome/shell]
-favorite-apps=['org.gnome.Terminal.desktop', 'brave-browser.desktop', 'thunderbird.desktop', 'firefox_firefox.desktop', 'org.gnome.Nautilus.desktop']
+favorite-apps=['org.gnome.Terminal.desktop', 'helium.desktop', 'thunderbird.desktop', 'org.gnome.Nautilus.desktop']
 
 [org/gnome/shell/app-switcher]
 current-workspace-only=true
