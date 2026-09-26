@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SELECTED_COMMIT=""
+
+if [ -n "${1:-}" ]; then
+  if ! SELECTED_COMMIT=$(git rev-parse --verify "${1}^{commit}" 2>/dev/null); then
+    echo "Error: '$1' is not a valid commit, branch, or tag." >&2
+    exit 1
+  fi
+else
+  if [ ! -x "$(command -v fzf)" ]; then
+    echo "\`fzf\` is not installed, cannot select commit interactively." >&2
+    exit 1
+  fi
+
+  LOG_FORMAT="%C(yellow)%h%C(reset) %C(auto)%d%C(reset) %s %C(green)(%cr)%C(reset) %C(blue)<%an>%C(reset)"
+
+  SELECTED_LINE=$(git log --graph --color=always --format=format:"$LOG_FORMAT" "$@" | \
+    fzf --ansi \
+        --no-sort \
+        --tiebreak=index \
+        --reverse \
+        --header="Select commit to amend into" \
+        --preview='commit=$(echo {} | grep -o "[a-f0-9]\{7,40\}");
+                   [ -n "$commit" ] && git show --color=always "$commit" | { delta || cat; }')
+
+  SELECTED_COMMIT=$(echo "$SELECTED_LINE" | grep -o -E '[a-f0-9]{7,40}' | head -n1)
+fi
+
+if [ -z "$SELECTED_COMMIT" ]; then
+  echo "No commit selected."
+  exit 1
+fi
+
+git commit --fixup="$SELECTED_COMMIT"
+GIT_SEQUENCE_EDITOR=true git rebase -i --autosquash "${SELECTED_COMMIT}~1"
