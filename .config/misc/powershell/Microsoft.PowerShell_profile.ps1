@@ -32,7 +32,7 @@ Set-Alias -Name unzip -Value Expand-Archive
 # Functions
 
 function la {
-    ls -Force
+    ls -Force @Args
 }
 
 function configg {
