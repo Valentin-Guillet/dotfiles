@@ -45,7 +45,7 @@ if empty($TMUX)
 endif
 
 
-let s:script_info = getscriptinfo({"name": "vim-tmux-navigator/plugin/tmux_navigator.vim"})
+let s:script_info = getscriptinfo({"name": config_utils#translate_path("vim-tmux-navigator/plugin/tmux_navigator.vim")})
 if empty(s:script_info) | finish | endif
 let s:script_id = string(s:script_info[0]["sid"])
 

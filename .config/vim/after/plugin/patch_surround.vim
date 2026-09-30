@@ -3,7 +3,7 @@
 " E.g. `css` = change surrounding under the cursor,
 " so on a `(`, it is exactly equivalent to typing `cs(`
 
-let s:script_info = getscriptinfo({"name": "vim-surround/plugin/surround.vim"})
+let s:script_info = getscriptinfo({"name": config_utils#translate_path("vim-surround/plugin/surround.vim")})
 if empty(s:script_info) | finish | endif
 let s:script_id = string(s:script_info[0]["sid"])
 

@@ -7,7 +7,7 @@ scriptencoding utf-8
 "   2. <plugin>/after/ftplugin/markdown.vim (remote vim-markdown)
 "   3. THIS FILE                            (patch-vim-markdown)
 
-let s:orig_script_info = getscriptinfo({"name": "vim-markdown/ftplugin/markdown.vim"})
+let s:orig_script_info = getscriptinfo({"name": config_utils#translate_path("vim-markdown/ftplugin/markdown.vim")})
 if empty(s:orig_script_info) | finish | endif
 let s:orig_script_id = string(s:orig_script_info[0]["sid"])
 

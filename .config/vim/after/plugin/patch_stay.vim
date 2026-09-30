@@ -11,7 +11,7 @@
 " and LoadView to use this modified function. We also remove the
 " `exists('g:SessionLoad')` condition in LoadView
 
-let s:script_info = getscriptinfo({"name": "vim-stay/plugin/stay.vim"})
+let s:script_info = getscriptinfo({"name": config_utils#translate_path("vim-stay/plugin/stay.vim")})
 if empty(s:script_info) | finish | endif
 let s:script_id = string(s:script_info[0]["sid"])
 
