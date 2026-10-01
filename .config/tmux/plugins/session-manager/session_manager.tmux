@@ -6,7 +6,7 @@ CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 main() {
     tmux bind T new-session
-    tmux bind X switch-client -n 2>/dev/null \; kill-session
+    tmux bind X switch-client -n 2>/dev/null \\\; kill-session
     tmux bind @ run "$CURRENT_DIR/scripts/promote_pane.sh '#{session_name}' '#{pane_id}'"
 
     tmux bind \< command-prompt -p "(rename-session)" -I "#S" "if-shell \"[ -z '%1' ]\" \"rename-session '#{s/\\\\$//:session_id}'\" \"rename-session '%%%'\""
