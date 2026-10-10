@@ -617,10 +617,8 @@ function s:FixLineSpellError()
 endfunction
 
 function s:DiffToggle()
-    let l:curr_win_nr = winnr()
     if &diff
-        windo diffoff
-        execute l:curr_win_nr . 'wincmd w'
+        diffoff!
         return
     endif
 
@@ -629,6 +627,7 @@ function s:DiffToggle()
         return
     endif
 
+    let l:curr_win_nr = winnr()
     windo diffthis
     execute l:curr_win_nr . 'wincmd w'
 endfunction
