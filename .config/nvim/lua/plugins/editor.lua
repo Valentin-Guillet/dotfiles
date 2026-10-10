@@ -1,6 +1,6 @@
 local function hscroll(picker, count, left)
 	if picker.preview.win:valid() then
-		vim.api.nvim_win_call(picker.preview.win.win, function ()
+		vim.api.nvim_win_call(picker.preview.win.win, function()
 			vim.cmd(("normal! %s%s"):format(count, left and "zh" or "zl"))
 		end)
 	end
@@ -61,6 +61,7 @@ return {
 
 			-- Overwrite getchar function so that <C-c> acts as <Esc> and cancel
 			-- which-key as well as current action (e.g. using c- or d- operator)
+			---@diagnostic disable-next-line: duplicate-set-field
 			require("which-key.state").getchar = function()
 				local status, char = pcall(vim.fn.getcharstr)
 				if not status and char == "Keyboard interrupt" then
@@ -171,5 +172,5 @@ return {
 		opts = {},
 	},
 
-	'andymass/vim-matchup',
+	"andymass/vim-matchup",
 }

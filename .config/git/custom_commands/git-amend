@@ -16,6 +16,7 @@ else
 
   LOG_FORMAT="%C(yellow)%h%C(reset) %C(auto)%d%C(reset) %s %C(green)(%cr)%C(reset) %C(blue)<%an>%C(reset)"
 
+  # shellcheck disable=SC2016
   SELECTED_LINE=$(git log --graph --color=always --format=format:"$LOG_FORMAT" "$@" | \
     fzf --ansi \
         --no-sort \
