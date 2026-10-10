@@ -136,6 +136,8 @@ return {
 
 	{
 		"mrjones2014/smart-splits.nvim",
+		opts = { mux = { backend = "smart-splits-backend-tmux" } },
+		dependencies = { { "smart-splits-nvim/backend-tmux", main = "smart-splits-backend-tmux" } },
 		keys = {
 			{ "<M-h>", function() require("smart-splits").move_cursor_left() end, mode = { "n", "i", "v", "o", "t" }, },
 			{ "<M-j>", function() require("smart-splits").move_cursor_down() end, mode = { "n", "i", "v", "o", "t" }, },
