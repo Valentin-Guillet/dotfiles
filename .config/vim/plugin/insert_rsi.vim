@@ -20,6 +20,8 @@ inoremap <expr> <C-D> col('.') > strlen(getline('.')) ? "\<Lt>C-D>" : "\<Lt>Del>
 inoremap <expr> <C-E> col('.') > strlen(getline('.'))<bar><bar>pumvisible() ? "\<Lt>C-E>" : "\<Lt>End>"
 inoremap <expr> <C-F> col('.') > strlen(getline('.')) ? "\<Lt>C-F>" : "\<Lt>Right>"
 
+inoremap <C-]> <C-O>f
+
 function! s:MapMeta() abort
     inoremap        <M-b> <S-Left>
     inoremap        <M-f> <S-Right>
