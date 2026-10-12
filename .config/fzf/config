@@ -16,10 +16,11 @@ fi
 
 export FZF_DEFAULT_OPTS="
     --ansi
+    --reverse
     --tmux 85%
-    --bind='?:toggle-preview'
-    --preview-window 'right:60%:hidden:wrap'
-    --preview '(bat --wrap=never --color=always {} || batcat --wrap=never --color=always {} || cat {} || tree -C {}) 2> /dev/null'"
+    --bind='ctrl-/:toggle-preview'
+    --preview-window 'right:60%:hidden:wrap,~1,+{2}/3'
+    --preview '(bat --no-config --style=header-filename,numbers --wrap=never --color=always {} || cat {} || tree -C {}) 2> /dev/null'"
 
 
 # Set up keybindings and completion, but with <M-g> instead of <C-t>
@@ -55,12 +56,27 @@ FZF_CTRL_T_COMMAND= eval "$(fzf --bash | \
         -e "s/_fzf_completion_loader=_comp_load/_fzf_completion_loader='_comp_load -D'/" \
         -e '/^elif type __load_completion/,+4c else')"
 
-rzf() {
-    command rg --color=always --line-number --no-heading --smart-case "${*:-}" |
-    fzf --ansi \
-        --color "hl:-1:underline,hl+:-1:underline:reverse" \
-        --delimiter : \
-        --preview 'batcat --color=always {1} --highlight-line {2}' \
-        --preview-window 'right:60%:hidden:wrap,+{2}-6' \
-        --bind 'enter:become(vim {1} +{2})'
+fzr() {
+  rm -f /tmp/rg-fzf-{r,f}
+  local rg_cmd="rg --column --line-number --no-heading --color=always --smart-case {q} || :"
+  local opener='if [[ $FZF_SELECT_COUNT -eq 0 ]]; then
+            vim {1} +{2}     # No selection. Open the current line in Vim.
+          else
+            vim +cw -q {+f}  # Build quickfix list for the selected items.
+          fi'
+  fzf --disabled --ansi --multi \
+      --tmux 98% \
+      --prompt "> " \
+      --bind "start:reload:$rg_cmd" \
+      --bind "change:reload:$rg_cmd" \
+      --bind "enter:become:$opener" \
+      --bind "ctrl-o:execute:$opener" \
+      --bind 'ctrl-r:transform:[[ $FZF_PROMPT == "fzf> " ]] &&
+        echo "rebind(change)+change-prompt(> )+disable-search+transform-query:echo \{q} > /tmp/rg-fzf-f; cat /tmp/rg-fzf-r" ||
+        echo "unbind(change)+change-prompt(fzf> )+enable-search+transform-query:echo \{q} > /tmp/rg-fzf-r; cat /tmp/rg-fzf-f"' \
+      --color "hl:-1:underline,hl+:-1:underline:reverse" \
+      --delimiter : \
+      --preview 'bat --no-config --style=header-filename,numbers --color=always --highlight-line {2} {1}' \
+      --preview-window 'right:80:nohidden:nowrap,~1,+{2}/3' \
+      --query "${*:-}"
 }
