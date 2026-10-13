@@ -46,7 +46,7 @@ venv() {
       echo "curl -LsSf https://astral.sh/uv/install.sh | env INSTALLER_NO_MODIFY_PATH=1 sh"
       return 1
     fi
-    uv venv "$venv_path"
+    uv venv "$venv_path" "${@:3}"
     echo "New venv $venv_name created at $venv_path"
 
     # Activate venv after creation
