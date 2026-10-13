@@ -56,6 +56,26 @@ FZF_CTRL_T_COMMAND= eval "$(fzf --bash | \
         -e "s/_fzf_completion_loader=_comp_load/_fzf_completion_loader='_comp_load -D'/" \
         -e '/^elif type __load_completion/,+4c else')"
 
+
+__fzf_git_hashes() {
+  if ! git rev-parse > /dev/null 2>&1; then
+    return 1
+  fi
+
+  git log --all --decorate --oneline --graph --color=always "$@" |
+    fzf --ansi \
+    --tiebreak "index" \
+    --border "rounded" \
+    --border-label "Select commit" \
+    --bind "ctrl-d:execute:grep -o '[a-f0-9]\{7,\}' <<< {} | head -n 1 | xargs git diff --color=always > /dev/tty" \
+    --color hl:underline,hl+:underline \
+    --preview "grep -o '[a-f0-9]\{7,\}' <<< {} | head -n 1 | xargs git show --color=always | delta" |
+    grep -o '[a-f0-9]\{7,\}'
+}
+
+bind '"\C-g\C-h": " \C-u \C-a\C-k$(__fzf_git_hashes)\e\C-e\C-y\C-a\C-y\ey\C-h\C-] \C-d\e("'
+
+
 fzr() {
   rm -f /tmp/rg-fzf-{r,f}
   local rg_cmd="rg --column --line-number --no-heading --color=always --smart-case {q} || :"
