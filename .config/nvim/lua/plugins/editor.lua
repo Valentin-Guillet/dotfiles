@@ -14,9 +14,12 @@ return {
 				win = {
 					input = {
 						keys = {
-							["<C-h>"] = { "preview_scroll_left", mode = { "i", "n" } },
-							["<C-l>"] = { "preview_scroll_right", mode = { "i", "n" } },
-							["<C-w>"] = { "focus_preview", mode = { "i", "n" } },
+							["<Esc>"] = { "close", mode = { "n", "i" } },
+							["<C-c>"] = { "close", mode = { "n", "i" } },
+							["<C-h>"] = { "preview_scroll_left", mode = { "n", "i" } },
+							["<C-l>"] = { "preview_scroll_right", mode = { "n", "i" } },
+							["<C-w>w"] = { "focus_preview", mode = { "n" } },
+							["<C-w><C-w>"] = { "focus_preview", mode = { "n" } },
 						},
 					},
 					preview = {
@@ -40,6 +43,7 @@ return {
 							},
 						},
 					},
+					help = { confirm = "vsplit" },
 				},
 			},
 		},
