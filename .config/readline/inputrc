@@ -7,10 +7,10 @@ set colored-stats On
 "\e[6~": history-search-forward
 
 # Go to position to add argument
-"\eB": "\C-a\C-]\ \C-f"
+"\eB": "\C-a\C-] \C-f"
 
 # Delete first word
-"\ee": "\C-a\C-]\ \C-f\C-u\C-e"
+"\ee": " \C-b\C-k\C-a\C-] \C-f\C-k\C-y\ey\C-a\C-] \C-f\C-d\C-u\C-y\ey"
 
 # To lower/upper/title with <C-x>
 "\C-x\C-u": upcase-word
@@ -20,27 +20,27 @@ set colored-stats On
 
 $if Bash
     # Replace (/add) ls as first word
-    "\ei": "\C-a\C-]\ \C-wls\C-e"
-    "\eI": "\C-als \C-e"
+    "\ei": " \C-b\C-k\C-a\C-] \C-f\C-k\C-y\ey\C-a\C-] \C-d\C-wls\C-f\C-y\ey"
+    "\eI": "\C-uls \C-y"
 
-    # Replace (/add) less as first word
-    "\eo": "\C-a\C-]\ \C-wless\C-e"
-    "\eO": "\C-aless \C-e"
+    # Replace (/add) cat as first word
+    "\eo": " \C-b\C-k\C-a\C-] \C-f\C-k\C-y\ey\C-a\C-] \C-d\C-wcat\C-f\C-y\ey"
+    "\eO": "\C-ucat \C-y"
 
     # Replace (/add) vim as first word
-    "\ev": "\C-a\C-]\ \C-k\C-a$([ \"\C-e\" = vim ] && echo -n n; echo vim)\e\C-e\C-y\C-e"
-    "\eV": "\C-avim \C-e"
+    "\ev": " \C-b\C-k\C-a\C-] \C-d\C-k\C-a$([ \"\C-e\" = vim ] && echo -n n; echo vim)\e\C-e\C-y\ey\C-a\C-] \C-f\C-u\C-y\C-y\ey"
+    "\eV": "\C-uvim \C-y"
 
     # Replace (/add) xdg-open as first word
-    "\ex": "\C-a\C-]\ \C-wxdg-open\C-e"
-    "\eX": "\C-axdg-open \C-e"
+    "\ex": " \C-b\C-k\C-a\C-] \C-f\C-k\C-y\ey\C-a\C-] \C-d\C-wxdg-open\C-f\C-y\ey"
+    "\eX": "\C-uxdg-open \C-y"
 
     # Copy arguments
-    "\eC": "\C-a\C-]\ \C-k\C-y\C-h\C-y\C-h"
+    "\eC": "\C-a\C-] \C-k\C-y\C-h\C-y\C-h"
 
     # Add man/sudo in first position
-    "\em": "\C-e\C-u\C-y\C-aman \C-]\ \C-k\n\C-y\ey\C-h"
-    "\es": "\C-asudo \C-e"
+    "\em": " \C-b\C-u\C-e\C-u\C-y\ey\C-aman \C-] \C-k\n\C-y\ey\C-a\C-d\C-y\ey"
+    "\es": "\C-usudo \C-y"
 $endif
 
 $if Python
