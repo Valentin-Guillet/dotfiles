@@ -41,7 +41,7 @@ vim.keymap.set("i", "KJ", "<Esc>l")
 vim.keymap.set("i", "<C-c>", "<Esc>")
 
 -- Redefine default mapping because it can't be pressed fast otherwise for some reason
-vim.keymap.set("n", "<leader>wd", function() vim.diagnostic.open_float() end, { desc = "Update" })
+vim.keymap.set("n", "<leader>wd", vim.diagnostic.open_float, { desc = "Open diagnostic" })
 
 -- Alt-u to undo in insert mode
 vim.keymap.set("i", "<M-u>", "<C-O>u")
@@ -116,8 +116,24 @@ vim.cmd([[cnoreabbrev <expr> help ((getcmdtype() == ':' && getcmdpos() <= 5)? 'v
 vim.cmd([[cnoreabbrev <expr> H ((getcmdtype() == ':' && getcmdpos() <= 2)? 'tab h' : 'H')]])
 vim.cmd([[cnoreabbrev <expr> Help ((getcmdtype() == ':' && getcmdpos() <= 5)? 'tab help' : 'Help')]])
 
+-- <Leader>z to maximize window
+vim.keymap.set("n", "<leader>z", "<leader>wm", { remap = true, desc = "Maximize window" })
+
 -- <C-V> to copy in insert mode and in command line
 vim.keymap.set({ "i", "c" }, "<C-S-v>", "<C-R>+", { desc = "Paste from clipboard" })
+
+-- "yp" to copy current file path to clipboard and add to yank ring
+vim.keymap.set("n", "yp", function()
+	local file_path = vim.fn.expand("%:p")
+	vim.fn.setreg("+", file_path)
+	vim.fn.setreg('"', file_path)
+	require("yanky").history.push(require("yanky.utils").get_register_info("+"))
+	vim.notify("Copied file path to clipboard", vim.log.levels.INFO)
+end, { desc = "Copy full path of current file to clipboard" })
+
+vim.keymap.set("n", "<leader>up", function()
+	vim.print(vim.fn.expand("%:p"))
+end, { desc = "Display full path of current file" })
 
 -- Open autocomplete on next subdirectory in command line
 vim.keymap.set("c", "<C-o>", "<Space><BS>", { desc = "Autocomplete in next subdirectory" })

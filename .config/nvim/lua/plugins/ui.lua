@@ -36,36 +36,20 @@ return {
 
 	{
 		"nvim-lualine/lualine.nvim",
-		opts = {
-			sections = {
-				lualine_b = {
-					{
-						get_venv_name,
-						cond = function()
-							return vim.bo.filetype == "python"
-						end,
-						icon = "󰌠",
-						color = { fg = "#FFD43B" },
-					},
-					"branch",
-				},
-				lualine_c = {
-					LazyVim.lualine.root_dir(),
-					{
-						"diagnostics",
-						symbols = {
-							error = LazyVim.config.icons.diagnostics.Error,
-							warn = LazyVim.config.icons.diagnostics.Warn,
-							info = LazyVim.config.icons.diagnostics.Info,
-							hint = LazyVim.config.icons.diagnostics.Hint,
-						},
-					},
-					{ "filetype", icon_only = true, separator = "", padding = { left = 1, right = 0 } },
-					{ LazyVim.lualine.pretty_path({ length = 0 }) },
-				},
-				lualine_y = { "%3l/%L %3c|" },
-			},
-		},
+		opts = function(_, opts)
+			-- Add active python venv
+			table.insert(opts.sections.lualine_b, 1, {
+				get_venv_name,
+				cond = function()
+					return vim.bo.filetype == "python"
+				end,
+				icon = "󰌠",
+				color = { fg = "#FFD43B" },
+			})
+
+			opts.sections.lualine_c[#opts.sections.lualine_c - 1] = { LazyVim.lualine.pretty_path({ length = 0 }) }
+			opts.sections.lualine_y = { "%3l/%L %3c|" }
+		end,
 	},
 
 	{ "akinsho/bufferline.nvim", enabled = false },
