@@ -12,7 +12,7 @@ setlocal foldlevel=1
 setlocal tabstop=8
 
 nnoremap <buffer> <silent> q :q<CR>
-nnoremap <buffer> s /^\s*\zs-
+nnoremap <buffer> s /\C^\s*\zs-
 
 noremap <buffer> <silent> <nowait> g gg
 noremap <buffer> <silent> <nowait> d <C-d>
