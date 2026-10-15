@@ -1,0 +1,85 @@
+#!/bin/bash
+
+
+__fzf_git_hashes() {
+  if ! git rev-parse > /dev/null 2>&1; then
+    return 1
+  fi
+
+  local log_format="%C(yellow)%h%C(reset) %C(auto)%d%C(reset) %s %C(green)(%cr)%C(reset) %C(blue)<%an>%C(reset)"
+  git log --graph --color=always --format=format:"$log_format" |
+    fzf --multi --ansi \
+    --tiebreak "index" \
+    --border "rounded" \
+    --border-label "Select commit" \
+    --bind "ctrl-o:execute:grep -o '[a-f0-9]\{7,\}' <<< {} | head -n 1 | xargs git show --color=always | { LESS=Rc delta || less -Rc; }" \
+    --color hl:underline,hl+:underline \
+    --preview-window 'right:45%:nohidden:nowrap' \
+    --preview "grep -o '[a-f0-9]\{7,\}' <<< {} | head -n 1 | xargs git diff-tree --root --no-commit-id --stat --color=always -r" |
+    grep -o '[a-f0-9]\{7,\}'
+}
+
+
+__fzf_git_files() {
+  if ! git rev-parse > /dev/null 2>&1; then
+    return 1
+  fi
+
+  local root query extract_file_name
+  root=$(git rev-parse --show-toplevel)
+  [[ -n "$(git rev-parse --show-prefix)" ]] && query='!../ '
+
+  read -r -d "" extract_file_name <<'EOF'
+"$(cut -c4- <<< {} | sed 's/.* -> //;s/^"//;s/"$//;s/\\"/"/g')"
+EOF
+
+  git -c core.quotePath=false -c color.status=always status --short --no-branch --untracked-files=all |
+    fzf --multi --ansi --nth 2..,.. \
+      --border 'rounded' \
+      --border-label 'Files' \
+      --bind "ctrl-o:execute:export LESS=Rc; file_name=$extract_file_name
+                 if git ls-files --error-unmatch -- \"\$file_name\" >/dev/null 2>&1; then
+                   git -c core.quotePath=false diff --no-ext-diff --color=always -- \"\$file_name\" | { delta || less; }
+                 elif command -v bat >/dev/null 2>&1; then
+                   bat --color=always --paging=always -- \"\$file_name\"
+                 else
+                   less -- \"\$file_name\"
+                 fi" \
+      --query "$query" \
+      --preview-window 'right:50%:nohidden:nowrap' \
+      --preview "file_name=$extract_file_name
+                 if git ls-files --error-unmatch -- \"\$file_name\" >/dev/null 2>&1; then
+                   git -c core.quotePath=false diff --no-ext-diff --color=always -- \"\$file_name\" | { delta || cat; }
+                 elif command -v bat >/dev/null 2>&1; then
+                   bat --color=always --style=plain -- \"\$file_name\"
+                 else
+                   cat -- \"\$file_name\"
+                 fi" |
+    cut -c4- | sed 's/.* -> //'
+}
+
+
+fzr() {
+  rm -f /tmp/rg-fzf-{r,f}
+  local rg_cmd="rg --column --line-number --no-heading --color=always --smart-case {q} || :"
+  local opener='if [[ $FZF_SELECT_COUNT -eq 0 ]]; then
+            vim {1} +{2}     # No selection. Open the current line in Vim.
+          else
+            vim +cw -q {+f}  # Build quickfix list for the selected items.
+          fi'
+  fzf --disabled --ansi --multi \
+      --tmux 98% \
+      --prompt "> " \
+      --bind "start:reload:$rg_cmd" \
+      --bind "change:reload:$rg_cmd" \
+      --bind "enter:become:$opener" \
+      --bind "ctrl-o:execute:$opener" \
+      --bind 'ctrl-r:transform:[[ $FZF_PROMPT == "fzf> " ]] &&
+        echo "rebind(change)+change-prompt(> )+disable-search+transform-query:echo \{q} > /tmp/rg-fzf-f; cat /tmp/rg-fzf-r" ||
+        echo "unbind(change)+change-prompt(fzf> )+enable-search+transform-query:echo \{q} > /tmp/rg-fzf-r; cat /tmp/rg-fzf-f"' \
+      --color "hl:-1:underline,hl+:-1:underline:reverse" \
+      --delimiter : \
+      --preview 'bat --no-config --style=header-filename,numbers --color=always --highlight-line {2} {1}' \
+      --preview-window 'right:80:nohidden:nowrap,~1,+{2}/3' \
+      --query "${*:-}"
+}

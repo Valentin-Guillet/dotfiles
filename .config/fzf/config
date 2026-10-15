@@ -57,46 +57,6 @@ FZF_CTRL_T_COMMAND= eval "$(fzf --bash | \
         -e '/^elif type __load_completion/,+4c else')"
 
 
-__fzf_git_hashes() {
-  if ! git rev-parse > /dev/null 2>&1; then
-    return 1
-  fi
-
-  git log --all --decorate --oneline --graph --color=always "$@" |
-    fzf --ansi \
-    --tiebreak "index" \
-    --border "rounded" \
-    --border-label "Select commit" \
-    --bind "ctrl-d:execute:grep -o '[a-f0-9]\{7,\}' <<< {} | head -n 1 | xargs git diff --color=always > /dev/tty" \
-    --color hl:underline,hl+:underline \
-    --preview "grep -o '[a-f0-9]\{7,\}' <<< {} | head -n 1 | xargs git show --color=always | delta" |
-    grep -o '[a-f0-9]\{7,\}'
-}
-
-bind '"\C-g\C-h": " \C-u \C-a\C-k$(__fzf_git_hashes)\e\C-e\C-y\C-a\C-y\ey\C-h\C-] \C-d\e("'
-
-
-fzr() {
-  rm -f /tmp/rg-fzf-{r,f}
-  local rg_cmd="rg --column --line-number --no-heading --color=always --smart-case {q} || :"
-  local opener='if [[ $FZF_SELECT_COUNT -eq 0 ]]; then
-            vim {1} +{2}     # No selection. Open the current line in Vim.
-          else
-            vim +cw -q {+f}  # Build quickfix list for the selected items.
-          fi'
-  fzf --disabled --ansi --multi \
-      --tmux 98% \
-      --prompt "> " \
-      --bind "start:reload:$rg_cmd" \
-      --bind "change:reload:$rg_cmd" \
-      --bind "enter:become:$opener" \
-      --bind "ctrl-o:execute:$opener" \
-      --bind 'ctrl-r:transform:[[ $FZF_PROMPT == "fzf> " ]] &&
-        echo "rebind(change)+change-prompt(> )+disable-search+transform-query:echo \{q} > /tmp/rg-fzf-f; cat /tmp/rg-fzf-r" ||
-        echo "unbind(change)+change-prompt(fzf> )+enable-search+transform-query:echo \{q} > /tmp/rg-fzf-r; cat /tmp/rg-fzf-f"' \
-      --color "hl:-1:underline,hl+:-1:underline:reverse" \
-      --delimiter : \
-      --preview 'bat --no-config --style=header-filename,numbers --color=always --highlight-line {2} {1}' \
-      --preview-window 'right:80:nohidden:nowrap,~1,+{2}/3' \
-      --query "${*:-}"
-}
+source "$HOME"/.config/fzf/fzf_fns
+bind '"\C-g\C-h": " \C-u \C-b\C-k$(__fzf_git_hashes)\e\C-e\C-u\C-y\ey\C-a\C-y\ey\C-u\C-y\C-h\C-y\ey\C-d\e("'
+bind '"\C-g\C-f": " \C-u \C-b\C-k$(__fzf_git_files)\e\C-e\C-u\C-y\ey\C-a\C-y\ey\C-u\C-y\C-h\C-y\ey\C-d\e("'
