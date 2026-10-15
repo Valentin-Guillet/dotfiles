@@ -728,6 +728,46 @@ if has("unix") && !exists(":W")
     command W execute 'silent! write !sudo /usr/bin/tee "%" >/dev/null' <bar> edit!
 endif
 
+" Command to delete existing vim view file of current file
+function! s:DeleteViewFile() abort
+    " Do not discard unsaved changes.
+    if &modified
+        echoerr 'Buffer has unsaved changes; write or discard them first.'
+        return
+    endif
+
+    let l:file = expand('%:p')
+    let l:home = expand('~')
+
+    " Encode the absolute path using Vim's view filename convention.
+    let l:relative = l:file
+    if stridx(l:file, l:home . '/') == 0
+        let l:relative = '~' . strpart(l:file, strlen(l:home))
+    endif
+
+    let l:viewname = substitute(l:relative, '/', '=+', 'g') . '='
+    let l:viewfile = expand(&viewdir) . l:viewname
+
+    if !filereadable(l:viewfile)
+        echo 'No view file found: ' . l:viewfile
+        return
+    endif
+
+    if confirm('Delete view file "' . l:viewfile . '"?', "&Yes\n&No", 2) == 1
+        bwipeout!
+        if delete(l:viewfile) == 0
+            echo 'Deleted view file: ' . l:viewfile
+        else
+            echoerr 'Failed to delete view file: ' . l:viewfile
+        endif
+        execute "edit! " . l:file
+    else
+        echo 'Deletion cancelled.'
+    endif
+endfunction
+
+command! DeleteView call <SID>DeleteViewFile()
+
 
 " {{{1 FULLSCREEN HELP
 
