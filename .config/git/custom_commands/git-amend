@@ -9,24 +9,21 @@ if [ -n "${1:-}" ]; then
     exit 1
   fi
 else
-  if [ ! -x "$(command -v fzf)" ]; then
+  if ! command -v fzf &>/dev/null; then
     echo "\`fzf\` is not installed, cannot select commit interactively." >&2
     exit 1
   fi
 
   LOG_FORMAT="%C(yellow)%h%C(reset) %C(auto)%d%C(reset) %s %C(green)(%cr)%C(reset) %C(blue)<%an>%C(reset)"
 
-  # shellcheck disable=SC2016
-  SELECTED_LINE=$(git log --graph --color=always --format=format:"$LOG_FORMAT" "$@" | \
-    fzf --ansi \
-        --no-sort \
-        --tiebreak=index \
-        --reverse \
-        --header="Select commit to amend into" \
-        --preview='commit=$(echo {} | grep -o "[a-f0-9]\{7,40\}");
-                   [ -n "$commit" ] && git show --color=always "$commit" | { delta || cat; }')
-
-  SELECTED_COMMIT=$(echo "$SELECTED_LINE" | grep -o -E '[a-f0-9]{7,40}' | head -n1)
+  fzf_fn_file="$HOME"/.config/fzf/fzf_fns
+  if [[ -f "$fzf_fn_file" ]]; then
+    # shellcheck disable=SC1090
+    SELECTED_COMMIT=$(source "$fzf_fn_file" && __fzf_git_hashes)
+  else
+    SELECTED_COMMIT=$(git log --graph --color=always --format=format:"$LOG_FORMAT" "$@" |
+      fzf --ansi --tiebreak=index | grep -o -E '[a-f0-9]{7,40}' | head -n1)
+  fi
 fi
 
 if [ -z "$SELECTED_COMMIT" ]; then
