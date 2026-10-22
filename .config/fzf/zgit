@@ -214,6 +214,23 @@ _zgit_cmd_amend_commit() {
     echo "Commit amended successfully!"
 }
 
+_zgit_cmd_reword_commit() {
+  local commit_hash new_message
+  commit_hash=$(_get_commit_hash "$1")
+  [[ -z "$commit_hash" ]] && return 1
+
+  if ! new_message=$(_zgit_prompt "New commit message: "); then
+    echo "Aborted"
+    return 130
+  fi
+
+  GIT_EDITOR='sh -c '\''IFS= read -r first < "$1" || :
+  printf "%s\n\n%s\n" "$first" '"$new_message"' > "$1"'\'' _' \
+    git commit --fixup="reword:$commit_hash"
+  git -c sequence.editor=: rebase --interactive --autostash --keep-empty --autosquash --rebase-merges "$commit_hash^" &&
+    echo "Commit reworded successfully!"
+}
+
 _zgit_cmd_move_commit() {
   local commit_hash commit_list
   commit_hash=$(_get_commit_hash "$2")
@@ -278,7 +295,7 @@ _zgit_log() {
   local zgit_script git_cmd bound_keys
   zgit_script=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)/$(basename -- "${BASH_SOURCE[0]}")
   git_cmd="git log --all --decorate --oneline --graph --color=always"
-  bound_keys="i,/,space,q,j,k,g,G,s,d,u,r,R,w,W,a,D,x,X,c,m,M,A,p,P,ctrl-shift-down,ctrl-shift-up,o"
+  bound_keys="i,/,space,q,j,k,g,G,s,d,u,r,R,b,B,a,D,x,X,c,m,M,A,w,p,P,ctrl-shift-down,ctrl-shift-up,o"
 
   # shellcheck disable=SC2016
   $git_cmd |
@@ -292,8 +309,8 @@ _zgit_log() {
       --bind "j:down-match,k:up-match,g:first,G:last,s:jump" \
       --bind "r:transform-footer($zgit_script __cmd reset_branch \"{}\")+reload($git_cmd)" \
       --bind "R:transform-footer($zgit_script __cmd reset_branch \"{}\" --hard)+reload($git_cmd)" \
-      --bind "space,w:transform-footer($zgit_script __cmd switch_branch \"{}\")+reload($git_cmd)" \
-      --bind "W:transform-footer($zgit_script __cmd switch_branch --prompt)+reload($git_cmd)" \
+      --bind "space,b:transform-footer($zgit_script __cmd switch_branch \"{}\")+reload($git_cmd)" \
+      --bind "B:transform-footer($zgit_script __cmd switch_branch --prompt)+reload($git_cmd)" \
       --bind "a:transform-footer($zgit_script __cmd create_branch \"{}\")+reload($git_cmd)" \
       --bind "D:transform-footer($zgit_script __cmd detach_head \"{}\")+reload($git_cmd)" \
       --bind "x:transform-footer($zgit_script __cmd delete_branch \"{}\")+reload($git_cmd)" \
@@ -302,6 +319,7 @@ _zgit_log() {
       --bind "m:transform-footer($zgit_script __cmd merge --branch \"{}\")+reload($git_cmd)" \
       --bind "M:transform-footer($zgit_script __cmd merge \"{}\")+reload($git_cmd)" \
       --bind "A:transform-footer($zgit_script __cmd amend_commit \"{}\")+reload($git_cmd)" \
+      --bind "w:transform-footer($zgit_script __cmd reword_commit \"{}\")+reload($git_cmd)" \
       --bind "p:transform-footer(git pull 2>&1)+reload($git_cmd)" \
       --bind "P:transform-footer(git push 2>&1)+reload($git_cmd)" \
       --bind "ctrl-shift-down:transform-footer($zgit_script __cmd move_commit down \"{}\")+reload($git_cmd)+down" \
