@@ -46,23 +46,22 @@ _zgit_preview_commit() {
 }
 
 _zgit_preview_file() {
-  local paging=never fallback=cat
+  local file_path paging=never fallback=(cat)
   if [[ $1 == --paging ]]; then
     shift
     paging=always
     fallback=(less -Rc)
   fi
 
-  local file_path=$(_get_file_path "$1")
+  file_path=$(_get_file_path "$1")
   if [[ ${1:0:2} == "??" ]]; then
-    LESS=Rc bat --color=always --paging="$paging" "$file_path" || "${fallback[@]} $file_path"
-  elif [[ ${1:1:1} != " " ]]; then
-    git diff --color=always --format= --diff-merges=first-parent "$file_path" 2>/dev/null | { LESS=Rc delta --paging="$paging" || "${fallback[@]}"; }
+    LESS=Rc bat --color=always --paging="$paging" "$file_path" || "${fallback[*]} $file_path"
   else
-    git diff --color=always --format= --diff-merges=first-parent --staged "$file_path" 2>/dev/null | { LESS=Rc delta --paging="$paging" || "${fallback[@]}"; }
+    local git_arg
+    [[ ${1:1:1} == " " ]] && git_arg="--staged"
+    git diff --color=always --format= --diff-merges=first-parent $git_arg "$file_path" 2>/dev/null | { LESS=Rc delta --paging="$paging" || "${fallback[@]}"; }
   fi
 }
-
 
 # LOG COMMANDS
 
@@ -224,6 +223,7 @@ _zgit_cmd_reword_commit() {
     return 130
   fi
 
+  # shellcheck disable=SC2016
   GIT_EDITOR='sh -c '\''IFS= read -r first < "$1" || :
   printf "%s\n\n%s\n" "$first" '"$new_message"' > "$1"'\'' _' \
     git commit --fixup="reword:$commit_hash"
@@ -275,7 +275,6 @@ _zgit_cmd_move_commit() {
     git rebase -i "${earlier}^"
 }
 
-
 # STATUS COMMANDS
 
 _zgit_cmd_toggle_file() {
@@ -292,6 +291,7 @@ _zgit_cmd_restore_file() {
   local file_path prompt_action status="${1:0:2}"
   file_path=$(_get_file_path "$1")
 
+  [[ "$status" == ?" " ]] && return 1 # nothing to restore
   [[ "$status" == "??" ]] && prompt_action="delete" || prompt_action="restore"
 
   if [[ ! $(_zgit_prompt "Do you really want to $prompt_action \"$file_path\"? [yN] ") =~ ^[Yy]$ ]]; then
@@ -339,32 +339,32 @@ _zgit_log() {
       --raw \
       --tiebreak 'index' \
       --prompt 'n> ' \
+      --bind "change:best" \
       --bind 'focus:transform:[[ {} == *"*"* ]] && exit; [[ $FZF_ACTION == "up"* ]] && echo up || echo down' \
       --bind "q:abort" \
       --bind "d:half-page-down,u:half-page-up,ctrl-f:preview-page-down,ctrl-b:preview-page-up" \
       --bind "j:down-match,k:up-match,g:first,G:last,s:jump" \
-      --bind "r:transform-footer($zgit_script __cmd reset_branch \"{}\")+reload($git_cmd)" \
-      --bind "R:transform-footer($zgit_script __cmd reset_branch \"{}\" --hard)+reload($git_cmd)" \
-      --bind "space,b:transform-footer($zgit_script __cmd switch_branch \"{}\")+reload($git_cmd)" \
+      --bind "r:transform-footer($zgit_script __cmd reset_branch {})+reload($git_cmd)" \
+      --bind "R:transform-footer($zgit_script __cmd reset_branch {} --hard)+reload($git_cmd)" \
+      --bind "space,b:transform-footer($zgit_script __cmd switch_branch {})+reload($git_cmd)" \
       --bind "B:transform-footer($zgit_script __cmd switch_branch --prompt)+reload($git_cmd)" \
-      --bind "a:transform-footer($zgit_script __cmd create_branch \"{}\")+reload($git_cmd)" \
-      --bind "D:transform-footer($zgit_script __cmd detach_head \"{}\")+reload($git_cmd)" \
-      --bind "x:transform-footer($zgit_script __cmd delete_branch \"{}\")+reload($git_cmd)" \
-      --bind "X:transform-footer($zgit_script __cmd delete_branch --force \"{}\")+reload($git_cmd)" \
-      --bind "c:transform-footer($zgit_script __cmd cherry_pick \"{}\")+reload($git_cmd)" \
-      --bind "m:transform-footer($zgit_script __cmd merge --branch \"{}\")+reload($git_cmd)" \
-      --bind "M:transform-footer($zgit_script __cmd merge \"{}\")+reload($git_cmd)" \
-      --bind "A:transform-footer($zgit_script __cmd amend_commit \"{}\")+reload($git_cmd)" \
-      --bind "w:transform-footer($zgit_script __cmd reword_commit \"{}\")+reload($git_cmd)" \
+      --bind "a:transform-footer($zgit_script __cmd create_branch {})+reload($git_cmd)" \
+      --bind "D:transform-footer($zgit_script __cmd detach_head {})+reload($git_cmd)" \
+      --bind "x:transform-footer($zgit_script __cmd delete_branch {})+reload($git_cmd)" \
+      --bind "X:transform-footer($zgit_script __cmd delete_branch --force {})+reload($git_cmd)" \
+      --bind "c:transform-footer($zgit_script __cmd cherry_pick {})+reload($git_cmd)" \
+      --bind "m:transform-footer($zgit_script __cmd merge --branch {})+reload($git_cmd)" \
+      --bind "M:transform-footer($zgit_script __cmd merge {})+reload($git_cmd)" \
+      --bind "A:transform-footer($zgit_script __cmd amend_commit {})+reload($git_cmd)" \
+      --bind "w:transform-footer($zgit_script __cmd reword_commit {})+reload($git_cmd)" \
       --bind "p:transform-footer(git pull 2>&1)+reload($git_cmd)" \
       --bind "P:transform-footer(git push 2>&1)+reload($git_cmd)" \
-      --bind "ctrl-shift-down:transform-footer($zgit_script __cmd move_commit down \"{}\")+reload($git_cmd)+down" \
-      --bind "ctrl-shift-up:transform-footer($zgit_script __cmd move_commit up \"{}\")+reload($git_cmd)+up" \
-      --bind "o:execute($zgit_script __preview commit --paging \"{}\")" \
+      --bind "ctrl-shift-down:transform-footer($zgit_script __cmd move_commit down {})+reload($git_cmd)+down" \
+      --bind "ctrl-shift-up:transform-footer($zgit_script __cmd move_commit up {})+reload($git_cmd)+up" \
+      --bind "o:execute($zgit_script __preview commit --paging {})" \
       --bind "ctrl-l:change-footer()+clear-screen" \
-      --bind "change:best" \
       --bind "i,/:unbind($bound_keys)+change-prompt(i> ),enter,esc:rebind($bound_keys)+change-prompt(n> )" \
-      --preview "$zgit_script __preview commit \"{}\""
+      --preview "$zgit_script __preview commit {}"
 }
 
 _zgit_status() {
@@ -381,22 +381,22 @@ _zgit_status() {
       --bind "q:abort" \
       --bind "d:half-page-down,u:half-page-up,ctrl-f:preview-page-down,ctrl-b:preview-page-up" \
       --bind "j:down,k:up,g:first,G:last,s:jump" \
-      --bind "space:transform-footer($zgit_script __cmd toggle_file \"{}\")+reload($git_cmd)" \
-      --bind "x:transform-footer($zgit_script __cmd restore_file \"{}\")+reload($git_cmd)" \
-      --bind "p:execute($zgit_script __cmd add_patch_file \"{}\")+reload($git_cmd)" \
-      --bind "r:execute($zgit_script __cmd reset_patch_file \"{}\")+reload($git_cmd)" \
-      --bind "o:execute($zgit_script __preview file --paging \"{}\")" \
+      --bind "space:transform-footer($zgit_script __cmd toggle_file {})+reload($git_cmd)" \
+      --bind "x:transform-footer($zgit_script __cmd restore_file {})+reload($git_cmd)" \
+      --bind "p:execute($zgit_script __cmd add_patch_file {})+reload($git_cmd)" \
+      --bind "r:execute($zgit_script __cmd reset_patch_file {})+reload($git_cmd)" \
+      --bind "o:execute($zgit_script __preview file --paging {})" \
       --bind "ctrl-l:change-footer()+clear-screen" \
       --bind "change:best" \
       --bind "i,/:unbind($bound_keys)+change-prompt(i> ),enter,esc:rebind($bound_keys)+change-prompt(n> )" \
-      --preview "$zgit_script __preview file \"{}\""
+      --preview "$zgit_script __preview file {}"
 }
 
 _zgit_main() {
   if (($#)) && [[ $1 == __cmd || $1 == __preview ]]; then
     local fn_name="_zgit_${1:2}_$2"
     shift 2
-    eval "$fn_name $*"
+    "$fn_name" "$@"
     return $?
   fi
 
