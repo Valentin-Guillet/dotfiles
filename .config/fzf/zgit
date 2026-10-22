@@ -199,6 +199,13 @@ _zgit_cmd_merge() {
   git merge "$merge_target" 2>&1
 }
 
+_zgit_cmd_fast_forward() {
+  local target_hash commit_hash
+  target_hash=$(_get_commit_hash "$1")
+  [[ -z "$target_hash" ]] && return 1
+  git merge --ff-only "$target_hash" 2>&1
+}
+
 _zgit_cmd_amend_commit() {
   local commit_hash
   commit_hash=$(_get_commit_hash "$1")
@@ -345,7 +352,7 @@ _zgit_log() {
   local zgit_script git_cmd bound_keys
   zgit_script=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)/$(basename -- "${BASH_SOURCE[0]}")
   git_cmd="git log --all --decorate --oneline --graph --color=always"
-  bound_keys="i,/,space,q,j,k,g,G,s,d,u,r,R,b,B,a,D,x,X,c,m,M,A,w,p,P,ctrl-shift-down,ctrl-shift-up,o"
+  bound_keys="i,/,space,q,j,k,g,G,s,d,u,r,R,b,B,a,D,x,X,c,m,M,f,A,w,p,P,ctrl-shift-down,ctrl-shift-up,o"
 
   # shellcheck disable=SC2016
   $git_cmd |
@@ -369,6 +376,7 @@ _zgit_log() {
       --bind "c:transform-footer($zgit_script __cmd cherry_pick {})+reload($git_cmd)" \
       --bind "m:transform-footer($zgit_script __cmd merge --branch {})+reload($git_cmd)" \
       --bind "M:transform-footer($zgit_script __cmd merge {})+reload($git_cmd)" \
+      --bind "f:transform-footer($zgit_script __cmd fast_forward {})+reload($git_cmd)" \
       --bind "A:transform-footer($zgit_script __cmd amend_commit {})+reload($git_cmd)" \
       --bind "w:transform-footer($zgit_script __cmd reword_commit {})+reload($git_cmd)" \
       --bind "p:transform-footer(git pull 2>&1)+reload($git_cmd)" \
