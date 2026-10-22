@@ -306,6 +306,24 @@ _zgit_cmd_restore_file() {
   fi
 }
 
+_zgit_cmd_add_patch_file() {
+  local file_path status="${1:1:1}"
+
+  [[ "$status" == " " ]] && return 1
+  file_path=$(_get_file_path "$1")
+  clear
+  git add --patch -- "$file_path" 2>&1
+}
+
+_zgit_cmd_reset_patch_file() {
+  local file_path status="${1:0:1}"
+
+  [[ "$status" == " " ]] && return 1
+  file_path=$(_get_file_path "$1")
+  clear
+  git reset --patch -- "$file_path" 2>&1
+}
+
 
 # MAIN FUNCTIONS
 
@@ -353,7 +371,7 @@ _zgit_status() {
   local zgit_script git_cmd bound_keys
   zgit_script=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)/$(basename -- "${BASH_SOURCE[0]}")
   git_cmd="git -c color.status=always status --short"
-  bound_keys="i,/,space,q,j,k,g,G,s,d,u,x,o"
+  bound_keys="i,/,space,q,j,k,g,G,s,d,u,x,p,r,o"
 
   # shellcheck disable=SC2016
   $git_cmd |
@@ -365,6 +383,8 @@ _zgit_status() {
       --bind "j:down,k:up,g:first,G:last,s:jump" \
       --bind "space:transform-footer($zgit_script __cmd toggle_file \"{}\")+reload($git_cmd)" \
       --bind "x:transform-footer($zgit_script __cmd restore_file \"{}\")+reload($git_cmd)" \
+      --bind "p:execute($zgit_script __cmd add_patch_file \"{}\")+reload($git_cmd)" \
+      --bind "r:execute($zgit_script __cmd reset_patch_file \"{}\")+reload($git_cmd)" \
       --bind "o:execute($zgit_script __preview file --paging \"{}\")" \
       --bind "ctrl-l:change-footer()+clear-screen" \
       --bind "change:best" \
