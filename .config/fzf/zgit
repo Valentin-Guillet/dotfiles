@@ -147,6 +147,65 @@ _zgit_cmd_delete_branch() {
     git branch --delete $git_cmd_arg "$branch_name" 2>&1
 }
 
+_zgit_cmd_cherry_pick() {
+    local commit_hash
+    commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7,40\}")
+    [[ -z "$commit_hash" ]] && return 1
+    git cherry-pick "$commit_hash" 2>&1
+}
+
+_zgit_cmd_merge() {
+    local merge_target commit_hash
+    if [[ $1 == --branch ]]; then
+        shift
+        commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7,40\}")
+        merge_target=$(_zgit_get_branch_name --no-checked-out --points-at "$commit_hash")
+        [[ $? == 0 ]] || return $?
+    else
+        merge_target=$(echo "$1" | grep -o "[a-f0-9]\{7,40\}")
+    fi
+    [[ -z "$merge_target" ]] && return 1
+    git merge "$merge_target" 2>&1
+}
+
+_zgit_cmd_move_commit() {
+    local commit_hash commit_list
+    commit_hash=$(echo "$2" | grep -o "[a-f0-9]\{7,40\}")
+    [[ -z "$commit_hash" ]] && return 1
+
+    mapfile -t commit_list < <(git rev-list --abbrev-commit --reverse HEAD)
+
+    local i src
+    for i in "${!commit_list[@]}"; do
+        [[ "${commit_list[i]}" == "$commit_hash" ]] && src=$i && break
+    done
+
+    [[ -z $src ]] && {
+        echo "Commit not found in current branch history"
+        return 1
+    }
+
+    case "$1" in
+        up)   dst=$((src + 1)) ;;
+        down) dst=$src; src=$((src - 1)) ;;
+        *)    echo "Direction must be 'up' or 'down'" ; return 1 ;;
+    esac
+
+    if (( src < 0 || dst >= ${#commit_list[@]} )); then
+        echo "Cannot swap: no neighboring commit in that direction"
+        return 1
+    fi
+
+    # Start an interactive rebase at the parent of the earlier commit.
+    local earlier=${commit_list[src]}
+    local neighbor=${commit_list[dst]}
+
+    GIT_SEQUENCE_EDITOR="sed -i -e 's/^pick $earlier /TEMP $earlier /' \
+        -e 's/^pick $neighbor /pick $earlier /' \
+        -e 's/^TEMP $earlier /pick $neighbor /'" \
+        git rebase -i "${earlier}^"
+}
+
 _zgit_main() {
     if (($#)) && [[ $1 == __cmd || $1 == __preview || $1 == __visualize ]]; then
         local fn_name="_zgit_${1:2}_$2"
@@ -183,6 +242,11 @@ _zgit_main() {
         --bind "D:transform-footer($_ZGIT_SCRIPT __cmd detach_head \"{}\")+reload($git_cmd)" \
         --bind "x:transform-footer($_ZGIT_SCRIPT __cmd delete_branch \"{}\")+reload($git_cmd)" \
         --bind "X:transform-footer($_ZGIT_SCRIPT __cmd delete_branch --force \"{}\")+reload($git_cmd)" \
+        --bind "c:transform-footer($_ZGIT_SCRIPT __cmd cherry_pick \"{}\")+reload($git_cmd)" \
+        --bind "m:transform-footer($_ZGIT_SCRIPT __cmd merge --branch \"{}\")+reload($git_cmd)" \
+        --bind "M:transform-footer($_ZGIT_SCRIPT __cmd merge \"{}\")+reload($git_cmd)" \
+        --bind "ctrl-shift-down:transform-footer($_ZGIT_SCRIPT __cmd move_commit down \"{}\")+reload($git_cmd)+down" \
+        --bind "ctrl-shift-up:transform-footer($_ZGIT_SCRIPT __cmd move_commit up \"{}\")+reload($git_cmd)+up" \
         --bind "ctrl-o:execute($_ZGIT_SCRIPT __visualize commit \"{}\")" \
         --bind "p:transform-footer(git pull)+reload($git_cmd)" \
         --bind "ctrl-l:change-footer()+clear-screen" \
