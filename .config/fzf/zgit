@@ -378,6 +378,7 @@ _zgit_log() {
       --bind "o:execute($zgit_script __preview commit --paging {})" \
       --bind "ctrl-l:change-footer()+clear-screen" \
       --bind "i,/:unbind($bound_keys)+change-prompt(i> ),enter,esc:rebind($bound_keys)+change-prompt(n> )" \
+      --bind "tab:become($zgit_script status)" \
       --preview "$zgit_script __preview commit {}"
 }
 
@@ -385,7 +386,7 @@ _zgit_status() {
   local zgit_script git_cmd bound_keys
   zgit_script=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)/$(basename -- "${BASH_SOURCE[0]}")
   git_cmd="git -c color.status=always status --short"
-  bound_keys="i,/,space,q,j,k,g,G,s,d,u,x,p,r,c,o"
+  bound_keys="i,/,space,q,j,k,g,G,s,d,u,x,p,r,c,o,tab"
 
   # shellcheck disable=SC2016
   $git_cmd |
@@ -404,6 +405,7 @@ _zgit_status() {
       --bind "ctrl-l:change-footer()+clear-screen" \
       --bind "change:best" \
       --bind "i,/:unbind($bound_keys)+change-prompt(i> ),enter,esc:rebind($bound_keys)+change-prompt(n> )" \
+      --bind "tab:become($zgit_script)" \
       --preview "$zgit_script __preview file {}"
 }
 
