@@ -288,6 +288,24 @@ _zgit_cmd_toggle_file() {
   fi
 }
 
+_zgit_cmd_restore_file() {
+  local file_path prompt_action status="${1:0:2}"
+  file_path=$(_get_file_path "$1")
+
+  [[ "$status" == "??" ]] && prompt_action="delete" || prompt_action="restore"
+
+  if [[ ! $(_zgit_prompt "Do you really want to $prompt_action \"$file_path\"? [yN] ") =~ ^[Yy]$ ]]; then
+    echo "Aborted"
+    return 1
+  fi
+
+  if [[ "$status" == "??" ]]; then
+    rm "$file_path"
+  else
+    git restore -- "$file_path" 2>&1
+  fi
+}
+
 
 # MAIN FUNCTIONS
 
@@ -335,7 +353,7 @@ _zgit_status() {
   local zgit_script git_cmd bound_keys
   zgit_script=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)/$(basename -- "${BASH_SOURCE[0]}")
   git_cmd="git -c color.status=always status --short"
-  bound_keys="i,/,space,q,j,k,g,G,s,d,u,o"
+  bound_keys="i,/,space,q,j,k,g,G,s,d,u,x,o"
 
   # shellcheck disable=SC2016
   $git_cmd |
@@ -346,6 +364,7 @@ _zgit_status() {
       --bind "d:half-page-down,u:half-page-up,ctrl-f:preview-page-down,ctrl-b:preview-page-up" \
       --bind "j:down,k:up,g:first,G:last,s:jump" \
       --bind "space:transform-footer($zgit_script __cmd toggle_file \"{}\")+reload($git_cmd)" \
+      --bind "x:transform-footer($zgit_script __cmd restore_file \"{}\")+reload($git_cmd)" \
       --bind "o:execute($zgit_script __preview file --paging \"{}\")" \
       --bind "ctrl-l:change-footer()+clear-screen" \
       --bind "change:best" \
