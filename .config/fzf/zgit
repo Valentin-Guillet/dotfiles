@@ -73,16 +73,20 @@ _zgit_get_branch_name_prompt() {
 
 _zgit_get_branch_name() {
     local git_cmd_arg
-    if (($#)); then
-        git_cmd_arg="--points-at $1"
+
+    if [[ $1 == --no-checked-out ]]; then
+        shift
+        mapfile -t branch_list < <(git branch --format='%(HEAD)%(refname:short)' "$@" | grep -v '^\*' | cut -c 2-)
+    else
+        mapfile -t branch_list < <(git branch --format='%(refname:short)' "$@")
     fi
-    mapfile -t branch_list < <(git branch --format='%(HEAD)%(refname:short)' $git_cmd_arg | grep -v '^\*' | cut -c 2-)
+
     if [[ "${#branch_list[@]}" == 1 ]]; then
         echo "${branch_list[0]}"
     elif [[ "${#branch_list[@]}" == 0 ]]; then
         _zgit_get_branch_name_prompt
     else
-        _zgit_get_branch_name_prompt $git_cmd_arg
+        _zgit_get_branch_name_prompt "$@"
     fi
     return $?
 }
@@ -93,8 +97,8 @@ _zgit_cmd_switch_branch() {
     if [[ $1 == --prompt ]]; then
         branch_name=$(_zgit_get_branch_name_prompt)
     else
-        branch_name=$(_zgit_get_branch_name "$commit_hash")
         commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7,40\}")
+        branch_name=$(_zgit_get_branch_name --no-checked-out --points-at "$commit_hash")
     fi
 
     [[ $? == 0 ]] || return $?
@@ -131,8 +135,8 @@ _zgit_cmd_delete_branch() {
         shift
         git_cmd_arg="--force"
     fi
-    branch_name=$(_zgit_get_branch_name "$commit_hash")
     commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7,40\}")
+    branch_name=$(_zgit_get_branch_name --points-at "$commit_hash")
 
     [[ $? == 0 ]] || return $?
 
