@@ -8,6 +8,10 @@ export ZGIT_FZF_DEFAULT_OPTS="
     --bind='ctrl-/:toggle-preview'
     --preview-window='right:60%:nohidden:nowrap'"
 
+_get_commit_hash() {
+  echo "$1" | grep -o "[a-f0-9]\{7,40\}"
+}
+
 _zgit_prompt() {
   local prompt_cmd="read -p \"$1\" -r ans; tmux set -p @answer \"\$ans\""
   if ! tmux display-popup -E -w 72% -h 5 -T 'zgit prompt' "$prompt_cmd"; then
@@ -18,20 +22,23 @@ _zgit_prompt() {
 }
 
 _zgit_preview_commit() {
-  local commit_hash
-  commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7,40\}")
-  git show --stat --patch --color=always --format=fuller "$commit_hash" 2>/dev/null | { LESS=Rc delta --paging=never || cat; }
+  local commit_hash paging=never fallback=cat
+  if [[ $1 == --paging ]]; then
+    shift
+    paging=always
+    fallback=(less -Rc)
+  fi
+  commit_hash=$(_get_commit_hash "$1")
+  git show --stat --patch --color=always --format=medium "$commit_hash" 2>/dev/null | { LESS=Rc delta --paging="$paging" || "${fallback[@]}"; }
 }
 
-_zgit_visualize_commit() {
-  local commit_hash
-  commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7,40\}")
-  git show --stat --patch --color=always --format=fuller "$commit_hash" 2>/dev/null | { LESS=Rc delta --paging=always || less -Rc; }
-}
+
+
+# LOG COMMANDS
 
 _zgit_cmd_reset_branch() {
   local commit_hash reset_level
-  commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7,40\}")
+  commit_hash=$(_get_commit_hash "$1")
   [[ -z "$commit_hash" ]] && return 1
 
   reset_level="--mixed"
@@ -96,7 +103,7 @@ _zgit_cmd_switch_branch() {
   if [[ $1 == --prompt ]]; then
     branch_name=$(_zgit_get_branch_name_prompt) || return $?
   else
-    commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7,40\}")
+    commit_hash=$(_get_commit_hash "$1")
     branch_name=$(_zgit_get_branch_name --no-checked-out --points-at "$commit_hash") || return $?
   fi
 
@@ -105,7 +112,7 @@ _zgit_cmd_switch_branch() {
 
 _zgit_cmd_create_branch() {
   local commit_hash prompt_cmd branch_name
-  commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7,40\}")
+  commit_hash=$(_get_commit_hash "$1")
 
   if ! branch_name=$(_zgit_prompt "New branch name: "); then
     echo "Aborted"
@@ -121,7 +128,7 @@ _zgit_cmd_create_branch() {
 
 _zgit_cmd_detach_head() {
   local commit_hash
-  commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7,40\}")
+  commit_hash=$(_get_commit_hash "$1")
   [[ -z "$commit_hash" ]] && return 1
   git switch --detach "$commit_hash" 2>&1
 }
@@ -133,7 +140,7 @@ _zgit_cmd_delete_branch() {
     shift
     git_cmd_arg="--force"
   fi
-  commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7,40\}")
+  commit_hash=$(_get_commit_hash "$1")
   branch_name=$(_zgit_get_branch_name --points-at "$commit_hash") || return $?
 
   if [[ $git_cmd_arg == --force && ! $(_zgit_prompt "Do you really want to force delete? [yN] ") =~ ^[Yy]$ ]]; then
@@ -145,7 +152,7 @@ _zgit_cmd_delete_branch() {
 
 _zgit_cmd_cherry_pick() {
   local commit_hash
-  commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7,40\}")
+  commit_hash=$(_get_commit_hash "$1")
   [[ -z "$commit_hash" ]] && return 1
   git cherry-pick "$commit_hash" 2>&1
 }
@@ -154,10 +161,10 @@ _zgit_cmd_merge() {
   local merge_target commit_hash
   if [[ $1 == --branch ]]; then
     shift
-    commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7,40\}")
+    commit_hash=$(_get_commit_hash "$1")
     merge_target=$(_zgit_get_branch_name --no-checked-out --points-at "$commit_hash") || return $?
   else
-    merge_target=$(echo "$1" | grep -o "[a-f0-9]\{7,40\}")
+    merge_target=$(_get_commit_hash "$1")
   fi
   [[ -z "$merge_target" ]] && return 1
   git merge "$merge_target" 2>&1
@@ -165,7 +172,7 @@ _zgit_cmd_merge() {
 
 _zgit_cmd_amend_commit() {
   local commit_hash
-  commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7,40\}")
+  commit_hash=$(_get_commit_hash "$1")
   [[ -z "$commit_hash" ]] && return 1
 
   if git diff --cached --quiet; then
@@ -179,7 +186,7 @@ _zgit_cmd_amend_commit() {
 
 _zgit_cmd_move_commit() {
   local commit_hash commit_list
-  commit_hash=$(echo "$2" | grep -o "[a-f0-9]\{7,40\}")
+  commit_hash=$(_get_commit_hash "$2")
   [[ -z "$commit_hash" ]] && return 1
 
   mapfile -t commit_list < <(git rev-list --abbrev-commit --reverse HEAD)
@@ -221,23 +228,16 @@ _zgit_cmd_move_commit() {
     git rebase -i "${earlier}^"
 }
 
-_zgit_main() {
-  if (($#)) && [[ $1 == __cmd || $1 == __preview || $1 == __visualize ]]; then
-    local fn_name="_zgit_${1:2}_$2"
-    shift 2
-    eval "$fn_name $*"
-    return $?
-  fi
 
-  if ! git rev-parse --show-toplevel >/dev/null 2>&1; then
-    echo "Not a git repository"
-    return 1
-  fi
+# STATUS COMMANDS
 
+# MAIN FUNCTIONS
+
+_zgit_log() {
   local zgit_script git_cmd bound_keys
   zgit_script=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)/$(basename -- "${BASH_SOURCE[0]}")
   git_cmd="git log --all --decorate --oneline --graph --color=always"
-  bound_keys="i,/,space,q,j,k,g,G,s,d,u,r,R,w,W,a,D,x,X,c,m,M,A,p,P,ctrl-shift-down,ctrl-shift-up"
+  bound_keys="i,/,space,q,j,k,g,G,s,d,u,r,R,w,W,a,D,x,X,c,m,M,A,p,P,ctrl-shift-down,ctrl-shift-up,o"
 
   # shellcheck disable=SC2016
   $git_cmd |
@@ -265,11 +265,31 @@ _zgit_main() {
       --bind "P:transform-footer(git push 2>&1)+reload($git_cmd)" \
       --bind "ctrl-shift-down:transform-footer($zgit_script __cmd move_commit down \"{}\")+reload($git_cmd)+down" \
       --bind "ctrl-shift-up:transform-footer($zgit_script __cmd move_commit up \"{}\")+reload($git_cmd)+up" \
-      --bind "ctrl-o:execute($zgit_script __visualize commit \"{}\")" \
+      --bind "o:execute($zgit_script __preview commit --paging \"{}\")" \
       --bind "ctrl-l:change-footer()+clear-screen" \
       --bind "change:best" \
       --bind "i,/:unbind($bound_keys)+change-prompt(i> ),enter,esc:rebind($bound_keys)+change-prompt(n> )" \
       --preview "$zgit_script __preview commit \"{}\""
+}
+
+_zgit_main() {
+  if (($#)) && [[ $1 == __cmd || $1 == __preview ]]; then
+    local fn_name="_zgit_${1:2}_$2"
+    shift 2
+    eval "$fn_name $*"
+    return $?
+  fi
+
+  if ! git rev-parse --show-toplevel >/dev/null 2>&1; then
+    echo "Not a git repository"
+    return 1
+  fi
+
+  if [[ $1 == status || $1 == st ]]; then
+    _zgit_status
+  else
+    _zgit_log
+  fi
 }
 
 _zgit_main "$@"
