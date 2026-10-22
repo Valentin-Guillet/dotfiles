@@ -155,6 +155,7 @@ _zgit_main() {
         return $?
     fi
 
+    local _ZGIT_SCRIPT git_cmd bound_keys
     _ZGIT_SCRIPT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)/$(basename -- "${BASH_SOURCE[0]}")
 
     local zgit_root git_cmd preview_cmd
@@ -164,6 +165,7 @@ _zgit_main() {
     fi
     git_cmd="git log --all --decorate --oneline --graph --color=always"
 
+    bound_keys="i,/,space,q,j,k,g,G,s,d,u,r,R,w,W,a,D,x,X,c,m,M,p,ctrl-shift-down,ctrl-shift-up"
     $git_cmd |
         FZF_DEFAULT_OPTS="${ZGIT_FZF_DEFAULT_OPTS:-}" fzf \
         --raw \
@@ -183,8 +185,9 @@ _zgit_main() {
         --bind "X:transform-footer($_ZGIT_SCRIPT __cmd delete_branch --force \"{}\")+reload($git_cmd)" \
         --bind "ctrl-o:execute($_ZGIT_SCRIPT __visualize commit \"{}\")" \
         --bind "p:transform-footer(git pull)+reload($git_cmd)" \
+        --bind "ctrl-l:change-footer()+clear-screen" \
         --bind "change:best" \
-        --bind "i,/:unbind(i,/,space,q,j,k,g,G,s,d,u,r,R,w,W,a,D,x,X,p)+change-prompt(i> ),enter,esc:rebind(i,/,space,q,j,k,g,G,s,d,u,r,R,w,W,a,D,x,X,p)+change-prompt(n> )" \
+        --bind "i,/:unbind($bound_keys)+change-prompt(i> ),enter,esc:rebind($bound_keys)+change-prompt(n> )" \
         --preview "$_ZGIT_SCRIPT __preview commit \"{}\""
 }
 
