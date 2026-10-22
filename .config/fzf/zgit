@@ -20,19 +20,19 @@ _zgit_prompt() {
 
 _zgit_preview_commit() {
     local commit_hash
-    commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7\}")
+    commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7,40\}")
     git show --stat --patch --color=always --format=fuller "$commit_hash" 2>/dev/null | { LESS=Rc delta --paging=never || cat; }
 }
 
 _zgit_visualize_commit() {
     local commit_hash
-    commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7\}")
+    commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7,40\}")
     git show --stat --patch --color=always --format=fuller "$commit_hash" 2>/dev/null | { LESS=Rc delta --paging=always || less -Rc; }
 }
 
 _zgit_cmd_reset_branch() {
     local commit_hash reset_level
-    commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7\}")
+    commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7,40\}")
     [[ -z "$commit_hash" ]] && return 1
 
     reset_level="--mixed"
@@ -93,8 +93,8 @@ _zgit_cmd_switch_branch() {
     if [[ $1 == --prompt ]]; then
         branch_name=$(_zgit_get_branch_name_prompt)
     else
-        commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7\}")
         branch_name=$(_zgit_get_branch_name "$commit_hash")
+        commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7,40\}")
     fi
 
     [[ $? == 0 ]] || return $?
@@ -103,7 +103,7 @@ _zgit_cmd_switch_branch() {
 
 _zgit_cmd_create_branch() {
     local commit_hash prompt_cmd branch_name
-    commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7\}")
+    commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7,40\}")
 
     if ! branch_name=$(_zgit_prompt "New branch name: "); then
         echo "Aborted"
@@ -119,7 +119,7 @@ _zgit_cmd_create_branch() {
 
 _zgit_cmd_detach_head() {
     local commit_hash
-    commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7\}")
+    commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7,40\}")
     [[ -z "$commit_hash" ]] && return 1
     git switch --detach "$commit_hash" 2>&1
 }
@@ -131,8 +131,8 @@ _zgit_cmd_delete_branch() {
         shift
         git_cmd_arg="--force"
     fi
-    commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7\}")
     branch_name=$(_zgit_get_branch_name "$commit_hash")
+    commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7,40\}")
 
     [[ $? == 0 ]] || return $?
 
