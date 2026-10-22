@@ -8,253 +8,253 @@ export ZGIT_FZF_DEFAULT_OPTS="
     --bind='ctrl-/:toggle-preview'
     --preview-window='right:60%:nohidden:nowrap'"
 
-
 _zgit_prompt() {
-    local prompt_cmd="read -p \"$1\" -r ans; tmux set -p @answer \"\$ans\""
-    if ! tmux display-popup -E -w 72% -h 5 -T 'zgit prompt' "$prompt_cmd"; then
-        return 130
-    fi
-    tmux show-option -vp @answer
-    tmux set-option -up @answer
+  local prompt_cmd="read -p \"$1\" -r ans; tmux set -p @answer \"\$ans\""
+  if ! tmux display-popup -E -w 72% -h 5 -T 'zgit prompt' "$prompt_cmd"; then
+    return 130
+  fi
+  tmux show-option -vp @answer
+  tmux set-option -up @answer
 }
 
 _zgit_preview_commit() {
-    local commit_hash
-    commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7,40\}")
-    git show --stat --patch --color=always --format=fuller "$commit_hash" 2>/dev/null | { LESS=Rc delta --paging=never || cat; }
+  local commit_hash
+  commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7,40\}")
+  git show --stat --patch --color=always --format=fuller "$commit_hash" 2>/dev/null | { LESS=Rc delta --paging=never || cat; }
 }
 
 _zgit_visualize_commit() {
-    local commit_hash
-    commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7,40\}")
-    git show --stat --patch --color=always --format=fuller "$commit_hash" 2>/dev/null | { LESS=Rc delta --paging=always || less -Rc; }
+  local commit_hash
+  commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7,40\}")
+  git show --stat --patch --color=always --format=fuller "$commit_hash" 2>/dev/null | { LESS=Rc delta --paging=always || less -Rc; }
 }
 
 _zgit_cmd_reset_branch() {
-    local commit_hash reset_level
-    commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7,40\}")
-    [[ -z "$commit_hash" ]] && return 1
+  local commit_hash reset_level
+  commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7,40\}")
+  [[ -z "$commit_hash" ]] && return 1
 
-    reset_level="--mixed"
-    if [[ $2 == "--hard" ]]; then
-        if [[ ! $(_zgit_prompt "Do you really want to reset hard? [yN] ") =~ ^[Yy]$ ]]; then
-            echo "Aborted"
-            return 1
-        fi
-        reset_level="--hard"
+  reset_level="--mixed"
+  if [[ $2 == "--hard" ]]; then
+    if [[ ! $(_zgit_prompt "Do you really want to reset hard? [yN] ") =~ ^[Yy]$ ]]; then
+      echo "Aborted"
+      return 1
     fi
-    git reset "$reset_level" "$commit_hash" 2>&1
+    reset_level="--hard"
+  fi
+  git reset "$reset_level" "$commit_hash" 2>&1
 }
 
 _zgit_get_branch_name_prompt() {
-    local branch_name
+  local branch_name
 
-    branch_name=$(git branch --sort=-committerdate --sort=HEAD --format=$'%(HEAD) %(color:yellow)%(refname:short) %(color:green)(%(committerdate:relative))\t%(color:blue)%(subject)%(color:reset)' --color=always "$@" | column -ts$'\t' |
-        fzf --ansi \
-            --tmux 70% \
-            --tiebreak begin \
-            --preview-window down,border-top,75% \
-            --color hl:underline,hl+:underline \
-            --no-hscroll \
-            --bind "alt-enter:become:printf '%s\n' {+} | cut -c3- | sed 's@[^/]*/@@'" \
-            --preview "git log --oneline --graph --date=short --color=always --pretty='format:%C(auto)%cd %h%d %s' \$(cut -c3- <<< {} | cut -d' ' -f1) --")
-    if [[ $? == 130 ]]; then
-        echo "Aborted"
-        return 130
-    fi
+  branch_name=$(git branch --sort=-committerdate --sort=HEAD --format=$'%(HEAD) %(color:yellow)%(refname:short) %(color:green)(%(committerdate:relative))\t%(color:blue)%(subject)%(color:reset)' --color=always "$@" | column -ts$'\t' |
+    fzf --ansi \
+      --tmux 70% \
+      --tiebreak begin \
+      --preview-window down,border-top,75% \
+      --color hl:underline,hl+:underline \
+      --no-hscroll \
+      --bind "alt-enter:become:printf '%s\n' {+} | cut -c3- | sed 's@[^/]*/@@'" \
+      --preview "git log --oneline --graph --date=short --color=always --pretty='format:%C(auto)%cd %h%d %s' \$(cut -c3- <<< {} | cut -d' ' -f1) --")
+  if [[ $? == 130 ]]; then
+    echo "Aborted"
+    return 130
+  fi
 
-    branch_name=$(echo "$branch_name" | sed 's/^\* //' | awk '{print $1}')
-    if [[ -z "$branch_name" ]]; then
-        echo "No branch selected"
-        return 1
-    fi
-    echo "$branch_name"
+  branch_name=$(echo "$branch_name" | sed 's/^\* //' | awk '{print $1}')
+  if [[ -z "$branch_name" ]]; then
+    echo "No branch selected"
+    return 1
+  fi
+  echo "$branch_name"
 }
 
 _zgit_get_branch_name() {
-    local git_cmd_arg
+  local git_cmd_arg
 
-    if [[ $1 == --no-checked-out ]]; then
-        shift
-        mapfile -t branch_list < <(git branch --format='%(HEAD)%(refname:short)' "$@" | grep -v '^\*' | cut -c 2-)
-    else
-        mapfile -t branch_list < <(git branch --format='%(refname:short)' "$@")
-    fi
+  if [[ $1 == --no-checked-out ]]; then
+    shift
+    mapfile -t branch_list < <(git branch --format='%(HEAD)%(refname:short)' "$@" | grep -v '^\*' | cut -c 2-)
+  else
+    mapfile -t branch_list < <(git branch --format='%(refname:short)' "$@")
+  fi
 
-    if [[ "${#branch_list[@]}" == 1 ]]; then
-        echo "${branch_list[0]}"
-    elif [[ "${#branch_list[@]}" == 0 ]]; then
-        _zgit_get_branch_name_prompt
-    else
-        _zgit_get_branch_name_prompt "$@"
-    fi
-    return $?
+  if [[ "${#branch_list[@]}" == 1 ]]; then
+    echo "${branch_list[0]}"
+  elif [[ "${#branch_list[@]}" == 0 ]]; then
+    _zgit_get_branch_name_prompt
+  else
+    _zgit_get_branch_name_prompt "$@"
+  fi
+  return $?
 }
 
 _zgit_cmd_switch_branch() {
-    local commit_hash branch_name
+  local commit_hash branch_name
 
-    if [[ $1 == --prompt ]]; then
-        branch_name=$(_zgit_get_branch_name_prompt)
-    else
-        commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7,40\}")
-        branch_name=$(_zgit_get_branch_name --no-checked-out --points-at "$commit_hash")
-    fi
+  if [[ $1 == --prompt ]]; then
+    branch_name=$(_zgit_get_branch_name_prompt) || return $?
+  else
+    commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7,40\}")
+    branch_name=$(_zgit_get_branch_name --no-checked-out --points-at "$commit_hash") || return $?
+  fi
 
-    [[ $? == 0 ]] || return $?
-    git switch "$branch_name" 2>&1
+  git switch "$branch_name" 2>&1
 }
 
 _zgit_cmd_create_branch() {
-    local commit_hash prompt_cmd branch_name
-    commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7,40\}")
+  local commit_hash prompt_cmd branch_name
+  commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7,40\}")
 
-    if ! branch_name=$(_zgit_prompt "New branch name: "); then
-        echo "Aborted"
-        return 130
-    fi
+  if ! branch_name=$(_zgit_prompt "New branch name: "); then
+    echo "Aborted"
+    return 130
+  fi
 
-    if [[ -z "$branch_name" ]]; then
-        echo "Abort: empty name"
-        return 1
-    fi
-    git branch "$branch_name" "$commit_hash" 2>&1
+  if [[ -z "$branch_name" ]]; then
+    echo "Abort: empty name"
+    return 1
+  fi
+  git branch "$branch_name" "$commit_hash" 2>&1
 }
 
 _zgit_cmd_detach_head() {
-    local commit_hash
-    commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7,40\}")
-    [[ -z "$commit_hash" ]] && return 1
-    git switch --detach "$commit_hash" 2>&1
+  local commit_hash
+  commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7,40\}")
+  [[ -z "$commit_hash" ]] && return 1
+  git switch --detach "$commit_hash" 2>&1
 }
 
 _zgit_cmd_delete_branch() {
-    local git_cmd_arg commit_hash branch_name
+  local git_cmd_arg commit_hash branch_name
 
-    if [[ $1 == --force ]]; then
-        shift
-        git_cmd_arg="--force"
-    fi
-    commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7,40\}")
-    branch_name=$(_zgit_get_branch_name --points-at "$commit_hash")
+  if [[ $1 == --force ]]; then
+    shift
+    git_cmd_arg="--force"
+  fi
+  commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7,40\}")
+  branch_name=$(_zgit_get_branch_name --points-at "$commit_hash") || return $?
 
-    [[ $? == 0 ]] || return $?
-
-    if [[ $git_cmd_arg == --force && ! $(_zgit_prompt "Do you really want to force delete? [yN] ") =~ ^[Yy]$ ]]; then
-        echo "Aborted"
-        return 1
-    fi
-    git branch --delete $git_cmd_arg "$branch_name" 2>&1
+  if [[ $git_cmd_arg == --force && ! $(_zgit_prompt "Do you really want to force delete? [yN] ") =~ ^[Yy]$ ]]; then
+    echo "Aborted"
+    return 1
+  fi
+  git branch --delete $git_cmd_arg "$branch_name" 2>&1
 }
 
 _zgit_cmd_cherry_pick() {
-    local commit_hash
-    commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7,40\}")
-    [[ -z "$commit_hash" ]] && return 1
-    git cherry-pick "$commit_hash" 2>&1
+  local commit_hash
+  commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7,40\}")
+  [[ -z "$commit_hash" ]] && return 1
+  git cherry-pick "$commit_hash" 2>&1
 }
 
 _zgit_cmd_merge() {
-    local merge_target commit_hash
-    if [[ $1 == --branch ]]; then
-        shift
-        commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7,40\}")
-        merge_target=$(_zgit_get_branch_name --no-checked-out --points-at "$commit_hash")
-        [[ $? == 0 ]] || return $?
-    else
-        merge_target=$(echo "$1" | grep -o "[a-f0-9]\{7,40\}")
-    fi
-    [[ -z "$merge_target" ]] && return 1
-    git merge "$merge_target" 2>&1
+  local merge_target commit_hash
+  if [[ $1 == --branch ]]; then
+    shift
+    commit_hash=$(echo "$1" | grep -o "[a-f0-9]\{7,40\}")
+    merge_target=$(_zgit_get_branch_name --no-checked-out --points-at "$commit_hash") || return $?
+  else
+    merge_target=$(echo "$1" | grep -o "[a-f0-9]\{7,40\}")
+  fi
+  [[ -z "$merge_target" ]] && return 1
+  git merge "$merge_target" 2>&1
 }
 
 _zgit_cmd_move_commit() {
-    local commit_hash commit_list
-    commit_hash=$(echo "$2" | grep -o "[a-f0-9]\{7,40\}")
-    [[ -z "$commit_hash" ]] && return 1
+  local commit_hash commit_list
+  commit_hash=$(echo "$2" | grep -o "[a-f0-9]\{7,40\}")
+  [[ -z "$commit_hash" ]] && return 1
 
-    mapfile -t commit_list < <(git rev-list --abbrev-commit --reverse HEAD)
+  mapfile -t commit_list < <(git rev-list --abbrev-commit --reverse HEAD)
 
-    local i src
-    for i in "${!commit_list[@]}"; do
-        [[ "${commit_list[i]}" == "$commit_hash" ]] && src=$i && break
-    done
+  local i src
+  for i in "${!commit_list[@]}"; do
+    [[ "${commit_list[i]}" == "$commit_hash" ]] && src=$i && break
+  done
 
-    [[ -z $src ]] && {
-        echo "Commit not found in current branch history"
-        return 1
-    }
+  [[ -z $src ]] && {
+    echo "Commit not found in current branch history"
+    return 1
+  }
 
-    case "$1" in
-        up)   dst=$((src + 1)) ;;
-        down) dst=$src; src=$((src - 1)) ;;
-        *)    echo "Direction must be 'up' or 'down'" ; return 1 ;;
-    esac
+  case "$1" in
+  up) dst=$((src + 1)) ;;
+  down)
+    dst=$src
+    src=$((src - 1))
+    ;;
+  *)
+    echo "Direction must be 'up' or 'down'"
+    return 1
+    ;;
+  esac
 
-    if (( src < 0 || dst >= ${#commit_list[@]} )); then
-        echo "Cannot swap: no neighboring commit in that direction"
-        return 1
-    fi
+  if ((src < 0 || dst >= ${#commit_list[@]})); then
+    echo "Cannot swap: no neighboring commit in that direction"
+    return 1
+  fi
 
-    # Start an interactive rebase at the parent of the earlier commit.
-    local earlier=${commit_list[src]}
-    local neighbor=${commit_list[dst]}
+  # Start an interactive rebase at the parent of the earlier commit.
+  local earlier=${commit_list[src]}
+  local neighbor=${commit_list[dst]}
 
-    GIT_SEQUENCE_EDITOR="sed -i -e 's/^pick $earlier /TEMP $earlier /' \
+  GIT_SEQUENCE_EDITOR="sed -i -e 's/^pick $earlier /TEMP $earlier /' \
         -e 's/^pick $neighbor /pick $earlier /' \
         -e 's/^TEMP $earlier /pick $neighbor /'" \
-        git rebase -i "${earlier}^"
+    git rebase -i "${earlier}^"
 }
 
 _zgit_main() {
-    if (($#)) && [[ $1 == __cmd || $1 == __preview || $1 == __visualize ]]; then
-        local fn_name="_zgit_${1:2}_$2"
-        shift 2
-        eval "$fn_name $@"
-        return $?
-    fi
+  if (($#)) && [[ $1 == __cmd || $1 == __preview || $1 == __visualize ]]; then
+    local fn_name="_zgit_${1:2}_$2"
+    shift 2
+    eval "$fn_name $*"
+    return $?
+  fi
 
-    local _ZGIT_SCRIPT git_cmd bound_keys
-    _ZGIT_SCRIPT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)/$(basename -- "${BASH_SOURCE[0]}")
+  if ! git rev-parse --show-toplevel >/dev/null 2>&1; then
+    echo "Not a git repository"
+    return 1
+  fi
 
-    local zgit_root git_cmd preview_cmd
-    if ! git rev-parse --show-toplevel 2>&1 >/dev/null; then
-        echo "Not a git repository"
-        return 1
-    fi
-    git_cmd="git log --all --decorate --oneline --graph --color=always"
+  local zgit_script git_cmd bound_keys
+  zgit_script=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)/$(basename -- "${BASH_SOURCE[0]}")
+  git_cmd="git log --all --decorate --oneline --graph --color=always"
+  bound_keys="i,/,space,q,j,k,g,G,s,d,u,r,R,w,W,a,D,x,X,c,m,M,p,P,ctrl-shift-down,ctrl-shift-up"
 
-    bound_keys="i,/,space,q,j,k,g,G,s,d,u,r,R,w,W,a,D,x,X,c,m,M,p,P,ctrl-shift-down,ctrl-shift-up"
-    $git_cmd |
-        FZF_DEFAULT_OPTS="${ZGIT_FZF_DEFAULT_OPTS:-}" fzf \
-        --raw \
-        --tiebreak 'index' \
-        --prompt 'n> ' \
-        --bind 'focus:transform:[[ {} == *"*"* ]] && exit; [[ $FZF_ACTION == "up"* ]] && echo up || echo down' \
-        --bind "q:abort" \
-        --bind "d:half-page-down,u:half-page-up,ctrl-f:preview-page-down,ctrl-b:preview-page-up" \
-        --bind "j:down-match,k:up-match,g:first,G:last,s:jump" \
-        --bind "r:transform-footer($_ZGIT_SCRIPT __cmd reset_branch \"{}\")+reload($git_cmd)" \
-        --bind "R:transform-footer($_ZGIT_SCRIPT __cmd reset_branch \"{}\" --hard)+reload($git_cmd)" \
-        --bind "space,w:transform-footer($_ZGIT_SCRIPT __cmd switch_branch \"{}\")+reload($git_cmd)" \
-        --bind "W:transform-footer($_ZGIT_SCRIPT __cmd switch_branch --prompt)+reload($git_cmd)" \
-        --bind "a:transform-footer($_ZGIT_SCRIPT __cmd create_branch \"{}\")+reload($git_cmd)" \
-        --bind "D:transform-footer($_ZGIT_SCRIPT __cmd detach_head \"{}\")+reload($git_cmd)" \
-        --bind "x:transform-footer($_ZGIT_SCRIPT __cmd delete_branch \"{}\")+reload($git_cmd)" \
-        --bind "X:transform-footer($_ZGIT_SCRIPT __cmd delete_branch --force \"{}\")+reload($git_cmd)" \
-        --bind "c:transform-footer($_ZGIT_SCRIPT __cmd cherry_pick \"{}\")+reload($git_cmd)" \
-        --bind "m:transform-footer($_ZGIT_SCRIPT __cmd merge --branch \"{}\")+reload($git_cmd)" \
-        --bind "M:transform-footer($_ZGIT_SCRIPT __cmd merge \"{}\")+reload($git_cmd)" \
-        --bind "p:transform-footer(git pull 2>&1)+reload($git_cmd)" \
-        --bind "P:transform-footer(git push 2>&1)+reload($git_cmd)" \
-        --bind "ctrl-shift-down:transform-footer($_ZGIT_SCRIPT __cmd move_commit down \"{}\")+reload($git_cmd)+down" \
-        --bind "ctrl-shift-up:transform-footer($_ZGIT_SCRIPT __cmd move_commit up \"{}\")+reload($git_cmd)+up" \
-        --bind "ctrl-o:execute($_ZGIT_SCRIPT __visualize commit \"{}\")" \
-        --bind "ctrl-l:change-footer()+clear-screen" \
-        --bind "change:best" \
-        --bind "i,/:unbind($bound_keys)+change-prompt(i> ),enter,esc:rebind($bound_keys)+change-prompt(n> )" \
-        --preview "$_ZGIT_SCRIPT __preview commit \"{}\""
+  # shellcheck disable=SC2016
+  $git_cmd |
+    FZF_DEFAULT_OPTS="${ZGIT_FZF_DEFAULT_OPTS:-}" fzf \
+      --raw \
+      --tiebreak 'index' \
+      --prompt 'n> ' \
+      --bind 'focus:transform:[[ {} == *"*"* ]] && exit; [[ $FZF_ACTION == "up"* ]] && echo up || echo down' \
+      --bind "q:abort" \
+      --bind "d:half-page-down,u:half-page-up,ctrl-f:preview-page-down,ctrl-b:preview-page-up" \
+      --bind "j:down-match,k:up-match,g:first,G:last,s:jump" \
+      --bind "r:transform-footer($zgit_script __cmd reset_branch \"{}\")+reload($git_cmd)" \
+      --bind "R:transform-footer($zgit_script __cmd reset_branch \"{}\" --hard)+reload($git_cmd)" \
+      --bind "space,w:transform-footer($zgit_script __cmd switch_branch \"{}\")+reload($git_cmd)" \
+      --bind "W:transform-footer($zgit_script __cmd switch_branch --prompt)+reload($git_cmd)" \
+      --bind "a:transform-footer($zgit_script __cmd create_branch \"{}\")+reload($git_cmd)" \
+      --bind "D:transform-footer($zgit_script __cmd detach_head \"{}\")+reload($git_cmd)" \
+      --bind "x:transform-footer($zgit_script __cmd delete_branch \"{}\")+reload($git_cmd)" \
+      --bind "X:transform-footer($zgit_script __cmd delete_branch --force \"{}\")+reload($git_cmd)" \
+      --bind "c:transform-footer($zgit_script __cmd cherry_pick \"{}\")+reload($git_cmd)" \
+      --bind "m:transform-footer($zgit_script __cmd merge --branch \"{}\")+reload($git_cmd)" \
+      --bind "M:transform-footer($zgit_script __cmd merge \"{}\")+reload($git_cmd)" \
+      --bind "p:transform-footer(git pull 2>&1)+reload($git_cmd)" \
+      --bind "P:transform-footer(git push 2>&1)+reload($git_cmd)" \
+      --bind "ctrl-shift-down:transform-footer($zgit_script __cmd move_commit down \"{}\")+reload($git_cmd)+down" \
+      --bind "ctrl-shift-up:transform-footer($zgit_script __cmd move_commit up \"{}\")+reload($git_cmd)+up" \
+      --bind "ctrl-o:execute($zgit_script __visualize commit \"{}\")" \
+      --bind "ctrl-l:change-footer()+clear-screen" \
+      --bind "change:best" \
+      --bind "i,/:unbind($bound_keys)+change-prompt(i> ),enter,esc:rebind($bound_keys)+change-prompt(n> )" \
+      --preview "$zgit_script __preview commit \"{}\""
 }
-
 
 _zgit_main "$@"
