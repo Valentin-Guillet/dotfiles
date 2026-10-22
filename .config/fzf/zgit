@@ -324,6 +324,20 @@ _zgit_cmd_reset_patch_file() {
   git reset --patch -- "$file_path" 2>&1
 }
 
+_zgit_cmd_commit() {
+  if git diff --cached --quiet; then
+    echo "Nothing to commit!"
+    return 1
+  fi
+
+  local commit_msg
+  if ! commit_msg=$(_zgit_prompt "Commit message: "); then
+    echo "Aborted"
+    return 130
+  fi
+
+  git commit -m "$commit_msg" 2>&1
+}
 
 # MAIN FUNCTIONS
 
@@ -371,7 +385,7 @@ _zgit_status() {
   local zgit_script git_cmd bound_keys
   zgit_script=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)/$(basename -- "${BASH_SOURCE[0]}")
   git_cmd="git -c color.status=always status --short"
-  bound_keys="i,/,space,q,j,k,g,G,s,d,u,x,p,r,o"
+  bound_keys="i,/,space,q,j,k,g,G,s,d,u,x,p,r,c,o"
 
   # shellcheck disable=SC2016
   $git_cmd |
@@ -385,6 +399,7 @@ _zgit_status() {
       --bind "x:transform-footer($zgit_script __cmd restore_file {})+reload($git_cmd)" \
       --bind "p:execute($zgit_script __cmd add_patch_file {})+reload($git_cmd)" \
       --bind "r:execute($zgit_script __cmd reset_patch_file {})+reload($git_cmd)" \
+      --bind "c:transform-footer($zgit_script __cmd commit)+reload($git_cmd)" \
       --bind "o:execute($zgit_script __preview file --paging {})" \
       --bind "ctrl-l:change-footer()+clear-screen" \
       --bind "change:best" \
