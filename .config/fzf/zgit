@@ -363,7 +363,7 @@ _zgit_log() {
       --bind "change:best" \
       --bind 'focus:transform:[[ {} == *"*"* ]] && exit; [[ $FZF_ACTION == "up"* ]] && echo up || echo down' \
       --bind "q:abort" \
-      --bind "d:half-page-down,u:half-page-up,ctrl-f:preview-page-down,ctrl-b:preview-page-up" \
+      --bind "d:half-page-down,u:half-page-up,ctrl-f:preview-half-page-down,ctrl-b:preview-half-page-up" \
       --bind "j:down-match,k:up-match,g:first,G:last,s:jump" \
       --bind "r:transform-footer($zgit_script __cmd reset_branch {})+reload($git_cmd)" \
       --bind "R:transform-footer($zgit_script __cmd reset_branch {} --hard)+reload($git_cmd)" \
@@ -402,7 +402,7 @@ _zgit_status() {
       --tiebreak 'index' \
       --prompt 'n> ' \
       --bind "q:abort" \
-      --bind "d:half-page-down,u:half-page-up,ctrl-f:preview-page-down,ctrl-b:preview-page-up" \
+      --bind "d:half-page-down,u:half-page-up,ctrl-f:preview-half-page-down,ctrl-b:preview-half-page-up" \
       --bind "j:down,k:up,g:first,G:last,s:jump" \
       --bind "space:transform-footer($zgit_script __cmd toggle_file {})+reload($git_cmd)" \
       --bind "x:transform-footer($zgit_script __cmd restore_file {})+reload($git_cmd)" \
