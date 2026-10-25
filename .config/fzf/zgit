@@ -343,10 +343,7 @@ _zgit_cmd_reword_commit() {
     return 130
   fi
 
-  # shellcheck disable=SC2016
-  GIT_EDITOR='sh -c '\''IFS= read -r first < "$1" || :
-  printf "%s\n\n%s\n" "$first" '"$new_message"' > "$1"'\'' _' \
-    git commit --fixup="reword:$commit_hash"
+  git commit --allow-empty --only -m "amend! $commit_hash" -m "$new_message" >/dev/null 2>&1
   git -c sequence.editor=: rebase --interactive --autostash --keep-empty --autosquash --rebase-merges "$commit_hash^" &&
     echo "Commit reworded successfully!"
 }
