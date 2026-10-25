@@ -51,6 +51,7 @@ STATUS_HELP_MSG="
  r		  unstage file in patch mode
  c		  commit staged changes
  x		  restore file
+ X		  restore all files
  
  o		  open and browse diff
  t		  open and browse staged diff
@@ -437,6 +438,20 @@ _zgit_cmd_restore_file() {
   fi
 }
 
+_zgit_cmd_clean_status() {
+  if git diff-index --quiet HEAD; then
+    echo "Nothing to clean!"
+    return 1
+  fi
+
+  if [[ ! $(_zgit_prompt "Do you really want to restore all files? [yN] ") =~ ^[Yy]$ ]]; then
+    echo "Aborted"
+    return 1
+  fi
+
+  git restore . 2>&1
+}
+
 _zgit_cmd_add_patch_file() {
   local file_path status="${1:1:1}"
 
@@ -524,7 +539,7 @@ _zgit_status() {
   local zgit_script git_cmd unbound_keys all_bound_keys
   zgit_script=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)/$(basename -- "${BASH_SOURCE[0]}")
   git_cmd="git -c color.status=always status --short"
-  unbound_keys="a,b,e,f,h,l,m,n,v,w,z,A,B,C,D,E,F,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,?,/,\,|,,,.,(,),[,],{,},<,>,!,@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9"
+  unbound_keys="a,b,e,f,h,l,m,n,v,w,z,A,B,C,D,E,F,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,Y,Z,?,/,\,|,,,.,(,),[,],{,},<,>,!,@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9"
   all_bound_keys="a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,/,space,ctrl-shift-down,ctrl-shift-up"
 
   # shellcheck disable=SC2016
@@ -538,6 +553,7 @@ _zgit_status() {
       --bind "y:transform-footer($zgit_script __cmd yank status {})" \
       --bind "space:transform-footer($zgit_script __cmd toggle_file {})+reload($git_cmd)" \
       --bind "x:transform-footer($zgit_script __cmd restore_file {})+reload($git_cmd)" \
+      --bind "X:transform-footer($zgit_script __cmd clean_status)+reload($git_cmd)" \
       --bind "p:execute($zgit_script __cmd add_patch_file {})+reload($git_cmd)" \
       --bind "r:execute($zgit_script __cmd reset_patch_file {})+reload($git_cmd)" \
       --bind "c:transform-footer($zgit_script __cmd commit)+reload($git_cmd)" \
