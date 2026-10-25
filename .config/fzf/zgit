@@ -14,6 +14,7 @@ LOG_HELP_MSG="
  s		  jump to line
  d / u		  move selection down / up
  ctrl-f / ctrl-b  scroll preview down / up
+ y		  yank commit hash
 
  r / R		  reset branch (soft / hard)
  space / b	  switch branch
@@ -42,6 +43,7 @@ STATUS_HELP_MSG="
  s		  jump to line
  d / u		  move selection down / up
  ctrl-f / ctrl-b  scroll preview down / up
+ y		      yank file path
 
  space		  stage / unstage file
  p		  stage file in patch mode
@@ -61,6 +63,7 @@ EXPLORE_HELP_MSG="
  s		  jump to line
  d / u		  move selection down / up
  ctrl-f / ctrl-b  scroll preview down / up
+ y		  yank file path
 
  o		  open file in preview
  i, /		  toggle search
@@ -100,6 +103,8 @@ _zgit_help_popup() {
   tmux display-popup -E -w 50 -h "$nb_lines" -T 'zgit help' "tput civis && read -p \"$1\" -n 1" &
 }
 
+# PREVIEW COMMANDS
+
 _zgit_preview_commit() {
   local commit_hash paging=never fallback=cat
   if [[ $1 == --paging ]]; then
@@ -138,6 +143,32 @@ _zgit_preview_commit_file() {
   fi
   git show --color=always --format= --diff-merges=first-parent --stat --patch "$1" -- "$2" 2>/dev/null | sed '2d' |
     { LESS="Rc\$--header 2" delta --paging="$paging" || "${fallback[@]}"; }
+}
+
+# COMMON COMMANDS
+
+_zgit_cmd_yank() {
+  local target value
+  if [[ "$1" == log ]]; then
+    value=$(_get_commit_hash "$2")
+    target="Commit hash"
+  elif [[ "$1" == status ]]; then
+    value=$(_get_file_path "$2")
+    target="File path"
+  elif [[ "$1" == explore ]]; then
+    value="$2"
+    target="File path"
+  fi
+
+  if command -v wl-copy >/dev/null 2>&1; then
+    echo -n "$value" | wl-copy
+  elif command -v xclip >/dev/null 2>&1; then
+    echo -n "$value" | xclip -selection clipboard
+  else
+    echo "No clipboard utility found. Install wl-clipboard or xclip to enable clipboard functionality."
+    return 1
+  fi
+  echo "$target yanked!"
 }
 
 # LOG COMMANDS
@@ -429,7 +460,7 @@ _zgit_log() {
   local zgit_script git_cmd unbound_keys all_bound_keys
   zgit_script=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)/$(basename -- "${BASH_SOURCE[0]}")
   git_cmd="git log --all --decorate --oneline --graph --color=always"
-  unbound_keys="h,l,n,t,v,y,C,E,F,H,I,J,K,L,N,O,Q,S,T,U,V,W,Y,Z,?,/,\,|,,,.,(,),[,],{,},<,>,!,@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9"
+  unbound_keys="h,l,n,t,v,C,E,F,H,I,J,K,L,N,O,Q,S,T,U,V,W,Y,Z,?,/,\,|,,,.,(,),[,],{,},<,>,!,@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9"
   all_bound_keys="a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,/,space,ctrl-shift-down,ctrl-shift-up"
 
   # shellcheck disable=SC2016
@@ -443,6 +474,7 @@ _zgit_log() {
       --bind "q:abort" \
       --bind "d:half-page-down,u:half-page-up,ctrl-f:preview-half-page-down,ctrl-b:preview-half-page-up" \
       --bind "j:down-match,k:up-match,g:first,G:last,s:jump" \
+      --bind "y:transform-footer($zgit_script __cmd yank log {})" \
       --bind "r:transform-footer($zgit_script __cmd reset_branch {})+reload($git_cmd)" \
       --bind "R:transform-footer($zgit_script __cmd reset_branch {} --hard)+reload($git_cmd)" \
       --bind "space,b:transform-footer($zgit_script __cmd switch_branch {})+reload($git_cmd)" \
@@ -475,7 +507,7 @@ _zgit_status() {
   local zgit_script git_cmd unbound_keys all_bound_keys
   zgit_script=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)/$(basename -- "${BASH_SOURCE[0]}")
   git_cmd="git -c color.status=always status --short"
-  unbound_keys="a,b,e,f,h,l,m,n,t,v,w,y,z,A,B,C,D,E,F,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,?,/,\,|,,,.,(,),[,],{,},<,>,!,@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9"
+  unbound_keys="a,b,e,f,h,l,m,n,t,v,w,z,A,B,C,D,E,F,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,?,/,\,|,,,.,(,),[,],{,},<,>,!,@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9"
   all_bound_keys="a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,/,space,ctrl-shift-down,ctrl-shift-up"
 
   # shellcheck disable=SC2016
@@ -486,6 +518,7 @@ _zgit_status() {
       --bind "q:abort" \
       --bind "d:half-page-down,u:half-page-up,ctrl-f:preview-half-page-down,ctrl-b:preview-half-page-up" \
       --bind "j:down,k:up,g:first,G:last,s:jump" \
+      --bind "y:transform-footer($zgit_script __cmd yank status {})" \
       --bind "space:transform-footer($zgit_script __cmd toggle_file {})+reload($git_cmd)" \
       --bind "x:transform-footer($zgit_script __cmd restore_file {})+reload($git_cmd)" \
       --bind "p:execute($zgit_script __cmd add_patch_file {})+reload($git_cmd)" \
@@ -508,7 +541,7 @@ _zgit_explore() {
   commit_hash=$(_get_commit_hash "$1")
   git_cmd="git show --pretty= --name-only --diff-merges=first-parent $commit_hash"
 
-  unbound_keys="a,b,c,e,f,h,l,m,n,p,r,t,v,w,x,y,z,A,B,C,D,E,F,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z"
+  unbound_keys="a,b,c,e,f,h,l,m,n,p,r,t,v,w,x,z,A,B,C,D,E,F,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z"
   all_bound_keys="a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,/,space,ctrl-shift-down,ctrl-shift-up"
 
   $git_cmd |
@@ -518,6 +551,7 @@ _zgit_explore() {
       --bind "q:abort" \
       --bind "d:half-page-down,u:half-page-up,ctrl-f:preview-half-page-down,ctrl-b:preview-half-page-up" \
       --bind "j:down,k:up,g:first,G:last,s:jump" \
+      --bind "y:transform-footer($zgit_script __cmd yank explore {})" \
       --bind "o:execute($zgit_script __preview commit_file --paging $commit_hash {})" \
       --bind "ctrl-l:change-footer()+clear-screen" \
       --bind "change:best" \
