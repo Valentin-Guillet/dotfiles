@@ -27,6 +27,7 @@ LOG_HELP_MSG="
  f		  fast-forward merge
  A		  amend commit
  w		  reword commit
+ W		  reword commit (in editor)
  p / P		  pull / push
  ctrl-shift-down  move commit down
  ctrl-shift-up	  move commit up
@@ -349,6 +350,18 @@ _zgit_cmd_reword_commit() {
     echo "Commit reworded successfully!"
 }
 
+_zgit_cmd_editor_reword_commit() {
+  local commit_hash prev_message new_message
+  commit_hash=$(_get_commit_hash "$1")
+  [[ -z "$commit_hash" ]] && return 1
+
+  if ! GIT_SEQUENCE_EDITOR="sed -i -e 's/pick $commit_hash/reword $commit_hash/'" \
+    git rebase --interactive --autostash --keep-empty --autosquash --rebase-merges "$commit_hash^"; then
+    git rebase --abort
+    return 130
+  fi
+}
+
 _zgit_cmd_move_commit() {
   local commit_hash commit_list
   commit_hash=$(_get_commit_hash "$2")
@@ -463,7 +476,7 @@ _zgit_log() {
   local zgit_script git_cmd unbound_keys all_bound_keys
   zgit_script=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)/$(basename -- "${BASH_SOURCE[0]}")
   git_cmd="git log --all --decorate --oneline --graph --color=always"
-  unbound_keys="h,l,n,t,v,C,E,F,H,I,J,K,L,N,O,Q,S,T,U,V,W,Y,Z,?,/,\,|,,,.,(,),[,],{,},<,>,!,@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9"
+  unbound_keys="h,l,n,t,v,C,E,F,H,I,J,K,L,N,O,Q,S,T,U,V,Y,Z,?,/,\,|,,,.,(,),[,],{,},<,>,!,@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9"
   all_bound_keys="a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,/,space,ctrl-shift-down,ctrl-shift-up"
 
   # shellcheck disable=SC2016
@@ -492,6 +505,7 @@ _zgit_log() {
       --bind "f:transform-footer($zgit_script __cmd fast_forward {})+reload($git_cmd)" \
       --bind "A:transform-footer($zgit_script __cmd amend_commit {})+reload($git_cmd)" \
       --bind "w:transform-footer($zgit_script __cmd reword_commit {})+reload($git_cmd)" \
+      --bind "W:execute($zgit_script __cmd editor_reword_commit {})+reload($git_cmd)" \
       --bind "e:execute($zgit_script explore {})" \
       --bind "p:transform-footer(git pull 2>&1)+reload($git_cmd)" \
       --bind "P:transform-footer(git push 2>&1)+reload($git_cmd)" \
