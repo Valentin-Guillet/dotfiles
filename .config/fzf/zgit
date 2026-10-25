@@ -31,6 +31,8 @@ LOG_HELP_MSG="
  p / P		  pull / push
  ctrl-shift-down  move commit down
  ctrl-shift-up	  move commit up
+ F		  filter commits
+ ctrl-r		  toggle -G/-S filter modes
 
  o		  open commit in preview
  i, /		  toggle search
@@ -179,6 +181,23 @@ _zgit_cmd_yank() {
 }
 
 # LOG COMMANDS
+
+_zgit_cmd_git_log_entries() {
+  local git_arg=()
+  if [[ -n "$FZF_HEADER_LABEL" ]]; then
+    git_arg=("-${FZF_HEADER_LABEL:0:1}" "${FZF_HEADER_LABEL:1}")
+  fi
+  git log --all --decorate --oneline --graph --color=always "${git_arg[@]}"
+}
+
+_zgit_cmd_git_log_header() {
+  [[ -z "$FZF_HEADER_LABEL" ]] && return
+  if [[ "${FZF_HEADER_LABEL:0:1}" == 'S' ]]; then
+    echo "Filter -S: ${FZF_HEADER_LABEL:1}"
+  else
+    echo "Filter -G: ${FZF_HEADER_LABEL:1}"
+  fi
+}
 
 _zgit_cmd_reset_branch() {
   local commit_hash reset_level
@@ -405,6 +424,31 @@ _zgit_cmd_move_commit() {
     git rebase -i "${earlier}^"
 }
 
+_zgit_cmd_filter_commits() {
+  if ! new_message=$(_zgit_prompt "Filter query: " "${1:1}"); then
+    echo "$1"
+    return 130
+  fi
+
+  local filter_mode
+  if [[ -z "$1" ]]; then
+    filter_mode='G'
+  else
+    filter_mode="${1:0:1}"
+  fi
+  echo "$filter_mode$new_message"
+}
+
+_zgit_cmd_switch_filter_mode() {
+  [[ -z "$FZF_HEADER_LABEL" ]] && return
+
+  if [[ "${FZF_HEADER_LABEL:0:1}" == 'S' ]]; then
+    echo "G${FZF_HEADER_LABEL:1}"
+  else
+    echo "S${FZF_HEADER_LABEL:1}"
+  fi
+}
+
 # STATUS COMMANDS
 
 _zgit_cmd_toggle_file() {
@@ -486,15 +530,17 @@ _zgit_cmd_commit() {
 # MAIN FUNCTIONS
 
 _zgit_log() {
-  local zgit_script git_cmd unbound_keys all_bound_keys
+  local zgit_script git_cmd header_cmd unbound_keys all_bound_keys
   zgit_script=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)/$(basename -- "${BASH_SOURCE[0]}")
   # shellcheck disable=SC2016
-  git_cmd="git log --all --decorate --oneline --graph --color=always"
-  unbound_keys="h,l,n,t,v,C,E,F,H,I,J,K,L,N,O,Q,S,T,U,V,Y,Z,?,/,\,|,,,.,(,),[,],{,},<,>,!,@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9"
+  git_cmd="$zgit_script __cmd git_log_entries"
+  header_cmd="$zgit_script __cmd git_log_header"
+
+  unbound_keys="h,l,n,t,v,C,E,H,I,J,K,L,N,O,Q,S,T,U,V,Y,Z,?,/,\,|,,,.,(,),[,],{,},<,>,!,@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9"
   all_bound_keys="a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,/,space,ctrl-shift-down,ctrl-shift-up"
 
   # shellcheck disable=SC2016
-  eval "$git_cmd" |
+  $git_cmd |
     FZF_DEFAULT_OPTS="${ZGIT_FZF_DEFAULT_OPTS:-}" fzf \
       --raw \
       --tiebreak 'index' \
@@ -520,6 +566,8 @@ _zgit_log() {
       --bind "A:transform-footer($zgit_script __cmd amend_commit {})+reload($git_cmd)" \
       --bind "w:transform-footer($zgit_script __cmd reword_commit {})+reload($git_cmd)" \
       --bind "W:execute($zgit_script __cmd editor_reword_commit {})+reload($git_cmd)" \
+      --bind "F:transform-header-label($zgit_script __cmd filter_commits \$FZF_HEADER_LABEL)+transform-header($header_cmd)+reload($git_cmd)" \
+      --bind "ctrl-r:transform-header-label($zgit_script __cmd switch_filter_mode)+transform-header($header_cmd)+reload($git_cmd)" \
       --bind "e:execute($zgit_script explore {})" \
       --bind "p:transform-footer(git pull 2>&1)+reload($git_cmd)" \
       --bind "P:transform-footer(git push 2>&1)+reload($git_cmd)" \
