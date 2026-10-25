@@ -403,10 +403,11 @@ _zgit_cmd_commit() {
 # MAIN FUNCTIONS
 
 _zgit_log() {
-  local zgit_script git_cmd bound_keys
+  local zgit_script git_cmd unbound_keys all_bound_keys
   zgit_script=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)/$(basename -- "${BASH_SOURCE[0]}")
   git_cmd="git log --all --decorate --oneline --graph --color=always"
-  bound_keys="i,/,space,q,j,k,g,G,s,d,u,r,R,b,B,a,D,x,X,c,m,M,f,A,w,p,P,ctrl-shift-down,ctrl-shift-up,o"
+  unbound_keys="e,h,l,n,t,v,y,C,E,F,H,I,J,K,L,N,O,Q,S,T,U,V,Y,Z,?,/,\,|,,,.,(,),[,],{,},<,>,!,@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9"
+  all_bound_keys="a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,/,space,ctrl-shift-down,ctrl-shift-up"
 
   # shellcheck disable=SC2016
   $git_cmd |
@@ -439,17 +440,19 @@ _zgit_log() {
       --bind "ctrl-shift-up:transform-footer($zgit_script __cmd move_commit up {})+reload($git_cmd)+up" \
       --bind "o:execute($zgit_script __preview commit --paging {})" \
       --bind "ctrl-l:change-footer()+clear-screen" \
-      --bind "i,/:unbind($bound_keys)+change-prompt(i> ),enter,esc:rebind($bound_keys)+change-prompt(n> )" \
+      --bind "$unbound_keys:ignore" \
+      --bind "i,/:unbind($all_bound_keys)+change-prompt(i> ),enter,esc:rebind($all_bound_keys)+change-prompt(n> )" \
       --bind "alt-/:execute($zgit_script __help \"$LOG_HELP_MSG\")" \
       --bind "tab:become($zgit_script status)" \
       --preview "$zgit_script __preview commit {}"
 }
 
 _zgit_status() {
-  local zgit_script git_cmd bound_keys
+  local zgit_script git_cmd unbound_keys all_bound_keys
   zgit_script=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)/$(basename -- "${BASH_SOURCE[0]}")
   git_cmd="git -c color.status=always status --short"
-  bound_keys="i,/,space,q,j,k,g,G,s,d,u,x,p,r,c,o,tab"
+  unbound_keys="a,b,e,f,h,l,m,n,t,v,w,y,z,A,B,C,D,E,F,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,?,/,\,|,,,.,(,),[,],{,},<,>,!,@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9"
+  all_bound_keys="a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,/,space,ctrl-shift-down,ctrl-shift-up"
 
   # shellcheck disable=SC2016
   $git_cmd |
@@ -467,7 +470,8 @@ _zgit_status() {
       --bind "o:execute($zgit_script __preview file --paging {})" \
       --bind "ctrl-l:change-footer()+clear-screen" \
       --bind "change:best" \
-      --bind "i,/:unbind($bound_keys)+change-prompt(i> ),enter,esc:rebind($bound_keys)+change-prompt(n> )" \
+      --bind "$unbound_keys:ignore" \
+      --bind "i,/:unbind($all_bound_keys)+change-prompt(i> ),enter,esc:rebind($all_bound_keys)+change-prompt(n> )" \
       --bind "alt-/:execute($zgit_script __help \"$STATUS_HELP_MSG\")" \
       --bind "tab:become($zgit_script)" \
       --preview "$zgit_script __preview file {}"
