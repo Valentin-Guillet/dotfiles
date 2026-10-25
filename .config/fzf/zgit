@@ -55,6 +55,18 @@ STATUS_HELP_MSG="
  Tab		  switch to log window
  q		  quit"
 
+EXPLORE_HELP_MSG="
+ j / k		  down / up
+ g / G		  first / last
+ s		  jump to line
+ d / u		  move selection down / up
+ ctrl-f / ctrl-b  scroll preview down / up
+
+ o		  open file in preview
+ i, /		  toggle search
+ Enter		  (search mode) exit search
+ q		  quit"
+
 _get_commit_hash() {
   echo "$1" | grep -o "[a-f0-9]\{7,40\}"
 }
@@ -115,6 +127,17 @@ _zgit_preview_file() {
     [[ ${1:1:1} == " " ]] && git_arg="--staged"
     git diff --color=always --format= --diff-merges=first-parent $git_arg "$file_path" 2>/dev/null | { LESS=Rc delta --paging="$paging" || "${fallback[@]}"; }
   fi
+}
+
+_zgit_preview_commit_file() {
+  local paging=never fallback=(cat)
+  if [[ $1 == --paging ]]; then
+    shift
+    paging=always
+    fallback=(less -Rc --header 2)
+  fi
+  git show --color=always --format= --diff-merges=first-parent --stat --patch "$1" -- "$2" 2>/dev/null | sed '2d' |
+    { LESS="Rc\$--header 2" delta --paging="$paging" || "${fallback[@]}"; }
 }
 
 # LOG COMMANDS
@@ -406,7 +429,7 @@ _zgit_log() {
   local zgit_script git_cmd unbound_keys all_bound_keys
   zgit_script=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)/$(basename -- "${BASH_SOURCE[0]}")
   git_cmd="git log --all --decorate --oneline --graph --color=always"
-  unbound_keys="e,h,l,n,t,v,y,C,E,F,H,I,J,K,L,N,O,Q,S,T,U,V,Y,Z,?,/,\,|,,,.,(,),[,],{,},<,>,!,@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9"
+  unbound_keys="h,l,n,t,v,y,C,E,F,H,I,J,K,L,N,O,Q,S,T,U,V,W,Y,Z,?,/,\,|,,,.,(,),[,],{,},<,>,!,@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9"
   all_bound_keys="a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,/,space,ctrl-shift-down,ctrl-shift-up"
 
   # shellcheck disable=SC2016
@@ -434,6 +457,7 @@ _zgit_log() {
       --bind "f:transform-footer($zgit_script __cmd fast_forward {})+reload($git_cmd)" \
       --bind "A:transform-footer($zgit_script __cmd amend_commit {})+reload($git_cmd)" \
       --bind "w:transform-footer($zgit_script __cmd reword_commit {})+reload($git_cmd)" \
+      --bind "e:execute($zgit_script explore {})" \
       --bind "p:transform-footer(git pull 2>&1)+reload($git_cmd)" \
       --bind "P:transform-footer(git push 2>&1)+reload($git_cmd)" \
       --bind "ctrl-shift-down:transform-footer($zgit_script __cmd move_commit down {})+reload($git_cmd)+down" \
@@ -477,7 +501,35 @@ _zgit_status() {
       --preview "$zgit_script __preview file {}"
 }
 
+_zgit_explore() {
+  local zgit_script git_cmd all_bound_keys commit_hash
+
+  zgit_script=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)/$(basename -- "${BASH_SOURCE[0]}")
+  commit_hash=$(_get_commit_hash "$1")
+  git_cmd="git show --pretty= --name-only --diff-merges=first-parent $commit_hash"
+
+  unbound_keys="a,b,c,e,f,h,l,m,n,p,r,t,v,w,x,y,z,A,B,C,D,E,F,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z"
+  all_bound_keys="a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,/,space,ctrl-shift-down,ctrl-shift-up"
+
+  $git_cmd |
+    FZF_DEFAULT_OPTS="${ZGIT_FZF_DEFAULT_OPTS:-}" fzf \
+      --tiebreak 'index' \
+      --prompt 'n> ' \
+      --bind "q:abort" \
+      --bind "d:half-page-down,u:half-page-up,ctrl-f:preview-half-page-down,ctrl-b:preview-half-page-up" \
+      --bind "j:down,k:up,g:first,G:last,s:jump" \
+      --bind "o:execute($zgit_script __preview commit_file --paging $commit_hash {})" \
+      --bind "ctrl-l:change-footer()+clear-screen" \
+      --bind "change:best" \
+      --bind "$unbound_keys:ignore" \
+      --bind "i,/:unbind($all_bound_keys)+change-prompt(i> ),enter,esc:rebind($all_bound_keys)+change-prompt(n> )" \
+      --bind "alt-/:execute($zgit_script __help \"$EXPLORE_HELP_MSG\")" \
+      --preview-window "~2" \
+      --preview "$zgit_script __preview commit_file $commit_hash {}"
+}
+
 _zgit_main() {
+  local action_name fn_name
   if (($#)) && [[ $1 == __help ]]; then
     shift
     _zgit_help_popup "$@"
@@ -485,7 +537,7 @@ _zgit_main() {
   fi
 
   if (($#)) && [[ $1 == __cmd || $1 == __preview ]]; then
-    local fn_name="_zgit_${1:2}_$2"
+    fn_name="_zgit_${1:2}_$2"
     shift 2
     "$fn_name" "$@"
     return $?
@@ -496,11 +548,17 @@ _zgit_main() {
     return 1
   fi
 
-  if [[ $1 == status || $1 == st ]]; then
-    _zgit_status
-  else
-    _zgit_log
+  action_name="$1"
+  shift
+  [[ -z "$action_name" ]] && action_name="log"
+  [[ "$action_name" == st ]] && action_name="status"
+
+  fn_name="_zgit_$action_name"
+  if ! command -v "$fn_name" >/dev/null 2>&1; then
+    echo "Unknown zgit command: $action_name"
+    return 1
   fi
+  "$fn_name" "$@"
 }
 
 _zgit_main "$@"
