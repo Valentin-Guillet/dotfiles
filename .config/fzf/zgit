@@ -8,6 +8,53 @@ export ZGIT_FZF_DEFAULT_OPTS="
     --bind='ctrl-/:toggle-preview'
     --preview-window='right:60%:nohidden:nowrap'"
 
+LOG_HELP_MSG="
+ j / k		  down / up
+ g / G		  first / last
+ s		  jump to line
+ d / u		  move selection down / up
+ ctrl-f / ctrl-b  scroll preview down / up
+
+ r / R		  reset branch (soft / hard)
+ space / b	  switch branch
+ B		  switch branch (prompt)
+ a		  create branch
+ D		  detach HEAD
+ x / X		  delete branch (safe / force)
+ c		  cherry-pick commit
+ m / M		  merge (branch / commit)
+ f		  fast-forward merge
+ A		  amend commit
+ w		  reword commit
+ p / P		  pull / push
+ ctrl-shift-down  move commit down
+ ctrl-shift-up	  move commit up
+ 
+ o		  open commit in preview
+ i, /		  toggle search
+ Enter		  (search mode) exit search
+ Tab		  switch to status window
+ q		  quit"
+
+STATUS_HELP_MSG="
+ j / k		  down / up
+ g / G		  first / last
+ s		  jump to line
+ d / u		  move selection down / up
+ ctrl-f / ctrl-b  scroll preview down / up
+
+ space		  stage / unstage file
+ p		  stage file in patch mode
+ r		  unstage file in patch mode
+ c		  commit staged changes
+ x		  restore file
+ 
+ o		  open file in preview
+ i, /		  toggle search
+ Enter		  (search mode) exit search
+ Tab		  switch to log window
+ q		  quit"
+
 _get_commit_hash() {
   echo "$1" | grep -o "[a-f0-9]\{7,40\}"
 }
@@ -32,6 +79,13 @@ _zgit_prompt() {
   fi
   tmux show-option -vp @answer
   tmux set-option -up @answer
+}
+
+_zgit_help_popup() {
+  local nb_lines
+  nb_lines=$(echo "$1" | wc -l)
+  nb_lines=$((nb_lines + 3))
+  tmux display-popup -E -w 50 -h "$nb_lines" -T 'zgit help' "tput civis && read -p \"$1\" -n 1" &
 }
 
 _zgit_preview_commit() {
@@ -386,6 +440,7 @@ _zgit_log() {
       --bind "o:execute($zgit_script __preview commit --paging {})" \
       --bind "ctrl-l:change-footer()+clear-screen" \
       --bind "i,/:unbind($bound_keys)+change-prompt(i> ),enter,esc:rebind($bound_keys)+change-prompt(n> )" \
+      --bind "alt-/:execute($zgit_script __help \"$LOG_HELP_MSG\")" \
       --bind "tab:become($zgit_script status)" \
       --preview "$zgit_script __preview commit {}"
 }
@@ -413,11 +468,18 @@ _zgit_status() {
       --bind "ctrl-l:change-footer()+clear-screen" \
       --bind "change:best" \
       --bind "i,/:unbind($bound_keys)+change-prompt(i> ),enter,esc:rebind($bound_keys)+change-prompt(n> )" \
+      --bind "alt-/:execute($zgit_script __help \"$STATUS_HELP_MSG\")" \
       --bind "tab:become($zgit_script)" \
       --preview "$zgit_script __preview file {}"
 }
 
 _zgit_main() {
+  if (($#)) && [[ $1 == __help ]]; then
+    shift
+    _zgit_help_popup "$@"
+    return $?
+  fi
+
   if (($#)) && [[ $1 == __cmd || $1 == __preview ]]; then
     local fn_name="_zgit_${1:2}_$2"
     shift 2
