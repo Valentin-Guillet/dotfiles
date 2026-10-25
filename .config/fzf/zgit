@@ -89,7 +89,7 @@ _get_file_path() {
 }
 
 _zgit_prompt() {
-  local prompt_cmd="read -p \"$1\" -r ans; tmux set -p @answer \"\$ans\""
+  local prompt_cmd="read -e -p \"$1\" -i \"$2\" -r ans; tmux set -p @answer \"\$ans\""
   if ! tmux display-popup -E -w 72% -h 5 -T 'zgit prompt' "$prompt_cmd"; then
     return 130
   fi
@@ -334,11 +334,12 @@ _zgit_cmd_amend_commit() {
 }
 
 _zgit_cmd_reword_commit() {
-  local commit_hash new_message
+  local commit_hash prev_message new_message
   commit_hash=$(_get_commit_hash "$1")
   [[ -z "$commit_hash" ]] && return 1
 
-  if ! new_message=$(_zgit_prompt "New commit message: "); then
+  prev_message=$(git log --format='%B' -n 1 "$commit_hash" | head -1)
+  if ! new_message=$(_zgit_prompt "New commit message: " "$prev_message"); then
     echo "Aborted"
     return 130
   fi
