@@ -8,9 +8,9 @@ main() {
     tmux bind-key C-u copy-mode \\\; send-keys -X search-backward "$search_url"
     tmux bind-key C-g run-shell "$HOME/.config/tmux/plugins/regex-search/git_status_search.sh #{pane_current_path}"
 
-    local shell_line="$(id -un)@$(hostname)"
-    tmux bind-key -T copy-mode-vi M-u send-keys 0 \\\; send-keys -X search-backward-text "$shell_line"
-    tmux bind-key -T copy-mode-vi M-d send-keys -X search-forward-text "$shell_line"
+    local shell_line="$(id -un)@$(hostname --short)"
+    tmux bind-key -T copy-mode-vi M-u send-keys 0 \\\; send-keys -X search-backward-text "$shell_line" \\\; send-keys zEw
+    tmux bind-key -T copy-mode-vi M-d send-keys -X search-forward-text "$shell_line" \\\; send-keys zEw
 }
 
 main
