@@ -59,7 +59,7 @@ logout=['<Control><Alt>Calculator']
 reboot=['<Control><Alt>Launch2']
 screensaver=['<Super>f']
 shutdown=['<Control><Alt>Delete']
-terminal=['<Primary><Alt>t']
+terminal=@as []
 www=['<Primary><Alt>w']
 
 [org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0]
