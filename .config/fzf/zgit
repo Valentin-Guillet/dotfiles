@@ -16,6 +16,7 @@ LOG_HELP_MSG="
  s		  jump to line
  d / u		  move selection down / up
  ctrl-f / ctrl-b  scroll preview down / up
+ z		  set position to HEAD
  y		  yank commit hash
 
  r / R		  reset branch (soft / hard)
@@ -211,6 +212,10 @@ _zgit_cmd_execute_git_cmd() {
 }
 
 # LOG COMMANDS
+
+_zgit_cmd_center_head() {
+  echo "pos:$(git log --all --graph --format='%D' | sed '/\sHEAD\(,\|\s\|$\)/q' | wc -l)"
+}
 
 _zgit_cmd_git_log_entries() {
   local git_arg=()
@@ -568,7 +573,7 @@ _zgit_log() {
   # shellcheck disable=SC2016
   enter_cmd='[[ "$FZF_PROMPT" == "i> " ]] && echo "rebind('"${ALL_BOUND_KEYS//\"/\\\"}"')+change-prompt(n> )" || echo "execute('"$zgit_script"' explore {})"'
 
-  unbound_keys=$'e,h,l,n,t,v,z,C,E,H,I,J,K,L,N,O,Q,S,T,U,V,Y,Z,/,\,|,,,.,;,(,),[,],{,},<,>,\',",!,@,#,$,%,^,&,*,+,=,0,1,2,3,4,5,6,7,8,9'
+  unbound_keys=$'e,h,l,n,t,v,C,E,H,I,J,K,L,N,O,Q,S,T,U,V,Y,Z,/,\,|,,,.,;,(,),[,],{,},<,>,\',",!,@,#,$,%,^,&,*,+,=,0,1,2,3,4,5,6,7,8,9'
 
   # shellcheck disable=SC2016
   $git_cmd |
@@ -581,6 +586,7 @@ _zgit_log() {
       --bind "q:abort" \
       --bind "d:half-page-down,u:half-page-up,ctrl-f:preview-half-page-down,ctrl-b:preview-half-page-up" \
       --bind "j:down-match,k:up-match,g:first,G:last,s:jump" \
+      --bind "z:transform($zgit_script __cmd center_head)" \
       --bind "y:transform-footer($zgit_script __cmd yank log {})" \
       --bind "r:transform-footer($zgit_script __cmd reset_branch {})+reload($git_cmd)" \
       --bind "R:transform-footer($zgit_script __cmd reset_branch {} --hard)+reload($git_cmd)" \
