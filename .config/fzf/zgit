@@ -35,6 +35,7 @@ LOG_HELP_MSG="
  F		  filter commits
  ctrl-r		  toggle -G/-S filter modes
 
+ alt-c / alt-x	  git continue / abort
  :		  execute a (git) command
  o		  open commit in preview
  i, /		  toggle search
@@ -59,6 +60,7 @@ STATUS_HELP_MSG="
  x		  restore file
  X		  restore all files
 
+ alt-c / alt-x	  git continue / abort
  :		  execute a (git) command
  o		  open and browse diff
  t		  open and browse staged diff
@@ -76,6 +78,7 @@ EXPLORE_HELP_MSG="
  ctrl-f / ctrl-b  scroll preview down / up
  y		  yank file path
 
+ alt-c / alt-x	  git continue / abort
  :		  execute a (git) command
  o		  open file in preview
  i, /		  toggle search
@@ -601,6 +604,8 @@ _zgit_log() {
       --bind "-:transform-footer($zgit_script __cmd move_commit down {})+reload($git_cmd)+down" \
       --bind "_:transform-footer($zgit_script __cmd move_commit up {})+reload($git_cmd)+up" \
       --bind "::transform-footer($zgit_script __cmd execute_git_cmd log {})+reload($git_cmd)" \
+      --bind "alt-c:execute(git continue)+reload($git_cmd)" \
+      --bind "alt-x:execute(git abort)+reload($git_cmd)" \
       --bind "o:execute($zgit_script __preview commit --paging {})" \
       --bind "ctrl-l:change-footer()+clear-screen" \
       --bind "$unbound_keys:ignore" \
@@ -633,6 +638,8 @@ _zgit_status() {
       --bind "r:execute($zgit_script __cmd reset_patch_file {})+reload($git_cmd)" \
       --bind "c:transform-footer($zgit_script __cmd commit)+reload($git_cmd)" \
       --bind "::transform-footer($zgit_script __cmd execute_git_cmd status {})+reload($git_cmd)" \
+      --bind "alt-c:execute(git continue)+reload($git_cmd)" \
+      --bind "alt-x:execute(git abort)+reload($git_cmd)" \
       --bind "o:execute($zgit_script __preview file --paging {})" \
       --bind "t:execute($zgit_script __preview file --paging --staged {})" \
       --bind "ctrl-l:change-footer()+clear-screen" \
@@ -662,6 +669,8 @@ _zgit_explore() {
       --bind "j:down,k:up,g:first,G:last,s:jump" \
       --bind "y:transform-footer($zgit_script __cmd yank explore {})" \
       --bind "::transform-footer($zgit_script __cmd execute_git_cmd explore {})+reload($git_cmd)" \
+      --bind "alt-c:execute(git continue)+reload($git_cmd)" \
+      --bind "alt-x:execute(git abort)+reload($git_cmd)" \
       --bind "o:execute($zgit_script __preview commit_file --paging $commit_hash {})" \
       --bind "ctrl-l:change-footer()+clear-screen" \
       --bind "change:best" \
