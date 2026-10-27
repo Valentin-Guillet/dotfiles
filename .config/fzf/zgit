@@ -35,6 +35,7 @@ LOG_HELP_MSG="
  F		  filter commits
  ctrl-r		  toggle -G/-S filter modes
 
+ :		  execute a (git) command
  o		  open commit in preview
  i, /		  toggle search
  Enter		  (normal mode) explore commit
@@ -58,6 +59,7 @@ STATUS_HELP_MSG="
  x		  restore file
  X		  restore all files
 
+ :		  execute a (git) command
  o		  open and browse diff
  t		  open and browse staged diff
  i, /		  toggle search
@@ -74,6 +76,7 @@ EXPLORE_HELP_MSG="
  ctrl-f / ctrl-b  scroll preview down / up
  y		  yank file path
 
+ :		  execute a (git) command
  o		  open file in preview
  i, /		  toggle search
  Enter		  (input mode) exit search
@@ -183,6 +186,25 @@ _zgit_cmd_yank() {
     return 1
   fi
   echo "$target yanked!"
+}
+
+_zgit_cmd_execute_git_cmd() {
+  local git_cmd cmd_arg
+  if ! git_cmd=$(_zgit_prompt "Command to execute: "); then
+    echo "Aborted"
+    return 130
+  fi
+
+  if [[ "$1" == log ]]; then
+    cmd_arg=$(_get_commit_hash "$2")
+  elif [[ "$1" == status ]]; then
+    cmd_arg=$(_get_file_path "$2")
+  elif [[ "$1" == explore ]]; then
+    cmd_arg="$2"
+  fi
+
+  git_cmd="${git_cmd//{\}/$cmd_arg}"
+  $git_cmd 2>&1
 }
 
 # LOG COMMANDS
@@ -543,7 +565,7 @@ _zgit_log() {
   # shellcheck disable=SC2016
   enter_cmd='[[ "$FZF_PROMPT" == "i> " ]] && echo "rebind('"${ALL_BOUND_KEYS//\"/\\\"}"')+change-prompt(n> )" || echo "execute('"$zgit_script"' explore {})"'
 
-  unbound_keys=$'e,h,l,n,t,v,C,E,H,I,J,K,L,N,O,Q,S,T,U,V,Y,Z,/,\,|,,,.,;,:,(,),[,],{,},<,>,\',",!,@,#,$,%,^,&,*,+,=,0,1,2,3,4,5,6,7,8,9'
+  unbound_keys=$'e,h,l,n,t,v,C,E,H,I,J,K,L,N,O,Q,S,T,U,V,Y,Z,/,\,|,,,.,;,(,),[,],{,},<,>,\',",!,@,#,$,%,^,&,*,+,=,0,1,2,3,4,5,6,7,8,9'
 
   # shellcheck disable=SC2016
   $git_cmd |
@@ -578,6 +600,7 @@ _zgit_log() {
       --bind "P:transform-footer(git push 2>&1)+reload($git_cmd)" \
       --bind "-:transform-footer($zgit_script __cmd move_commit down {})+reload($git_cmd)+down" \
       --bind "_:transform-footer($zgit_script __cmd move_commit up {})+reload($git_cmd)+up" \
+      --bind "::transform-footer($zgit_script __cmd execute_git_cmd log {})+reload($git_cmd)" \
       --bind "o:execute($zgit_script __preview commit --paging {})" \
       --bind "ctrl-l:change-footer()+clear-screen" \
       --bind "$unbound_keys:ignore" \
@@ -592,7 +615,7 @@ _zgit_status() {
   local zgit_script git_cmd unbound_keys
   zgit_script=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)/$(basename -- "${BASH_SOURCE[0]}")
   git_cmd="git -c color.status=always status --short"
-  unbound_keys=$'a,b,e,f,h,l,m,n,v,w,z,A,B,C,D,E,F,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,Y,Z,/,\,|,,,.,;,:,(,),[,],{,},<,>,\',",!,@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9'
+  unbound_keys=$'a,b,e,f,h,l,m,n,v,w,z,A,B,C,D,E,F,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,Y,Z,/,\,|,,,.,;,(,),[,],{,},<,>,\',",!,@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9'
 
   # shellcheck disable=SC2016
   $git_cmd |
@@ -609,6 +632,7 @@ _zgit_status() {
       --bind "p:execute($zgit_script __cmd add_patch_file {})+reload($git_cmd)" \
       --bind "r:execute($zgit_script __cmd reset_patch_file {})+reload($git_cmd)" \
       --bind "c:transform-footer($zgit_script __cmd commit)+reload($git_cmd)" \
+      --bind "::transform-footer($zgit_script __cmd execute_git_cmd status {})+reload($git_cmd)" \
       --bind "o:execute($zgit_script __preview file --paging {})" \
       --bind "t:execute($zgit_script __preview file --paging --staged {})" \
       --bind "ctrl-l:change-footer()+clear-screen" \
@@ -637,6 +661,7 @@ _zgit_explore() {
       --bind "d:half-page-down,u:half-page-up,ctrl-f:preview-half-page-down,ctrl-b:preview-half-page-up" \
       --bind "j:down,k:up,g:first,G:last,s:jump" \
       --bind "y:transform-footer($zgit_script __cmd yank explore {})" \
+      --bind "::transform-footer($zgit_script __cmd execute_git_cmd explore {})+reload($git_cmd)" \
       --bind "o:execute($zgit_script __preview commit_file --paging $commit_hash {})" \
       --bind "ctrl-l:change-footer()+clear-screen" \
       --bind "change:best" \
