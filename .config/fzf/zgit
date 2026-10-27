@@ -20,6 +20,7 @@ LOG_HELP_MSG="
  y		  yank commit hash
 
  r / R		  reset branch (soft / hard)
+ e / E		  rebase branch (auto / interactive)
  space / b	  switch branch
  B		  switch branch (prompt)
  a		  create branch
@@ -117,7 +118,7 @@ _zgit_help_popup() {
   local nb_lines
   nb_lines=$(echo "$1" | wc -l)
   nb_lines=$((nb_lines + 3))
-  tmux display-popup -E -w 50 -h "$nb_lines" -T 'zgit help' "tput civis && read -p \"$1\" -n 1" &
+  tmux display-popup -E -w 56 -h "$nb_lines" -T 'zgit help' "tput civis && read -p \"$1\" -n 1" &
 }
 
 # PREVIEW COMMANDS
@@ -248,6 +249,14 @@ _zgit_cmd_reset_branch() {
     reset_level="--hard"
   fi
   git reset "$reset_level" "$commit_hash" 2>&1
+}
+
+_zgit_cmd_rebase_onto() {
+  local commit_hash git_arg
+  commit_hash=$(_get_commit_hash "$1")
+  [[ -z "$commit_hash" ]] && return 1
+
+  git rebase "$commit_hash" "${@:2}" 2>&1
 }
 
 _zgit_get_branch_name_prompt() {
@@ -573,7 +582,7 @@ _zgit_log() {
   # shellcheck disable=SC2016
   enter_cmd='[[ "$FZF_PROMPT" == "i> " ]] && echo "rebind('"${ALL_BOUND_KEYS//\"/\\\"}"')+change-prompt(n> )" || echo "execute('"$zgit_script"' explore {})"'
 
-  unbound_keys=$'e,h,l,n,t,v,C,E,H,I,J,K,L,N,O,Q,S,T,U,V,Y,Z,/,\,|,,,.,;,(,),[,],{,},<,>,\',",!,@,#,$,%,^,&,*,+,=,0,1,2,3,4,5,6,7,8,9'
+  unbound_keys=$'h,l,n,t,v,C,H,I,J,K,L,N,O,Q,S,T,U,V,Y,Z,/,\,|,,,.,;,(,),[,],{,},<,>,\',",!,@,#,$,%,^,&,*,+,=,0,1,2,3,4,5,6,7,8,9'
 
   # shellcheck disable=SC2016
   $git_cmd |
@@ -590,6 +599,8 @@ _zgit_log() {
       --bind "y:transform-footer($zgit_script __cmd yank log {})" \
       --bind "r:transform-footer($zgit_script __cmd reset_branch {})+reload($git_cmd)" \
       --bind "R:transform-footer($zgit_script __cmd reset_branch {} --hard)+reload($git_cmd)" \
+      --bind "e:transform-footer($zgit_script __cmd rebase_onto {})+reload($git_cmd)" \
+      --bind "E:execute($zgit_script __cmd rebase_onto {} --interactive)+reload($git_cmd)" \
       --bind "space,b:transform-footer($zgit_script __cmd switch_branch {})+reload($git_cmd)" \
       --bind "B:transform-footer($zgit_script __cmd switch_branch --prompt)+reload($git_cmd)" \
       --bind "a:transform-footer($zgit_script __cmd create_branch {})+reload($git_cmd)" \
