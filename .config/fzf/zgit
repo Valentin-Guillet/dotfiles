@@ -44,6 +44,7 @@ LOG_HELP_MSG="
  Enter		  (normal mode) explore commit
 		  (input mode) exit search
  Tab		  switch to status window
+ alt-r		  refresh command
  ?		  display keybindings
  q		  quit"
 
@@ -70,6 +71,7 @@ STATUS_HELP_MSG="
  i, /		  toggle search
  Enter		  (input mode) exit search
  Tab		  switch to log window
+ alt-r		  refresh command
  ?		  display keybindings
  q		  quit"
 
@@ -625,6 +627,7 @@ _zgit_log() {
       --bind "alt-c:execute(git continue)+reload($git_cmd)" \
       --bind "alt-x:execute(git abort)+reload($git_cmd)" \
       --bind "o:execute($zgit_script __preview commit --paging {})" \
+      --bind "alt-r:reload($git_cmd)" \
       --bind "ctrl-l:change-footer()+clear-screen" \
       --bind "$unbound_keys:ignore" \
       --bind "i,/:unbind($ALL_BOUND_KEYS)+change-prompt(i> ),esc:rebind($ALL_BOUND_KEYS)+change-prompt(n> )" \
@@ -661,6 +664,7 @@ _zgit_status() {
       --bind "alt-x:execute(git abort)+reload($git_cmd)" \
       --bind "o:execute($zgit_script __preview file --paging {})" \
       --bind "t:execute($zgit_script __preview file --paging --staged {})" \
+      --bind "alt-r:reload($git_cmd)" \
       --bind "ctrl-l:change-footer()+clear-screen" \
       --bind "change:best" \
       --bind "$unbound_keys:ignore" \
@@ -691,6 +695,7 @@ _zgit_explore() {
       --bind "alt-c:execute(git continue)+reload($git_cmd)" \
       --bind "alt-x:execute(git abort)+reload($git_cmd)" \
       --bind "o:execute($zgit_script __preview commit_file --paging $commit_hash {})" \
+      --bind "alt-r:reload($git_cmd)" \
       --bind "ctrl-l:change-footer()+clear-screen" \
       --bind "change:best" \
       --bind "$unbound_keys:ignore" \
