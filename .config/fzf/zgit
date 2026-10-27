@@ -527,7 +527,7 @@ _zgit_cmd_restore_file() {
   fi
 }
 
-_zgit_cmd_clean_status() {
+_zgit_cmd_restore_all() {
   if git diff-index --quiet HEAD; then
     echo "Nothing to clean!"
     return 1
@@ -539,6 +539,21 @@ _zgit_cmd_clean_status() {
   fi
 
   git restore . 2>&1
+}
+
+_zgit_cmd_restore_and_clean() {
+if git diff-index --quiet HEAD && ! git ls-files . --exclude-standard --others | grep -q ^; then
+    echo "Nothing to clean!"
+    return 1
+  fi
+
+  if [[ ! $(_zgit_prompt "Do you really want to restore AND clean all files? [yN] ") =~ ^[Yy]$ ]]; then
+    echo "Aborted"
+    return 1
+  fi
+
+  git restore . 2>&1
+  git clean -fd
 }
 
 _zgit_cmd_add_patch_file() {
@@ -655,7 +670,8 @@ _zgit_status() {
       --bind "space:transform-footer($zgit_script __cmd toggle_file {})+reload($git_cmd)" \
       --bind "A:transform-footer(git add -A)+reload($git_cmd)" \
       --bind "x:transform-footer($zgit_script __cmd restore_file {})+reload($git_cmd)" \
-      --bind "X:transform-footer($zgit_script __cmd clean_status)+reload($git_cmd)" \
+      --bind "X:transform-footer($zgit_script __cmd restore_all)+reload($git_cmd)" \
+      --bind "ctrl-x:transform-footer($zgit_script __cmd restore_and_clean)+reload($git_cmd)" \
       --bind "p:execute($zgit_script __cmd add_patch_file {})+reload($git_cmd)" \
       --bind "r:execute($zgit_script __cmd reset_patch_file {})+reload($git_cmd)" \
       --bind "c:transform-footer($zgit_script __cmd commit)+reload($git_cmd)" \
