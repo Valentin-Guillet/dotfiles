@@ -621,7 +621,7 @@ _zgit_log() {
       --bind "q:abort" \
       --bind "d:half-page-down,u:half-page-up,ctrl-f:preview-half-page-down,ctrl-b:preview-half-page-up" \
       --bind "j:down-match,k:up-match,g:first,G:last,s:jump" \
-      --bind "z:transform($zgit_script __cmd center_head)" \
+      --bind "load,z:transform($zgit_script __cmd center_head)" \
       --bind "y:transform-footer($zgit_script __cmd yank log {})" \
       --bind "r:transform-footer($zgit_script __cmd reset_branch {})+reload($git_cmd)" \
       --bind "R:transform-footer($zgit_script __cmd reset_branch {} --hard)+reload($git_cmd)" \
