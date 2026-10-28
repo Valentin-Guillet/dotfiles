@@ -20,7 +20,7 @@ export FZF_DEFAULT_OPTS="
     --tmux 85%
     --bind='ctrl-/:toggle-preview'
     --preview-window 'right:60%:hidden:wrap,~1,+{2}/3'
-    --preview '(bat --no-config --style=header-filename,numbers --wrap=never --color=always {} || cat {} || tree -C {}) 2> /dev/null'"
+    --preview '(bat --no-config --style=header-filename,numbers --wrap=never --color=always {} || cat {} || ([ -d {} ] && tree -C {})) 2> /dev/null'"
 
 
 # Set up keybindings and completion, but with <M-g> instead of <C-t>
