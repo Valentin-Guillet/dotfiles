@@ -69,7 +69,8 @@ STATUS_HELP_MSG="
  o		  open and browse diff
  t		  open and browse staged diff
  i, /		  toggle search
- Enter		  (input mode) exit search
+ Enter		  (normal mode) open file in editor
+		  (input mode) exit search
  Tab		  switch to log window
  alt-r		  refresh command
  ?		  display keybindings
@@ -87,7 +88,8 @@ EXPLORE_HELP_MSG="
  :		  execute a (git) command
  o		  open file in preview
  i, /		  toggle search
- Enter		  (input mode) exit search
+ Enter		  (normal mode) open file in editor
+		  (input mode) exit search
  ?		  display keybindings
  q		  quit"
 
@@ -589,6 +591,12 @@ _zgit_cmd_commit() {
   git commit -m "$commit_msg" 2>&1
 }
 
+_zgit_cmd_open_editor() {
+  local file_path
+  file_path=$(_get_file_path "$1")
+  "${EDITOR:-vim}" "$file_path"
+}
+
 # MAIN FUNCTIONS
 
 _zgit_log() {
@@ -653,9 +661,13 @@ _zgit_log() {
 }
 
 _zgit_status() {
-  local zgit_script git_cmd unbound_keys
+  local zgit_script git_cmd enter_cmd unbound_keys
   zgit_script=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)/$(basename -- "${BASH_SOURCE[0]}")
   git_cmd="git -c color.status=always status --short"
+  # shellcheck disable=SC2016
+  enter_cmd='[[ "$FZF_PROMPT" == "i> " ]] && echo "rebind('"${ALL_BOUND_KEYS//\"/\\\"}"')+change-prompt(n> )" || echo "execute('"$zgit_script"' __cmd open_editor {})"'
+
+
   unbound_keys=$'a,b,e,f,h,l,m,n,v,w,z,B,C,D,E,F,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,Y,Z,/,\,|,,,.,;,(,),[,],{,},<,>,\',",!,@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9'
 
   # shellcheck disable=SC2016
@@ -684,18 +696,26 @@ _zgit_status() {
       --bind "ctrl-l:change-footer()+clear-screen" \
       --bind "change:best" \
       --bind "$unbound_keys:ignore" \
-      --bind "i,/:unbind($ALL_BOUND_KEYS)+change-prompt(i> ),enter,esc:rebind($ALL_BOUND_KEYS)+change-prompt(n> )" \
+      --bind "i,/:unbind($ALL_BOUND_KEYS)+change-prompt(i> ),esc:rebind($ALL_BOUND_KEYS)+change-prompt(n> )" \
+      --bind "enter:transform:$enter_cmd" \
       --bind "?:execute($zgit_script __help \"$STATUS_HELP_MSG\")" \
       --bind "tab:become($zgit_script)" \
       --preview "$zgit_script __preview file {}"
 }
 
 _zgit_explore() {
-  local zgit_script commit_hash git_cmd
+  local zgit_script commit_hash git_cmd enter_cmd
 
   zgit_script=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)/$(basename -- "${BASH_SOURCE[0]}")
   commit_hash=$(_get_commit_hash "$1")
   git_cmd="git show --pretty= --name-only --diff-merges=first-parent $commit_hash"
+
+  # shellcheck disable=SC2016
+  enter_cmd=$'if [[ "$FZF_PROMPT" == "i> " ]]; then
+    echo "rebind('"${ALL_BOUND_KEYS//\"/\\\"}"')+change-prompt(n> )"
+  else
+    echo "execute(git show '"$commit_hash"$':{} | vim -R -c \\"execute \'file \' . fnameescape({}) | filetype detect\\" -)"
+  fi'
 
   unbound_keys=$'a,b,c,e,f,h,l,m,n,p,r,t,v,w,x,z,A,B,C,D,E,F,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,/,\,|,,,.,;,(,),[,],{,},<,>,\',",!,@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9,space'
 
@@ -715,7 +735,8 @@ _zgit_explore() {
       --bind "ctrl-l:change-footer()+clear-screen" \
       --bind "change:best" \
       --bind "$unbound_keys:ignore" \
-      --bind "i,/:unbind($ALL_BOUND_KEYS)+change-prompt(i> ),enter,esc:rebind($ALL_BOUND_KEYS)+change-prompt(n> )" \
+      --bind "i,/:unbind($ALL_BOUND_KEYS)+change-prompt(i> ),esc:rebind($ALL_BOUND_KEYS)+change-prompt(n> )" \
+      --bind "enter:transform:$enter_cmd" \
       --bind "?:execute($zgit_script __help \"$EXPLORE_HELP_MSG\")" \
       --preview-window "~2" \
       --preview "$zgit_script __preview commit_file $commit_hash {}"
