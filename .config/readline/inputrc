@@ -39,8 +39,8 @@ $if Bash
     "\eC": "\C-a\C-] \C-k\C-y\C-h\C-y\C-h"
 
     # Add man/sudo in first position
-    "\em": " \C-b\C-u\C-e\C-u\C-y\ey\C-aman \C-] \C-k\n\C-y\ey\C-a\C-d\C-y\ey"
-    "\es": "\C-usudo \C-y"
+    "\em": " \C-u \C-a\C-kman \C-y\C-a\ef\C-f\C-d\C-y\ey\C-h\C-a\ef\ef \C-b\C-k\n\C-y\ey\C-a\C-d\C-y\ey\C-h"
+    "\es": " \C-usudo \C-y\C-h"
 $endif
 
 $if Python
