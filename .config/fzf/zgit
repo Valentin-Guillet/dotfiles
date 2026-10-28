@@ -61,8 +61,9 @@ STATUS_HELP_MSG="
  p		  stage file in patch mode
  r		  unstage file in patch mode
  c		  commit staged changes
- x		  restore file
- X		  restore all files
+ x		  restore file in patch mode
+ X		  restore file
+ C		  restore all files
 
  alt-c / alt-x	  git continue / abort
  :		  execute a (git) command
@@ -576,6 +577,15 @@ _zgit_cmd_reset_patch_file() {
   git reset --patch -- "$file_path" 2>&1
 }
 
+_zgit_cmd_restore_patch_file() {
+  local file_path status="${1:1:1}"
+
+  [[ "$status" == " " ]] && return 1
+  file_path=$(_get_file_path "$1")
+  clear
+  git restore --patch -- "$file_path" 2>&1
+}
+
 _zgit_cmd_commit() {
   if git diff --cached --quiet; then
     echo "Nothing to commit!"
@@ -667,8 +677,7 @@ _zgit_status() {
   # shellcheck disable=SC2016
   enter_cmd='[[ "$FZF_PROMPT" == "i> " ]] && echo "rebind('"${ALL_BOUND_KEYS//\"/\\\"}"')+change-prompt(n> )" || echo "execute('"$zgit_script"' __cmd open_editor {})"'
 
-
-  unbound_keys=$'a,b,e,f,h,l,m,n,v,w,z,B,C,D,E,F,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,Y,Z,/,\,|,,,.,;,(,),[,],{,},<,>,\',",!,@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9'
+  unbound_keys=$'a,b,e,f,h,l,m,n,v,w,z,B,D,E,F,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,Y,Z,/,\,|,,,.,;,(,),[,],{,},<,>,\',",!,@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9'
 
   # shellcheck disable=SC2016
   $git_cmd |
@@ -681,8 +690,9 @@ _zgit_status() {
       --bind "y:transform-footer($zgit_script __cmd yank status {})" \
       --bind "space:transform-footer($zgit_script __cmd toggle_file {})+reload($git_cmd)" \
       --bind "A:transform-footer(git add -A)+reload($git_cmd)" \
-      --bind "x:transform-footer($zgit_script __cmd restore_file {})+reload($git_cmd)" \
-      --bind "X:transform-footer($zgit_script __cmd restore_all)+reload($git_cmd)" \
+      --bind "x:execute($zgit_script __cmd restore_patch_file {})+reload($git_cmd)" \
+      --bind "X:transform-footer($zgit_script __cmd restore_file {})+reload($git_cmd)" \
+      --bind "C:transform-footer($zgit_script __cmd restore_all)+reload($git_cmd)" \
       --bind "ctrl-x:transform-footer($zgit_script __cmd restore_and_clean)+reload($git_cmd)" \
       --bind "p:execute($zgit_script __cmd add_patch_file {})+reload($git_cmd)" \
       --bind "r:execute($zgit_script __cmd reset_patch_file {})+reload($git_cmd)" \
