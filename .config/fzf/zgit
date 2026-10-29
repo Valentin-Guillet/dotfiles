@@ -17,6 +17,7 @@ LOG_HELP_MSG="
  d / u		  move selection down / up
  ctrl-f / ctrl-b  scroll preview down / up
  z		  set position to HEAD
+ [ / ]		  go to next / prev branch or tag
  y		  yank commit hash
 
  r / R		  reset branch (soft / hard)
@@ -95,7 +96,7 @@ EXPLORE_HELP_MSG="
  q		  quit"
 
 _get_commit_hash() {
-  echo "$1" | grep -o "[a-f0-9]\{7,40\}"
+  echo "$1" | grep -o "[a-f0-9]\{7,40\}" | head -1
 }
 
 _get_file_path() {
@@ -499,6 +500,19 @@ _zgit_cmd_switch_filter_mode() {
   fi
 }
 
+_zgit_cmd_goto_next_branch() {
+  local pos next_pos
+  pos=$(($1 + 1))
+  next_pos=$(git log --all --graph --format='%D' | sed -n "$pos,$ { /[a-zA-Z0-9]/ { =; q }}")
+  echo "pos($next_pos)"
+}
+
+_zgit_cmd_goto_prev_branch() {
+  local prev_pos
+  prev_pos=$(git log --all --graph --format='%D' | sed -n "$1q; /[a-zA-Z0-9]/=" | tail -n 1)
+  echo "pos($prev_pos)"
+}
+
 # STATUS COMMANDS
 
 _zgit_cmd_toggle_file() {
@@ -618,7 +632,7 @@ _zgit_log() {
   # shellcheck disable=SC2016
   enter_cmd='[[ "$FZF_PROMPT" == "i> " ]] && echo "rebind('"${ALL_BOUND_KEYS//\"/\\\"}"')+change-prompt(n> )" || echo "execute('"$zgit_script"' explore {})"'
 
-  unbound_keys=$'h,l,n,t,v,C,H,I,J,K,L,N,O,Q,S,T,U,V,Y,Z,/,\,|,,,.,;,(,),[,],{,},<,>,\',",!,@,#,$,%,^,&,*,+,=,0,1,2,3,4,5,6,7,8,9'
+  unbound_keys=$'h,l,n,t,v,C,H,I,J,K,L,N,O,Q,S,T,U,V,Y,Z,/,\,|,,,.,;,(,),{,},<,>,\',",!,@,#,$,%,^,&,*,+,=,0,1,2,3,4,5,6,7,8,9'
 
   # shellcheck disable=SC2016
   $git_cmd |
@@ -657,6 +671,8 @@ _zgit_log() {
       --bind "-:transform-footer($zgit_script __cmd move_commit down {})+reload($git_cmd)+down" \
       --bind "_:transform-footer($zgit_script __cmd move_commit up {})+reload($git_cmd)+up" \
       --bind "::transform-footer($zgit_script __cmd execute_git_cmd log {})+reload($git_cmd)" \
+      --bind "[:transform($zgit_script __cmd goto_prev_branch \$FZF_POS)" \
+      --bind "]:transform($zgit_script __cmd goto_next_branch \$FZF_POS)" \
       --bind "alt-c:execute(git continue)+reload($git_cmd)" \
       --bind "alt-x:execute(git abort)+reload($git_cmd)" \
       --bind "o:execute($zgit_script __preview commit --paging {})" \
