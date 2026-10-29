@@ -308,40 +308,13 @@ _update_fzf() {
   _success "fzf ${latest_version#v} installed."
 }
 
-_update_lazygit() {
-  _confirm "Install lazygit?" || return 0
-
-  local api_response latest_version lg_url
-  api_response="$(curl -s https://api.github.com/repos/jesseduffield/lazygit/releases/latest)"
-  latest_version="$(echo "$api_response" | grep '"tag_name"' | cut -d '"' -f 4)"
-  lg_url="$(echo "$api_response" | grep browser_download_url | grep 'linux_x86_64\.tar\.gz' | cut -d '"' -f 4)"
-
-  local local_version=""
-  if command -v lazygit &>/dev/null; then
-    local_version="$(lazygit --version | grep -oP '(?<=, version=)[^,]+')"
-  fi
-
-  if [[ "$local_version" == "${latest_version#v}" ]]; then
-    _success "lazygit ${latest_version#v} is already up to date."
-    return 0
-  fi
-
-  _header "Installing lazygit ${latest_version#v} (current: ${local_version:-not installed})"
-  _info "Downloading lazygit ${latest_version#v}..."
-  wget -q "$lg_url" -O lg.tar.gz
-  tar -xaf lg.tar.gz lazygit
-  rm lg.tar.gz
-  mv lazygit "$HOME"/.local/bin/
-  _success "lazygit ${latest_version#v} installed."
-}
-
 main() {
   mkdir -p "$HOME"/.local/bin/
   mkdir -p "$HOME"/.local/src/
   mkdir -p "$HOME"/.local/share/bash-completion/completions/
 
   local all_install_tools=(dotfiles git uv nerdfont dconf misc)
-  local all_update_tools=(vim tmux neovim bat delta fd fzf lazygit ripgrep git-extras)
+  local all_update_tools=(vim tmux neovim bat delta fd fzf ripgrep git-extras)
 
   local tools=()
   local do_install=0
@@ -357,7 +330,7 @@ main() {
     echo "  -h, --help     Show this help message and exit"
     echo "  -l, --list     List all available tools and exit"
     echo "  -i, --install  Run first-time setup routines (implies -u)"
-    echo "  -t, --tools    Update CLI tools only: bat, delta, fd, fzf, lazygit, ripgrep"
+    echo "  -t, --tools    Update CLI tools only: bat, delta, fd, fzf, ripgrep"
     echo "  -y, --yes      Skip confirmation prompts"
     echo ""
     echo -e "${BOLD}Arguments:${RESET}"
@@ -386,7 +359,7 @@ main() {
       return 0
       ;;
     -i | --install) do_install=1 && shift ;;
-    -t | --tools) tools+=(bat delta fd fzf lazygit ripgrep) && shift ;;
+    -t | --tools) tools+=(bat delta fd fzf ripgrep) && shift ;;
     -y | --yes) ASK_CONFIRM=0 && shift ;;
     --) shift && break ;;
     esac
