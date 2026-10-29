@@ -68,8 +68,7 @@ STATUS_HELP_MSG="
 
  alt-c / alt-x	  git continue / abort
  :		  execute a (git) command
- o		  open and browse diff
- t		  open and browse staged diff
+ o / O		  open and browse (/staged) diff
  i, /		  toggle search
  Enter		  (normal mode) open file in editor
 		  (input mode) exit search
@@ -693,7 +692,7 @@ _zgit_status() {
   # shellcheck disable=SC2016
   enter_cmd='[[ "$FZF_PROMPT" == "i> " ]] && echo "rebind('"${ALL_BOUND_KEYS//\"/\\\"}"')+change-prompt(n> )" || echo "execute('"$zgit_script"' __cmd open_editor {})"'
 
-  unbound_keys=$'a,b,e,f,h,l,m,n,v,w,z,B,D,E,F,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,Y,Z,/,\,|,,,.,;,(,),[,],{,},<,>,\',",!,@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9'
+  unbound_keys=$'a,b,e,f,h,l,m,n,t,v,w,z,B,D,E,F,H,I,J,K,L,M,N,P,Q,R,S,T,U,V,W,Y,Z,/,\,|,,,.,;,(,),[,],{,},<,>,\',",!,@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9'
 
   # shellcheck disable=SC2016
   $git_cmd |
@@ -717,7 +716,7 @@ _zgit_status() {
       --bind "alt-c:execute(git continue)+reload($git_cmd)" \
       --bind "alt-x:execute(git abort)+reload($git_cmd)" \
       --bind "o:execute($zgit_script __preview file --paging {})" \
-      --bind "t:execute($zgit_script __preview file --paging --staged {})" \
+      --bind "O:execute($zgit_script __preview file --paging --staged {})" \
       --bind "alt-r:reload($git_cmd)" \
       --bind "ctrl-l:change-footer()+clear-screen" \
       --bind "change:best" \
