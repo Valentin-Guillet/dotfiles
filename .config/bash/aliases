@@ -38,6 +38,7 @@ alias configgx='vim $XDG_CONFIG_HOME/bash/xdg_setup; source ~/.bashrc'
 
 alias cdgit='cd $(git rev-parse --show-toplevel)'
 
+alias zg='zgit'
 command -v bat &>/dev/null && alias cat='bat'
 command -v fd &>/dev/null && alias fd='fd --color=auto --no-ignore --hidden --follow --exclude .git'
 command -v lazygit &>/dev/null && alias lg='lazygit'
