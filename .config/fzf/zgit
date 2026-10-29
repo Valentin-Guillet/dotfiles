@@ -155,7 +155,11 @@ _zgit_preview_file() {
 
   file_path=$(_get_file_path "$1")
   if [[ "${1:0:2}" == "??" ]]; then
-    LESS=Rc bat --color=always --paging="$paging" "$file_path" || "${fallback[*]} $file_path"
+    if [[ -f "$file_path" ]]; then
+      LESS=Rc bat --color=always --paging="$paging" "$file_path" 2>/dev/null || "${fallback[@]}" "$file_path"
+    else
+      git ls-files -co --exclude-standard -- "$file_path" | tree -Ca --fromfile . 2>/dev/null || ls -R --color=always
+    fi
   else
     [[ "${1:1:1}" == " " ]] && git_arg=("--staged")
     git diff --color=always --format= --diff-merges=first-parent "${git_arg[@]}" "$file_path" 2>/dev/null | { LESS=Rc delta --paging="$paging" || "${fallback[@]}"; }
