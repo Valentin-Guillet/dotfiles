@@ -16,6 +16,9 @@ command -v fzf &>/dev/null && source "$XDG_CONFIG_HOME"/fzf/config
 [[ -f "$XDG_CONFIG_HOME"/fuzzy_complete/fuzzycd_wrapper.sh ]] && source "$XDG_CONFIG_HOME"/fuzzy_complete/fuzzycd_wrapper.sh
 [[ -f "$XDG_CONFIG_HOME"/fuzzy_complete/fuzzy_complete.sh ]] && source "$XDG_CONFIG_HOME"/fuzzy_complete/fuzzy_complete.sh
 
+# zgit
+command -v zgit >/dev/null 2>&1 || ln -s "$XDG_CONFIG_HOME"/fzf/zgit "$HOME"/.local/bin/
+
 pathadd "$XDG_CONFIG_HOME"/git/custom_commands
 
 # Rust
