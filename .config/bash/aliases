@@ -40,7 +40,6 @@ alias cdgit='cd $(git rev-parse --show-toplevel)'
 
 command -v bat &>/dev/null && alias cat='bat'
 command -v fd &>/dev/null && alias fd='fd --color=auto --no-ignore --hidden --follow --exclude .git'
-command -v lazygit &>/dev/null && alias lg='lazygit'
 command -v rg &>/dev/null && alias rgi='rg --no-ignore'
 
 if [ -f "$HOME"/.config/tokens/github ]; then
