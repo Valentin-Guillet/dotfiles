@@ -9,6 +9,15 @@
                 "commandline": "bash.exe --noprofile --norc -c '$HOME/.config/misc/windows_terminal/toggle_keybindings.py'"
             },
             "id": "User.ToggleKeybindings"
+        },
+        {
+            "command":
+            {
+                "action": "splitPane",
+                "split": "down",
+                "commandline": "bash.exe --noprofile --norc -c 'cat $HOME/.config/tokens/github | clip.exe'"
+            },
+            "id": "User.CopyGitPwd"
         }
     ],
     "keybindings":
@@ -273,6 +282,11 @@
             "id": "Terminal.ToggleSplitOrientation",
             "keys": "ctrl+space",
             "toggle": true
+        },
+
+        {
+            "id": "User.CopyGitPwd",
+            "keys": "ctrl+g"
         },
 
         {
