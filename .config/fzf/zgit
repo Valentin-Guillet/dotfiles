@@ -236,15 +236,6 @@ _zgit_cmd_git_log_entries() {
   git log --all --decorate --oneline --graph --color=always "${git_arg[@]}"
 }
 
-_zgit_cmd_git_log_header() {
-  [[ -z "$FZF_HEADER_LABEL" ]] && return
-  if [[ "${FZF_HEADER_LABEL:0:1}" == 'S' ]]; then
-    echo "Filter -S: ${FZF_HEADER_LABEL:1}"
-  else
-    echo "Filter -G: ${FZF_HEADER_LABEL:1}"
-  fi
-}
-
 _zgit_cmd_reset_branch() {
   local commit_hash reset_level
   commit_hash=$(_get_commit_hash "$1")
@@ -627,28 +618,44 @@ _zgit_cmd_open_editor() {
 # MAIN FUNCTIONS
 
 _zgit_log() {
-  local zgit_script git_cmd header_cmd enter_cmd unbound_keys
+  local zgit_script git_cmd header_cmd enter_cmd pos_load_cmd load_cmd init_filter init_header unbound_keys
   zgit_script=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)/$(basename -- "${BASH_SOURCE[0]}")
   git_cmd="$zgit_script __cmd git_log_entries"
-  header_cmd="$zgit_script __cmd git_log_header"
+
+  # shellcheck disable=SC2016
+  header_cmd='[[ -n "$FZF_HEADER_LABEL" ]] && echo "Filter -${FZF_HEADER_LABEL:0:1}: ${FZF_HEADER_LABEL:1}"'
 
   # shellcheck disable=SC2016
   enter_cmd='[[ "$FZF_PROMPT" == "i> " ]] && echo "rebind('"${ALL_BOUND_KEYS//\"/\\\"}"')+change-prompt(n> )" || echo "execute('"$zgit_script"' explore {})"'
 
+  pos_load_cmd="transform($zgit_script __cmd center_head)"
+  for arg in "$@"; do
+    if [[ "$arg" == --position=* ]]; then
+      pos_load_cmd="pos(${arg:11})"
+    elif [[ "$arg" == --filter=* ]]; then
+      init_filter="${arg:9}"
+      [[ -n "$init_filter" ]] && init_header="Filter -${init_filter:0:1}: ${init_filter:1}"
+    fi
+  done
+  load_cmd="[[ \"\$FZF_PROMPT\" == 'l> ' ]] && echo '$pos_load_cmd+change-prompt(n> )'"
+
   unbound_keys=$'h,l,n,t,v,C,H,I,J,K,L,N,O,Q,S,T,U,V,Y,Z,/,\,|,,,.,;,(,),{,},<,>,\',",!,@,#,$,%,^,&,*,+,=,0,1,2,3,4,5,6,7,8,9'
 
   # shellcheck disable=SC2016
-  $git_cmd |
+  FZF_HEADER_LABEL="$init_filter" $git_cmd |
     FZF_DEFAULT_OPTS="${ZGIT_FZF_DEFAULT_OPTS:-}" fzf \
       --raw \
       --tiebreak 'index' \
-      --prompt 'n> ' \
+      --prompt 'l> ' \
+      --header-label "$init_filter" \
+      --header "$init_header" \
       --bind "change:best" \
+      --bind "load:transform:$load_cmd" \
       --bind 'focus:transform:[[ {} == *"*"* ]] && exit; [[ $FZF_ACTION == "up"* ]] && echo up || echo down' \
       --bind "q:abort" \
       --bind "d:half-page-down,u:half-page-up,ctrl-f:preview-half-page-down,ctrl-b:preview-half-page-up" \
       --bind "j:down-match,k:up-match,g:first,G:last,s:jump" \
-      --bind "load,z:transform($zgit_script __cmd center_head)" \
+      --bind "z:transform($zgit_script __cmd center_head)" \
       --bind "y:transform-footer($zgit_script __cmd yank log {})" \
       --bind "r:transform-footer($zgit_script __cmd reset_branch {})+reload($git_cmd)" \
       --bind "R:transform-footer($zgit_script __cmd reset_branch {} --hard)+reload($git_cmd)" \
@@ -685,7 +692,7 @@ _zgit_log() {
       --bind "i,/:unbind($ALL_BOUND_KEYS)+change-prompt(i> ),esc:rebind($ALL_BOUND_KEYS)+change-prompt(n> )" \
       --bind "enter:transform:$enter_cmd" \
       --bind "?:execute($zgit_script __help \"$LOG_HELP_MSG\")" \
-      --bind "tab:become($zgit_script status)" \
+      --bind "tab:become($zgit_script status --position=\$FZF_POS --filter=\\\"\$FZF_HEADER_LABEL\\\")" \
       --preview "$zgit_script __preview commit {}"
 }
 
@@ -728,7 +735,7 @@ _zgit_status() {
       --bind "i,/:unbind($ALL_BOUND_KEYS)+change-prompt(i> ),esc:rebind($ALL_BOUND_KEYS)+change-prompt(n> )" \
       --bind "enter:transform:$enter_cmd" \
       --bind "?:execute($zgit_script __help \"$STATUS_HELP_MSG\")" \
-      --bind "tab:become($zgit_script)" \
+      --bind "tab:become($zgit_script log $*)" \
       --preview "$zgit_script __preview file {}"
 }
 
