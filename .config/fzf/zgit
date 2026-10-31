@@ -279,8 +279,7 @@ _zgit_get_branch_name_prompt() {
       --preview-window down,border-top,75% \
       --color hl:underline,hl+:underline \
       --no-hscroll \
-      --bind "alt-enter:become:printf '%s\n' {+} | cut -c3- | sed 's@[^/]*/@@'" \
-      --preview "git log --oneline --graph --date=short --color=always --pretty='format:%C(auto)%cd %h%d %s' \$(cut -c3- <<< {} | cut -d' ' -f1) --")
+      --preview "git log --oneline --graph --date=short --color=always --pretty='format:%C(auto)%cd %h%d %s' \$([[ \"{}\" =~ '(HEAD detached' ]] && echo 'HEAD' || echo \$(cut -c3- <<< {} | cut -d' ' -f1)) --")
   if [[ $? == 130 ]]; then
     echo "Aborted"
     return 130
@@ -654,7 +653,7 @@ _zgit_log() {
       --bind "R:transform-footer($zgit_script __cmd reset_branch {} --hard)+reload($git_cmd)" \
       --bind "e:transform-footer($zgit_script __cmd rebase_onto {})+reload($git_cmd)" \
       --bind "E:execute($zgit_script __cmd rebase_onto {} --interactive)+reload($git_cmd)" \
-      --bind "space,b:transform-footer($zgit_script __cmd switch_branch {})+reload($git_cmd)" \
+      --bind "space,b:transform-footer($zgit_script __cmd switch_branch {})+reload($git_cmd)+transform($zgit_script __cmd center_head)" \
       --bind "B:transform-footer($zgit_script __cmd switch_branch --prompt)+reload($git_cmd)" \
       --bind "a:transform-footer($zgit_script __cmd create_branch {})+reload($git_cmd)" \
       --bind "D:transform-footer($zgit_script __cmd detach_head {})+reload($git_cmd)" \
