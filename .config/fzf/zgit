@@ -272,7 +272,8 @@ _zgit_cmd_rebase_onto() {
 _zgit_get_branch_name_prompt() {
   local branch_name
 
-  branch_name=$(git branch --sort=-committerdate --sort=HEAD --format=$'%(HEAD) %(color:yellow)%(refname:short) %(color:green)(%(committerdate:relative))\t%(color:blue)%(subject)%(color:reset)' --color=always "$@" | column -ts$'\t' |
+  branch_name=$(git branch --sort=-committerdate --sort=HEAD --format=$'%(HEAD) %(color:yellow)%(refname:short) %(color:green)(%(committerdate:relative))\t%(color:blue)%(subject)%(color:reset)' --color=always "$@" |
+    column -ts$'\t' |
     fzf --ansi \
       --tmux 70% \
       --tiebreak begin \
@@ -561,7 +562,7 @@ _zgit_cmd_restore_all() {
 }
 
 _zgit_cmd_restore_and_clean() {
-if git diff-index --quiet HEAD && ! git ls-files . --exclude-standard --others | grep -q ^; then
+  if git diff-index --quiet HEAD && ! git ls-files . --exclude-standard --others | grep -q ^; then
     echo "Nothing to clean!"
     return 1
   fi
