@@ -13,7 +13,7 @@ ALL_BOUND_KEYS=$'a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,A,B,C,D,E,F
 LOG_HELP_MSG="
  j / k		  down / up
  g / G		  first / last
- s		  jump to line
+ J		  jump to line
  d / u		  move selection down / up
  ctrl-f / ctrl-b  scroll preview down / up
  z		  set position to HEAD
@@ -52,7 +52,7 @@ LOG_HELP_MSG="
 STATUS_HELP_MSG="
  j / k		  down / up
  g / G		  first / last
- s		  jump to line
+ J		  jump to line
  d / u		  move selection down / up
  ctrl-f / ctrl-b  scroll preview down / up
  y		  yank file path
@@ -80,7 +80,7 @@ STATUS_HELP_MSG="
 EXPLORE_HELP_MSG="
  j / k		  down / up
  g / G		  first / last
- s		  jump to line
+ J		  jump to line
  d / u		  move selection down / up
  ctrl-f / ctrl-b  scroll preview down / up
  y		  yank file path
@@ -640,7 +640,7 @@ _zgit_log() {
   done
   load_cmd="[[ \"\$FZF_PROMPT\" == 'l> ' ]] && echo '$pos_load_cmd+change-prompt(n> )'"
 
-  unbound_keys=$'h,l,n,t,v,C,H,I,J,K,L,N,O,Q,S,T,U,V,Y,Z,\,|,,,.,;,(,),{,},<,>,\',",!,@,#,$,%,^,&,*,+,=,0,1,2,3,4,5,6,7,8,9'
+  unbound_keys=$'h,l,n,s,t,v,C,H,I,K,L,N,O,Q,S,T,U,V,Y,Z,\,|,,,.,;,(,),{,},<,>,\',",!,@,#,$,%,^,&,*,+,=,0,1,2,3,4,5,6,7,8,9'
 
   # shellcheck disable=SC2016
   FZF_HEADER_LABEL="$init_filter" $git_cmd |
@@ -655,7 +655,7 @@ _zgit_log() {
       --bind 'focus:transform:[[ {} == *"*"* ]] && exit; [[ $FZF_ACTION == "up"* ]] && echo up || echo down' \
       --bind "q:abort" \
       --bind "d:half-page-down,u:half-page-up,ctrl-f:preview-half-page-down,ctrl-b:preview-half-page-up" \
-      --bind "j:down-match,k:up-match,g:first,G:last,s:jump" \
+      --bind "j:down-match,k:up-match,g:first,G:last,J:jump" \
       --bind "z:transform($zgit_script __cmd center_head)" \
       --bind "y:transform-footer($zgit_script __cmd yank log {})" \
       --bind "r:transform-footer($zgit_script __cmd reset_branch {})+reload($git_cmd)" \
@@ -704,7 +704,7 @@ _zgit_status() {
   # shellcheck disable=SC2016
   enter_cmd='[[ "$FZF_PROMPT" == "i> " ]] && echo "rebind('"${ALL_BOUND_KEYS//\"/\\\"}"')+change-prompt(n> )" || echo "execute('"$zgit_script"' __cmd open_editor {})"'
 
-  unbound_keys=$'a,b,e,f,h,l,m,n,t,v,w,z,B,D,E,F,H,I,J,K,L,M,N,P,Q,R,S,T,U,V,W,Y,Z,\,|,,,.,;,(,),[,],{,},<,>,\',",!,@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9'
+  unbound_keys=$'a,b,e,f,h,l,m,n,s,t,v,w,z,B,D,E,F,H,I,K,L,M,N,P,Q,R,S,T,U,V,W,Y,Z,\,|,,,.,;,(,),[,],{,},<,>,\',",!,@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9'
 
   # shellcheck disable=SC2016
   $git_cmd |
@@ -713,7 +713,7 @@ _zgit_status() {
       --prompt 'n> ' \
       --bind "q:abort" \
       --bind "d:half-page-down,u:half-page-up,ctrl-f:preview-half-page-down,ctrl-b:preview-half-page-up" \
-      --bind "j:down,k:up,g:first,G:last,s:jump" \
+      --bind "j:down,k:up,g:first,G:last,J:jump" \
       --bind "y:transform-footer($zgit_script __cmd yank status {})" \
       --bind "space:transform-footer($zgit_script __cmd toggle_file {})+reload($git_cmd)" \
       --bind "A:transform-footer(git add -A)+reload($git_cmd)" \
@@ -754,7 +754,7 @@ _zgit_explore() {
     echo "execute(git show '"$commit_hash"$':{} | vim -R -c \\"execute \'file \' . fnameescape({}) | filetype detect\\" -)"
   fi'
 
-  unbound_keys=$'a,b,c,e,f,h,l,m,n,p,r,t,v,w,x,z,A,B,C,D,E,F,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,\,|,,,.,;,(,),[,],{,},<,>,\',",!,@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9,space'
+  unbound_keys=$'a,b,c,e,f,h,l,m,n,p,r,s,t,v,w,x,z,A,B,C,D,E,F,H,I,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,\,|,,,.,;,(,),[,],{,},<,>,\',",!,@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9,space'
 
   $git_cmd |
     FZF_DEFAULT_OPTS="${ZGIT_FZF_DEFAULT_OPTS:-}" fzf \
@@ -762,7 +762,7 @@ _zgit_explore() {
       --prompt 'n> ' \
       --bind "q:abort" \
       --bind "d:half-page-down,u:half-page-up,ctrl-f:preview-half-page-down,ctrl-b:preview-half-page-up" \
-      --bind "j:down,k:up,g:first,G:last,s:jump" \
+      --bind "j:down,k:up,g:first,G:last,J:jump" \
       --bind "y:transform-footer($zgit_script __cmd yank explore {})" \
       --bind "::transform-footer($zgit_script __cmd execute_git_cmd explore {})+reload($git_cmd)" \
       --bind "alt-c:execute(git continue)+reload($git_cmd)" \
