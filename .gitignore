@@ -32,27 +32,17 @@
 
 !.config/git/
 !.config/git/**
-.config/git/custom_commands/git-abort
-.config/git/custom_commands/git-alias
-.config/git/custom_commands/git-continue
-.config/git/custom_commands/git-count
-.config/git/custom_commands/git-obliterate
-.config/git/custom_commands/git-root
-.config/git/custom_commands/git-summary
+.config/git/custom_commands/**
+!.config/git/custom_commands/git-amend
+!.config/git/custom_commands/git-ignore
 
 !.config/ideavim/
 !.config/ideavim/**
-
-!.config/lazygit
-!.config/lazygit/**
 
 !.config/lesskey
 
 !.config/misc/
 !.config/misc/**
-
-!.config/neovide/
-!.config/neovide/**
 
 !.config/nvim/
 !.config/nvim/**
@@ -76,43 +66,6 @@
 
 !.config/ruff/
 !.config/ruff/**
-
-!.config/sublime-text/
-!.config/sublime-text/Packages/
-
-!.config/sublime-text/Packages/BetterFindBuffer/
-!.config/sublime-text/Packages/BetterFindBuffer/FindResults.hidden-tmTheme
-
-!.config/sublime-text/Packages/Default/
-!.config/sublime-text/Packages/Default/symbol.py
-
-!.config/sublime-text/Packages/Jump\ Along\ Indent/
-!.config/sublime-text/Packages/Jump\ Along\ Indent/*
-
-!.config/sublime-text/Packages/LSP/
-!.config/sublime-text/Packages/LSP/*
-
-!.config/sublime-text/Packages/MaxPane/
-!.config/sublime-text/Packages/MaxPane/*
-
-!.config/sublime-text/Packages/MultiEditUtils/
-!.config/sublime-text/Packages/MultiEditUtils/*
-
-!.config/sublime-text/Packages/ProjectManager/
-!.config/sublime-text/Packages/ProjectManager/*
-
-!.config/sublime-text/Packages/Vintage/
-!.config/sublime-text/Packages/Vintage/*
-
-!.config/sublime-text/Packages/User/
-!.config/sublime-text/Packages/User/*
-.config/sublime-text/Packages/User/Package\ Control*
-.config/sublime-text/Packages/User/SBSCompare*
-
-!.config/sublime-merge/
-!.config/sublime-merge/Packages/
-!.config/sublime-merge/Packages/User/
-!.config/sublime-merge/Packages/User/*
 
 !.config/tmux/
 !.config/tmux/**
