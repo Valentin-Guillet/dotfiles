@@ -31,8 +31,7 @@ LOG_HELP_MSG="
  m / M		  merge (branch / commit)
  f		  fast-forward merge
  A		  amend commit
- w		  reword commit
- W		  reword commit (in editor)
+ w / W		  reword commit (inline / in editor)
  p / P		  pull / push
  - / _		  move commit down / up
  F		  filter commits
