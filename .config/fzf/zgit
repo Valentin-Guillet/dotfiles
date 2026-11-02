@@ -38,6 +38,7 @@ LOG_HELP_MSG="
  alt-r		  toggle -G/-S filter modes
 
  alt-c / alt-x	  git continue / abort
+ =		  open diff with HEAD
  :		  execute a (git) command
  o		  open commit in preview
  i, /		  toggle search
@@ -469,6 +470,14 @@ _zgit_cmd_move_commit() {
     git rebase -i "${earlier}^"
 }
 
+_zgit_cmd_display_diff() {
+  local commit_hash
+  commit_hash=$(_get_commit_hash "$1")
+  [[ -z "$commit_hash" ]] && return 1
+
+  git diff --color=always --stat --patch --diff-merges=first-parent "$commit_hash" 2>/dev/null
+}
+
 _zgit_cmd_filter_commits() {
   if ! new_message=$(_zgit_prompt "Filter query: " "${1:1}"); then
     echo "$1"
@@ -639,7 +648,7 @@ _zgit_log() {
   done
   load_cmd="[[ \"\$FZF_PROMPT\" == 'l> ' ]] && echo '$pos_load_cmd+change-prompt(n> )'"
 
-  unbound_keys=$'h,l,n,s,t,v,C,H,I,K,L,N,O,Q,S,T,U,V,Y,Z,\,|,,,.,;,(,),{,},<,>,\',",!,@,#,$,%,^,&,*,+,=,0,1,2,3,4,5,6,7,8,9'
+  unbound_keys=$'h,l,n,s,t,v,C,H,I,K,L,N,O,Q,S,T,U,V,Y,Z,\,|,,,.,;,(,),{,},<,>,\',",!,@,#,$,%,^,&,*,+,0,1,2,3,4,5,6,7,8,9'
 
   # shellcheck disable=SC2016
   FZF_HEADER_LABEL="$init_filter" $git_cmd |
@@ -681,6 +690,7 @@ _zgit_log() {
       --bind "-:transform-footer($zgit_script __cmd move_commit down {})+reload($git_cmd)+down" \
       --bind "_:transform-footer($zgit_script __cmd move_commit up {})+reload($git_cmd)+up" \
       --bind "::transform-footer($zgit_script __cmd execute_git_cmd log {})+reload($git_cmd)" \
+      --bind "=:execute($zgit_script __cmd display_diff {})+reload($git_cmd)" \
       --bind "[:transform($zgit_script __cmd goto_prev_branch \$FZF_POS)" \
       --bind "]:transform($zgit_script __cmd goto_next_branch \$FZF_POS)" \
       --bind "alt-c:execute(git continue)+reload($git_cmd)" \
