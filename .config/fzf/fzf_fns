@@ -7,7 +7,7 @@ __fzf_git_hashes() {
   fi
 
   local log_format="%C(yellow)%h%C(reset) %C(auto)%d%C(reset) %s %C(green)(%cr)%C(reset) %C(blue)<%an>%C(reset)"
-  git log --graph --color=always --format=format:"$log_format" |
+  git log --all --graph --color=always --format=format:"$log_format" |
     fzf --multi --ansi \
     --tiebreak "index" \
     --border "rounded" \
