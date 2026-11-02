@@ -58,9 +58,8 @@ STATUS_HELP_MSG="
  y		  yank file path
 
  space		  stage / unstage file
- A		  stage all files
- p		  stage file in patch mode
- r		  unstage file in patch mode
+ A / R		  stage / unstage all files
+ p / r		  stage / unstage file in patch mode
  c		  commit staged changes
  x		  restore file in patch mode
  X		  restore file
@@ -713,7 +712,7 @@ _zgit_status() {
   # shellcheck disable=SC2016
   enter_cmd='[[ "$FZF_PROMPT" == "i> " ]] && echo "rebind('"${ALL_BOUND_KEYS//\"/\\\"}"')+change-prompt(n> )" || echo "execute('"$zgit_script"' __cmd open_editor {})"'
 
-  unbound_keys=$'a,b,e,f,h,l,m,n,s,t,v,w,z,B,D,E,F,H,I,K,L,M,N,P,Q,R,S,T,U,V,W,Y,Z,\,|,,,.,;,(,),[,],{,},<,>,\',",!,@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9'
+  unbound_keys=$'a,b,e,f,h,l,m,n,s,t,v,w,z,B,D,E,F,H,I,K,L,M,N,P,Q,S,T,U,V,W,Y,Z,\,|,,,.,;,(,),[,],{,},<,>,\',",!,@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9'
 
   # shellcheck disable=SC2016
   $git_cmd |
@@ -726,6 +725,7 @@ _zgit_status() {
       --bind "y:transform-footer($zgit_script __cmd yank status {})" \
       --bind "space:transform-footer($zgit_script __cmd toggle_file {})+reload($git_cmd)" \
       --bind "A:transform-footer(git add -A)+reload($git_cmd)" \
+      --bind "R:transform-footer(git reset)+reload($git_cmd)" \
       --bind "x:execute($zgit_script __cmd restore_patch_file {})+reload($git_cmd)" \
       --bind "X:transform-footer($zgit_script __cmd restore_file {})+reload($git_cmd)" \
       --bind "C:transform-footer($zgit_script __cmd restore_all)+reload($git_cmd)" \
