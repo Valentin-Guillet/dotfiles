@@ -33,6 +33,7 @@ LOG_HELP_MSG="
  A		  amend commit
  w / W		  reword commit (inline / in editor)
  p / P		  pull / push
+ ctrl-p		  push --force
  - / _		  move commit down / up
  F		  filter commits
  alt-r		  toggle -G/-S filter modes
@@ -780,6 +781,7 @@ _zgit_log() {
       --bind "alt-r:transform-header-label($zgit_script __cmd switch_filter_mode)+transform-header($header_cmd)+reload($git_cmd)" \
       --bind "p:transform-footer(git pull 2>&1)+reload($git_cmd)" \
       --bind "P:transform-footer(git push 2>&1)+reload($git_cmd)" \
+      --bind "ctrl-p:transform-footer(git push --force-with-lease 2>&1)+reload($git_cmd)" \
       --bind "-:transform-footer($zgit_script __cmd move_commit down {})+reload($git_cmd)+down" \
       --bind "_:transform-footer($zgit_script __cmd move_commit up {})+reload($git_cmd)+up" \
       --bind "::transform-footer($zgit_script __cmd execute_git_cmd log {})+reload($git_cmd)" \
