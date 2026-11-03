@@ -519,7 +519,7 @@ _zgit_cmd_display_diff() {
   commit_hash=$(_get_commit_hash "$1")
   [[ -z "$commit_hash" ]] && return 1
 
-  git diff --color=always --stat --patch --diff-merges=first-parent "$commit_hash" 2>/dev/null
+  git diff --color=always --stat --patch --diff-merges=first-parent "$commit_hash" 2>/dev/null | { LESS="Rc" delta --paging=always || less -Rc ; }
 }
 
 _zgit_cmd_filter_commits() {
