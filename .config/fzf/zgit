@@ -65,6 +65,8 @@ STATUS_HELP_MSG="
  X		  restore file
  ctrl-x		  restore all files and clean
  C		  restore all files
+ s / S		  push / pop stash
+ alt-s		  pop stash (prompt)
 
  alt-c / alt-x	  git continue / abort
  :		  execute a (git) command
@@ -95,8 +97,34 @@ EXPLORE_HELP_MSG="
  ?		  display keybindings
  q		  quit"
 
+STASH_HELP_MSG="
+ j / k		  down / up
+ g / G		  first / last
+ J		  jump to line
+ d / u		  move selection down / up
+ ctrl-f / ctrl-b  scroll preview down / up
+ y		  yank stash name
+
+ a		  apply stash
+ p		  pop stash
+ x      drop stash
+ w      rename stash
+
+ :		  execute a (git) command
+ o		  open stash in preview
+ i, /		  toggle search
+ Enter		  (normal mode) apply stash
+ 		  (input mode) exit search
+ ctrl-r		  refresh command
+ ?		  display keybindings
+ q		  quit"
+
 _get_commit_hash() {
-  echo "$1" | grep -o "[a-f0-9]\{7,40\}" | head -1
+  if [[ "$1" == "stash@"* ]]; then
+    echo "$1" | cut -d' ' -f 1 | xargs git rev-parse
+  else
+    echo "$1" | grep -o "[a-f0-9]\{7,40\}" | head -1
+  fi
 }
 
 _get_file_path() {
@@ -178,6 +206,17 @@ _zgit_preview_commit_file() {
     { LESS="Rc\$--header 2" delta --paging="$paging" || "${fallback[@]}"; }
 }
 
+_zgit_preview_stash() {
+  local stash_name paging=never fallback=(cat)
+  if [[ "$1" == --paging ]]; then
+    shift
+    paging=always
+    fallback=(less -Rc)
+  fi
+  stash_name="${1%% *}"
+  git stash show --color=always --stat --patch "$stash_name" 2>/dev/null | { LESS="Rc" delta --paging="$paging" || "${fallback[@]}"; }
+}
+
 # COMMON COMMANDS
 
 _zgit_cmd_yank() {
@@ -191,6 +230,9 @@ _zgit_cmd_yank() {
   elif [[ "$1" == explore ]]; then
     value="$2"
     target="File path"
+  elif [[ "$1" == stash ]]; then
+    value="${2%%:*}"
+    target="Stash name"
   fi
 
   if command -v wl-copy >/dev/null 2>&1; then
@@ -604,6 +646,55 @@ _zgit_cmd_restore_patch_file() {
   git restore --patch -- "$file_path" 2>&1
 }
 
+_zgit_cmd_stash_push() {
+  files=$(git diff --cached --name-only)
+  # shellcheck disable=SC2086
+  git stash push -- $files 2>&1
+}
+
+_zgit_cmd_stash_apply() {
+  local stash_name
+  stash_name="${1%% *}"
+  [[ -z "$stash_name" ]] && return 1
+
+  git stash apply "$stash_name" 2>&1
+}
+
+_zgit_cmd_stash_pop() {
+  local stash_name
+  stash_name="${1%% *}"
+  [[ -z "$stash_name" ]] && return 1
+
+  git stash pop "$stash_name" 2>&1
+}
+
+_zgit_cmd_stash_drop() {
+  local stash_name
+  stash_name="${1%% *}"
+  [[ -z "$stash_name" ]] && return 1
+
+  if [[ ! $(_zgit_prompt "Do you really want to drop \"$stash_name\"? [yN] ") =~ ^[Yy]$ ]]; then
+    echo "Aborted"
+    return 1
+  fi
+
+  git stash drop "$stash_name" 2>&1
+}
+
+_zgit_cmd_stash_reword() {
+  local stash_name stash_msg
+  stash_name="${1%% *}"
+  [[ -z "$stash_name" ]] && return 1
+
+  stash_msg="${1#* }"
+  if ! new_message=$(_zgit_prompt "New stash message: " "$stash_msg"); then
+    echo "Aborted"
+    return 130
+  fi
+
+  echo git stash store -m "$new_message" "$stash_name" 2>&1
+}
+
 _zgit_cmd_commit() {
   if git diff --cached --quiet; then
     echo "Nothing to commit!"
@@ -715,7 +806,7 @@ _zgit_status() {
   # shellcheck disable=SC2016
   enter_cmd='[[ "$FZF_PROMPT" == "i> " ]] && echo "rebind('"${ALL_BOUND_KEYS//\"/\\\"}"')+change-prompt(n> )" || echo "execute('"$zgit_script"' __cmd open_editor {})"'
 
-  unbound_keys=$'a,b,e,f,h,l,m,n,s,t,v,w,z,B,D,E,F,H,I,K,L,M,N,P,Q,S,T,U,V,W,Y,Z,\,|,,,.,;,(,),[,],{,},<,>,\',",!,@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9'
+  unbound_keys=$'a,b,e,f,h,l,m,n,t,v,w,z,B,D,E,F,H,I,K,L,M,N,P,Q,T,U,V,W,Y,Z,\,|,,,.,;,(,),[,],{,},<,>,\',",!,@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9'
 
   # shellcheck disable=SC2016
   $git_cmd |
@@ -737,6 +828,9 @@ _zgit_status() {
       --bind "r:execute($zgit_script __cmd reset_patch_file {})+reload($git_cmd)" \
       --bind "c:transform-footer($zgit_script __cmd commit)+reload($git_cmd)" \
       --bind "::transform-footer($zgit_script __cmd execute_git_cmd status {})+reload($git_cmd)" \
+      --bind "s:transform-footer($zgit_script __cmd stash_push)+reload($git_cmd)" \
+      --bind "S:transform-footer(git stash pop 2>&1)+reload($git_cmd)" \
+      --bind "alt-s:execute($zgit_script stash)+reload($git_cmd)" \
       --bind "alt-c:execute(git continue)+reload($git_cmd)" \
       --bind "alt-x:execute(git abort)+reload($git_cmd)" \
       --bind "o:execute($zgit_script __preview file --paging {})" \
@@ -789,6 +883,50 @@ _zgit_explore() {
       --bind "?:execute($zgit_script __help \"$EXPLORE_HELP_MSG\")" \
       --preview-window "~2" \
       --preview "$zgit_script __preview commit_file $commit_hash {}"
+}
+
+_zgit_stash() {
+  ! git stash list | grep -q . && return 1
+
+  local zgit_script git_cmd enter_cmd
+
+  zgit_script=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)/$(basename -- "${BASH_SOURCE[0]}")
+  git_cmd=(git stash list --color=always --format='%C(yellow)%gd %C(auto)%gs%C(reset)')
+  printf -v git_cmd_str '%q ' "${git_cmd[@]}"
+
+  # shellcheck disable=SC2016
+  enter_cmd=$'if [[ "$FZF_PROMPT" == "i> " ]]; then
+    echo "rebind('"${ALL_BOUND_KEYS//\"/\\\"}"$')+change-prompt(n> )"
+  else
+    echo "execute('"$zgit_script"' explore {})"
+  fi'
+
+  unbound_keys=$'b,c,e,f,h,l,m,n,r,s,t,v,z,A,B,C,D,E,F,H,I,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,\,|,,,.,;,(,),[,],{,},<,>,\',",!,@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9,space'
+
+  "${git_cmd[@]}" |
+    FZF_DEFAULT_OPTS="${ZGIT_FZF_DEFAULT_OPTS:-}" fzf \
+      --tiebreak 'index' \
+      --prompt 'n> ' \
+      --bind "q:abort" \
+      --bind "d:half-page-down,u:half-page-up,ctrl-f:preview-half-page-down,ctrl-b:preview-half-page-up" \
+      --bind "j:down,k:up,g:first,G:last,J:jump" \
+      --bind "a:transform-footer($zgit_script __cmd stash_apply {})+abort" \
+      --bind "p:transform-footer($zgit_script __cmd stash_pop {})+abort" \
+      --bind "x:transform-footer($zgit_script __cmd stash_drop {})+reload($git_cmd_str)" \
+      --bind "w:transform-footer($zgit_script __cmd stash_reword {})+reload($git_cmd_str)" \
+      --bind "y:transform-footer($zgit_script __cmd yank stash {})" \
+      --bind "::transform-footer($zgit_script __cmd execute_git_cmd explore {})+reload($git_cmd_str)" \
+      --bind "alt-c:execute(git continue)+reload($git_cmd_str)" \
+      --bind "alt-x:execute(git abort)+reload($git_cmd_str)" \
+      --bind "o:execute($zgit_script __preview stash --paging {})" \
+      --bind "ctrl-r:reload($git_cmd_str)" \
+      --bind "ctrl-l:change-footer()+clear-screen" \
+      --bind "change:best" \
+      --bind "$unbound_keys:ignore" \
+      --bind "i,/:unbind($ALL_BOUND_KEYS)+change-prompt(i> ),esc:rebind($ALL_BOUND_KEYS)+change-prompt(n> )" \
+      --bind "enter:transform:$enter_cmd" \
+      --bind "?:execute($zgit_script __help \"$STASH_HELP_MSG\")" \
+      --preview "$zgit_script __preview stash {}"
 }
 
 _zgit_main() {
