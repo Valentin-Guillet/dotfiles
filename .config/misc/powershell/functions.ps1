@@ -50,7 +50,7 @@ function du($path) {
 }
 
 function td {
-    vim ~\.cache\ToDo
+    vim $HOME\.cache\ToDo
 }
 
 . $PSScriptRoot\venv_fn.ps1
