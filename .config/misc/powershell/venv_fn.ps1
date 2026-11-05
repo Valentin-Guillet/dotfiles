@@ -40,7 +40,7 @@ Tool to manage python virtual environments. Usage:
             return
         }
 
-        if (-not (Get-Command uv -ErrorAction Ignore)) {
+        if (-not (Get-Command uv -ErrorAction SilentlyContinue)) {
             Write-Host "uv is not installed. Please refer to the official uv installation guide for Windows (https://astral.sh/uv/install)."
             return
         }
@@ -135,7 +135,7 @@ Tool to manage python virtual environments. Usage:
 
         $escapedPath = [regex]::Escape($path)
         # Find the line in the file that matches the path.
-        $line = (Get-Content $venv_file | Select-String -Pattern "^$escapedPath`t" -ErrorAction Ignore).Line
+        $line = (Get-Content $venv_file | Select-String -Pattern "^$escapedPath`t" -ErrorAction SilentlyContinue).Line
         if ([string]::IsNullOrEmpty($line)) {
             Write-Host "No venv matched for path '$path'."
         } else {
@@ -190,7 +190,7 @@ Tool to manage python virtual environments. Usage:
 
     # Handle the '--init' or '-i' command: Install common development tools.
     elseif ($args[0] -eq "--init" -or $args[0] -eq "-i") {
-        if (-not (Get-Command uv -ErrorAction Ignore)) {
+        if (-not (Get-Command uv -ErrorAction SilentlyContinue)) {
             Write-Host "uv is not installed. Please refer to the official uv installation guide for Windows."
             return
         }
@@ -405,7 +405,7 @@ Tool to manage python virtual environments. Usage:
 
             # If the target venv is not 'base', ensure the prompt is not disabled (assuming user's prompt respects this).
             if ($venv_name -ne "base") {
-                Remove-Item Env:\VIRTUAL_ENV_DISABLE_PROMPT -ErrorAction Ignore
+                Remove-Item Env:\VIRTUAL_ENV_DISABLE_PROMPT -ErrorAction SilentlyContinue
             }
 
             try {
@@ -428,7 +428,7 @@ Tool to manage python virtual environments. Usage:
         # Only proceed if a non-base venv is currently active.
         if ($currentActivatedVenvName -ne "base" -and $env:VIRTUAL_ENV) {
             # Check if the 'deactivate' function (usually defined by `Activate.ps1`) exists.
-            if (Get-Command deactivate -CommandType Function -ErrorAction Ignore) {
+            if (Get-Command deactivate -CommandType Function -ErrorAction SilentlyContinue) {
                 deactivate # Call the existing deactivate function.
                 Write-Host "Deactivated current virtual environment."
             } else {
@@ -438,9 +438,9 @@ Tool to manage python virtual environments. Usage:
                 # Remove the venv's 'Scripts' path from the system PATH.
                 $env:PATH = ($env:PATH -split ';') | Where-Object { -not $_.StartsWith($env:VIRTUAL_ENV, [System.StringComparison]::OrdinalIgnoreCase) } | Join-String -Separator ';'
                 # Clear the VIRTUAL_ENV environment variable.
-                Remove-Item Env:\VIRTUAL_ENV -ErrorAction Ignore
+                Remove-Item Env:\VIRTUAL_ENV -ErrorAction SilentlyContinue
                 # Clear the PROMPT environment variable (as activation scripts often modify it).
-                Remove-Item Env:\PROMPT -ErrorAction Ignore
+                Remove-Item Env:\PROMPT -ErrorAction SilentlyContinue
                 Write-Host "Manually deactivated virtual environment."
             }
 
