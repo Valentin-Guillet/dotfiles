@@ -205,7 +205,7 @@ _update_neovim() {
   _info "Installing dependencies..."
   sudo apt install -y -qq gcc make cmake &>/dev/null
   _info "Building..."
-  make -j >/dev/null
+  make CMAKE_BUILD_TYPE=Release -j >/dev/null
   _info "Installing..."
   sudo make install >/dev/null
   _success "nvim $(nvim --version | head -n 1 | cut -d' ' -f2) installed."
