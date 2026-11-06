@@ -48,6 +48,7 @@ LOG_HELP_MSG="
  Tab		  switch to status window
  ctrl-r		  refresh command
  ?		  display keybindings
+ !		  display last command output
  q		  quit"
 
 STATUS_HELP_MSG="
@@ -78,6 +79,7 @@ STATUS_HELP_MSG="
  Tab		  switch to log window
  ctrl-r		  refresh command
  ?		  display keybindings
+ !		  display last command output
  q		  quit"
 
 EXPLORE_HELP_MSG="
@@ -96,6 +98,7 @@ EXPLORE_HELP_MSG="
 		  (input mode) exit search
  ctrl-r		  refresh command
  ?		  display keybindings
+ !		  display last command output
  q		  quit"
 
 STASH_HELP_MSG="
@@ -118,6 +121,7 @@ STASH_HELP_MSG="
  		  (input mode) exit search
  ctrl-r		  refresh command
  ?		  display keybindings
+ !		  display last command output
  q		  quit"
 
 _zgit_bind() {
@@ -159,6 +163,26 @@ _zgit_popup_bindings() {
   nb_lines=$(echo "$1" | wc -l)
   nb_lines=$((nb_lines + 3))
   tmux display-popup -E -w 56 -h "$nb_lines" -T 'Zgit keybindings' "tput civis && read -p \"$1\" -n 1"
+}
+
+_zgit_popup_last_cmd() {
+  local max_lines nb_lines
+
+  [[ -s "$1" ]] || return
+
+  if [[ -n "$TMUX" ]]; then
+    nb_lines=$(($(wc -l < "$1") + 6))
+    max_lines=$((FZF_LINES - 2))
+    if ((nb_lines > max_lines)); then
+      tmux display-popup -E -w 50% -h "$max_lines" -T 'Last command output' "tput civis && less -c~KP ' ' \"$1\""
+    else
+      tmux display-popup -E -w 50% -h "$nb_lines" -T 'Last command output' "tput civis && cat \"$1\" && read -n1"
+    fi
+  else
+    clear
+    cat "$1"
+    read -rn 1
+  fi
 }
 
 # PREVIEW COMMANDS
@@ -747,7 +771,7 @@ _zgit_log() {
   done
   load_cmd="[[ \"\$FZF_PROMPT\" == 'l> ' ]] && echo '$pos_load_cmd+change-prompt(n> )'"
 
-  unbound_keys=$'h,l,n,s,t,v,C,H,I,K,L,N,O,Q,S,T,U,V,Y,Z,\,|,,,.,;,(,),{,},<,>,\',",!,@,#,$,%,^,&,*,+,0,1,2,3,4,5,6,7,8,9'
+  unbound_keys=$'h,l,n,s,t,v,C,H,I,K,L,N,O,Q,S,T,U,V,Y,Z,\,|,,,.,;,(,),{,},<,>,\',",@,#,$,%,^,&,*,+,0,1,2,3,4,5,6,7,8,9'
 
   # shellcheck disable=SC2016
   FZF_HEADER_LABEL="$init_filter" $git_cmd |
@@ -802,6 +826,7 @@ _zgit_log() {
       --bind "i,/:unbind($ALL_BOUND_KEYS)+change-prompt(i> ),esc:rebind($ALL_BOUND_KEYS)+change-prompt(n> )" \
       --bind "enter:transform:$enter_cmd" \
       --bind "?:execute-silent($zgit_script __popup bindings \"$LOG_HELP_MSG\")" \
+      --bind "!:change-footer()+execute-silent($zgit_script __popup last_cmd \"$ZGIT_FOOTER_FILE\")" \
       --bind "tab:become($zgit_script status --position=\$FZF_POS --filter=\\\"\$FZF_HEADER_LABEL\\\")" \
       --preview "$zgit_script __preview commit {}"
 }
@@ -813,7 +838,7 @@ _zgit_status() {
   # shellcheck disable=SC2016
   enter_cmd='[[ "$FZF_PROMPT" == "i> " ]] && echo "rebind('"${ALL_BOUND_KEYS//\"/\\\"}"')+change-prompt(n> )" || echo "execute('"$zgit_script"' __cmd open_editor {})"'
 
-  unbound_keys=$'a,b,e,f,h,l,m,n,t,v,w,z,B,D,E,F,H,I,K,L,M,N,P,Q,T,U,V,W,Y,Z,\,|,,,.,;,(,),[,],{,},<,>,\',",!,@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9'
+  unbound_keys=$'a,b,e,f,h,l,m,n,t,v,w,z,B,D,E,F,H,I,K,L,M,N,P,Q,T,U,V,W,Y,Z,\,|,,,.,;,(,),[,],{,},<,>,\',",@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9'
 
   # shellcheck disable=SC2016
   $git_cmd |
@@ -849,6 +874,7 @@ _zgit_status() {
       --bind "i,/:unbind($ALL_BOUND_KEYS)+change-prompt(i> ),esc:rebind($ALL_BOUND_KEYS)+change-prompt(n> )" \
       --bind "enter:transform:$enter_cmd" \
       --bind "?:execute-silent($zgit_script __popup bindings \"$STATUS_HELP_MSG\")" \
+      --bind "!:change-footer()+execute-silent($zgit_script __popup last_cmd \"$ZGIT_FOOTER_FILE\")" \
       --bind "tab:become($zgit_script log $*)" \
       --preview "$zgit_script __preview file {}"
 }
@@ -867,7 +893,7 @@ _zgit_explore() {
     echo "execute(git show '"$commit_hash"$':{} | vim -R -c \\"execute \'file \' . fnameescape({}) | filetype detect\\" -)"
   fi'
 
-  unbound_keys=$'a,b,c,e,f,h,l,m,n,p,r,s,t,v,w,x,z,A,B,C,D,E,F,H,I,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,\,|,,,.,;,(,),[,],{,},<,>,\',",!,@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9,space'
+  unbound_keys=$'a,b,c,e,f,h,l,m,n,p,r,s,t,v,w,x,z,A,B,C,D,E,F,H,I,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,\,|,,,.,;,(,),[,],{,},<,>,\',",@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9,space'
 
   $git_cmd |
     FZF_DEFAULT_OPTS="${ZGIT_FZF_DEFAULT_OPTS:-}" fzf \
@@ -888,6 +914,7 @@ _zgit_explore() {
       --bind "i,/:unbind($ALL_BOUND_KEYS)+change-prompt(i> ),esc:rebind($ALL_BOUND_KEYS)+change-prompt(n> )" \
       --bind "enter:transform:$enter_cmd" \
       --bind "?:execute-silent($zgit_script __popup bindings \"$EXPLORE_HELP_MSG\")" \
+      --bind "!:change-footer()+execute-silent($zgit_script __popup last_cmd \"$ZGIT_FOOTER_FILE\")" \
       --preview-window "~2" \
       --preview "$zgit_script __preview commit_file $commit_hash {}"
 }
@@ -911,7 +938,7 @@ _zgit_stash() {
     echo "execute('"$zgit_script"' explore {})"
   fi'
 
-  unbound_keys=$'b,c,e,f,h,l,m,n,r,s,t,v,z,A,B,C,D,E,F,H,I,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,\,|,,,.,;,(,),[,],{,},<,>,\',",!,@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9,space'
+  unbound_keys=$'b,c,e,f,h,l,m,n,r,s,t,v,z,A,B,C,D,E,F,H,I,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,\,|,,,.,;,(,),[,],{,},<,>,\',",@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9,space'
 
   "${git_cmd[@]}" |
     FZF_DEFAULT_OPTS="${ZGIT_FZF_DEFAULT_OPTS:-}" fzf \
@@ -936,6 +963,7 @@ _zgit_stash() {
       --bind "i,/:unbind($ALL_BOUND_KEYS)+change-prompt(i> ),esc:rebind($ALL_BOUND_KEYS)+change-prompt(n> )" \
       --bind "enter:transform:$enter_cmd" \
       --bind "?:execute-silent($zgit_script __popup bindings \"$STASH_HELP_MSG\")" \
+      --bind "!:change-footer()+execute-silent($zgit_script __popup last_cmd \"$ZGIT_FOOTER_FILE\")" \
       --preview "$zgit_script __preview stash {}"
 }
 
