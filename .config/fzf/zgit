@@ -173,7 +173,7 @@ _zgit_popup_last_cmd() {
     nb_lines=$(($(wc -l <"$1") + 6))
     max_lines=$((FZF_LINES - 2))
     if ((nb_lines > max_lines)); then
-      tmux display-popup -E -w 50% -h "$max_lines" -T 'Last command output' "tput civis && less -c~KP ' ' \"$1\""
+      tmux display-popup -E -w 50% -h "$max_lines" -T 'Last command output' "tput civis && less -Rc~KP ' ' \"$1\""
     else
       tmux display-popup -E -w 50% -h "$nb_lines" -T 'Last command output' "tput civis && cat \"$1\" && read -n1"
     fi
@@ -194,7 +194,7 @@ _zgit_preview_commit() {
     fallback=(less -Rc)
   fi
   commit_hash=$(_get_commit_hash "$1")
-  git show --stat --patch --color=always --format=medium "$commit_hash" 2>/dev/null | { LESS=Rc delta --paging="$paging" || "${fallback[@]}"; }
+  git show --stat --patch --format=medium "$commit_hash" 2>/dev/null | { LESS=Rc delta --paging="$paging" || "${fallback[@]}"; }
 }
 
 _zgit_preview_file() {
@@ -220,7 +220,7 @@ _zgit_preview_file() {
   else
     [[ "${git_arg[0]}" == "--staged" && "${1:0:1}" == " " ]] && return
     [[ "${1:1:1}" == " " ]] && git_arg=("--staged")
-    git diff --color=always --format= --diff-merges=first-parent "${git_arg[@]}" "$file_path" 2>/dev/null | { LESS=Rc delta --paging="$paging" || "${fallback[@]}"; }
+    git diff --format= --diff-merges=first-parent "${git_arg[@]}" "$file_path" 2>/dev/null | { LESS=Rc delta --paging="$paging" || "${fallback[@]}"; }
   fi
 }
 
@@ -231,7 +231,7 @@ _zgit_preview_commit_file() {
     paging=always
     fallback=(less -Rc --header 2)
   fi
-  git show --color=always --format= --diff-merges=first-parent --stat --patch "$1" -- "$2" 2>/dev/null | sed '2d' |
+  git show --format= --diff-merges=first-parent --stat --patch "$1" -- "$2" 2>/dev/null | sed '2d' |
     { LESS="Rc\$--header 2" delta --paging="$paging" || "${fallback[@]}"; }
 }
 
@@ -243,7 +243,7 @@ _zgit_preview_stash() {
     fallback=(less -Rc)
   fi
   stash_name="${1%% *}"
-  git stash show --color=always --stat --patch "$stash_name" 2>/dev/null | { LESS="Rc" delta --paging="$paging" || "${fallback[@]}"; }
+  git stash show --stat --patch "$stash_name" 2>/dev/null | { LESS="Rc" delta --paging="$paging" || "${fallback[@]}"; }
 }
 
 # COMMON COMMANDS
@@ -297,7 +297,7 @@ _zgit_cmd_execute_git_cmd() {
 # LOG COMMANDS
 
 _zgit_cmd_center_head() {
-  echo "pos:$(git log --all --graph --format='%D' | sed '/\sHEAD\(,\|\s\|$\)/q' | wc -l)"
+  echo "pos:$(git log --color=never --all --graph --format='%D' | sed '/\sHEAD\(,\|\s\|$\)/q' | wc -l)"
 }
 
 _zgit_cmd_git_log_entries() {
@@ -305,7 +305,7 @@ _zgit_cmd_git_log_entries() {
   if [[ -n "$FZF_HEADER_LABEL" ]]; then
     git_arg=("-${FZF_HEADER_LABEL:0:1}" "${FZF_HEADER_LABEL:1}")
   fi
-  git log --all --decorate --oneline --graph --color=always "${git_arg[@]}"
+  git log --all --decorate --oneline --graph "${git_arg[@]}"
 }
 
 _zgit_cmd_reset_branch() {
@@ -344,7 +344,7 @@ _zgit_get_branch_name_prompt() {
       --preview-window down,border-top,75% \
       --color hl:underline,hl+:underline \
       --no-hscroll \
-      --preview "git log --oneline --graph --date=short --color=always --pretty='format:%C(auto)%cd %h%d %s' \$([[ \"{}\" =~ '(HEAD detached' ]] && echo 'HEAD' || echo \$(cut -c3- <<< {} | cut -d' ' -f1)) --")
+      --preview "git log --oneline --graph --date=short --pretty='format:%C(auto)%cd %h%d %s' \$([[ \"{}\" =~ '(HEAD detached' ]] && echo 'HEAD' || echo \$(cut -c3- <<< {} | cut -d' ' -f1)) --")
   if [[ $? == 130 ]]; then
     echo "Aborted"
     return 130
@@ -475,7 +475,7 @@ _zgit_cmd_reword_commit() {
   commit_hash=$(_get_commit_hash "$1")
   [[ -z "$commit_hash" ]] && return 1
 
-  prev_message=$(git log --format='%B' -n 1 "$commit_hash" | head -1)
+  prev_message=$(git log --color=never --format='%B' -n 1 "$commit_hash" | head -1)
   if ! new_message=$(_zgit_prompt "New commit message: " "$prev_message"); then
     echo "Aborted"
     return 130
@@ -548,7 +548,7 @@ _zgit_cmd_display_diff() {
   commit_hash=$(_get_commit_hash "$1")
   [[ -z "$commit_hash" ]] && return 1
 
-  git diff --color=always --stat --patch --diff-merges=first-parent "$commit_hash" 2>/dev/null | { LESS="Rc" delta --paging=always || less -Rc; }
+  git diff --stat --patch --diff-merges=first-parent "$commit_hash" 2>/dev/null | { LESS="Rc" delta --paging=always || less -Rc; }
 }
 
 _zgit_cmd_filter_commits() {
@@ -580,13 +580,13 @@ _zgit_cmd_switch_filter_mode() {
 _zgit_cmd_goto_next_branch() {
   local pos next_pos
   pos=$(($1 + 1))
-  next_pos=$(git log --all --graph --format='%D' | sed -n "$pos,$ { /[a-zA-Z0-9]/ { =; q }}")
+  next_pos=$(git log --color=never --all --graph --format='%D' | sed -n "$pos,$ { /[a-zA-Z0-9]/ { =; q }}")
   echo "pos($next_pos)"
 }
 
 _zgit_cmd_goto_prev_branch() {
   local prev_pos
-  prev_pos=$(git log --all --graph --format='%D' | sed -n "$1q; /[a-zA-Z0-9]/=" | tail -n 1)
+  prev_pos=$(git log --color=never --all --graph --format='%D' | sed -n "$1q; /[a-zA-Z0-9]/=" | tail -n 1)
   echo "pos($prev_pos)"
 }
 
@@ -837,7 +837,7 @@ _zgit_log() {
 _zgit_status() {
   local zgit_script git_cmd enter_cmd unbound_keys
   zgit_script=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)/$(basename -- "${BASH_SOURCE[0]}")
-  git_cmd="git -c color.status=always status --short"
+  git_cmd="git status --short"
   # shellcheck disable=SC2016
   enter_cmd='[[ "$FZF_PROMPT" == "i> " ]] && echo "rebind('"${ALL_BOUND_KEYS//\"/\\\"}"')+change-prompt(n> )" || echo "execute('"$zgit_script"' __cmd open_editor {})"'
 
@@ -931,7 +931,7 @@ _zgit_stash() {
   local zgit_script git_cmd enter_cmd
 
   zgit_script=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)/$(basename -- "${BASH_SOURCE[0]}")
-  git_cmd=(git stash list --color=always --format='%C(yellow)%gd %C(auto)%gs%C(reset)')
+  git_cmd=(git stash list --format='%C(yellow)%gd %C(auto)%gs%C(reset)')
   printf -v git_cmd_str '%q ' "${git_cmd[@]}"
 
   # shellcheck disable=SC2016
@@ -995,9 +995,18 @@ _zgit_main() {
     return 1
   fi
 
-  export ZGIT_FOOTER_FILE
-  ZGIT_FOOTER_FILE=$(mktemp --tmpdir zgit_footer.XXXXXXXX)
-  trap 'rm -f "$ZGIT_FOOTER_FILE"' EXIT
+  if [[ -z "$ZGIT_FOOTER_FILE" ]]; then
+    export ZGIT_FOOTER_FILE
+    ZGIT_FOOTER_FILE=$(mktemp --tmpdir zgit_footer.XXXXXXXX)
+    trap 'rm -f "$ZGIT_FOOTER_FILE"' EXIT
+
+    export GIT_CONFIG_COUNT=0
+    for setting_name in ui branch diff interactive status; do
+      export GIT_CONFIG_KEY_$GIT_CONFIG_COUNT="color.$setting_name"
+      export GIT_CONFIG_VALUE_$GIT_CONFIG_COUNT=always
+      GIT_CONFIG_COUNT=$((GIT_CONFIG_COUNT + 1))
+    done
+  fi
 
   "$fn_name" "$@"
 }
