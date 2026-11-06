@@ -120,6 +120,10 @@ STASH_HELP_MSG="
  ?		  display keybindings
  q		  quit"
 
+_zgit_bind() {
+  echo "$1:execute-silent(${*:2} >$ZGIT_FOOTER_FILE 2>&1)+transform-footer(((\$(wc -l < $ZGIT_FOOTER_FILE) > 15)) && { head -n 14 $ZGIT_FOOTER_FILE; echo '[...]'; } || cat $ZGIT_FOOTER_FILE)"
+}
+
 _get_commit_hash() {
   if [[ "$1" == "stash@"* ]]; then
     echo "$1" | cut -d' ' -f 1 | xargs git rev-parse
@@ -150,11 +154,11 @@ _zgit_prompt() {
   tmux set-option -up @answer
 }
 
-_zgit_help_popup() {
+_zgit_popup_bindings() {
   local nb_lines
   nb_lines=$(echo "$1" | wc -l)
   nb_lines=$((nb_lines + 3))
-  tmux display-popup -E -w 56 -h "$nb_lines" -T 'zgit help' "tput civis && read -p \"$1\" -n 1" &
+  tmux display-popup -E -w 56 -h "$nb_lines" -T 'Zgit keybindings' "tput civis && read -p \"$1\" -n 1"
 }
 
 # PREVIEW COMMANDS
@@ -466,6 +470,7 @@ _zgit_cmd_editor_reword_commit() {
   if ! GIT_SEQUENCE_EDITOR="sed -i -e 's/pick $commit_hash/reword $commit_hash/'" \
     git rebase --interactive --autostash --keep-empty --autosquash --rebase-merges "$commit_hash^"; then
     git rebase --abort
+    echo "Aborted"
     return 130
   fi
 }
@@ -759,32 +764,32 @@ _zgit_log() {
       --bind "d:half-page-down,u:half-page-up,ctrl-f:preview-half-page-down,ctrl-b:preview-half-page-up" \
       --bind "j:down-match,k:up-match,g:first,G:last,J:jump" \
       --bind "z:transform($zgit_script __cmd center_head)" \
-      --bind "y:transform-footer($zgit_script __cmd yank log {})" \
-      --bind "r:transform-footer($zgit_script __cmd reset_branch {})+reload($git_cmd)" \
-      --bind "R:transform-footer($zgit_script __cmd reset_branch {} --hard)+reload($git_cmd)" \
-      --bind "e:transform-footer($zgit_script __cmd rebase_onto {})+reload($git_cmd)" \
+      --bind "$(_zgit_bind "y" "$zgit_script __cmd yank log {}")" \
+      --bind "$(_zgit_bind "r" "$zgit_script __cmd reset_branch {}")+reload($git_cmd)" \
+      --bind "$(_zgit_bind "R" "$zgit_script __cmd reset_branch {} --hard")+reload($git_cmd)" \
+      --bind "$(_zgit_bind "e" "$zgit_script __cmd rebase_onto {}")+reload($git_cmd)" \
       --bind "E:execute($zgit_script __cmd rebase_onto {} --interactive)+reload($git_cmd)" \
-      --bind "space,b:transform-footer($zgit_script __cmd switch_branch {})+reload($git_cmd)+transform($zgit_script __cmd center_head)" \
-      --bind "B:transform-footer($zgit_script __cmd switch_branch --prompt)+reload($git_cmd)" \
-      --bind "a:transform-footer($zgit_script __cmd create_branch {})+reload($git_cmd)" \
-      --bind "D:transform-footer($zgit_script __cmd detach_head {})+reload($git_cmd)" \
-      --bind "x:transform-footer($zgit_script __cmd delete_branch {})+reload($git_cmd)" \
-      --bind "X:transform-footer($zgit_script __cmd delete_branch --force {})+reload($git_cmd)" \
-      --bind "c:transform-footer($zgit_script __cmd cherry_pick {})+reload($git_cmd)" \
-      --bind "m:transform-footer($zgit_script __cmd merge --branch {})+reload($git_cmd)" \
-      --bind "M:transform-footer($zgit_script __cmd merge {})+reload($git_cmd)" \
-      --bind "f:transform-footer($zgit_script __cmd fast_forward {})+reload($git_cmd)" \
-      --bind "A:transform-footer($zgit_script __cmd amend_commit {})+reload($git_cmd)" \
-      --bind "w:transform-footer($zgit_script __cmd reword_commit {})+reload($git_cmd)" \
+      --bind "$(_zgit_bind "space,b" "$zgit_script __cmd switch_branch {}")+reload($git_cmd)+transform($zgit_script __cmd center_head)" \
+      --bind "$(_zgit_bind "B" "$zgit_script __cmd switch_branch --prompt")+reload($git_cmd)+transform($zgit_script __cmd center_head)" \
+      --bind "$(_zgit_bind "a" "$zgit_script __cmd create_branch {}")+reload($git_cmd)" \
+      --bind "$(_zgit_bind "D" "$zgit_script __cmd detach_head {}")+reload($git_cmd)" \
+      --bind "$(_zgit_bind "x" "$zgit_script __cmd delete_branch {}")+reload($git_cmd)" \
+      --bind "$(_zgit_bind "X" "$zgit_script __cmd delete_branch --force {}")+reload($git_cmd)" \
+      --bind "$(_zgit_bind "c" "$zgit_script __cmd cherry_pick {}")+reload($git_cmd)" \
+      --bind "$(_zgit_bind "m" "$zgit_script __cmd merge --branch {}")+reload($git_cmd)" \
+      --bind "$(_zgit_bind "M" "$zgit_script __cmd merge {}")+reload($git_cmd)" \
+      --bind "$(_zgit_bind "f" "$zgit_script __cmd fast_forward {}")+reload($git_cmd)" \
+      --bind "$(_zgit_bind "A" "$zgit_script __cmd amend_commit {}")+reload($git_cmd)" \
+      --bind "$(_zgit_bind "w" "$zgit_script __cmd reword_commit {}")+reload($git_cmd)" \
       --bind "W:execute($zgit_script __cmd editor_reword_commit {})+reload($git_cmd)" \
       --bind "F:transform-header-label($zgit_script __cmd filter_commits \$FZF_HEADER_LABEL)+transform-header($header_cmd)+reload($git_cmd)" \
       --bind "alt-r:transform-header-label($zgit_script __cmd switch_filter_mode)+transform-header($header_cmd)+reload($git_cmd)" \
-      --bind "p:transform-footer(git pull 2>&1)+reload($git_cmd)" \
-      --bind "P:transform-footer(git push 2>&1)+reload($git_cmd)" \
-      --bind "ctrl-p:transform-footer(git push --force-with-lease 2>&1)+reload($git_cmd)" \
-      --bind "-:transform-footer($zgit_script __cmd move_commit down {})+reload($git_cmd)+down" \
-      --bind "_:transform-footer($zgit_script __cmd move_commit up {})+reload($git_cmd)+up" \
-      --bind "::transform-footer($zgit_script __cmd execute_git_cmd log {})+reload($git_cmd)" \
+      --bind "$(_zgit_bind "p" "git pull")+reload($git_cmd)" \
+      --bind "$(_zgit_bind "P" "git push")+reload($git_cmd)" \
+      --bind "$(_zgit_bind "ctrl-p" "git push --force-with-lease")+reload($git_cmd)" \
+      --bind "$(_zgit_bind "-" "$zgit_script __cmd move_commit down {}")+reload($git_cmd)+down" \
+      --bind "$(_zgit_bind "_" "$zgit_script __cmd move_commit up {}")+reload($git_cmd)+up" \
+      --bind "$(_zgit_bind ":" "$zgit_script __cmd execute_git_cmd log {}")" \
       --bind "=:execute($zgit_script __cmd display_diff {})+reload($git_cmd)" \
       --bind "[:transform($zgit_script __cmd goto_prev_branch \$FZF_POS)" \
       --bind "]:transform($zgit_script __cmd goto_next_branch \$FZF_POS)" \
@@ -796,7 +801,7 @@ _zgit_log() {
       --bind "$unbound_keys:ignore" \
       --bind "i,/:unbind($ALL_BOUND_KEYS)+change-prompt(i> ),esc:rebind($ALL_BOUND_KEYS)+change-prompt(n> )" \
       --bind "enter:transform:$enter_cmd" \
-      --bind "?:execute($zgit_script __help \"$LOG_HELP_MSG\")" \
+      --bind "?:execute-silent($zgit_script __popup bindings \"$LOG_HELP_MSG\")" \
       --bind "tab:become($zgit_script status --position=\$FZF_POS --filter=\\\"\$FZF_HEADER_LABEL\\\")" \
       --preview "$zgit_script __preview commit {}"
 }
@@ -818,21 +823,21 @@ _zgit_status() {
       --bind "q:abort" \
       --bind "d:half-page-down,u:half-page-up,ctrl-f:preview-half-page-down,ctrl-b:preview-half-page-up" \
       --bind "j:down,k:up,g:first,G:last,J:jump" \
-      --bind "y:transform-footer($zgit_script __cmd yank status {})" \
-      --bind "space:transform-footer($zgit_script __cmd toggle_file {})+reload($git_cmd)" \
-      --bind "A:transform-footer(git add -A)+reload($git_cmd)" \
-      --bind "R:transform-footer(git reset)+reload($git_cmd)" \
+      --bind "$(_zgit_bind "y" "$zgit_script __cmd yank status {}")" \
+      --bind "$(_zgit_bind "space" "$zgit_script __cmd toggle_file {}")+down+reload($git_cmd)" \
+      --bind "$(_zgit_bind "A" "git add -A")+reload($git_cmd)" \
+      --bind "$(_zgit_bind "R" "git reset")+reload($git_cmd)" \
       --bind "x:execute($zgit_script __cmd restore_patch_file {})+reload($git_cmd)" \
-      --bind "X:transform-footer($zgit_script __cmd restore_file {})+reload($git_cmd)" \
-      --bind "C:transform-footer($zgit_script __cmd restore_all)+reload($git_cmd)" \
-      --bind "ctrl-x:transform-footer($zgit_script __cmd restore_and_clean)+reload($git_cmd)" \
+      --bind "$(_zgit_bind "X" "$zgit_script __cmd restore_file {}")+reload($git_cmd)" \
+      --bind "$(_zgit_bind "C" "$zgit_script __cmd restore_all")+reload($git_cmd)" \
+      --bind "$(_zgit_bind "ctrl-x" "$zgit_script __cmd restore_and_clean")+reload($git_cmd)" \
       --bind "p:execute($zgit_script __cmd add_patch_file {})+reload($git_cmd)" \
       --bind "r:execute($zgit_script __cmd reset_patch_file {})+reload($git_cmd)" \
-      --bind "c:transform-footer($zgit_script __cmd commit)+reload($git_cmd)" \
-      --bind "::transform-footer($zgit_script __cmd execute_git_cmd status {})+reload($git_cmd)" \
-      --bind "s:transform-footer($zgit_script __cmd stash_push)+reload($git_cmd)" \
-      --bind "S:transform-footer(git stash pop 2>&1)+reload($git_cmd)" \
-      --bind "alt-s:execute($zgit_script stash)+reload($git_cmd)" \
+      --bind "$(_zgit_bind "c" "$zgit_script __cmd commit")+reload($git_cmd)" \
+      --bind "$(_zgit_bind ":" "$zgit_script __cmd execute_git_cmd status {}")+reload($git_cmd)" \
+      --bind "$(_zgit_bind "s" "$zgit_script __cmd stash_push")+reload($git_cmd)" \
+      --bind "$(_zgit_bind "S" "git stash pop")+reload($git_cmd)" \
+      --bind "$(_zgit_bind "alt-s" "$zgit_script stash")+reload($git_cmd)" \
       --bind "alt-c:execute(git continue)+reload($git_cmd)" \
       --bind "alt-x:execute(git abort)+reload($git_cmd)" \
       --bind "o:execute($zgit_script __preview file --paging {})" \
@@ -843,7 +848,7 @@ _zgit_status() {
       --bind "$unbound_keys:ignore" \
       --bind "i,/:unbind($ALL_BOUND_KEYS)+change-prompt(i> ),esc:rebind($ALL_BOUND_KEYS)+change-prompt(n> )" \
       --bind "enter:transform:$enter_cmd" \
-      --bind "?:execute($zgit_script __help \"$STATUS_HELP_MSG\")" \
+      --bind "?:execute-silent($zgit_script __popup bindings \"$STATUS_HELP_MSG\")" \
       --bind "tab:become($zgit_script log $*)" \
       --preview "$zgit_script __preview file {}"
 }
@@ -871,8 +876,8 @@ _zgit_explore() {
       --bind "q:abort" \
       --bind "d:half-page-down,u:half-page-up,ctrl-f:preview-half-page-down,ctrl-b:preview-half-page-up" \
       --bind "j:down,k:up,g:first,G:last,J:jump" \
-      --bind "y:transform-footer($zgit_script __cmd yank explore {})" \
-      --bind "::transform-footer($zgit_script __cmd execute_git_cmd explore {})+reload($git_cmd)" \
+      --bind "$(_zgit_bind "y" "$zgit_script __cmd yank explore {}")" \
+      --bind "$(_zgit_bind ":" "$zgit_script __cmd execute_git_cmd explore {}")+reload($git_cmd)" \
       --bind "alt-c:execute(git continue)+reload($git_cmd)" \
       --bind "alt-x:execute(git abort)+reload($git_cmd)" \
       --bind "o:execute($zgit_script __preview commit_file --paging $commit_hash {})" \
@@ -882,13 +887,16 @@ _zgit_explore() {
       --bind "$unbound_keys:ignore" \
       --bind "i,/:unbind($ALL_BOUND_KEYS)+change-prompt(i> ),esc:rebind($ALL_BOUND_KEYS)+change-prompt(n> )" \
       --bind "enter:transform:$enter_cmd" \
-      --bind "?:execute($zgit_script __help \"$EXPLORE_HELP_MSG\")" \
+      --bind "?:execute-silent($zgit_script __popup bindings \"$EXPLORE_HELP_MSG\")" \
       --preview-window "~2" \
       --preview "$zgit_script __preview commit_file $commit_hash {}"
 }
 
 _zgit_stash() {
-  ! git stash list | grep -q . && return 1
+  if ! git stash list | grep -q .; then
+    echo "No stashes"
+    return 1
+  fi
 
   local zgit_script git_cmd enter_cmd
 
@@ -912,12 +920,12 @@ _zgit_stash() {
       --bind "q:abort" \
       --bind "d:half-page-down,u:half-page-up,ctrl-f:preview-half-page-down,ctrl-b:preview-half-page-up" \
       --bind "j:down,k:up,g:first,G:last,J:jump" \
-      --bind "a:transform-footer($zgit_script __cmd stash_apply {})+abort" \
-      --bind "p:transform-footer($zgit_script __cmd stash_pop {})+abort" \
-      --bind "x:transform-footer($zgit_script __cmd stash_drop {})+reload($git_cmd_str)" \
-      --bind "w:transform-footer($zgit_script __cmd stash_reword {})+reload($git_cmd_str)" \
-      --bind "y:transform-footer($zgit_script __cmd yank stash {})" \
-      --bind "::transform-footer($zgit_script __cmd execute_git_cmd explore {})+reload($git_cmd_str)" \
+      --bind "$(_zgit_bind "a" "$zgit_script __cmd stash_apply {}")+abort" \
+      --bind "$(_zgit_bind "p" "$zgit_script __cmd stash_pop {}")+abort" \
+      --bind "$(_zgit_bind "x" "$zgit_script __cmd stash_drop {}")+reload($git_cmd_str)" \
+      --bind "$(_zgit_bind "w" "$zgit_script __cmd stash_reword {}")+reload($git_cmd_str)" \
+      --bind "$(_zgit_bind "y" "$zgit_script __cmd yank stash {}")" \
+      --bind "$(_zgit_bind ":" "$zgit_script __cmd execute_git_cmd explore {}")+reload($git_cmd_str)" \
       --bind "alt-c:execute(git continue)+reload($git_cmd_str)" \
       --bind "alt-x:execute(git abort)+reload($git_cmd_str)" \
       --bind "o:execute($zgit_script __preview stash --paging {})" \
@@ -927,19 +935,13 @@ _zgit_stash() {
       --bind "$unbound_keys:ignore" \
       --bind "i,/:unbind($ALL_BOUND_KEYS)+change-prompt(i> ),esc:rebind($ALL_BOUND_KEYS)+change-prompt(n> )" \
       --bind "enter:transform:$enter_cmd" \
-      --bind "?:execute($zgit_script __help \"$STASH_HELP_MSG\")" \
+      --bind "?:execute-silent($zgit_script __popup bindings \"$STASH_HELP_MSG\")" \
       --preview "$zgit_script __preview stash {}"
 }
 
 _zgit_main() {
   local action_name fn_name
-  if (($#)) && [[ "$1" == __help ]]; then
-    shift
-    _zgit_help_popup "$@"
-    return $?
-  fi
-
-  if (($#)) && [[ "$1" == __cmd || "$1" == __preview ]]; then
+  if (($#)) && [[ "$1" == __popup || "$1" == __cmd || "$1" == __preview ]]; then
     fn_name="_zgit_${1:2}_$2"
     shift 2
     "$fn_name" "$@"
@@ -961,6 +963,11 @@ _zgit_main() {
     echo "Unknown zgit command: $action_name"
     return 1
   fi
+
+  export ZGIT_FOOTER_FILE
+  ZGIT_FOOTER_FILE=$(mktemp --tmpdir zgit_footer.XXXXXXXX)
+  trap 'rm -f "$ZGIT_FOOTER_FILE"' EXIT
+
   "$fn_name" "$@"
 }
 
