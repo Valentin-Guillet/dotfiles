@@ -22,8 +22,7 @@ LOG_HELP_MSG="
 
  r / R		  reset branch (soft / hard)
  e / E		  rebase branch (auto / interactive)
- space / b	  switch branch
- B		  switch branch (prompt)
+ space, b / B	  switch branch (auto / prompt)
  a		  create branch
  D		  detach HEAD
  x / X		  delete branch (safe / force)
@@ -111,8 +110,8 @@ STASH_HELP_MSG="
 
  a		  apply stash
  p		  pop stash
- x      drop stash
- w      rename stash
+ x		  drop stash
+ w		  rename stash
 
  :		  execute a (git) command
  o		  open stash in preview
@@ -171,7 +170,7 @@ _zgit_popup_last_cmd() {
   [[ -s "$1" ]] || return
 
   if [[ -n "$TMUX" ]]; then
-    nb_lines=$(($(wc -l < "$1") + 6))
+    nb_lines=$(($(wc -l <"$1") + 6))
     max_lines=$((FZF_LINES - 2))
     if ((nb_lines > max_lines)); then
       tmux display-popup -E -w 50% -h "$max_lines" -T 'Last command output' "tput civis && less -c~KP ' ' \"$1\""
@@ -219,6 +218,7 @@ _zgit_preview_file() {
       git ls-files -co --exclude-standard -- "$file_path" | tree -Ca --fromfile . 2>/dev/null || ls -R --color=always
     fi
   else
+    [[ "${git_arg[0]}" == "--staged" && "${1:0:1}" == " " ]] && return
     [[ "${1:1:1}" == " " ]] && git_arg=("--staged")
     git diff --color=always --format= --diff-merges=first-parent "${git_arg[@]}" "$file_path" 2>/dev/null | { LESS=Rc delta --paging="$paging" || "${fallback[@]}"; }
   fi
@@ -260,7 +260,7 @@ _zgit_cmd_yank() {
     value="$2"
     target="File path"
   elif [[ "$1" == stash ]]; then
-    value="${2%%:*}"
+    value="${2%% *}"
     target="Stash name"
   fi
 
@@ -548,7 +548,7 @@ _zgit_cmd_display_diff() {
   commit_hash=$(_get_commit_hash "$1")
   [[ -z "$commit_hash" ]] && return 1
 
-  git diff --color=always --stat --patch --diff-merges=first-parent "$commit_hash" 2>/dev/null | { LESS="Rc" delta --paging=always || less -Rc ; }
+  git diff --color=always --stat --patch --diff-merges=first-parent "$commit_hash" 2>/dev/null | { LESS="Rc" delta --paging=always || less -Rc; }
 }
 
 _zgit_cmd_filter_commits() {
@@ -556,6 +556,7 @@ _zgit_cmd_filter_commits() {
     echo "$1"
     return 130
   fi
+  [[ -z "$new_message" ]] && return
 
   local filter_mode
   if [[ -z "$1" ]]; then
@@ -614,7 +615,7 @@ _zgit_cmd_restore_file() {
   fi
 
   if [[ "$status" == "??" ]]; then
-    rm "$file_path"
+    rm -r "$file_path"
   else
     git restore -- "$file_path" 2>&1
   fi
@@ -676,18 +677,34 @@ _zgit_cmd_restore_patch_file() {
   git restore --patch -- "$file_path" 2>&1
 }
 
-_zgit_cmd_stash_push() {
-  files=$(git diff --cached --name-only)
-  # shellcheck disable=SC2086
-  git stash push -- $files 2>&1
+_zgit_cmd_commit() {
+  if git diff --cached --quiet; then
+    echo "Nothing to commit!"
+    return 1
+  fi
+
+  local commit_msg
+  if ! commit_msg=$(_zgit_prompt "Commit message: "); then
+    echo "Aborted"
+    return 130
+  fi
+
+  git commit -m "$commit_msg" 2>&1
 }
 
-_zgit_cmd_stash_apply() {
-  local stash_name
-  stash_name="${1%% *}"
-  [[ -z "$stash_name" ]] && return 1
+_zgit_cmd_open_editor() {
+  local file_path
+  file_path=$(_get_file_path "$1")
+  [[ -z "$file_path" ]] && return 1
+  "${EDITOR:-vim}" "$file_path"
+}
 
-  git stash apply "$stash_name" 2>&1
+# STASH COMMANDS
+
+_zgit_cmd_stash_push() {
+  files=$(git diff --color=never --cached --name-only)
+  # shellcheck disable=SC2086
+  git stash push -- $files 2>&1
 }
 
 _zgit_cmd_stash_pop() {
@@ -696,6 +713,14 @@ _zgit_cmd_stash_pop() {
   [[ -z "$stash_name" ]] && return 1
 
   git stash pop "$stash_name" 2>&1
+}
+
+_zgit_cmd_stash_apply() {
+  local stash_name
+  stash_name="${1%% *}"
+  [[ -z "$stash_name" ]] && return 1
+
+  git stash apply "$stash_name" 2>&1
 }
 
 _zgit_cmd_stash_drop() {
@@ -723,28 +748,6 @@ _zgit_cmd_stash_reword() {
   fi
 
   echo git stash store -m "$new_message" "$stash_name" 2>&1
-}
-
-_zgit_cmd_commit() {
-  if git diff --cached --quiet; then
-    echo "Nothing to commit!"
-    return 1
-  fi
-
-  local commit_msg
-  if ! commit_msg=$(_zgit_prompt "Commit message: "); then
-    echo "Aborted"
-    return 130
-  fi
-
-  git commit -m "$commit_msg" 2>&1
-}
-
-_zgit_cmd_open_editor() {
-  local file_path
-  file_path=$(_get_file_path "$1")
-  [[ -z "$file_path" ]] && return 1
-  "${EDITOR:-vim}" "$file_path"
 }
 
 # MAIN FUNCTIONS
@@ -822,12 +825,12 @@ _zgit_log() {
       --bind "o:execute($zgit_script __preview commit --paging {})" \
       --bind "ctrl-r:reload($git_cmd)" \
       --bind "ctrl-l:change-footer()+clear-screen" \
-      --bind "$unbound_keys:ignore" \
       --bind "i,/:unbind($ALL_BOUND_KEYS)+change-prompt(i> ),esc:rebind($ALL_BOUND_KEYS)+change-prompt(n> )" \
       --bind "enter:transform:$enter_cmd" \
       --bind "?:execute-silent($zgit_script __popup bindings \"$LOG_HELP_MSG\")" \
       --bind "!:change-footer()+execute-silent($zgit_script __popup last_cmd \"$ZGIT_FOOTER_FILE\")" \
       --bind "tab:become($zgit_script status --position=\$FZF_POS --filter=\\\"\$FZF_HEADER_LABEL\\\")" \
+      --bind "$unbound_keys:ignore" \
       --preview "$zgit_script __preview commit {}"
 }
 
@@ -870,12 +873,12 @@ _zgit_status() {
       --bind "ctrl-r:reload($git_cmd)" \
       --bind "ctrl-l:change-footer()+clear-screen" \
       --bind "change:best" \
-      --bind "$unbound_keys:ignore" \
       --bind "i,/:unbind($ALL_BOUND_KEYS)+change-prompt(i> ),esc:rebind($ALL_BOUND_KEYS)+change-prompt(n> )" \
       --bind "enter:transform:$enter_cmd" \
       --bind "?:execute-silent($zgit_script __popup bindings \"$STATUS_HELP_MSG\")" \
       --bind "!:change-footer()+execute-silent($zgit_script __popup last_cmd \"$ZGIT_FOOTER_FILE\")" \
       --bind "tab:become($zgit_script log $*)" \
+      --bind "$unbound_keys:ignore" \
       --preview "$zgit_script __preview file {}"
 }
 
@@ -910,11 +913,11 @@ _zgit_explore() {
       --bind "ctrl-r:reload($git_cmd)" \
       --bind "ctrl-l:change-footer()+clear-screen" \
       --bind "change:best" \
-      --bind "$unbound_keys:ignore" \
       --bind "i,/:unbind($ALL_BOUND_KEYS)+change-prompt(i> ),esc:rebind($ALL_BOUND_KEYS)+change-prompt(n> )" \
       --bind "enter:transform:$enter_cmd" \
       --bind "?:execute-silent($zgit_script __popup bindings \"$EXPLORE_HELP_MSG\")" \
       --bind "!:change-footer()+execute-silent($zgit_script __popup last_cmd \"$ZGIT_FOOTER_FILE\")" \
+      --bind "$unbound_keys:ignore" \
       --preview-window "~2" \
       --preview "$zgit_script __preview commit_file $commit_hash {}"
 }
@@ -959,11 +962,11 @@ _zgit_stash() {
       --bind "ctrl-r:reload($git_cmd_str)" \
       --bind "ctrl-l:change-footer()+clear-screen" \
       --bind "change:best" \
-      --bind "$unbound_keys:ignore" \
       --bind "i,/:unbind($ALL_BOUND_KEYS)+change-prompt(i> ),esc:rebind($ALL_BOUND_KEYS)+change-prompt(n> )" \
       --bind "enter:transform:$enter_cmd" \
       --bind "?:execute-silent($zgit_script __popup bindings \"$STASH_HELP_MSG\")" \
       --bind "!:change-footer()+execute-silent($zgit_script __popup last_cmd \"$ZGIT_FOOTER_FILE\")" \
+      --bind "$unbound_keys:ignore" \
       --preview "$zgit_script __preview stash {}"
 }
 
