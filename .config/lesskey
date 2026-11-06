@@ -3,6 +3,8 @@
 a forw-search \^\\s+-
 l right-scroll
 h left-scroll
+0 no-scroll
+$ end-scroll
 
 #line-edit
 ^P up
