@@ -107,6 +107,9 @@ BRANCH_HELP_MSG="
  d / u		  move selection down / up
  ctrl-f / ctrl-b  scroll preview down / up
  y		  yank branch name
+
+ w / W		  reword branch (inline / in editor)
+ x / X		  delete branch (safe / force)
  
  alt-c / alt-x	  git continue / abort
  :		  execute a (git) command
@@ -454,7 +457,7 @@ _zgit_cmd_detach_head() {
   git switch --detach "$commit_hash" 2>&1
 }
 
-_zgit_cmd_delete_branch() {
+_zgit_cmd_delete_branch_at_commit() {
   local git_cmd_arg commit_hash branch_name
 
   if [[ "$1" == --force ]]; then
@@ -741,6 +744,56 @@ _zgit_cmd_open_editor() {
   "${EDITOR:-vim}" "$file_path"
 }
 
+# BRANCH COMMANDS
+
+_zgit_cmd_rename_branch() {
+  local branch_name new_branch_name
+  branch_name=$(_get_branch_name "$1")
+  [[ -z "$branch_name" ]] && return 1
+
+  if ! new_branch_name=$(_zgit_prompt "New branch name: " "$branch_name"); then
+    echo "Aborted"
+    return 130
+  fi
+
+  git branch -m "$branch_name" "$new_branch_name" 2>&1
+}
+
+_zgit_cmd_editor_rename_branch() {
+  local branch_name tmp_file
+  branch_name=$(_get_branch_name "$1")
+  [[ -z "$branch_name" ]] && return 1
+
+  tmp_file=$(mktemp --tmpdir)
+  echo "$branch_name" >"$tmp_file"
+  ${EDITOR:-vim} "$tmp_file"
+  new_branch_name=$(cat "$tmp_file")
+  rm -f "$tmp_file"
+  if [[ -z "$new_branch_name" ]]; then
+    echo "Abort"
+    return 1
+  fi
+
+  git branch -m "$branch_name" "$new_branch_name" 2>&1
+}
+
+_zgit_cmd_delete_branch() {
+  local git_cmd_arg branch_name
+
+  if [[ "$1" == --force ]]; then
+    shift
+    git_cmd_arg=("--force")
+  fi
+  branch_name=$(_get_branch_name "$1")
+  [[ -z "$branch_name" ]] && return 1
+
+  if [[ "${git_cmd_arg[0]}" == --force && ! $(_zgit_prompt "Do you really want to force delete branch \"$branch_name\"? [yN] ") =~ ^[Yy]$ ]]; then
+    echo "Aborted"
+    return 1
+  fi
+  git branch --delete "${git_cmd_arg[@]}" "$branch_name" 2>&1
+}
+
 # STASH COMMANDS
 
 _zgit_cmd_stash_push() {
@@ -840,8 +893,8 @@ _zgit_log() {
       --bind "$(_zgit_bind --has-input "b" "$ZGIT_SCRIPT __cmd switch_branch --prompt {}")+reload($git_cmd)+transform($ZGIT_SCRIPT __cmd center_head)" \
       --bind "$(_zgit_bind --has-input "a" "$ZGIT_SCRIPT __cmd create_branch {}")+reload($git_cmd)" \
       --bind "$(_zgit_bind "D" "$ZGIT_SCRIPT __cmd detach_head {}")+reload($git_cmd)" \
-      --bind "$(_zgit_bind --has-input "x" "$ZGIT_SCRIPT __cmd delete_branch {}")+reload($git_cmd)" \
-      --bind "$(_zgit_bind --has-input "X" "$ZGIT_SCRIPT __cmd delete_branch --force {}")+reload($git_cmd)" \
+      --bind "$(_zgit_bind --has-input "x" "$ZGIT_SCRIPT __cmd delete_branch_at_commit {}")+reload($git_cmd)" \
+      --bind "$(_zgit_bind --has-input "X" "$ZGIT_SCRIPT __cmd delete_branch_at_commit --force {}")+reload($git_cmd)" \
       --bind "$(_zgit_bind "c" "$ZGIT_SCRIPT __cmd cherry_pick {}")+reload($git_cmd)" \
       --bind "$(_zgit_bind --has-input "m" "$ZGIT_SCRIPT __cmd merge {}")+reload($git_cmd)" \
       --bind "$(_zgit_bind "M" "$ZGIT_SCRIPT __cmd merge --branch {}")+reload($git_cmd)" \
@@ -969,7 +1022,7 @@ _zgit_branch() {
   # shellcheck disable=SC2016
   enter_cmd='[[ "$FZF_PROMPT" == "i> " ]] && echo "rebind('"${ALL_BOUND_KEYS//\"/\\\"}"')+change-prompt(n> )" || echo "accept"'
 
-  unbound_keys=$'a,b,c,e,f,h,l,m,n,p,r,s,t,v,w,x,z,A,B,C,D,E,F,H,I,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,\,|,,,.,;,(,),[,],{,},<,>,\',",@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9,space'
+  unbound_keys=$'a,b,c,e,f,h,l,m,n,p,r,s,t,v,z,A,B,C,D,E,F,H,I,K,L,M,N,O,P,Q,R,S,T,U,V,Y,Z,\,|,,,.,;,(,),[,],{,},<,>,\',",@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9,space'
 
   _get_branch_name  "$("${git_cmd[@]}" |
     FZF_DEFAULT_OPTS="${ZGIT_FZF_DEFAULT_OPTS:-}" fzf \
@@ -980,6 +1033,10 @@ _zgit_branch() {
       --bind "j:down,k:up,g:first,G:last,J:jump" \
       --bind "$(_zgit_bind "y" "$ZGIT_SCRIPT __cmd yank branch {}")" \
       --bind "$(_zgit_bind --has-input ":" "$ZGIT_SCRIPT __cmd execute_git_cmd branch {}")+reload($git_cmd_str)" \
+      --bind "$(_zgit_bind --has-input "w" "$ZGIT_SCRIPT __cmd rename_branch {}")+reload($git_cmd_str)" \
+      --bind "$(_zgit_bind --has-input "x" "$ZGIT_SCRIPT __cmd delete_branch {}")+reload($git_cmd_str)" \
+      --bind "$(_zgit_bind --has-input "X" "$ZGIT_SCRIPT __cmd delete_branch --force {}")+reload($git_cmd_str)" \
+      --bind "W:execute($ZGIT_SCRIPT __cmd editor_rename_branch {})+reload($git_cmd_str)" \
       --bind "alt-c:execute(git continue)+reload($git_cmd_str)" \
       --bind "alt-x:execute(git abort)+reload($git_cmd_str)" \
       --bind "o:execute($ZGIT_SCRIPT __preview branch --paging {})" \
