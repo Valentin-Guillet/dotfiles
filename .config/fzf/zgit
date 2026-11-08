@@ -27,7 +27,7 @@ LOG_HELP_MSG="
  D		  detach HEAD
  x / X		  delete branch (safe / force)
  c		  cherry-pick commit
- m / M		  merge (branch / commit)
+ m / M		  merge (commit / branch)
  f		  fast-forward merge
  A		  amend commit
  w / W		  reword commit (inline / in editor)
@@ -824,8 +824,8 @@ _zgit_log() {
       --bind "$(_zgit_bind --has-input "x" "$ZGIT_SCRIPT __cmd delete_branch {}")+reload($git_cmd)" \
       --bind "$(_zgit_bind --has-input "X" "$ZGIT_SCRIPT __cmd delete_branch --force {}")+reload($git_cmd)" \
       --bind "$(_zgit_bind "c" "$ZGIT_SCRIPT __cmd cherry_pick {}")+reload($git_cmd)" \
-      --bind "$(_zgit_bind --has-input "m" "$ZGIT_SCRIPT __cmd merge --branch {}")+reload($git_cmd)" \
-      --bind "$(_zgit_bind "M" "$ZGIT_SCRIPT __cmd merge {}")+reload($git_cmd)" \
+      --bind "$(_zgit_bind --has-input "m" "$ZGIT_SCRIPT __cmd merge {}")+reload($git_cmd)" \
+      --bind "$(_zgit_bind "M" "$ZGIT_SCRIPT __cmd merge --branch {}")+reload($git_cmd)" \
       --bind "$(_zgit_bind "f" "$ZGIT_SCRIPT __cmd fast_forward {}")+reload($git_cmd)" \
       --bind "$(_zgit_bind "A" "$ZGIT_SCRIPT __cmd amend_commit {}")+reload($git_cmd)" \
       --bind "$(_zgit_bind --has-input "w" "$ZGIT_SCRIPT __cmd reword_commit {}")+reload($git_cmd)" \
