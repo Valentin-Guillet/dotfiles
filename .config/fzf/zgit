@@ -100,6 +100,25 @@ EXPLORE_HELP_MSG="
  !		  display last command output
  q		  quit"
 
+BRANCH_HELP_MSG="
+ j / k		  down / up
+ g / G		  first / last
+ J		  jump to line
+ d / u		  move selection down / up
+ ctrl-f / ctrl-b  scroll preview down / up
+ y		  yank branch name
+ 
+ alt-c / alt-x	  git continue / abort
+ :		  execute a (git) command
+ o		  open branch in preview
+ i, /		  toggle search
+ Enter		  (normal mode) switch branch
+ 		  (input mode) exit search
+ ctrl-r		  refresh command
+ ?		  display keybindings
+ !		  display last command output
+ q		  quit"
+
 STASH_HELP_MSG="
  j / k		  down / up
  g / G		  first / last
@@ -153,6 +172,14 @@ _get_file_path() {
   file_name="${file_name#\"}"
   file_name="${file_name%\"}"
   echo "$file_name"
+}
+
+_get_branch_name() {
+  local branch_name
+  branch_name="${1:2}"
+  branch_name="${branch_name%% *}"
+  [[ "$branch_name" == '(HEAD' ]] && branch_name="HEAD"
+  echo "$branch_name"
 }
 
 _zgit_prompt() {
@@ -258,6 +285,18 @@ _zgit_preview_commit_file() {
     { LESS="Rc\$--header 2" delta --paging="$paging" || "${fallback[@]}"; }
 }
 
+_zgit_preview_branch() {
+  local branch_name paging=never fallback=(cat)
+  if [[ "$1" == --paging ]]; then
+    shift
+    paging=always
+    fallback=(less -Rc)
+  fi
+  branch_name=$(_get_branch_name "$1")
+  [[ -z "$branch_name" ]] && return 1
+  git log --oneline --graph --date=short --pretty='format:%C(auto)%cd %h%d %s' "$branch_name" | { LESS="Rc" delta --paging="$paging" || "${fallback[@]}"; }
+}
+
 _zgit_preview_stash() {
   local stash_name paging=never fallback=(cat)
   if [[ "$1" == --paging ]]; then
@@ -275,16 +314,21 @@ _zgit_cmd_yank() {
   local target value
   if [[ "$1" == log ]]; then
     value=$(_get_commit_hash "$2")
-    target="Commit hash"
+    target="Commit hash \"$value\""
   elif [[ "$1" == status ]]; then
     value=$(_get_file_path "$2")
-    target="File path"
+    target="File path \"$value\""
   elif [[ "$1" == explore ]]; then
     value="$2"
-    target="File path"
+    target="File path \"$value\""
+  elif [[ "$1" == branch ]]; then
+    value="${2:2}"
+    value="${value%% *}"
+    [[ "$value" == '(HEAD' ]] && value="HEAD"
+    target="Branch name \"$value\""
   elif [[ "$1" == stash ]]; then
     value="${2%% *}"
-    target="Stash name"
+    target="Stash name \"$value\""
   fi
 
   if command -v wl-copy >/dev/null 2>&1; then
@@ -355,32 +399,6 @@ _zgit_cmd_rebase_onto() {
   git rebase "$commit_hash" "${@:2}" 2>&1
 }
 
-_zgit_get_branch_name_prompt() {
-  local branch_name
-
-  branch_name=$(git branch --sort=-committerdate --sort=HEAD --format=$'%(HEAD) %(color:yellow)%(refname:short) %(color:green)(%(committerdate:relative))\t%(color:blue)%(subject)%(color:reset)' --color=always "$@" |
-    column -ts$'\t' |
-    fzf --ansi \
-      --tmux 70% \
-      --tiebreak begin \
-      --bind "ctrl-f:preview-half-page-down,ctrl-b:preview-half-page-up" \
-      --preview-window down,border-top,75% \
-      --color hl:underline,hl+:underline \
-      --no-hscroll \
-      --preview "git log --oneline --graph --date=short --pretty='format:%C(auto)%cd %h%d %s' \$([[ \"{}\" =~ '(HEAD detached' ]] && echo 'HEAD' || echo \$(cut -c3- <<< {} | cut -d' ' -f1)) --")
-  if [[ $? == 130 ]]; then
-    echo "Aborted"
-    return 130
-  fi
-
-  branch_name=$(echo "$branch_name" | sed 's/^\* //' | awk '{print $1}')
-  if [[ -z "$branch_name" ]]; then
-    echo "No branch selected"
-    return 1
-  fi
-  echo "$branch_name"
-}
-
 _zgit_get_branch_name() {
   if [[ "$1" == --no-checked-out ]]; then
     shift
@@ -392,9 +410,9 @@ _zgit_get_branch_name() {
   if [[ "${#branch_list[@]}" == 1 ]]; then
     echo "${branch_list[0]}"
   elif [[ "${#branch_list[@]}" == 0 ]]; then
-    _zgit_get_branch_name_prompt
+    "$ZGIT_SCRIPT" branch
   else
-    _zgit_get_branch_name_prompt "$@"
+    "$ZGIT_SCRIPT" branch "$@"
   fi
   return $?
 }
@@ -403,12 +421,13 @@ _zgit_cmd_switch_branch() {
   local commit_hash branch_name
 
   if [[ "$1" == --prompt ]]; then
-    branch_name=$(_zgit_get_branch_name_prompt) || return $?
+    branch_name=$("$ZGIT_SCRIPT" branch) || return $?
   else
     commit_hash=$(_get_commit_hash "$1")
     branch_name=$(_zgit_get_branch_name --no-checked-out --points-at "$commit_hash") || return $?
   fi
 
+  [[ -z "$branch_name" ]] && return 1
   git switch "$branch_name" 2>&1
 }
 
@@ -939,6 +958,40 @@ _zgit_explore() {
       --bind "$unbound_keys:ignore" \
       --preview-window "~2" \
       --preview "$ZGIT_SCRIPT __preview commit_file $commit_hash {}"
+}
+
+_zgit_branch() {
+  local git_cmd enter_cmd
+
+  git_cmd=(git branch --sort=-committerdate --sort=HEAD --format=$'%(HEAD) %(color:yellow)%(refname:short) %(color:green)(%(committerdate:relative))\t%(color:blue)%(subject)%(color:reset)' "$@")
+  printf -v git_cmd_str '%q ' "${git_cmd[@]}"
+
+  # shellcheck disable=SC2016
+  enter_cmd='[[ "$FZF_PROMPT" == "i> " ]] && echo "rebind('"${ALL_BOUND_KEYS//\"/\\\"}"')+change-prompt(n> )" || echo "accept"'
+
+  unbound_keys=$'a,b,c,e,f,h,l,m,n,p,r,s,t,v,w,x,z,A,B,C,D,E,F,H,I,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,\,|,,,.,;,(,),[,],{,},<,>,\',",@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9,space'
+
+  _get_branch_name  "$("${git_cmd[@]}" |
+    FZF_DEFAULT_OPTS="${ZGIT_FZF_DEFAULT_OPTS:-}" fzf \
+      --tiebreak 'begin' \
+      --prompt 'n> ' \
+      --bind "q:abort" \
+      --bind "d:half-page-down,u:half-page-up,ctrl-f:preview-half-page-down,ctrl-b:preview-half-page-up" \
+      --bind "j:down,k:up,g:first,G:last,J:jump" \
+      --bind "$(_zgit_bind "y" "$ZGIT_SCRIPT __cmd yank branch {}")" \
+      --bind "$(_zgit_bind --has-input ":" "$ZGIT_SCRIPT __cmd execute_git_cmd branch {}")+reload($git_cmd_str)" \
+      --bind "alt-c:execute(git continue)+reload($git_cmd_str)" \
+      --bind "alt-x:execute(git abort)+reload($git_cmd_str)" \
+      --bind "o:execute($ZGIT_SCRIPT __preview branch --paging {})" \
+      --bind "ctrl-r:reload($git_cmd_str)" \
+      --bind "ctrl-l:change-footer()+clear-screen" \
+      --bind "change:best" \
+      --bind "i,/:unbind($ALL_BOUND_KEYS)+change-prompt(i> ),esc:rebind($ALL_BOUND_KEYS)+change-prompt(n> )" \
+      --bind "enter:transform:$enter_cmd" \
+      --bind "?:execute$([[ -n $TMUX ]] && echo "-silent")($ZGIT_SCRIPT __popup bindings \"$BRANCH_HELP_MSG\")" \
+      --bind "!:change-footer()+execute$([[ -n $TMUX ]] && echo "-silent")($ZGIT_SCRIPT __popup last_cmd \"$ZGIT_FOOTER_FILE\")" \
+      --bind "$unbound_keys:ignore" \
+      --preview "$ZGIT_SCRIPT __preview branch {}")"
 }
 
 _zgit_stash() {
