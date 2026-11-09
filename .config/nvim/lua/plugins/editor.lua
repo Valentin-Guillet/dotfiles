@@ -18,6 +18,7 @@ return {
 							["<C-c>"] = { "close", mode = { "n", "i" } },
 							["<C-h>"] = { "preview_scroll_left", mode = { "n", "i" } },
 							["<C-l>"] = { "preview_scroll_right", mode = { "n", "i" } },
+							["w"] = { "focus_preview", mode = { "n" } },
 							["<C-w>w"] = { "focus_preview", mode = { "n" } },
 							["<C-w><C-w>"] = { "focus_preview", mode = { "n" } },
 						},
@@ -45,6 +46,25 @@ return {
 					},
 					help = { confirm = "vsplit" },
 				},
+			},
+		},
+		keys = {
+			{
+				"<leader>n",
+				function()
+					Snacks.picker.notifications({
+						win = {
+							preview = {
+								wo = {
+									wrap = true,
+									linebreak = true,
+									breakindent = true,
+								},
+							},
+						},
+					})
+				end,
+				desc = "Notification History",
 			},
 		},
 	},
