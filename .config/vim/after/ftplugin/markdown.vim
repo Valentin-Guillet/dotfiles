@@ -619,8 +619,8 @@ function! s:SetCommonMappings()
 
     nnoremap <buffer><silent> > :set opfunc=<SID>Markdown_ModifyIndentRange<CR>g@
     nnoremap <buffer><silent> < :set opfunc=<SID>Markdown_ModifyDedentRange<CR>g@
-    vnoremap <buffer><silent> > <Cmd>call <SID>Markdown_ModifyIndentRange('visual')<CR>
-    vnoremap <buffer><silent> < <Cmd>call <SID>Markdown_ModifyDedentRange('visual')<CR>
+    vnoremap <buffer><silent> > :<C-u>call <SID>Markdown_ModifyIndentRange('visual')<CR>
+    vnoremap <buffer><silent> < :<C-u>call <SID>Markdown_ModifyDedentRange('visual')<CR>
 
     inoremap <buffer><silent>       <C-T> <C-T><Cmd>call <SID>Markdown_ModifyBullet(1) \| call <SID>TodoList_UpdateParents(-1, 0)<CR>
     inoremap <buffer><silent><expr> <C-D> col('.')>strlen(getline('.')) ? "<Cmd>call <SID>Markdown_ModifyBullet(-1) \| call <SID>TodoList_UpdateParents(-1, 0)<CR><C-D>" : "<Del>"
