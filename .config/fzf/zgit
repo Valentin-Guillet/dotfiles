@@ -1112,7 +1112,7 @@ _zgit_stash() {
       --bind "j:down,k:up,g:first,G:last,J:jump" \
       --bind "$(_zgit_bind "a" "$ZGIT_SCRIPT __cmd stash_apply {}")+abort" \
       --bind "$(_zgit_bind "p" "$ZGIT_SCRIPT __cmd stash_pop {}")+abort" \
-      --bind "$(_zgit_bind "x" "$ZGIT_SCRIPT __cmd stash_drop {}")+reload($git_cmd_str)" \
+      --bind "$(_zgit_bind --has-input "x" "$ZGIT_SCRIPT __cmd stash_drop {}")+reload($git_cmd_str)" \
       --bind "$(_zgit_bind --has-input "w" "$ZGIT_SCRIPT __cmd stash_reword {}")+reload($git_cmd_str)" \
       --bind "$(_zgit_bind "y" "$ZGIT_SCRIPT __cmd yank stash {}")" \
       --bind "$(_zgit_bind --has-input ":" "$ZGIT_SCRIPT __cmd execute_git_cmd stash {}")+reload($git_cmd_str)" \
