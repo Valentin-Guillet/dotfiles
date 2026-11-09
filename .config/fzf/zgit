@@ -889,7 +889,7 @@ _zgit_cmd_stash_reword() {
     return 130
   fi
 
-  echo git stash store -m "$new_message" "$stash_name" 2>&1
+  git stash store -m "$new_message" "$stash_name" 2>&1
 }
 
 # MAIN FUNCTIONS
