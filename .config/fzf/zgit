@@ -807,7 +807,7 @@ _zgit_cmd_rename_branch() {
 }
 
 _zgit_cmd_editor_rename_branch() {
-  local branch_name tmp_file
+  local branch_name tmp_file new_branch_name
   branch_name=$(_get_branch_name "$1")
   [[ -z "$branch_name" ]] && return 1
 
@@ -844,9 +844,9 @@ _zgit_cmd_delete_branch() {
 # STASH COMMANDS
 
 _zgit_cmd_stash_push() {
-  files=$(git diff --color=never --cached --name-only)
-  # shellcheck disable=SC2086
-  git stash push -- $files 2>&1
+  local -a files
+  mapfile -t files < <(git diff --color=never --cached --name-only)
+  git stash push -- "${files[@]}" 2>&1
 }
 
 _zgit_cmd_stash_pop() {
