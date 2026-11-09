@@ -496,6 +496,7 @@ _zgit_cmd_delete_branch_at_commit() {
   fi
   commit_hash=$(_get_commit_hash "$1")
   branch_name=$(_zgit_get_branch_name "$commit_hash") || return $?
+  [[ -z "$branch_name" ]] && return 1
 
   if [[ "${git_cmd_arg[0]}" == --force && ! $(_zgit_prompt "Do you really want to force delete branch \"$branch_name\"? [yN] ") =~ ^[Yy]$ ]]; then
     echo "Aborted"
