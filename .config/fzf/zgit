@@ -187,13 +187,30 @@ _get_branch_name() {
 }
 
 _zgit_prompt() {
+  local history_cmd=":"
+  if [[ "$1" == --use-history ]]; then
+    shift
+    history_cmd="history"
+  fi
+
+  HISTFILE="$XDG_CACHE_HOME"/bash/history
   if [[ -z "$TMUX" ]]; then
+    "$history_cmd" -c
+    "$history_cmd" -r "$HISTFILE"
     read -e -p "$1" -i "$2" -r ans >&2
+    "$history_cmd" -s "$ans"
+    "$history_cmd" -w "$HISTFILE"
     echo "$ans"
     return
   fi
 
-  local prompt_cmd="read -e -p \"$1\" -i \"$2\" -r ans; tmux set -p @answer \"\$ans\""
+  local prompt_cmd="
+  $history_cmd -c
+  $history_cmd -r \"$HISTFILE\"
+  read -e -p \"$1\" -i \"$2\" -r ans
+  $history_cmd -s \"\$ans\"
+  $history_cmd -w \"$HISTFILE\"
+  tmux set -p @answer \"\$ans\""
   if ! tmux display-popup -E -w 72% -h 5 -T 'zgit prompt' "$prompt_cmd"; then
     return 130
   fi
@@ -348,7 +365,7 @@ _zgit_cmd_yank() {
 
 _zgit_cmd_execute_git_cmd() {
   local git_cmd cmd_arg
-  if ! git_cmd=$(_zgit_prompt "Command to execute: "); then
+  if ! git_cmd=$(_zgit_prompt --use-history "Command to execute: "); then
     echo "Aborted"
     return 130
   fi
