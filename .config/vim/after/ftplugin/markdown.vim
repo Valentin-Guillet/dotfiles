@@ -572,13 +572,16 @@ function! Foldtext_todolist()
     endif
 
     let l:n_children = 0
+    let l:n_done_children = 0
     for l:lnum in range(v:foldstart + 1, v:foldend)
-        if s:TodoList_LineIsItem(getline(l:lnum))
+        let l:child_line = getline(l:lnum)
+        if s:TodoList_LineIsItem(l:child_line)
+            let l:n_done_children += s:TodoList_ItemIsDone(l:child_line)
             let l:n_children += 1
         endif
     endfor
 
-    let l:suffix      = ' [' . l:n_children . (l:n_children > 1 ? ' items]' : ' item]')
+    let l:suffix      = ' [' . l:n_done_children . ' / ' . l:n_children . (l:n_children > 1 ? ' items]' : ' item]')
     let l:has_numbers = &number || &relativenumber
     let l:nucolwidth  = &fdc + l:has_numbers * &numberwidth
     let l:windowwidth = winwidth(0) - l:nucolwidth - 6
