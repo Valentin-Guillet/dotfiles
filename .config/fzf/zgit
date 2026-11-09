@@ -400,7 +400,7 @@ _zgit_cmd_rebase_onto() {
   commit_hash=$(_get_commit_hash "$1")
   [[ -z "$commit_hash" ]] && return 1
 
-  git rebase "$commit_hash" "${@:2}" 2>&1
+  git rebase --rebase-merges "$commit_hash" "${@:2}" 2>&1
 }
 
 _zgit_get_branch_name() {
