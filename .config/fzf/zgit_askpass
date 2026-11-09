@@ -1,0 +1,3 @@
+#!/bin/bash
+
+exec "$ZGIT_SCRIPT" __cmd ask_pass "$@"

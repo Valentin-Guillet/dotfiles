@@ -225,7 +225,7 @@ _zgit_prompt() {
   if ! tmux display-popup -E -w 72% -h 5 -T 'zgit prompt' "$prompt_cmd"; then
     return 130
   fi
-  tmux show-option -vp @answer
+  tmux show-options -vp @answer
   tmux set-option -up @answer
 }
 
@@ -239,7 +239,7 @@ _zgit_popup_bindings() {
   local nb_lines
   nb_lines=$(echo "$1" | wc -l)
   nb_lines=$((nb_lines + 3))
-  tmux display-popup -E -w 56 -h "$nb_lines" -T 'Zgit keybindings' "tput civis && read -p \"$1\" -n 1"
+  tmux display-popup -k -w 56 -h "$nb_lines" -T 'Zgit keybindings' "tput civis && echo \"$1\""
 }
 
 _zgit_popup_last_cmd() {
@@ -253,7 +253,7 @@ _zgit_popup_last_cmd() {
     if ((nb_lines > max_lines)); then
       tmux display-popup -E -w 50% -h "$max_lines" -T 'Last command output' "tput civis && less -Rc~KP ' ' \"$1\""
     else
-      tmux display-popup -E -w 50% -h "$nb_lines" -T 'Last command output' "tput civis && cat \"$1\" && read -n1"
+      tmux display-popup -k -w 50% -h "$nb_lines" -T 'Last command output' "tput civis && cat \"$1\""
     fi
   else
     if ((nb_lines > max_lines)); then
@@ -395,6 +395,31 @@ _zgit_cmd_execute_git_cmd() {
 
   git_cmd="${git_cmd//{\}/$cmd_arg}"
   $git_cmd 2>&1
+}
+
+_zgit_cmd_ask_pass() {
+  local ans
+  local -a read_arg
+  for prompt in "${@}"; do
+    if [[ "$prompt" == "Username for 'https://github.com"* ]]; then
+      # Don't need to ask for username as its ignored by Github
+      git config --global user.name
+      continue
+    fi
+    [[ "$prompt" == "Password"* ]] && read_arg=(-s) || read_arg=()
+
+    if [[ -z "$TMUX" ]]; then
+      read "${read_arg[@]}" -p "$prompt" -r ans </dev/tty
+      echo "$ans"
+    else
+      local ask_pass_cmd="read ${read_arg[*]} -p \"$prompt\" -r ans && tmux set -p @ans \"\$ans\""
+      if ! tmux new-pane -OW -x 80 -y 8 -X 27% -Y 50% "$ask_pass_cmd"; then
+        return 130
+      fi
+      tmux show-options -vp @ans
+      tmux set-option -up @ans
+    fi
+  done
 }
 
 # LOG COMMANDS
@@ -951,11 +976,11 @@ _zgit_log() {
       --bind "W:execute($ZGIT_SCRIPT __cmd editor_reword_commit {})+reload($git_cmd)" \
       --bind "F:transform-header-label($ZGIT_SCRIPT __cmd filter_commits \$FZF_HEADER_LABEL)+transform-header($header_cmd)+reload($git_cmd)" \
       --bind "alt-r:transform-header-label($ZGIT_SCRIPT __cmd switch_filter_mode)+transform-header($header_cmd)+reload($git_cmd)" \
-      --bind "$(_zgit_bind "p" "git pull")+reload($git_cmd)" \
-      --bind "$(_zgit_bind "P" "git push")+reload($git_cmd)" \
-      --bind "$(_zgit_bind "ctrl-p" "git push --force-with-lease")+reload($git_cmd)" \
-      --bind "$(_zgit_bind "@" "git fetch -p")+reload($git_cmd)" \
-      --bind "$(_zgit_bind "." "$ZGIT_SCRIPT __cmd fetch_branch {}")+reload($git_cmd)" \
+      --bind "$(_zgit_bind --has-input "p" "git pull")+reload($git_cmd)" \
+      --bind "$(_zgit_bind --has-input "P" "git push")+reload($git_cmd)" \
+      --bind "$(_zgit_bind --has-input "ctrl-p" "git push --force-with-lease")+reload($git_cmd)" \
+      --bind "$(_zgit_bind --has-input "@" "git fetch -p")+reload($git_cmd)" \
+      --bind "$(_zgit_bind --has-input "." "$ZGIT_SCRIPT __cmd fetch_branch {}")+reload($git_cmd)" \
       --bind "$(_zgit_bind "-" "$ZGIT_SCRIPT __cmd move_commit down {}")+reload($git_cmd)+down" \
       --bind "$(_zgit_bind "_" "$ZGIT_SCRIPT __cmd move_commit up {}")+reload($git_cmd)+up" \
       --bind "$(_zgit_bind --has-input ":" "$ZGIT_SCRIPT __cmd execute_git_cmd log {}")+reload($git_cmd)" \
@@ -1057,7 +1082,7 @@ _zgit_explore() {
 }
 
 _zgit_branch() {
-  local git_cmd unbound_keys
+  local git_cmd git_cmd_str unbound_keys
 
   git_cmd=(git branch --sort=-committerdate --sort=HEAD --format=$'%(HEAD) %(color:yellow)%(refname:short) %(color:green)(%(committerdate:relative))\t%(color:blue)%(subject)%(color:reset)' "$@")
   printf -v git_cmd_str '%q ' "${git_cmd[@]}"
@@ -1098,7 +1123,7 @@ _zgit_stash() {
     return 1
   fi
 
-  local git_cmd unbound_keys
+  local git_cmd git_cmd_str unbound_keys
 
   git_cmd=(git stash list --format='%C(yellow)%gd %C(auto)%gs%C(reset)')
   printf -v git_cmd_str '%q ' "${git_cmd[@]}"
@@ -1160,10 +1185,10 @@ _zgit_main() {
 
   # Initialization
   if [[ -z "$ZGIT_FOOTER_FILE" ]]; then
-    export ZGIT_SCRIPT
+    export ZGIT_SCRIPT GIT_ASKPASS GIT_TERMINAL_PROMPT=0 ZGIT_FOOTER_FILE
     ZGIT_SCRIPT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)/$(basename -- "${BASH_SOURCE[0]}")
+    GIT_ASKPASS="$(dirname -- "$(readlink -f "$ZGIT_SCRIPT")")/zgit_askpass"
 
-    export ZGIT_FOOTER_FILE
     ZGIT_FOOTER_FILE=$(mktemp --tmpdir zgit_footer.XXXXXXXX)
     trap 'rm -f "$ZGIT_FOOTER_FILE"' EXIT
 
