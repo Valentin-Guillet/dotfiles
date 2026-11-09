@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -o pipefail
+
 export ZGIT_FZF_DEFAULT_OPTS="
     --ansi
     --reverse
@@ -295,7 +297,7 @@ _zgit_preview_file() {
     if [[ -f "$file_path" ]]; then
       LESS=Rc bat --color=always --paging="$paging" "$file_path" 2>/dev/null || "${fallback[@]}" "$file_path"
     else
-      git ls-files -co --exclude-standard -- "$file_path" | tree -Ca --fromfile . 2>/dev/null || ls -R --color=always
+      git ls-files -co --exclude-standard -- "$file_path" | { tree -Ca --fromfile . 2>/dev/null || cat; } | "${fallback[@]}"
     fi
   else
     [[ "${git_arg[0]}" == "--staged" && "${1:0:1}" == " " ]] && return
@@ -1062,7 +1064,7 @@ _zgit_branch() {
 
   unbound_keys=$'a,b,c,e,f,h,l,m,n,p,r,s,t,v,z,A,B,C,D,E,F,H,I,K,L,M,N,O,P,Q,R,S,T,U,V,Y,Z,\,|,,,.,;,(,),[,],{,},<,>,\',",@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9,space'
 
-  _get_branch_name  "$("${git_cmd[@]}" |
+  _get_branch_name "$("${git_cmd[@]}" |
     FZF_DEFAULT_OPTS="${ZGIT_FZF_DEFAULT_OPTS:-}" fzf \
       --tiebreak 'begin' \
       --prompt 'n> ' \
