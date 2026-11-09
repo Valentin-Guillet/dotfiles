@@ -177,4 +177,22 @@ return {
 	},
 
 	"andymass/vim-matchup",
+
+	{
+		"tuurep/registereditor",
+		keys = {
+			{
+				"gm",
+				function()
+					local register = vim.fn.getcharstr()
+					if register == "\27" then -- abort on Esc
+						return
+					end
+					vim.cmd("RegisterEdit " .. vim.fn.escape(register, " "))
+				end,
+				mode = { "n", "v" },
+				desc = "Register Edit",
+			},
+		},
+	},
 }
