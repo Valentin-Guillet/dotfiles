@@ -12,19 +12,6 @@ return {
 	},
 
 	{
-		"zbirenbaum/copilot.lua",
-		opts = {
-			suggestion = {
-				auto_trigger = false,
-				keymap = {
-					next = "<M-}>",
-					prev = "<M-{>",
-				},
-			},
-		},
-	},
-
-	{
 		"kylechui/nvim-surround",
 		event = "VeryLazy",
 		init = function()
