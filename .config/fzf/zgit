@@ -157,6 +157,11 @@ _zgit_bind() {
   echo "$1:execute-silent(${*:2} >$ZGIT_FOOTER_FILE 2>&1)+transform-footer(((\$(wc -l < $ZGIT_FOOTER_FILE) > 15)) && { head -n 14 $ZGIT_FOOTER_FILE; echo '[...]'; } || cat $ZGIT_FOOTER_FILE)"
 }
 
+_zgit_exit_insert_or() {
+  # shellcheck disable=SC2016
+  echo '[[ "$FZF_PROMPT" == "i> " ]] && echo "rebind('"${ALL_BOUND_KEYS//\"/\\\"}"')+change-prompt(n> )" || echo "'"$1"'"'
+}
+
 _get_commit_hash() {
   if [[ "$1" == "stash@"* ]]; then
     echo "$1" | cut -d' ' -f 1 | xargs git rev-parse
@@ -890,13 +895,11 @@ _zgit_cmd_stash_reword() {
 # MAIN FUNCTIONS
 
 _zgit_log() {
-  local git_cmd header_cmd enter_cmd pos_load_cmd load_cmd init_filter init_header unbound_keys
+  local git_cmd header_cmd pos_load_cmd load_cmd init_filter init_header unbound_keys
   git_cmd="$ZGIT_SCRIPT __cmd git_log_entries"
 
   # shellcheck disable=SC2016
   header_cmd='[[ -n "$FZF_HEADER_LABEL" ]] && echo "Filter -${FZF_HEADER_LABEL:0:1}: ${FZF_HEADER_LABEL:1}"'
-  # shellcheck disable=SC2016
-  enter_cmd='[[ "$FZF_PROMPT" == "i> " ]] && echo "rebind('"${ALL_BOUND_KEYS//\"/\\\"}"')+change-prompt(n> )" || echo "execute('"$ZGIT_SCRIPT"' explore {})"'
 
   pos_load_cmd="transform($ZGIT_SCRIPT __cmd center_head)"
   for arg in "$@"; do
@@ -962,8 +965,9 @@ _zgit_log() {
       --bind "o:execute($ZGIT_SCRIPT __preview commit --paging {})" \
       --bind "ctrl-r:reload($git_cmd)" \
       --bind "ctrl-l:change-footer()+clear-screen" \
-      --bind "i,/:unbind($ALL_BOUND_KEYS)+change-prompt(i> ),esc:rebind($ALL_BOUND_KEYS)+change-prompt(n> )" \
-      --bind "enter:transform:$enter_cmd" \
+      --bind "i,/:unbind($ALL_BOUND_KEYS)+change-prompt(i> )" \
+      --bind "esc:transform:$(_zgit_exit_insert_or "abort")" \
+      --bind "enter:transform:$(_zgit_exit_insert_or "execute($ZGIT_SCRIPT explore {})")" \
       --bind "?:execute$([[ -n $TMUX ]] && echo "-silent")($ZGIT_SCRIPT __popup bindings \"$LOG_HELP_MSG\")" \
       --bind "!:change-footer()+execute$([[ -n $TMUX ]] && echo "-silent")($ZGIT_SCRIPT __popup last_cmd \"$ZGIT_FOOTER_FILE\")" \
       --bind "tab:become($ZGIT_SCRIPT status --position=\$FZF_POS --filter=\\\"\$FZF_HEADER_LABEL\\\")" \
@@ -972,10 +976,8 @@ _zgit_log() {
 }
 
 _zgit_status() {
-  local git_cmd enter_cmd unbound_keys
+  local git_cmd unbound_keys
   git_cmd="git status --short"
-  # shellcheck disable=SC2016
-  enter_cmd='[[ "$FZF_PROMPT" == "i> " ]] && echo "rebind('"${ALL_BOUND_KEYS//\"/\\\"}"')+change-prompt(n> )" || echo "execute('"$ZGIT_SCRIPT"' __cmd open_editor {})"'
 
   unbound_keys=$'a,b,e,f,h,l,m,n,t,v,w,z,B,D,E,F,H,I,K,L,M,N,P,Q,T,U,V,W,Y,Z,\,|,,,.,;,(,),[,],{,},<,>,\',",@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9'
 
@@ -1009,8 +1011,9 @@ _zgit_status() {
       --bind "ctrl-r:reload($git_cmd)" \
       --bind "ctrl-l:change-footer()+clear-screen" \
       --bind "change:best" \
-      --bind "i,/:unbind($ALL_BOUND_KEYS)+change-prompt(i> ),esc:rebind($ALL_BOUND_KEYS)+change-prompt(n> )" \
-      --bind "enter:transform:$enter_cmd" \
+      --bind "i,/:unbind($ALL_BOUND_KEYS)+change-prompt(i> )" \
+      --bind "esc:transform:$(_zgit_exit_insert_or "abort")" \
+      --bind "enter:transform:$(_zgit_exit_insert_or "execute($ZGIT_SCRIPT __cmd open_editor {})")" \
       --bind "?:execute$([[ -n $TMUX ]] && echo "-silent")($ZGIT_SCRIPT __popup bindings \"$STATUS_HELP_MSG\")" \
       --bind "!:change-footer()+execute$([[ -n $TMUX ]] && echo "-silent")($ZGIT_SCRIPT __popup last_cmd \"$ZGIT_FOOTER_FILE\")" \
       --bind "tab:become($ZGIT_SCRIPT log $*)" \
@@ -1019,17 +1022,10 @@ _zgit_status() {
 }
 
 _zgit_explore() {
-  local commit_hash git_cmd enter_cmd
+  local commit_hash git_cmd unbound_keys
 
   commit_hash=$(_get_commit_hash "$1")
   git_cmd="git show --pretty= --name-only --diff-merges=first-parent $commit_hash"
-
-  # shellcheck disable=SC2016
-  enter_cmd=$'if [[ "$FZF_PROMPT" == "i> " ]]; then
-    echo "rebind('"${ALL_BOUND_KEYS//\"/\\\"}"')+change-prompt(n> )"
-  else
-    echo "execute(git show '"$commit_hash"$':{} | vim -R -c \\"execute \'file \' . fnameescape({}) | filetype detect\\" -)"
-  fi'
 
   unbound_keys=$'a,b,c,e,f,h,l,m,n,p,r,s,t,v,w,x,z,A,B,C,D,E,F,H,I,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,\,|,,,.,;,(,),[,],{,},<,>,\',",@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9,space'
 
@@ -1048,8 +1044,9 @@ _zgit_explore() {
       --bind "ctrl-r:reload($git_cmd)" \
       --bind "ctrl-l:change-footer()+clear-screen" \
       --bind "change:best" \
-      --bind "i,/:unbind($ALL_BOUND_KEYS)+change-prompt(i> ),esc:rebind($ALL_BOUND_KEYS)+change-prompt(n> )" \
-      --bind "enter:transform:$enter_cmd" \
+      --bind "i,/:unbind($ALL_BOUND_KEYS)+change-prompt(i> )" \
+      --bind "esc:transform:$(_zgit_exit_insert_or "abort")" \
+      --bind "enter:transform:$(_zgit_exit_insert_or "execute(git show $commit_hash:{} | vim -R -c \\\"execute 'file ' . fnameescape({}) | filetype detect\\\" -)")" \
       --bind "?:execute$([[ -n $TMUX ]] && echo "-silent")($ZGIT_SCRIPT __popup bindings \"$EXPLORE_HELP_MSG\")" \
       --bind "!:change-footer()+execute$([[ -n $TMUX ]] && echo "-silent")($ZGIT_SCRIPT __popup last_cmd \"$ZGIT_FOOTER_FILE\")" \
       --bind "$unbound_keys:ignore" \
@@ -1058,13 +1055,10 @@ _zgit_explore() {
 }
 
 _zgit_branch() {
-  local git_cmd enter_cmd
+  local git_cmd unbound_keys
 
   git_cmd=(git branch --sort=-committerdate --sort=HEAD --format=$'%(HEAD) %(color:yellow)%(refname:short) %(color:green)(%(committerdate:relative))\t%(color:blue)%(subject)%(color:reset)' "$@")
   printf -v git_cmd_str '%q ' "${git_cmd[@]}"
-
-  # shellcheck disable=SC2016
-  enter_cmd='[[ "$FZF_PROMPT" == "i> " ]] && echo "rebind('"${ALL_BOUND_KEYS//\"/\\\"}"')+change-prompt(n> )" || echo "accept"'
 
   unbound_keys=$'a,b,c,e,f,h,l,m,n,p,r,s,t,v,z,A,B,C,D,E,F,H,I,K,L,M,N,O,P,Q,R,S,T,U,V,Y,Z,\,|,,,.,;,(,),[,],{,},<,>,\',",@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9,space'
 
@@ -1087,8 +1081,9 @@ _zgit_branch() {
       --bind "ctrl-r:reload($git_cmd_str)" \
       --bind "ctrl-l:change-footer()+clear-screen" \
       --bind "change:best" \
-      --bind "i,/:unbind($ALL_BOUND_KEYS)+change-prompt(i> ),esc:rebind($ALL_BOUND_KEYS)+change-prompt(n> )" \
-      --bind "enter:transform:$enter_cmd" \
+      --bind "i,/:unbind($ALL_BOUND_KEYS)+change-prompt(i> )" \
+      --bind "esc:transform:$(_zgit_exit_insert_or "abort")" \
+      --bind "enter:transform:$(_zgit_exit_insert_or "accept")" \
       --bind "?:execute$([[ -n $TMUX ]] && echo "-silent")($ZGIT_SCRIPT __popup bindings \"$BRANCH_HELP_MSG\")" \
       --bind "!:change-footer()+execute$([[ -n $TMUX ]] && echo "-silent")($ZGIT_SCRIPT __popup last_cmd \"$ZGIT_FOOTER_FILE\")" \
       --bind "$unbound_keys:ignore" \
@@ -1101,17 +1096,10 @@ _zgit_stash() {
     return 1
   fi
 
-  local git_cmd enter_cmd
+  local git_cmd unbound_keys
 
   git_cmd=(git stash list --format='%C(yellow)%gd %C(auto)%gs%C(reset)')
   printf -v git_cmd_str '%q ' "${git_cmd[@]}"
-
-  # shellcheck disable=SC2016
-  enter_cmd=$'if [[ "$FZF_PROMPT" == "i> " ]]; then
-    echo "rebind('"${ALL_BOUND_KEYS//\"/\\\"}"$')+change-prompt(n> )"
-  else
-    echo "execute('"$ZGIT_SCRIPT"' explore {})"
-  fi'
 
   unbound_keys=$'b,c,e,f,h,l,m,n,r,s,t,v,z,A,B,C,D,E,F,H,I,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,\,|,,,.,;,(,),[,],{,},<,>,\',",@,#,$,%,^,&,*,-,_,+,=,0,1,2,3,4,5,6,7,8,9,space'
 
@@ -1134,8 +1122,9 @@ _zgit_stash() {
       --bind "ctrl-r:reload($git_cmd_str)" \
       --bind "ctrl-l:change-footer()+clear-screen" \
       --bind "change:best" \
-      --bind "i,/:unbind($ALL_BOUND_KEYS)+change-prompt(i> ),esc:rebind($ALL_BOUND_KEYS)+change-prompt(n> )" \
-      --bind "enter:transform:$enter_cmd" \
+      --bind "i,/:unbind($ALL_BOUND_KEYS)+change-prompt(i> )" \
+      --bind "esc:transform:$(_zgit_exit_insert_or "abort")" \
+      --bind "enter:transform:$(_zgit_exit_insert_or "execute($ZGIT_SCRIPT explore {})")" \
       --bind "?:execute$([[ -n $TMUX ]] && echo "-silent")($ZGIT_SCRIPT __popup bindings \"$STASH_HELP_MSG\")" \
       --bind "!:change-footer()+execute$([[ -n $TMUX ]] && echo "-silent")($ZGIT_SCRIPT __popup last_cmd \"$ZGIT_FOOTER_FILE\")" \
       --bind "$unbound_keys:ignore" \
