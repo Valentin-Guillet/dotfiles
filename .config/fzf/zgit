@@ -436,6 +436,35 @@ _zgit_cmd_git_log_entries() {
   git log --all --decorate --oneline --graph "${git_arg[@]}"
 }
 
+_zgit_cmd_goto_parent_commit() {
+  local commit_hash pos parent_hash
+  commit_hash=$(_get_commit_hash "$1")
+  [[ -z "$commit_hash" ]] && return 1
+  
+  parent_hash=$(git rev-parse --short "$commit_hash^" 2>/dev/null) || return 1
+  
+  pos=$(_zgit_cmd_git_log_entries | grep -n "$parent_hash" | head -1 | cut -d: -f1)
+  [[ -z "$pos" ]] && return 1
+  
+  echo "pos($pos)"
+}
+
+_zgit_cmd_goto_child_commit() {
+  local commit_hash pos child_hash
+  commit_hash=$(_get_commit_hash "$1")
+  [[ -z "$commit_hash" ]] && return 1
+
+  child_hash=$(git rev-list --all --children "$commit_hash" | grep "^$commit_hash")
+  child_hash="${child_hash##* }"
+  child_hash=$(git rev-parse --short "$child_hash" 2>/dev/null) || return 1
+  [[ -z "$child_hash" ]] && return 1
+
+  pos=$(_zgit_cmd_git_log_entries | grep -n "$child_hash" | head -1 | cut -d: -f1)
+  [[ -z "$pos" ]] && return 1
+
+  echo "pos($pos)"
+}
+
 _zgit_cmd_reset_branch() {
   local commit_hash reset_level
   commit_hash=$(_get_commit_hash "$1")
@@ -955,6 +984,8 @@ _zgit_log() {
       --bind "q:abort" \
       --bind "d:half-page-down,u:half-page-up,ctrl-f:preview-half-page-down,ctrl-b:preview-half-page-up" \
       --bind "j:down-match,k:up-match,g:first,G:last,J:jump" \
+      --bind "ctrl-j:transform($ZGIT_SCRIPT __cmd goto_parent_commit {})" \
+      --bind "ctrl-k:transform($ZGIT_SCRIPT __cmd goto_child_commit {})" \
       --bind "z:transform($ZGIT_SCRIPT __cmd center_head)" \
       --bind "$(_zgit_bind "y" "$ZGIT_SCRIPT __cmd yank log {}")" \
       --bind "$(_zgit_bind "r" "$ZGIT_SCRIPT __cmd reset_branch {}")+reload($git_cmd)" \
