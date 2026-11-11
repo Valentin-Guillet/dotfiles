@@ -394,7 +394,7 @@ _zgit_cmd_execute_git_cmd() {
   fi
 
   git_cmd="${git_cmd//{\}/$cmd_arg}"
-  $git_cmd 2>&1
+  eval "$git_cmd" 2>&1
 }
 
 _zgit_cmd_ask_pass() {
