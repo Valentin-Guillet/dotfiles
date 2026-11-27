@@ -565,9 +565,25 @@ vnoremap D <C-v>D
 vnoremap q <C-c>
 
 " Toggle french keymap à-la unimpaired
-nmap <Plug>(unimpaired-enable)k :<C-u>setlocal keymap=french<CR>
-nmap <Plug>(unimpaired-disable)k :<C-u>setlocal keymap=<CR>
-nmap <Plug>(unimpaired-toggle)k :<C-u>setlocal keymap=<C-r>=(&keymap ==? "french") ? "" : "french"<CR><CR>
+nmap <Plug>(unimpaired-enable)k <Cmd>setlocal keymap=french<CR>
+nmap <Plug>(unimpaired-disable)k <Cmd>setlocal keymap=<CR>
+nmap <Plug>(unimpaired-toggle)k <Cmd>setlocal keymap=<C-r>=(&keymap ==? "french") ? "" : "french"<CR><CR>
+
+" Cycle between langs with [k/]k
+let s:lang_list = ["en", "fr"]
+function! s:CycleSpellLang(direction)
+    if ! &spell
+        return
+    endif
+    let l:current = index(s:lang_list, &spelllang)
+    let l:next = (l:current + a:direction + len(s:lang_list)) % len(s:lang_list)
+    let &spelllang = s:lang_list[l:next]
+    echo "Set spelllang to " . s:lang_list[l:next]
+endfunction
+
+nnoremap ]k <Cmd>call <SID>CycleSpellLang(1)<CR>
+nnoremap [k <Cmd>call <SID>CycleSpellLang(-1)<CR>
+
 
 try
     call operator#user#define("CommentDuplicate", "comdup#CommentDuplicate", "let b:ComDup_pos = getpos('.')")
