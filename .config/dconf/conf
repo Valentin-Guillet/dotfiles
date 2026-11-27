@@ -54,7 +54,7 @@ toggle-tiled-right=['<Super>Right', '<Super>l']
 
 [org/gnome/settings-daemon/plugins/media-keys]
 custom-keybindings=['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/']
-home=['<Primary><Alt>e']
+home=['<Primary><Alt>f']
 logout=['<Control><Alt>Calculator']
 reboot=['<Control><Alt>Launch2']
 screensaver=['<Super>f']
@@ -69,8 +69,6 @@ name='Terminal'
 
 [org/gnome/shell]
 disabled-extensions=['tiling-assistant@ubuntu.com']
-enabled-extensions=['wsmatrix@martin.zurowietz.de', 'putWindow@clemens.lab21.org']
-favorite-apps=['org.gnome.Terminal.desktop', 'helium.desktop', 'thunderbird.desktop', 'org.gnome.Nautilus.desktop']
 
 [org/gnome/shell/app-switcher]
 current-workspace-only=true
@@ -84,5 +82,7 @@ num-rows=3
 [org/gnome/shell/keybindings]
 toggle-message-tray=['<Super>v']
 
+[org/gnome/shell/window-switcher]
+current-workspace-only=true
 [org/gnome/system/location]
 enabled=false
