@@ -1,0 +1,19 @@
+highlight Normal guibg=#1B1D1E
+
+set guioptions-=m
+set guioptions-=T
+set guioptions-=r
+set guioptions-=l
+set guioptions-=b
+
+nnoremap <C-S-c> "+y
+xnoremap <C-S-c> "+y
+
+nnoremap <C-S-v> "+p
+noremap! <C-S-v> <C-r>+
+inoremap <C-S-v> <C-r>+
+
+if has("terminal")
+    tnoremap <C-/> <C-_>
+endif
+

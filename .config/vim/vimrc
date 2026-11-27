@@ -199,6 +199,11 @@ let g:loaded_rrhelper = 1
 let g:loaded_vimballPlugin = 1
 
 
+if has("gui_running")
+    let g:readline_meta = 1
+endif
+
+
 call plug#begin($XDG_DATA_HOME . "/vim/plug-packages/")
 
 Plug 'AndrewRadev/linediff.vim'
@@ -328,10 +333,6 @@ let g:python_highlight_all = 1
 
 " Python indent
 let g:python_pep8_indent_multiline_string = -2
-
-
-" Readline
-let g:readline_ctrl_t = 0
 
 
 " Tagbar
