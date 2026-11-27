@@ -53,7 +53,7 @@ toggle-tiled-left=['<Super>Left', '<Super>h']
 toggle-tiled-right=['<Super>Right', '<Super>l']
 
 [org/gnome/settings-daemon/plugins/media-keys]
-custom-keybindings=['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/']
+custom-keybindings=['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/']
 home=['<Primary><Alt>f']
 logout=['<Control><Alt>Calculator']
 reboot=['<Control><Alt>Launch2']
@@ -66,6 +66,11 @@ www=['<Primary><Alt>w']
 binding='<Control><Alt>t'
 command='gnome-terminal --window --maximize'
 name='Terminal'
+
+[org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1]
+binding='<Control><Alt>v'
+command='gvim --nofork -c ScratchRun'
+name='Vim scratch'
 
 [org/gnome/shell]
 disabled-extensions=['tiling-assistant@ubuntu.com']
